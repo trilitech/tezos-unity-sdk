@@ -1,0 +1,174 @@
+type id = nat;
+type amount = nat;
+
+type item = 
+{
+// @layout:comb
+//  id: int,
+  price : int,
+
+  // inventory type: leg, torso, hand, consumable, etc
+  itemType : int,
+
+  damage : int, 
+  armor : int,
+  attackSpeed : int,
+  healthPoints : int,
+  manaPoints : int
+};
+
+type slot = [item, amount];
+type itemSet = set<slot>;
+type inventory = map<id, slot>;
+
+type storage =
+{
+  inventories : big_map<address, inventory>,
+//  viewerContract : address
+};
+
+type viewParameter =
+// @layout:comb
+| ["ViewNat", nat]
+| ["ViewInt", int]
+| ["ViewString", string]
+| ["ViewAddress", address]
+| ["ViewInventory", inventory]
+;
+
+type parameter =
+//| ["Get_my_inventory"]
+//| ["Get_inventory_of", address]
+
+| ["HumanizeItem", item]
+| ["HumanizeSlot", mySlot]
+| ["HumanizeInventory", itemSet]
+
+| ["Mint", int]
+| ["Update_operators", address]
+;
+
+type listOfOps = list<operation>;
+type return_ = [listOfOps, storage];
+
+
+// @view
+let view_inventory_of = ([addr , s]: [address , storage]) : itemSet => 
+{ 
+    let inv : inventory = match(
+      Big_map.find_opt(addr, s.inventories) as option<inventory>, {
+        Some: (item : inventory) => item,
+        None: () => Map.empty as inventory
+      });
+
+    const pairs = Map.fold(
+      (acc: mySet, item: [item, amount]) : itemSet => Set.add(item, acc),
+      inv, 
+      Set.empty as itemSet
+    );
+    
+   return pairs;
+};
+
+/*
+let sendToCallback = (addr : address, s : storage) : listOfOps => {
+
+    const callback: contract<viewParameter> = match(
+      Tezos.get_contract_opt(s.viewerContract) as option<contract<viewParameter>>, {
+          Some: (contract: option<contract<viewParameter>>) => contract,
+          None: () => failwith("Contract not found!!!") 
+      });
+
+    let invToSend = ViewInventory(view_inventory_of(addr, s));
+    let op : operation = Tezos.transaction(invToSend, 0 as tez, callback);    
+    return list([op]) as listOfOps;
+};
+*/
+
+let mint = (seed: int, store: storage) : storage => {
+
+  let dmg = (seed * 13) % 9 + 1;
+  let arm = (seed / 13) % (9) + 1;
+  let atkSpd = (seed * 17) % (9) + 1;
+  let hp = (seed * 5) % (9) + 1;
+  let mp = (seed / 35) % (9) + 1;
+
+  let newItem : item =
+  {
+    id: seed,
+    price : (dmg + arm + atkSpd + hp + mp),
+
+    damage : dmg, 
+    armor : arm,
+    attackSpeed : atkSpd,
+    healthPoints : hp,
+    manaPoints : mp
+  };
+
+  let addr = Tezos.get_sender();
+  let old_map_opt: option<inventory> = Big_map.find_opt(addr, store.inventories);
+
+  /*
+  // in case we need to increment the amount of items per ID
+  let old_map = match(old_map_opt, {
+    Some: (inv: inventory) => 
+    {
+        let old_amount_opt : option<nat> = Big_map.find_opt(newItem, inv);
+
+        let new_amount = match(old_ampount_opt, {
+          Some: (amount : nat) => amount + 1,
+          None: () => 1
+        });
+    },
+    None: () => 
+    {
+      return Big_map.literal(list([
+      [newItem, 1]
+      ]));
+    }
+  });
+  */
+
+  let old_map = match(old_map_opt, {
+    Some: (inv: inventory) => inv,
+    None: () => Map.empty
+  });
+
+  // add to the map if not present, do nothing if it does
+  let new_map = Map.update(newItem, Some({count: (1 as nat)}), old_map);
+
+  // add to the map if not present, replace if it does
+  let new_store : storage = 
+  {
+    inventories: Big_map.update (addr, Some(new_map), store.inventories),
+  //  viewerContract : store.viewerContract
+  }
+  
+  return new_store;
+};
+
+let main = ([action, store]: [parameter, storage]) : return_ => {
+
+  let noop : listOfOps = list([]);
+    match(action, {
+//      Get_my_inventory: () => { return [sendToCallback(Tezos.get_sender(), store), store];  },
+//      Get_inventory_of: (addr: address) => { return [sendToCallback(addr, store), store]; },
+
+      HumanizeItem: (item : item) => { failwith("Netezos use only") },
+      HumanizeSlot: (slot : mySlot) => { failwith("Netezos use only") },
+      HumanizeInventory: (set : itemSet) => { failwith("Netezos use only") },
+
+      Mint: (seed : int)       => { return [noop, mint(seed, store)]; },
+
+      Update_operators: (addr: address) => 
+      { 
+          const newStorage : storage = 
+          {
+            inventories : store.inventories,
+//            viewerContract : addr
+          };
+
+          return [noop, newStorage]; 
+        }
+    });
+};

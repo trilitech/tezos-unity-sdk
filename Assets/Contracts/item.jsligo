@@ -1,0 +1,12 @@
+// Item stats definition
+export type t = 
+{
+// @layout:comb
+  // inventory type: leg, torso, hand, consumable, etc
+  itemType : int,
+  damage : int, 
+  armor : int,
+  attackSpeed : int,
+  healthPoints : int,
+  manaPoints : int
+};

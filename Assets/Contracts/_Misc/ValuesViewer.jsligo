@@ -1,0 +1,21 @@
+type item = 
+{
+// @layout:comb
+  name: string,
+  props: int
+};
+
+type inventory = set<item>;
+
+type viewParameter =
+// @layout:comb
+| ["ViewNat", nat]
+| ["ViewInt", int]
+| ["ViewString", string]
+| ["ViewAddress", address]
+| ["ViewInventory", inventory];
+
+type storage = unit;
+type ret = [list<operation>, storage];
+
+const main = ([_action, _store]: [viewParameter, storage]): ret => { return failwith() as ret; };

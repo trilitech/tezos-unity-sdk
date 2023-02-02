@@ -1,0 +1,76 @@
+#import "errors.jsligo" "Errors"
+
+type owner    = address;
+type operator = address;
+type token_id = nat;
+
+export type operator_info = 
+// @layout:comb
+{
+   owner    : owner,
+   operator : operator,
+   token_id : token_id,
+};
+
+// Operators is a list of addresses that have access to the specified token_ids.
+// These behave like token administrators. When making transfer, the contracts checks if the caller is in this list
+export type t = big_map<[owner, operator], set<token_id>>;
+
+// checks that the address is allowed to operate on the token
+export const assert_authorisation = ([operators, from_, token_id]: [t, address, nat]): unit => {
+   const sender_ = (Tezos.get_sender ());
+   if (sender_ != from_){
+      const authorized = match ((Big_map.find_opt ([from_,sender_], operators)),
+      {Some: (a : set<token_id>) => a , None : () => Set.empty});
+      if (!(Set.mem (token_id, authorized))) 
+         {return failwith (Errors.not_operator)}
+   }
+};
+
+const assert_update_permission = (owner : owner) : unit =>
+      assert_with_error ((owner == (Tezos.get_sender ())), "The sender can only manage operators for his own token");
+   // For an administator
+   // const admin = tz1.... ;
+   // assert_with_error ((Tezos.sender = admiin), "Only administrator can manage operators")
+
+    // added extra from:
+    // https://gitlab.com/ligolang/contract-catalogue/-/blob/main/lib/fa2/nft/NFT.jsligo
+    
+    export const is_operator = ([operators, owner, operator, token_id] : [t , address , address , nat]) : bool => {
+   
+      const authorized = 
+      match (Big_map.find_opt ([owner, operator], operators), {
+         Some: (a : set<token_id>) => a , 
+         None : () => Set.empty
+      });
+
+   (Set.mem (token_id, authorized) || owner == operator)  
+};
+
+// add a new operator to the list
+export const add_operator = ([operators,owner,operator,token_id]: [t, owner, operator, token_id]) : t => {
+   if (owner == operator) { return operators; } // assert_authorisation always allow the owner so this case is not relevant
+   else {
+      assert_update_permission (owner);
+      let auth_tokens = match (Big_map.find_opt ([owner,operator], operators),
+         {Some : (ts: set<token_id>) => ts , None : () => Set.empty});
+      auth_tokens = Set.add (token_id, auth_tokens);
+      return Big_map.update ([owner,operator], Some (auth_tokens), operators);
+   }
+};
+         
+// remove an operator from the list
+export const remove_operator = ([operators,owner,operator,token_id]: [t, owner, operator, token_id]) : t => {
+   if (owner == operator) { return operators; } // assert_authorisation always allow the owner so this case is not relevant
+   else {
+      assert_update_permission (owner);
+      const auth_tokens : option<set<token_id>> = match (Big_map.find_opt ([owner,operator], operators),
+      {Some : (ts : set<token_id>) => {
+         const ts = Set.remove (token_id, ts);
+         if (Set.cardinal (ts) == (0 as nat)) { return None ()} else { return Some (ts)};
+      },
+      None : () => None ()
+      });
+      return Big_map.update ([owner,operator], auth_tokens, operators);
+   }
+};

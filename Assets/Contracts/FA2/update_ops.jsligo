@@ -1,0 +1,34 @@
+#import "errors.jsligo" "Errors"
+#import "storage.jsligo" "Storage"
+#import "operators.jsligo" "Operators"
+
+type storage = Storage.t;
+
+// Update_operators entrypoint
+export type operator = 
+// @layout:comb
+{
+   owner    : address,
+   operator : address,
+   token_id : nat,
+};
+
+export type unit_update      = ["Add_operator", operator] | ["Remove_operator", operator];
+export type update_operators_param = list<unit_update>;
+
+const update_ops = ([updates, s]: [update_operators_param, storage]): [list<operation>, storage] => {
+   const update_operator = ([operators,update] : [Operators.t, unit_update]) : Operators.t => match (update, 
+   { Add_operator    : (operator: operator) => Operators.add_operator (operators, operator.owner, operator.operator, operator.token_id)
+   , Remove_operator : (operator: operator) => Operators.remove_operator (operators, operator.owner, operator.operator, operator.token_id)
+   });
+   let operators = Storage.get_operators (s);
+   operators = List.fold_left (update_operator, operators, updates);
+   const s = Storage.set_operators (s, operators);
+   [list([]),s]
+};
+
+// If transfer_policy is  No_transfer or Owner_transfer
+//const update_ops : update_operators -> storage -> operation list * storage = 
+//   fun (updates: update_operators) (s: storage) -> 
+//   const () = failwith Errors.not_supported in
+//   ([]: operation list),s

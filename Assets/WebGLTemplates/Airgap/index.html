@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+    <script src="StreamingAssets/walletbeacon.min.js"></script>
+  </head>
+  <body style="text-align: center">
+    <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+    <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+    <script>
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+
+        dataUrl: "Build/{{{ DATA_FILENAME }}}",
+        frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_WASM
+        codeUrl: "Build/{{{ CODE_FILENAME }}}",
+#endif
+#if MEMORY_FILENAME
+        memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+#endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      }).then((unityInstance) => {
+        console.log("Unity instance");
+        window.unityInstance = unityInstance;
+      });
+    </script>
+    <script>
+
+      class MyLogger {
+
+        constructor() {}
+      // ---------------------------------
+      // >>>>>>> BEACON SDK <<<<<<<<
+      // ---------------------------------
+        // Most if this code is based on the dapp.html example provided by Airgap
+        //https://github.com/airgap-it/beacon-sdk/blob/master/examples/dapp.html
+
+        debug(name, method, ...args) {
+          const el = document.createElement('div')
+          el.innerText = `'debug' ${name} ${method} ${args.join(', ')}`
+          el.setAttribute('style', 'background-color: blue')
+          document.getElementById('logger-output').appendChild(el)
+        }
+
+        log(name, method, ...args) {
+          const el = document.createElement('div')
+          el.innerText = `'log' ${name} ${method} ${args.join(', ')}`
+          el.setAttribute('style', 'background-color: green')
+          document.getElementById('logger-output').appendChild(el)
+        }
+
+        warn(name, method, ...args) {
+          const el = document.createElement('div')
+          el.innerText = `'warn' ${name} ${method} ${args.join(', ')}`
+          el.setAttribute('style', 'background-color: orange')
+          document.getElementById('logger-output').appendChild(el)
+        }
+
+        error(name, method, ...args) {
+          const el = document.createElement('div')
+          el.innerText = `'error' ${name} ${method} ${args.join(', ')}`
+          el.setAttribute('style', 'background-color: red')
+          document.getElementById('logger-output').appendChild(el)
+        }
+      }
+
+      const x = new MyLogger()
+      var activeAccountAddress = ""
+      beacon.setLogger(x)
+
+      // Initiate DAppClient
+      const client = new beacon.DAppClient({
+        name: 'Unity Tezos DApp', // Name of the DApp,
+        disclaimerText: 'This is an optional <b>disclaimer</b>.'
+      })
+
+      // Display the active account in the UI
+      const updateActiveAccount = () => {
+        client.getActiveAccount().then((activeAccount) => {
+          if(window.unityInstance){
+            if(activeAccount){
+              // Send active account to unity instance
+              window.unityInstance.SendMessage("UnityBeacon", "OnAccountReceived", JSON.stringify(activeAccount));
+              updateAccountsCount();
+            }else{
+              window.unityInstance.SendMessage("UnityBeacon", "OnAccountReceived", "");
+            }
+          }
+        })
+      }
+      //updateActiveAccount()
+
+      // const sendTransaction = (mutezAmount, address) => {
+      //   return client.getActiveAccount().then((activeAccount) => {
+      //     try {
+      //       const result = client.requestOperation({
+      //         operationDetails: [
+      //           {
+      //             kind: beacon.TezosOperationType.TRANSACTION,
+      //             destination: address ?? activeAccount?.address ?? '',
+      //             amount: mutezAmount
+      //           }
+      //         ]
+      //       })
+
+      //       console.log(result);
+      //       window.unityInstance.SendMessage("BeaconMessageReceiver", "OnTransactionCompleted", JSON.stringify(result));
+      //     } catch (error) {
+      //       console.log(`The transaction failed and the following error was returned:`, error)
+      //       window.unityInstance.SendMessage("BeaconMessageReceiver", "OnTransactionFailed", JSON.stringify(error));
+      //     }
+      //   })
+      // }
+
+      // send contract call
+      const sendContractCall = (destination, amount, entryPoint, parameter) => {
+        return client.getActiveAccount().then(async (activeAccount) => {
+          // Setting the color of TzButton is only possible if you are currently the leader and own a color
+          // So this call will likely fail
+          try {
+            const result = await client.requestOperation({
+              operationDetails: [
+                {
+                  kind: beacon.TezosOperationType.TRANSACTION,
+                  amount: amount,
+                  destination: destination,
+                  parameters: {
+                    entrypoint: entryPoint,
+                    value: JSON.parse(parameter)
+                  }
+                }
+              ]
+            })
+
+            //console.log("Contract Call Result: " + result);
+            window.unityInstance.SendMessage("UnityBeacon", "OnContractCallCompleted", JSON.stringify(result));
+          } catch (error) {
+            //console.log(`The contract call failed and the following error was returned:`, error)
+            window.unityInstance.SendMessage("UnityBeacon", "OnContractCallFailed", JSON.stringify(error));
+          }
+        })
+      }
+
+      // Initiate a permission request
+        const requestPermission = (callback) => {
+            if (selectedRpc && selectedRpc.length > 0) {
+                client
+                    .requestPermissions(
+                        {
+                            network: {
+                                type: preferredNetwork,
+                                rpcUrl: selectedRpc
+                            }
+                        }
+                    )
+                    .then(connectAccountCompleted)
+                    .catch(connectAccountFailed)
+            } else {
+                client
+                    .requestPermissions(
+                        {
+                            network: {
+                                type: preferredNetwork,
+                            }
+                        }
+                    )
+                    .then(connectAccountCompleted)
+                    .catch(connectAccountFailed)
+            }
+      }
+
+      const connectAccountCompleted = (permissions) => {
+        //console.log('permissions', permissions);
+        activeAccountAddress = permissions.address;
+        //console.log('address', activeAccountAddress);
+        window.unityInstance.SendMessage("UnityBeacon", "OnAccountConnected", JSON.stringify(permissions));
+        updateActiveAccount();
+      }
+
+      const connectAccountFailed = (error) => {
+        console.log('error during permission request', error);
+        activeAccountAddress = "";
+        window.unityInstance.SendMessage("UnityBeacon", "OnAccountFailedToConnect", JSON.stringify(error));
+      }
+
+      const removePeer = () => {
+        client.getPeers().then((peers) => {
+          if (peers.length > 0) {
+            client.removePeer(peers[0], true).then(() => {
+              console.log('peer removed', peers[0])
+              activeAccountAddress = "";
+              updateActiveAccount()
+              updateAccountsCount();
+              window.unityInstance.SendMessage("UnityBeacon", "OnAccountDisconnected", JSON.stringify(peers[0]));
+            })
+          } else {
+            console.log('no peers to be removed')
+          }
+        })
+      }
+
+      const switchAccount = () => {
+        client.getAccounts().then((accounts) => {
+          client.getActiveAccount().then((activeAccount) => {
+            if (!activeAccount) {
+              if (accounts.length === 0) {
+                return alert('No account to switch to')
+              }
+
+              return client.setActiveAccount(accounts[0]).then(() => {
+                updateActiveAccount()
+              })
+            }
+            const filtered = accounts.filter(
+              (acc) => acc.accountIdentifier !== activeAccount.accountIdentifier
+            )
+            if (filtered.length === 0) {
+              return alert('No account to switch to')
+            }
+
+            client.setActiveAccount(filtered[0]).then(() => {
+              updateActiveAccount()
+            })
+          })
+        })
+      }
+
+      const reset = () => {
+        client.destroy().then(() => {
+          window.location.reload()
+        })
+      }
+
+      const updateAccountsCount = () => {
+        client.getAccounts().then((accounts) => {
+          console.log(accounts);
+          //window.unityInstance.SendMessage("UnityBeacon", "OnAccountsCountChanged", accounts.length);
+        })
+      }
+
+      const signPayload = (st, pl) => {
+        client.requestSignPayload({signingType: st, payload: pl}).then((result) => {
+          window.unityInstance.SendMessage("UnityBeacon", "OnPayloadSigned", JSON.stringify(result));
+        })
+      }
+
+    </script>
+    <script>
+      // ---------------------------------
+      // >>>>>>> UNITY CONNECTION <<<<<<<<
+      // ---------------------------------
+        // This whole section is used by Unity through the BeaconConnection.jslib file
+        // The way WebGL send information back to unity is using the SendMessage function.
+        // window.unityInstance.SendMessage("GameObjectReceiverName", "MethodName", parameter);
+        // For example:
+        // window.unityInstance.SendMessage("UnityBeacon", "OnAccountsCountChanged", accounts.length);
+        // You can consult more detailed information here: https://docs.unity3d.com/Manual/webgl-interactingwithbrowserscripting.html
+
+        // Contains the preferred network. It should be set from unity.
+        // By default it is set to Mainnet
+        let preferredNetwork = client.preferredNetwork;
+        // Custom RPC
+        let selectedRpc = "";
+
+        /**
+         * Set the network and rpc to connect
+         * @param  {String} Network name
+         * @param  {String} Custom RPC
+         */
+        function SetNetwork(network, rpc) {
+            preferredNetwork = network;
+            client.preferredNetwork = network;
+            selectedRpc = rpc;
+        }
+
+        /** 
+         * Function called from unity to request the permission to connect an account through Beacon 
+         */ 
+        function ConnectAccount(){
+          requestPermission();
+        }
+
+        /**
+         * Removes the connection to the current Account
+         */
+        function RemovePeer(){
+          removePeer();
+        }
+
+        /**
+         * Switch to the next account (when there're more than one connected)
+         */
+        function SwitchAccounts(){
+          switchAccount();
+        }
+
+        /**
+         * Send a transaction to an specific account
+         * @param  {String} Amount of mutez to send (1 Tez = 1000000 Mutez)
+         * @param  {String} Receiver of the transaction
+         */
+        function SendMutez(amount, address){
+          //sendTransaction(amount, address);
+        }
+
+        /**
+         * Send a contract call to a custom contract and a custom Entry Point with one int parameter
+         * @param  {String} Address of the contract
+         * @param  {String} Amount of mutez to send (1 Tez = 1000000 Mutez)
+         * @param  {String} Name of the function to be called
+         * @param  {String} Value of the parameter. Currently it only supports an int parameter represented as string
+         */
+        function SendContract(destination, amount, entryPoint, parameter){
+          sendContractCall(destination, amount, entryPoint, parameter);
+        }
+
+        /**
+         * Remove all the connections and reset the dApp client
+         */
+        function Reset(){
+          reset();
+        }
+
+        /**
+         * Request payload signing
+         */
+        function SignPayload(signingType, payload) {
+          signPayload(signingType, payload);
+        }
+
+        /**
+         * Returns current cached active account address;
+         */
+        function GetActiveAccountAddress() {
+          return activeAccountAddress;
+        }
+
+        // ---------------------------------
+        // >>>>>>> EXAMPLE <<<<<<<<
+        // ---------------------------------
+
+        /** This is an example of how to call an entrypoint with more than one arguments.
+         * This example receives 3 arguments {int, int, string}
+         * You can notice that on the value description.
+         * 
+         * This notation is needed because of how Michelson contracts work
+         * You can consult more detailed inforation here: https://tezos.gitlab.io/alpha/michelson.html
+         * on the section JSON syntax
+         */
+        let multipleArgumentsOperation = {
+            operationDetails: [
+              {
+                kind: beacon.TezosOperationType.TRANSACTION,
+                amount: "0",
+                destination: "KT1PtEyxNRgy7cwKhUfG6kX4ZfFiMeEv3iCo",
+                parameters: {
+                  entrypoint: "testMultipleArgs",
+                  value: {
+                    "prim": "Pair",
+                    "args": [ 
+                      { 
+                        "prim": "Pair", 
+                        "args": [ 
+                          { "int": "3" }, 
+                          { "int": "5" } 
+                        ]
+                       }, 
+                       { "string": "Lol" } 
+                      ] 
+                    } 
+                  } 
+                } 
+              ]
+            }
+    </script>
+    <div id="logger-output"></div>
+  </body>
+</html>

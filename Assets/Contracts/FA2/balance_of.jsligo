@@ -1,0 +1,55 @@
+#import "storage.jsligo" "Storage"
+#import "ledger.jsligo" "Ledger"
+#import "metadata.jsligo" "TokenMetadata"
+
+export type storage = Storage.t;
+
+export type request = {
+   owner    : address,
+   token_id : nat,
+};
+
+type callback = 
+// @layout:comb
+{
+   request : request,
+   balance : nat,
+};
+
+export type balance_of_param =
+// @layout:comb
+{
+   requests : list<request>,
+   callback : contract<list<callback>>,
+};
+
+// Balance_of entrypoint (TZIP4 data-read callback format)
+// Uses another contract as a callback to send the result to
+
+// Gives the amount of items of requested ID
+// 1 or 0 for Non-fungibles, actual amount of fungibles
+const balance_of = ([b, s] : [balance_of_param, storage]): [list<operation>, storage] => {
+   //const {requests, callback} = b;
+   const requests = b.requests;
+   const callback = b.callback;
+
+   const get_balance_info = (request : request) : callback => {
+      //let {owner, token_id} = request;
+      const owner = request.owner;
+      const token_id = request.token_id;
+
+      TokenMetadata.assert_token_exist  (s.token_metadata, token_id); 
+
+      // multi asset version
+      const balance_ = Ledger.get_for_user(s.ledger, owner, token_id);
+
+      // nft only version
+      // let balance_ = 0 as nat;
+      // if (Storage.is_owner_of (s, owner, token_id)) balance_ = 1 as nat;
+
+      ({request:request,balance:balance_})
+   };
+   const callback_param = List.map (get_balance_info, requests);
+   const operation = Tezos.transaction (callback_param, (0 as tez), callback);
+   [list([operation]),s]
+};

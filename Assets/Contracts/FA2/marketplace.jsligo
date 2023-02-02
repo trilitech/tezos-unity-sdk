@@ -1,0 +1,49 @@
+
+type owner = address;
+type token_id = nat;
+type currency = nat;
+type price = nat;
+
+export type add_to_market_param = 
+{
+    token_id : token_id,
+    currency : currency,
+    price : price
+};
+
+// marketplace: a slot represents an item (with keeping track of the owner) and it's price in the specified soft currency
+// warning: using map for storage is not suitable for actual deployment,
+// big_map is more suitable, but it requires redesign
+export type t = map<[owner, token_id], [currency, price]>;
+
+export type remove_from_market_param = [owner, token_id];
+export type buy_param = [owner, token_id];
+
+// check for the items is already on the market
+const is_item_on_market = ([p, m] : [[address, nat], t]) : bool => Map.mem(p, m);
+
+// adds an item to the market place with the specified price request
+const add_to_market = ( p : add_to_market_param, m: t) : t  =>
+{
+    let caller = Tezos.get_sender();
+    
+    // no selling of in-game currency allowed
+    if(p.token_id == (0 as nat))
+    {
+        return failwith("Not allowed") as t;
+    };
+
+    return Map.add([caller, p.token_id], [p.currency, p.price], m);
+};
+
+// removes selling offer from the market place (when sold or cancelled)
+const remove_from_market = ([owner, token_id] : remove_from_market_param, m: t) : t  =>
+{
+    if(!Map.mem([owner, token_id], m))
+    {
+        return failwith("item not found when removing") as t;
+    };
+
+    return Map.remove([owner, token_id], m);
+};
+

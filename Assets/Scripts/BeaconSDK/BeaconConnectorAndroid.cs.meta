@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:UnityTezosAirgap/Assets/Scripts/BeaconConnectorAndroid.cs.meta
+guid: 9b8e8b1bb3effe5488c53af694412ca1
+========
+guid: e257a0251d68743a6a1407d9ee4867ae
+>>>>>>>> netezos_for_michelson:UnityTezosAirgap/Assets/Scripts/Helpers/CoroutineWrapper.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
