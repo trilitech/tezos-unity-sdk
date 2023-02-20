@@ -38,3 +38,6 @@ Library/*
 Logs/*
 Temp/*
 *.db
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor-firstpass.csproj
+tezos-unity-sdk.sln
