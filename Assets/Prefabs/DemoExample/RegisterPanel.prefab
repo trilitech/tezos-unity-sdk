@@ -2390,7 +2390,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _deepLinkPair: {fileID: 7580025468252638738}
-  _qrPair: {fileID: 0}
   _qrImage: {fileID: 845853786785863931}
   _qrCodeView: {fileID: 2656511422170555018}
   _uiManager: {fileID: 0}
@@ -2607,7 +2606,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 180, y: 180}
+  m_SizeDelta: {x: 256, y: 256}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1679391660344038116
 CanvasRenderer:
