@@ -43,7 +43,8 @@ public class QRCodeView : MonoBehaviour
             Options = new QrCodeEncodingOptions()
             {
                 Width = width,
-                Height = height
+                Height = height,
+                PureBarcode = true
             }
         };
         return writer.Write(text);
