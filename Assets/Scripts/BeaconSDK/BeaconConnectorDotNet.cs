@@ -109,11 +109,14 @@ namespace BeaconSDK
 
         public async void RequestTezosPermission(string networkName = "", string networkRPC = "")
         {
+            if (!Enum.TryParse(networkName, out Beacon.Sdk.Beacon.Permission.NetworkType networkType))
+                networkType = Beacon.Sdk.Beacon.Permission.NetworkType.ghostnet;
+            
             var network = new Beacon.Sdk.Beacon.Permission.Network
             {
-                Type = Beacon.Sdk.Beacon.Permission.NetworkType.custom,
-                Name = _network, //"mainnet",
-                RpcUrl = _rpc //"https://rpc.tzkt.io/mainnet"
+                Type = networkType,
+                Name = _network,
+                RpcUrl = _rpc
             };
 
             var permissionScopes = new List<PermissionScope>
