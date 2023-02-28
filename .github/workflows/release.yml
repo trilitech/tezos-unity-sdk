@@ -1,0 +1,39 @@
+name: Release
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'tezos-unity-sdk.zip'
+          exclusions: '*.git* *.github*'
+
+      - name: Parse changelog
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ github.ref_name }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.changelog.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            ## ${{ steps.changelog.outputs.date }}
+            ${{ steps.changelog.outputs.changes }}
+          prerelease: ${{ steps.changelog.outputs.status == 'prereleased' }}
+          files: 'tezos-unity-sdk.zip'
