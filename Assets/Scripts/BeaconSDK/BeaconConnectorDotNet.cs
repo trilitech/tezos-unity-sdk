@@ -39,9 +39,9 @@ namespace BeaconSDK
         {
             var options = new BeaconOptions
             {
-                AppName = "Dapp sample",
-                AppUrl = "https://awesome-dapp.com",
-                IconUrl = "https://bcd-static-assets.fra1.digitaloceanspaces.com/dapps/atomex/atomex_logo.jpg",
+                AppName = "Tezos Unity SDK",
+                AppUrl = "https://tezos.com/unity",
+                IconUrl = "https://unity.com/sites/default/files/2022-09/unity-tab-small.png",
                 KnownRelayServers = Constants.KnownRelayServers,
 
                 DatabaseConnectionString = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
