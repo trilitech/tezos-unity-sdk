@@ -1,0 +1,70 @@
+// Login entrypoint: pre-mint random items & in-game currency on first log-in
+
+#import "FA2/ledger.jsligo" "Ledger"
+#import "FA2/storage.jsligo" "Storage"
+#import "FA2/metadata.jsligo" "TokenMetadata"
+#import "item.jsligo" "Item"
+
+#import "mint.jsligo" "Mint"
+
+type storage = Storage.t;
+type currency = nat;
+type amount = nat;
+
+export type login_param = unit;
+
+// "Get Coins" implementation
+// gives the user 1000 coins and mints 1 item the first time they press the button
+// The following times won't do anything
+const login = (p: login_param, s: storage) : [list<operation> , storage]  =>
+{
+    // empty list of operation and the old not modified storage
+    let result = [list([]) as list<operation>, s];
+    
+    let sender = Tezos.get_sender();
+    
+    // checking if sender is already in the dictionary
+    if(!Big_map.mem(sender, s.ledger))
+    {
+        // adding 1000 coins to a new user
+        let token_id = 0 as nat;
+        let amount_ =  1000 as nat;
+
+        // modifying the ledger (giving 1000 coins to the new user)
+        let new_ledger = Ledger.set_for_user([s.ledger, sender, token_id, amount_]);
+        
+        // the old metadata cached
+        let new_metadata = s.token_metadata;
+
+        // checking if the soft currency ID is already in the metadata dictionary (it is if this has been ever called)
+        if(!Big_map.mem(token_id, s.token_metadata))
+        {
+            // adding item stats to soft currency just in case, so there are no errors
+            // but maybe should be done on property-based
+            // i.e. Item would have "item" property, but the currency would not
+            let newItem : Item.t = { itemType:0,damage:0,armor:0,attackSpeed:0,healthPoints:0,manaPoints:0};
+
+            let current_token_info : map<string, bytes> = Map.literal( list([
+                ["item", Bytes.pack(newItem)]
+            ]));
+    
+            let current_metadata : TokenMetadata.data = { 
+                token_id : token_id, 
+                token_info : current_token_info 
+            };
+    
+            // modifying the metadata by adding "coin" id to the dictionary with dummy stats
+            new_metadata = Big_map.add(token_id, current_metadata, s.token_metadata);
+        }
+        
+        // new storage with the new metadata
+        let new_storage = ({...s, ledger : new_ledger, token_metadata : new_metadata});
+        
+        // minting an item as well [operations, new_after_mint_storage]
+        let mint_result = Mint.mint(p, new_storage);
+                    
+        return mint_result;
+    }
+
+    return result;
+};

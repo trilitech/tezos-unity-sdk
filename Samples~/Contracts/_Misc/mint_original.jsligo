@@ -1,0 +1,62 @@
+#import "FA2/ledger.jsligo" "Ledger"
+#import "FA2/storage.jsligo" "Storage"
+#import "FA2/metadata.jsligo" "TokenMetadata"
+
+type token_id = nat;
+type owner = address;
+
+type ledger = Ledger.t;
+type storage = Storage.t;
+type token_metadata = TokenMetadata.t;
+
+export type mint_param = 
+// @layout:comb
+{
+   ids : list<token_id>,
+   metas : big_map<token_id, map<string, bytes>>
+};
+
+type tokenIter = [token_metadata, big_map<token_id, map<string, bytes>>];
+
+// allowed by operator/administrator
+const mint = (param: mint_param, s: storage) : [list<operation> , storage]  =>
+{
+   // update token_ids
+   let add_id = ([acc, id] : [list<nat>, nat]) : list<nat> => list([id, ...acc]);
+   let new_token_ids : list<nat> = List.fold(add_id, param.ids, s.token_ids);
+
+   // update ledger
+   // TODO: check wether [OWNER,ID] presents, then add to the amount (i.e. add money)
+   
+   // original
+   //let set_token_owner = ([map, id] : [ledger, token_id]) : ledger => Big_map.add([Tezos.get_sender (), id], 1 as nat, map)
+   let set_token_owner = ([map, id] : [ledger, token_id]) : ledger => 
+      Big_map.add( Tezos.get_sender (), 
+      Map.literal( list([
+          [id, 1 as nat] // item 0
+         ])), 
+      map);
+
+   let new_ledger : ledger = List.fold(set_token_owner, param.ids, s.ledger);
+
+   let add_token = ([acc, elt] : [tokenIter, token_id ]) : tokenIter =>
+   {
+      let current_token_info : map<string, bytes> = match(Big_map.find_opt(elt, acc[1]), 
+      {
+         Some: (ti : map<string, bytes>) => ti,
+         None: () => failwith("Missing token_info") //as map<string, bytes>
+      });
+
+      let current_metadata : TokenMetadata.data = { 
+         token_id : elt, 
+         token_info : current_token_info 
+         };
+         
+      [Big_map.add(elt, current_metadata, acc[0]), acc[1]];
+   };
+
+   // update token metadata
+   let [new_token_metadata, _] = List.fold(add_token, param.ids, [s.token_metadata, param.metas]);
+
+   return [ list([]), ({...s, token_ids: new_token_ids, ledger: new_ledger, token_metadata: new_token_metadata }) ]
+}

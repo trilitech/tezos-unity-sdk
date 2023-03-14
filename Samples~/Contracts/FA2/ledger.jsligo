@@ -1,0 +1,51 @@
+#import "errors.jsligo" "Errors"
+
+type token_id = nat;
+type owner = address;
+type amount_ = nat;
+
+// warning: using map for storage is not suitable for actual deployment, 
+// big_map is more suitable, but it requires redesign
+export type token_map = map<token_id, amount_>;
+
+// ledger: tracks the amount of items per user
+export type t = big_map<owner, token_map>;   
+
+// returns the amount of items per requester [user, ID]
+export const get_for_user = ([ledger, owner, token_id]: [t, owner, token_id]) : nat =>
+   match (Big_map.find_opt (owner, ledger), {
+      Some: (m: token_map) => match (Map.find_opt(token_id, m), {
+         Some: (a : nat) => a,
+         None: () => 0 as nat
+      }),
+      None: () => 0 as nat
+   });    
+
+// sets the amount for ID on that user and returns the new ledger
+const set_for_user = ([ledger, owner, token_id, amount_]: [t, owner, token_id, amount_]) : t =>
+{
+   let oldMap = match(Big_map.find_opt(owner, ledger), {
+      Some: (m : token_map) => m,
+      None: () => Map.empty
+   });
+
+   let newMap = Map.update(token_id, Some(amount_), oldMap);
+   return Big_map.update( owner, Some(newMap),  ledger)
+};
+
+// decreases the amount of items on the given user
+const decrease_token_amount_for_user = ([ledger, from_, token_id, amount_]: [t, owner, token_id, amount_]) : t => {
+    let balance_ = get_for_user (ledger, from_, token_id);
+    assert_with_error ((balance_ >= amount_), Errors.ins_balance);
+    balance_ = abs(balance_ - amount_);
+    const ledger = set_for_user(ledger, from_, token_id, balance_);
+    return ledger;
+};
+
+// increases the amount of items on the given user
+const increase_token_amount_for_user = ([ledger, to_, token_id, amount_]: [t, owner, token_id, amount_]) : t => {
+    let balance_ = get_for_user (ledger, to_, token_id);
+    balance_ = balance_ + amount_;
+    const ledger = set_for_user(ledger, to_, token_id, balance_);
+    return ledger;
+}; 

@@ -1,0 +1,296 @@
+// https://gitlab.com/ligolang/contract-catalogue/-/blob/main/lib/fa2/asset/multi_asset.jsligo
+
+#import "mint.jsligo" "Mint"
+#import "login.jsligo" "Login"
+#import "item.jsligo" "Item"
+
+#import "FA2/storage.jsligo" "Storage"
+#import "FA2/transfer.jsligo" "Transfer"
+#import "FA2/balance_of.jsligo" "BalanceOf"
+#import "FA2/update_ops.jsligo" "UpdateOps"
+#import "FA2/metadata.jsligo" "TokenMetadata"
+#import "FA2/marketplace.jsligo" "Marketplace"
+#import "FA2/operators.jsligo" "Operators"
+
+type storage = Storage.t;
+
+type token_id = nat;
+type amount = nat;
+
+type currency = nat;
+type price = nat;
+
+type item = Item.t;
+type itemSet = set<[item, amount]>;
+
+type marketToken = [address, token_id];
+type marketPrice = [currency, price];
+
+// data format for inventory View
+type view_inventory_result =
+{  
+// @layout:comb
+
+  id: int, 
+  amount: int,
+
+  item: Item.t
+};
+
+// data format for marketplace View
+type view_marketplace_result =
+{
+// @layout:comb
+
+  id: int, 
+  owner: address,
+  currency: int,
+  price: int,
+
+  item: Item.t
+};
+
+type login_param = Login.login_param;
+type mint_param = Mint.mint_param;
+type set_meta_param = TokenMetadata.data;
+
+type add_to_market_param = Marketplace.add_to_market_param;
+type remove_from_market_param = Marketplace.remove_from_market_param;
+type buy_param = Marketplace.buy_param;
+
+type transfer_param = Transfer.transfer_param;
+type balance_of_param = BalanceOf.balance_of_param;
+type update_operators_param = UpdateOps.update_operators_param;
+
+type parameter =
+// @layout:comb
+| ["Login", login_param]
+| ["Mint", mint_param]
+
+// Marketplace interaction
+| ["AddToMarket", add_to_market_param]
+| ["RemoveFromMarket", remove_from_market_param]
+| ["Buy", buy_param]
+
+// FA2 interfacce
+| ["Transfer", transfer_param] 
+| ["Balance_of", balance_of_param] 
+| ["Update_operators", update_operators_param]
+
+// utility
+| ["SetMeta", set_meta_param] 
+
+// "Humanize" are utility functions, used to parse data to human-readable objects
+| ["HumanizeItem", item] 
+| ["HumanizeInventory", set<view_inventory_result>] 
+| ["HumanizeItemOnMarket", bool] 
+| ["HumanizeItemsOnMarket", set<[nat, bool]>] 
+| ["HumanizeMarketplace", set<view_marketplace_result>] 
+;
+
+// Smart contract main entry point
+const main = ([p, s]: [parameter, storage]) : [list<operation>, storage] => match (p,
+{  
+   Login            : (p : login_param           ) => Login.login(p, s) ,
+   Mint             : (p : mint_param            ) => Mint.mint(p, s) ,
+
+   AddToMarket      : (p : add_to_market_param        ) => 
+   {
+      let caller = Tezos.get_sender();
+       
+      TokenMetadata.assert_token_exist (s.token_metadata, p.token_id);
+      Operators.assert_authorisation (s.operators, caller, p.token_id);
+
+      let new_marketplace = Marketplace.add_to_market(p, s.marketplace);
+      let new_storage = Storage.set_marketplace (s, new_marketplace);
+      [list([]), new_storage]
+   } ,
+
+   RemoveFromMarket : (p : remove_from_market_param      ) => 
+   {
+      let caller = Tezos.get_sender();
+
+      const [_, token_id] = p;
+
+      TokenMetadata.assert_token_exist (s.token_metadata, token_id);
+      Operators.assert_authorisation (s.operators, caller, token_id);
+      
+      let new_marketplace = Marketplace.remove_from_market(p, s.marketplace);
+      let new_storage = Storage.set_marketplace (s, new_marketplace);
+      [list([]), new_storage]
+   } ,
+
+   Buy              : (p : buy_param         ) => Transfer.marketplace_buy(p, s),
+
+   Transfer         : (p : transfer_param        ) => Transfer.transfer   (p, s) ,
+   Balance_of       : (p : balance_of_param      ) => BalanceOf.balance_of (p, s) ,
+   Update_operators : (p : update_operators_param) => UpdateOps.update_ops (p, s),
+
+   // utility
+   SetMeta:                (p : set_meta_param       ) => Storage.set_token_metadata(p, s) , // to be removed for security
+
+   // Humanize utility function do not need to execute any code, because they are never actually called
+   HumanizeItem:           (_p : item                          ) => failwith("Netezos use only"),
+   HumanizeInventory:      (_p : set<view_inventory_result>    ) => failwith("Netezos use only"),
+   HumanizeItemOnMarket:   (_p : bool                          ) => failwith("Netezos use only"),
+   HumanizeItemsOnMarket:  (_p : set<[nat, bool]>              ) => failwith("Netezos use only"),
+   HumanizeMarketplace:    (_p : set<view_marketplace_result>  ) => failwith("Netezos use only"),
+});
+
+
+// @view
+const get_balance = ([p, s] : [[address , nat] , storage]) : nat => {
+   const [owner, token_id] = p;
+   Storage.get_balance (s, owner, token_id);
+};
+   
+// @view
+const is_operator = ([op, s] : [Operators.operator_info , storage]) : bool =>
+   Operators.is_operator (s.operators, op.owner, op.operator, op.token_id);
+
+// @view
+const total_supply = ([token_id, s] : [nat , storage]) : nat => {
+   TokenMetadata.assert_token_exist (s.token_metadata, token_id);
+   (1 as nat)
+};
+
+// @view
+const token_metadata = ([p, s] : [nat, storage]) : TokenMetadata.data =>
+   TokenMetadata.get_token_metadata(p, s.token_metadata);
+
+// @view
+const view_item_meta = ([token_id , s]: [nat , storage]) : item =>
+{
+   let meta = 
+      match (Big_map.find_opt (token_id, s.token_metadata), {
+         Some : (data : data) => data,
+         None : () => failwith ("Meta not found")
+      });
+
+    let info =
+      match(Map.find_opt ("item", meta.token_info), {
+         Some : (info : bytes) => info,
+         None : () => failwith ("Property not found")
+      });
+
+   let item = match( Bytes.unpack(info) as option<item>, {
+      Some: (it : item) => it,
+      None: () => failwith("Could not unpack")
+   });
+
+   return item;
+};
+ 
+// @view
+let view_items_of = ([owner , s]: [address , storage]) : set<view_inventory_result> => 
+{ 
+   let inv = match(
+      Big_map.find_opt(owner, s.ledger), {
+        Some: (m : map<token_id, amount>) => m,
+        None: () => Map.empty
+      });
+
+   Map.fold(
+      (acc: set<view_inventory_result>, [token_id, amount]: [token_id, amount]) => 
+      {
+         if(amount > (0 as nat))
+         {
+            let meta = 
+               match (Big_map.find_opt (token_id, s.token_metadata), {
+                  Some : (data : data) => data,
+                  None : () => failwith ("Meta not found")
+               });
+
+            let info =
+               match(Map.find_opt ("item", meta.token_info), {
+                  Some : (info : bytes) => info,
+                  None : () => failwith ("Property not found")
+               });
+
+            let item = match( Bytes.unpack(info) as option<item>, {
+               Some: (it : item) => it,
+               None: () => failwith("Could not unpack")
+            });
+
+            let result : view_inventory_result =
+            {
+               id: int(token_id),
+               amount: int(amount),
+               item: item
+            };
+            
+            return Set.add(result, acc);
+         }
+         
+         return acc;
+      },
+      inv, 
+      Set.empty
+    );
+};
+
+// @view
+let view_items_on_market = ([_p, s] : [unit, storage]) : set<view_marketplace_result> => 
+{ 
+   Map.fold(
+      (acc: set<view_marketplace_result>, [marketToken, marketPrice]: [marketToken, marketPrice]) => 
+      {
+         const [owner, token_id] = marketToken;
+         const [currency, price] = marketPrice;
+
+         let meta = 
+               match (Big_map.find_opt (token_id, s.token_metadata), {
+                  Some : (data : data) => data,
+                  None : () => failwith ("Meta not found")
+               });
+
+         let info =
+               match(Map.find_opt ("item", meta.token_info), {
+                  Some : (info : bytes) => info,
+                  None : () => failwith ("Property not found")
+               });
+
+         let item = match( Bytes.unpack(info) as option<item>, {
+               Some: (it : item) => it,
+               None: () => failwith("Could not unpack")
+            });
+
+         let result : view_marketplace_result =
+            {
+               id: int(token_id),
+               owner: owner,
+               currency: int(currency),
+               price: int(price),
+               item: item
+            };
+
+
+         Set.add(result, acc)
+      },
+      s.marketplace, 
+      Set.empty
+    );
+};
+
+// @view
+let is_item_on_market = ([p, s] : [[address, nat], storage]) : bool => Map.mem(p, s.marketplace);
+
+// @view
+let is_items_on_market = ([p, s] : [[address, list<nat>], storage]) : set<[nat, bool]> =>
+   List.fold( 
+      (acc: set<[nat, bool]>, token_id : nat) => {
+         let is_present = Map.mem([p[0], token_id], s.marketplace);
+         Set.add([token_id, is_present], acc);
+      },
+      p[1], 
+      Set.empty
+   );
+
+
+
+// @ view
+//const item_metadata = ([p, s] : [nat, storage]) : bytes =>
+//   token_metadata(p, s).token_info["item"];
+
+// @ view
+//const all_tokens = ([_, s] : [unit , storage]) : list<nat> => s.token_ids;

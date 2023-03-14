@@ -1,0 +1,43 @@
+#import "errors.jsligo" "Errors"
+   
+// This should be initialized at origination, conforming to either 
+// TZIP-12 : https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#token-metadata
+// or TZIP-16 : https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#contract-metadata-tzip-016 
+export type data = 
+{
+   token_id : nat,
+   token_info : map<string, bytes>
+};
+
+type minter = address;
+type token_id = nat;
+
+// metadata is a map of properties (specified by TZIP12 or TZIP21) kept in bytes
+// for the gameplay "item" property is used, which stores the item's stats
+export type t = big_map <token_id, data>;
+
+// read the token metadata as pair (ID as key)
+export const get_token_metadata = ([token_id, tm] : [token_id, t]) : data =>
+   match (Big_map.find_opt (token_id, tm), {
+      Some : (data : data) => data,
+      None : () => failwith (Errors.undefined_token)
+      });
+
+// read token metadata property supplied as string
+export const get_token_info = ([property, data] : [string, data]) : bytes =>
+   match(Map.find_opt (property, data.token_info), {
+      Some : (info : bytes) => info,
+      None : () => failwith (Errors.undefined_token)
+   });
+
+// testing purposes, to be removed, because metadata is supposed to be 1 write-only
+// this can re-write metadata to any token, used for dev utility
+export const set_token_metadata = ([meta, tm] : [data, t]) : t => 
+   Big_map.update(meta.token_id, Some(meta), tm);
+
+// checks if the ID has ever been minted
+export const assert_token_exist = ([m, token_id]: [t, nat]) : unit => {
+   const _ = Option.unopt_with_error (
+      Big_map.find_opt (token_id, m),
+         Errors.undefined_token);
+};

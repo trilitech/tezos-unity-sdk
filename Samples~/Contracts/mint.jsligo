@@ -1,0 +1,76 @@
+#import "FA2/ledger.jsligo" "Ledger"
+#import "FA2/storage.jsligo" "Storage"
+#import "FA2/metadata.jsligo" "TokenMetadata"
+
+#import "item.jsligo" "Item"
+
+type token_id = nat;
+type owner = address;
+
+type ledger = Ledger.t;
+type token_map = Ledger.token_map;
+
+type storage = Storage.t;
+type token_metadata = TokenMetadata.t;
+
+type item = Item.t;
+
+export type mint_param = unit;
+
+// allowed only by operator/administrator
+// mints a "random" item by using mint counter and time offsets
+const mint = (_p: mint_param, s: storage) : [list<operation> , storage]  =>
+{
+   // current mint counter gives a unique ID to a new minted item
+   let token_id = s.token_counter;
+   let owner =  Tezos.get_sender ();
+   
+   // if owner key exists, then add token_id to the map with amount of "1", since it is an NFT
+   let new_ledger : ledger =
+      match( Big_map.find_opt( owner, s.ledger ), {
+         Some: (m : token_map) => Big_map.update(owner, Some(Map.add(token_id, 1 as nat, m)), s.ledger),
+         None: () => Big_map.add(owner, Map.literal( list([  [token_id, 1 as nat]  ])), s.ledger)
+      });
+
+   // getting some pseudo "random" value based on the current time as an offset
+   let some_midnight: timestamp = "2020-09-06t11:00:00Z" as timestamp;
+   let now = Tezos.get_now();
+   let some_seconds = now - some_midnight;
+
+   let seed = int(token_id) + some_seconds;
+
+   // "random stats"
+   let newItem : item =
+   {
+      itemType :     seed % 9 + 1,
+      damage :      (seed * 1 + 12345) % (9) + 1, 
+      armor :       (seed * 2 + 23456) % (9) + 1,
+      attackSpeed : (seed * 3 + 34567) % (9) + 1,
+      healthPoints :(seed * 4 + 45678) % (9) + 1,
+      manaPoints :  (seed * 5 + 56789) % (9) + 1
+   };
+
+   // writing the data as bytes array into metadata
+   // to be filled with misc metadata from TZIP12 and TZIP21
+   let current_token_info : map<string, bytes> = Map.literal( list([
+      ["item", Bytes.pack(newItem)]
+   ]));
+
+   let current_metadata : TokenMetadata.data = { 
+      token_id : token_id, 
+      token_info : current_token_info 
+   };
+   
+   // making sure that all items have unique IDs
+   let new_counter = s.token_counter + (1 as nat);
+
+   // modifying metadata with the new token_id
+   let new_token_metadata = Big_map.add(token_id, current_metadata, s.token_metadata);
+   let new_storage = ({...s, 
+        ledger: new_ledger, 
+        token_metadata: new_token_metadata, 
+        token_counter: new_counter
+   });
+
+   return [ list([]), new_storage];
+}

@@ -1,0 +1,14 @@
+type t = string;
+
+const undefined_token = "FA2_TOKEN_UNDEFINED"
+const ins_balance     = "FA2_INSUFFICIENT_BALANCE"
+const no_transfer     = "FA2_TX_DENIED"
+const not_owner       = "FA2_NOT_OWNER"
+const not_operator    = "FA2_NOT_OPERATOR"
+const not_supported   = "FA2_OPERATORS_UNSUPPORTED"
+const rec_hook_fail   = "FA2_RECEIVER_HOOK_FAILED"
+const send_hook_fail  = "FA2_SENDER_HOOK_FAILED"
+const rec_hook_undef  = "FA2_RECEIVER_HOOK_UNDEFINED"
+const send_hook_under = "FA2_SENDER_HOOK_UNDEFINED"
+
+const only_sender_manage_operators = "The sender can only manage operators for his own token"

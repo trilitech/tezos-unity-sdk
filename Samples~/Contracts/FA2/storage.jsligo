@@ -1,0 +1,44 @@
+#import "ledger.jsligo" "Ledger"
+#import "errors.jsligo" "Errors"
+#import "operators.jsligo" "Operators"
+#import "metadata.jsligo" "TokenMetadata"
+#import "marketplace.jsligo" "Marketplace"
+
+type token_id = nat;
+
+export type t = {
+   ledger : Ledger.t,
+   token_metadata : TokenMetadata.t,
+   operators : Operators.t,
+   marketplace : Marketplace.t,
+
+    // keeps track of how many times the contract has minted.
+    // the value makes sure that token IDs are unique
+   token_counter : nat
+};
+
+// returns the amount of tokens for the provided user and ID
+export const get_balance = ([s, owner, token_id] : [t, address, nat]) : nat => {
+    TokenMetadata.assert_token_exist (s.token_metadata, token_id);
+    
+    return Ledger.get_for_user([s.ledger, owner, token_id]);
+};
+
+// helper: makes a new storage with a new ledger instance
+export const set_ledger = ([s, ledger]: [t, Ledger.t]) : t => ({...s, ledger : ledger});
+
+export const get_operators = (s:t) : Operators.t => s.operators;
+export const set_operators = ([s, operators]: [t, Operators.t]) : t => ({...s, operators : operators});
+
+// helper: makes a new storage with a new metadata instance
+export const set_token_metadata = ([d, s] : [TokenMetadata.data, t]) : [list<operation>, t] => 
+{
+   //TokenMetadata.assert_token_exist (s.token_metadata, d.token_id);
+   //Operators.assert_authorisation (s.operators, Tezos.get_sender(), d.token_id);
+
+   let new_token_metadata = Big_map.update(d.token_id, Some(d), s.token_metadata);
+   return [ list([]), ({...s, token_metadata : new_token_metadata}) ];
+}
+
+// helper: makes a new storage with a new martketplace instance
+export const set_marketplace = ([s, marketplace]: [t, Marketplace.t]) : t => ({...s, marketplace : marketplace});

@@ -1,0 +1,133 @@
+#import "ledger.jsligo" "Ledger"
+#import "storage.jsligo" "Storage"
+#import "operators.jsligo" "Operators"
+#import "metadata.jsligo" "TokenMetadata"
+#import "marketplace.jsligo" "Marketplace"
+
+type storage = Storage.t;
+type buy_param = Marketplace.buy_param;
+
+// Transfer entrypoint
+export type atomic_trans = 
+// @layout:comb
+{
+   to_      : address,
+   token_id : nat,
+   token_amount   : nat,
+};
+
+
+type transfer_from = {
+   from_ : address,
+   tx    : list<atomic_trans>,
+};
+
+export type transfer_param = list<transfer_from>;
+
+// "transfering" would imply manipulation of amount property on a user for the provided ID
+// it decreases the amount for one user and increases for the other
+// thus supporting both: fungibles and non fungibles
+// if before transfer the ledger looked like this:
+//
+// user A: [id:15, Amount:1]
+//
+// then after transfer to user B the ledger looks like this
+//
+// user A: [id:15, Amount:0]
+// user B: [id:15, Amount:1]
+
+const atomic_transfer_new_ledger = (l: Ledger.t, from_: address, to_ : address, token_id : nat, token_amount : nat) : Ledger.t =>
+{                 
+   let ledger = Ledger.decrease_token_amount_for_user (l, from_, token_id, token_amount);
+   ledger = Ledger.increase_token_amount_for_user (ledger, to_, token_id, token_amount);
+               
+   return ledger;
+}
+
+// this is FA2 standard entry point
+// walks through the list of transactions (of type transfer_param), and then through the lists of operations 
+// thus withing the single entrypoint call it is possible to transfer a selection of items from the same user to a bunch of users
+const transfer = ([t, s]: [transfer_param, storage]): [list<operation>, storage] => {
+
+   const transfer_new_storage = (t : transfer_param, s : storage) : storage => {
+
+   // This function process the "tx" list. Since all transfer share the same "from_" address, we use a se
+      const process_atomic_transfer = (from_ : address) : (s: storage, t: atomic_trans) => storage => {
+         return (s: storage, t: atomic_trans) : storage => 
+         {
+            //const {to_,token_id,token_amount} = t;
+            const to_ = t.to_;
+            const token_id = t.token_id; 
+            const token_amount = t.token_amount;
+
+            TokenMetadata.assert_token_exist (s.token_metadata, token_id);
+            Operators.assert_authorisation (s.operators, from_, token_id);
+
+            let new_marketplace = s.marketplace;
+            if(Marketplace.is_item_on_market([from_, token_id], s.marketplace))
+               new_marketplace = Marketplace.remove_from_market([from_, token_id], s.marketplace);
+
+            let new_ledger = atomic_transfer_new_ledger(s.ledger, from_, to_, token_id, token_amount);
+
+            return ({...s, marketplace : new_marketplace, ledger: new_ledger});
+         };
+      }; 
+   
+      const process_single_transfer = ([s, t]: [storage, transfer_from]) : storage => {
+         //const {from_,tx} = t;
+         const from_ = t.from_;
+         const tx = t.tx;
+      
+         return List.fold_left (process_atomic_transfer (from_), s, tx);
+      };
+
+      return List.fold_left (process_single_transfer, s, t);
+   }
+
+   return [list ([]), transfer_new_storage(t, s)];
+}
+
+// used by Example Project's internal market place
+// checks that the Buyer has sufficient amount of currency
+// 1. moves the requested item from the owner to the buyer
+// 2. moves the soft currency from the buyer to the owner
+
+const marketplace_buy = ([p, s]: [buy_param, storage]): [list<operation>, storage] => {
+
+   const [owner, token_id] = p;
+
+   let [currency, price] = match( 
+      Map.find_opt([owner, token_id], s.marketplace), {
+         Some: (val : [nat, nat]) => val,
+         None: () => failwith("Entry not found")
+   });
+
+   let caller = Tezos.get_sender();
+
+   // check if enough coins
+   let currency_balance = Storage.get_balance([s, caller, currency]);
+   if(currency_balance < price)
+   {
+       return failwith("Insufficient funds");
+   };
+
+   let item_balance = Storage.get_balance([s, owner, token_id]);
+   if(item_balance <= (0 as nat))
+   {
+       return failwith("Negative balance");
+   };
+
+   // Authorization check?
+   // Keep in mind, that this entrypoint is not called by the owner of the item
+   // Neither is the caller in the Operators list
+
+   // move the item from the owner to the buyer
+   let new_ledger = atomic_transfer_new_ledger(s.ledger, owner, caller, token_id, 1 as nat);
+
+   // move currency from the buyer to the owner
+   new_ledger = atomic_transfer_new_ledger(new_ledger, caller, owner, currency, price);
+
+   let new_marketplace = Marketplace.remove_from_market([owner, token_id], s.marketplace);
+
+   return [list ([]), ({...s, ledger: new_ledger, marketplace : new_marketplace})];
+}
