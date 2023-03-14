@@ -14,7 +14,7 @@ namespace BeaconSDK
 
 		public static string NativeMessage = string.Empty;
 
-		private QRCodeView _qrCodeView;
+		// private QRCodeView _qrCodeView;
 		private BeaconMessageReceiver _messageReceiver;
 
 		public void SetNetwork(string network, string rpc)
@@ -42,10 +42,10 @@ namespace BeaconSDK
 			return address;
 		}
 
-		public void SetQRCodeView(QRCodeView qRCodeView)
-		{
-			_qrCodeView = qRCodeView;
-		}
+		// public void SetQRCodeView(QRCodeView qRCodeView)
+		// {
+		// 	_qrCodeView = qRCodeView;
+		// }
 
 		public void SetBeaconMessageReceiver(BeaconMessageReceiver messageReceiver)
 		{
@@ -72,10 +72,10 @@ namespace BeaconSDK
 			_beaconDAppViewModel.Call("resumeBeacon");
 		}
 
-		public void QRCode(string handshake)
-		{
-			_qrCodeView.SetQrCode(_beaconDAppViewModel.Call<string>("pair"));
-		}
+		// public void QRCode(string handshake)
+		// {
+		// 	_qrCodeView.SetQrCode(_beaconDAppViewModel.Call<string>("pair"));
+		// }
 
 		public void Unpair()
 		{
