@@ -1,5 +1,4 @@
 using System;
-//using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,6 @@ using Beacon.Sdk.Core.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Netezos.Keys;
 using Newtonsoft.Json.Linq;
-using BeaconSDK;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -180,6 +178,7 @@ namespace BeaconSDK
                 return;
             }
 
+            
             var pubKey = PubKey.FromBase58(_permission.PublicKey);
 
             var operationRequest = new OperationRequest(

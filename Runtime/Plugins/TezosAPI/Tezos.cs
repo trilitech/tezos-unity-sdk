@@ -122,7 +122,8 @@ namespace TezosAPI
 
 		public IEnumerator ReadView(string contractAddress, string entryPoint, object input, Action<JsonElement> callback)
 		{
-			return NetezosExtensions.ReadView(_networkNode,contractAddress, entryPoint, input, callback);
+			var resIenum = NetezosExtensions.ReadView(_networkNode,contractAddress, entryPoint, input, callback);
+			return resIenum;
 		}
 
 		public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0)
