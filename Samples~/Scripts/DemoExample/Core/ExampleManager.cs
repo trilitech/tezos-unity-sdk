@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using BeaconSDK;
 using Netezos.Encoding;
 using UnityEngine;
 using TezosAPI;
