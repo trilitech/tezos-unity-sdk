@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Beacon.Sdk;
@@ -16,6 +17,7 @@ using Netezos.Keys;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace BeaconSDK
 {
@@ -27,8 +29,6 @@ namespace BeaconSDK
         private PermissionResponse _permission;
         private string _address;
 
-        const string DbPath = "dapp-sample.db";
-
         private string _network;
         private string _rpc;
 
@@ -36,6 +36,9 @@ namespace BeaconSDK
 
         public async void ConnectAccount()
         {
+            var dbPath = Path.Combine(Application.persistentDataPath, "dapp-sample.db");
+            Debug.Log($"DB file stored in {dbPath}");
+
             var options = new BeaconOptions
             {
                 AppName = "Tezos Unity SDK",
@@ -44,8 +47,8 @@ namespace BeaconSDK
                 KnownRelayServers = Constants.KnownRelayServers,
 
                 DatabaseConnectionString = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? $"Filename={DbPath}; Connection=Shared;"
-                    : $"Filename={DbPath}; Mode=Exclusive;"
+                    ? $"Filename={dbPath}; Connection=Shared;"
+                    : $"Filename={dbPath}; Mode=Exclusive;"
             };
 
             BeaconDappClient =
@@ -57,8 +60,7 @@ namespace BeaconSDK
             Debug.Log("Dapp initialized");
             BeaconDappClient.Connect();
             Debug.Log("Dapp connected");
-
-
+            
             string pairingRequestQrData = BeaconDappClient.GetPairingRequestInfo();
             _messageReceiver.OnHandshakeReceived(pairingRequestQrData);
 
@@ -110,7 +112,7 @@ namespace BeaconSDK
         {
             if (!Enum.TryParse(networkName, out Beacon.Sdk.Beacon.Permission.NetworkType networkType))
                 networkType = Beacon.Sdk.Beacon.Permission.NetworkType.ghostnet;
-            
+
             var network = new Beacon.Sdk.Beacon.Permission.Network
             {
                 Type = networkType,
@@ -178,7 +180,6 @@ namespace BeaconSDK
                 return;
             }
 
-            
             var pubKey = PubKey.FromBase58(_permission.PublicKey);
 
             var operationRequest = new OperationRequest(
@@ -243,7 +244,12 @@ namespace BeaconSDK
             if (e.PairingDone)
             {
                 var peer = BeaconDappClient.GetActivePeer();
-                if (peer == null) return;
+                var peerIsNull = peer == null;
+                if (peerIsNull)
+                {
+                    Debug.Log($"PairingDone, peerIsNull {peerIsNull}");
+                    return;
+                }
 
                 Debug.Log("Paired. Active peer: " + peer.Name);
                 _messageReceiver.OnPairingCompleted("paired");
