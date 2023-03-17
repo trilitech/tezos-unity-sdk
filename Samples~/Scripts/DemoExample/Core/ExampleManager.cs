@@ -194,7 +194,7 @@ public class ExampleManager : IExampleManager
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
         
 #if UNITY_IOS || UNITY_ANDROID
-        Application.OpenURL("temple://");
+        Application.OpenURL("tezos://");
 #endif
     }
 
@@ -207,7 +207,7 @@ public class ExampleManager : IExampleManager
         _tezos.CallContract(contractAddress, entrypoint, input, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
-        Application.OpenURL("temple://");
+        Application.OpenURL("tezos://");
 #endif
     }
 
@@ -331,7 +331,7 @@ public class ExampleManager : IExampleManager
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
 
 #if UNITY_IOS
-        Application.OpenURL("temple://");
+        Application.OpenURL("tezos://");
 #elif UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
