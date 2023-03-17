@@ -330,9 +330,7 @@ public class ExampleManager : IExampleManager
 
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
 
-#if UNITY_IOS
-        Application.OpenURL("tezos://");
-#elif UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
         Application.OpenURL("tezos://");
 #endif
     }

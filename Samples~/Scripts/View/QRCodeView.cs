@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using ZXing;
 using ZXing.QrCode;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
 using BeaconSDK;
 #endif
 
