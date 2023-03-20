@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Operation;
@@ -46,9 +45,7 @@ namespace BeaconSDK
                 IconUrl = "https://unity.com/sites/default/files/2022-09/unity-tab-small.png",
                 KnownRelayServers = Constants.KnownRelayServers,
 
-                DatabaseConnectionString = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? $"Filename={dbPath}; Connection=Shared;"
-                    : $"Filename={dbPath}; Mode=Exclusive;"
+                DatabaseConnectionString = $"Filename={dbPath}; Connection=direct; Upgrade=true;"
             };
 
             BeaconDappClient =
@@ -61,27 +58,8 @@ namespace BeaconSDK
             BeaconDappClient.Connect();
             Debug.Log("Dapp connected");
             
-            string pairingRequestQrData = BeaconDappClient.GetPairingRequestInfo();
+            var pairingRequestQrData = BeaconDappClient.GetPairingRequestInfo();
             _messageReceiver.OnHandshakeReceived(pairingRequestQrData);
-
-
-            // Sign-on feature. Disabled for feature parity and making the user to log in every time
-            /*
-            var activePeer = BeaconDappClient.GetActivePeer().Result;
-
-            if (activePeer != null)
-            {
-                var permissions = BeaconDappClient
-                    .PermissionInfoRepository
-                    .TryReadBySenderIdAsync(activePeer.SenderId)
-                    .Result;
-
-                var permissionsString = permissions?.Scopes.Aggregate(string.Empty,
-                    (res, scope) => res + $"{scope}, ") ?? string.Empty;
-
-                Debug.Log($"We have active peer {activePeer.Name} with permissions {permissionsString}");
-            }
-            */
         }
 
         public string GetActiveAccountAddress()
@@ -208,7 +186,7 @@ namespace BeaconSDK
             if (_permission == null)
             {
                 Debug.LogError("No active permissions");
-                //	_permission = await BeaconDappClient.PermissionInfoRepository.TryReadBySenderIdAsync(peer.SenderId);
+                //  _permission = await BeaconDappClient.PermissionInfoRepository.TryReadBySenderIdAsync(peer.SenderId);
                 return;
             }
 
@@ -323,13 +301,13 @@ namespace BeaconSDK
                             ["signature"] = signPayloadResponse.Signature
                         }.ToString());
 /*
-					var pubKey = PubKey.FromBase58(senderPermissions.PublicKey);
-					var payloadBytes = Hex.Parse(PayloadToSign);
-					var verified = pubKey.Verify(payloadBytes, signPayloadResponse.Signature);
-					var stringVerifyResult = verified ? "Successfully" : "Unsuccessfully";
+                    var pubKey = PubKey.FromBase58(senderPermissions.PublicKey);
+                    var payloadBytes = Hex.Parse(PayloadToSign);
+                    var verified = pubKey.Verify(payloadBytes, signPayloadResponse.Signature);
+                    var stringVerifyResult = verified ? "Successfully" : "Unsuccessfully";
 
-					Debug.Log(
-						$"{stringVerifyResult} signed payload by {senderPermissions.AppMetadata.Name}, signature is {signPayloadResponse.Signature}");
+                    Debug.Log(
+                        $"{stringVerifyResult} signed payload by {senderPermissions.AppMetadata.Name}, signature is {signPayloadResponse.Signature}");
 */
                     break;
                 }
