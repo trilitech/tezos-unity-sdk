@@ -15,6 +15,21 @@
     "com.unity.nuget.newtonsoft-json": "3.0.2",
     "com.unity.textmeshpro": "3.0.6"
   },
+  "keywords": [
+    "tezos",
+    "blockchain",
+    "game-dev",
+    "unity",
+    "sdk"
+  ],
+  "homepage": "https://tezos.com/unity/",
+  "bugs": {
+    "url": "https://github.com/trilitech/tezos-unity-sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:trilitech/tezos-unity-sdk.git"
+  },
   "documentationUrl": "https://opentezos.com/gaming/unity-sdk/getting-started/",
   "changelogUrl": "https://github.com/trilitech/tezos-unity-sdk/blob/main/CHANGELOG.md",
   "author": {
