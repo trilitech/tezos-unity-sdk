@@ -247,7 +247,7 @@ class DAppViewModel
         when(response)
         {
             is OperationTezosResponse -> UnityPlayer.UnitySendMessage("UnityBeacon", "OnContractCallCompleted", response.toJson().toString())
-            is SignPayloadTezosResponse -> UnityPlayer.UnitySendMessage("UnityBeacon", "OnPayloadSigned", response.signature.toString())
+            is SignPayloadTezosResponse -> UnityPlayer.UnitySendMessage("UnityBeacon", "OnPayloadSigned", response.toJson().toString())
             is BroadcastTezosResponse -> UnityPlayer.UnitySendMessage("UnityBeacon", "OnBroadcastResponse", response.toString())
             is PermissionBeaconResponse -> UnityPlayer.UnitySendMessage("UnityBeacon", "OnAccountConnected", response.toJson().toString())
             //is BlockchainBeaconResponse -> UnityPlayer.UnitySendMessage("UnityBeacon", "OnHandshakeReceived", response.destination.id)
