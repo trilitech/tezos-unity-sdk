@@ -56,6 +56,13 @@ namespace BeaconSDK
 			Debug.Log("From unity, OnContractCallCompleted: " + result);
 			ContractCallCompleted?.Invoke(result);
 		}
+		
+		public void OnContractCallInjected(string result)
+		{
+			// result is the json of transaction response
+			Debug.Log("From unity, OnContractCallInjected: " + result);
+			ContractCallInjected?.Invoke(result);
+		}
 
 		[Serializable]
 		struct ContractCallInjectionResult
@@ -69,7 +76,8 @@ namespace BeaconSDK
 			var success = false;
 			var timeout = 30f; // seconds
 			var timestamp = Time.time;
-
+			Debug.Log("Operation injected into blockchain");
+			
 			// keep making requests until time out or success
 			while (!success && Time.time - timestamp < timeout)
 			{
@@ -96,8 +104,8 @@ namespace BeaconSDK
 			ContractCallInjectionResult result;
 			result.success = success;
 			result.transactionHash = transactionHash;
-			Debug.Log("Operation injected into blockchain: " + success);
-			ContractCallInjected?.Invoke(JsonUtility.ToJson(result));
+			Debug.Log($"Operation completed with success: {success}");
+			ContractCallCompleted?.Invoke(JsonUtility.ToJson(result));
 		}
 
 		public void OnContractCallFailed(string result)

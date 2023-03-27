@@ -71,7 +71,7 @@ namespace TezosAPI
                 var signature = json.GetProperty("signature").GetString();
                 _signature = signature;
             };
-            MessageReceiver.ContractCallCompleted += (transaction) =>
+            MessageReceiver.ContractCallInjected += transaction =>
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(transaction);
                 var transactionHash = json.GetProperty("transactionHash").GetString();

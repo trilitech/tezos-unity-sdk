@@ -264,10 +264,11 @@ namespace BeaconSDK
                         return;
 
                     UnityMainThreadDispatcher.Enqueue(
-                        _messageReceiver.OnContractCallCompleted, //operationResponse.TransactionHash);
+                        _messageReceiver.OnContractCallInjected, //operationResponse.TransactionHash);
                         new JObject
                         {
-                            ["transactionHash"] = operationResponse.TransactionHash
+                            ["transactionHash"] = operationResponse.TransactionHash,
+                            ["success"] = "true"
                         }.ToString());
 
                     Debug.Log($"Operation completed with transaction hash {operationResponse.TransactionHash}");
