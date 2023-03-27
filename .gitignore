@@ -114,8 +114,3 @@ sysinfo.txt
 *.usertasks
 *.resources
 /BUILD/
-CHANGELOG.md.meta
-CONTRIBUTING.md.meta
-LICENSE.meta
-README.md.meta
-package.json.meta
