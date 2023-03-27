@@ -75,9 +75,8 @@ namespace BeaconSDK
 			{
 				uri = string.Format(uri, transactionHash);
 				Debug.Log("WebRequest into " + uri);
-				using UnityWebRequest webRequest = UnityWebRequest.Get(uri);
+				using var webRequest = UnityWebRequest.Get(uri);
 				yield return webRequest.SendWebRequest();
-
 				var resultText = webRequest.downloadHandler.text;
 
 				if (!string.IsNullOrEmpty(webRequest.error))
@@ -90,6 +89,8 @@ namespace BeaconSDK
 				{
 					success = JsonSerializer.Deserialize<bool>(resultText);
 				}
+				
+				yield return new WaitForSecondsRealtime(3);
 			}
 
 			ContractCallInjectionResult result;

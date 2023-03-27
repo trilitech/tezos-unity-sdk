@@ -33,13 +33,20 @@ namespace BeaconSDK
             var dbPath = Path.Combine(Application.persistentDataPath, "tezos-unity-sdk-beacon.db");
             Debug.Log($"DB file stored in {dbPath}");
 
+            var dbConnectionString = $"Filename={dbPath}; Connection=direct; Upgrade=true;";
+
+            if (Application.platform is RuntimePlatform.WindowsEditor or RuntimePlatform.WindowsPlayer)
+            {
+                dbConnectionString = $"Filename={dbPath}; Connection=shared;";
+            }
+
             var options = new BeaconOptions
             {
                 AppName = "Tezos Unity SDK",
                 AppUrl = "https://tezos.com/unity",
                 IconUrl = "https://unity.com/sites/default/files/2022-09/unity-tab-small.png",
                 KnownRelayServers = Constants.KnownRelayServers,
-                DatabaseConnectionString = $"Filename={dbPath}; Connection=shared; Upgrade=true;"
+                DatabaseConnectionString = dbConnectionString
             };
 
             _beaconDappClient = (DappBeaconClient)BeaconClientFactory
