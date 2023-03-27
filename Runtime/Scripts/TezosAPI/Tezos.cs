@@ -52,10 +52,10 @@ namespace TezosAPI
 			_beaconConnector = new BeaconConnectorNull();
 #endif
 
-            MessageReceiver.ClientCreated += (_) => { _beaconConnector.RequestHandshake(); };
-            MessageReceiver.HandshakeReceived += (handshake) => { _handshake = handshake; };
+            MessageReceiver.ClientCreated += _ => { _beaconConnector.RequestHandshake(); };
+            MessageReceiver.HandshakeReceived += handshake => { _handshake = handshake; };
 
-            MessageReceiver.AccountConnected += (account) =>
+            MessageReceiver.AccountConnected += account =>
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(account);
                 if (json.TryGetProperty("account", out json))

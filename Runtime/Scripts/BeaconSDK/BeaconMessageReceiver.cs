@@ -30,11 +30,11 @@ namespace BeaconSDK
 			ClientCreated?.Invoke(result);
 		}
 
-		public void OnAccountConnected(string result)
+		public void OnAccountConnected(string address)
 		{
 			// result is the json permission response
-			Debug.Log("From unity, OnAccountConnected: " + result);
-			AccountConnected?.Invoke(result);
+			Debug.Log("From unity, OnAccountConnected: " + address);
+			AccountConnected?.Invoke(address);
 		}
 
 		public void OnAccountFailedToConnect(string result)
