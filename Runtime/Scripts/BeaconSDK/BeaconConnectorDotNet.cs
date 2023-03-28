@@ -30,23 +30,16 @@ namespace BeaconSDK
 
         public async void ConnectAccount()
         {
-            var dbPath = Path.Combine(Application.persistentDataPath, "tezos-unity-sdk-beacon.db");
-            Debug.Log($"DB file stored in {dbPath}");
-
-            var dbConnectionString = $"Filename={dbPath}; Connection=direct; Upgrade=true;";
-
-            if (Application.platform is RuntimePlatform.WindowsEditor or RuntimePlatform.WindowsPlayer)
-            {
-                dbConnectionString = $"Filename={dbPath}; Connection=shared;";
-            }
-
+            var pathToDb = Path.Combine(Application.persistentDataPath, "tezos-unity-sdk-beacon1.db");
+            Debug.Log($"DB file stored in {pathToDb}");
+            
             var options = new BeaconOptions
             {
                 AppName = "Tezos Unity SDK",
                 AppUrl = "https://tezos.com/unity",
                 IconUrl = "https://unity.com/sites/default/files/2022-09/unity-tab-small.png",
                 KnownRelayServers = Constants.KnownRelayServers,
-                DatabaseConnectionString = dbConnectionString
+                DatabaseConnectionString = $"Filename={pathToDb};Connection=direct;Upgrade=true"
             };
 
             _beaconDappClient = (DappBeaconClient)BeaconClientFactory
@@ -133,15 +126,15 @@ namespace BeaconSDK
                 scopes: permissionScopes
             );
 
-            var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
-            if (activeAccountPermissions != null)
+            var activePeer = _beaconDappClient.GetActivePeer();
+            if (activePeer != null)
             {
-                await _beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, permissionRequest);
+                await _beaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
                 Debug.Log("Permission request sent");
             }
             else
             {
-                Debug.LogError("No active permissions found");
+                Debug.LogError("No active peer found");
             }
         }
 
@@ -218,16 +211,7 @@ namespace BeaconSDK
         {
             if (e.PairingDone)
             {
-                var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
-                if (activeAccountPermissions == null)
-                {
-                    Debug.LogError($"Pairing done, permissions is null.");
-                    return;
-                }
-
-                Debug.Log("Paired. Active peer name: " + activeAccountPermissions.AppMetadata.Name);
                 _messageReceiver.OnPairingCompleted("paired");
-
                 return;
             }
 
