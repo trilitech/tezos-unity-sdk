@@ -30,7 +30,7 @@ namespace BeaconSDK
 
         public async void ConnectAccount()
         {
-            var pathToDb = Path.Combine(Application.persistentDataPath, "tezos-unity-sdk-beacon.db");
+            var pathToDb = Path.Combine(Application.persistentDataPath, "beacon.db");
             Debug.Log($"DB file stored in {pathToDb}");
             
             var options = new BeaconOptions
