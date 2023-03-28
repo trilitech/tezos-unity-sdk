@@ -30,7 +30,7 @@ namespace BeaconSDK
 
         public async void ConnectAccount()
         {
-            var pathToDb = Path.Combine(Application.persistentDataPath, "tezos-unity-sdk-beacon1.db");
+            var pathToDb = Path.Combine(Application.persistentDataPath, "tezos-unity-sdk-beacon.db");
             Debug.Log($"DB file stored in {pathToDb}");
             
             var options = new BeaconOptions
@@ -85,6 +85,10 @@ namespace BeaconSDK
 
         public void DisconnectAccount()
         {
+            _beaconDappClient.RemoveActiveAccounts();
+            var pairingRequestQrData = _beaconDappClient.GetPairingRequestInfo();
+            _messageReceiver.OnHandshakeReceived(pairingRequestQrData);
+            UnityMainThreadDispatcher.Enqueue(_messageReceiver.OnAccountDisconnected, string.Empty);
         }
 
         public void SetNetwork(string network, string rpc)
