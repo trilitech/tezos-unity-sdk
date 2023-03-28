@@ -330,7 +330,7 @@ public class ExampleManager : IExampleManager
 
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
 
-#if UNITY_ANDROID || UNITY_IOS
+#if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
     }
@@ -367,7 +367,10 @@ public class ExampleManager : IExampleManager
     public void RequestSignPayload(int signingType, string payload)
     {
         _tezos.RequestSignPayload(signingType, payload);
-        _tezos.ConnectWallet();
+        
+#if UNITY_IOS || UNITY_ANDROID
+        Application.OpenURL("tezos://");
+#endif
     }
 
     public bool VerifyPayload(string payload)
