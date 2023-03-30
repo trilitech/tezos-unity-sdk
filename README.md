@@ -32,8 +32,8 @@ Yoy can install the UPM package via directly Git URL. To load a package from a G
 * Select Add package from git URL from the add menu. A text box and an Add button appear.
 * Enter the `https://github.com/trilitech/tezos-unity-sdk.git` Git URL in the text box and click Add.
 * You may also install a specific package version by using the URL with the specified version.
-  * `https://github.com/trilitech/tezos-unity-sdk.git#X.Y`
-  * Please note that the version `X.Y` stated here is to be replaced with the version you would like to get.
+  * `https://github.com/trilitech/tezos-unity-sdk.git#X.Y.Z`
+  * Please note that the version `X.Y.Z` stated here is to be replaced with the version you would like to get.
   * You can find all the available releases [here](https://github.com/trilitech/tezos-unity-sdk/releases).
   * The latest available release version is [![Last Release](https://img.shields.io/github/v/release/trilitech/tezos-unity-sdk)](https://github.com/trilitech/tezos-unity-sdk/releases/latest)
 
@@ -46,7 +46,7 @@ For more information about what protocols Unity supports, see [Git URLs](https:/
   * Ensure `com.trilitech` is part of `scopes`.
   * Add `com.trilitech.tezos-unity-sdk` to the `dependencies`, stating the latest version.
 
-A minimal example ends up looking like this. Please note that the version `X.Y` stated here is to be replaced with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk) which is currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity-sdk?color=blue)](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk).
+A minimal example ends up looking like this. Please note that the version `X.Y.Z` stated here is to be replaced with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk) which is currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity-sdk?color=blue)](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk).
   ```json
   {
     "scopedRegistries": [
@@ -59,7 +59,7 @@ A minimal example ends up looking like this. Please note that the version `X.Y` 
       }
     ],
     "dependencies": {
-      "com.trilitech.tezos-unity-sdk": "X.Y",
+      "com.trilitech.tezos-unity-sdk": "X.Y.Z",
       ...
     }
   }
