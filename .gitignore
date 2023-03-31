@@ -108,4 +108,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 dist/*
-
+*.pidb.meta
+sysinfo.txt
+*.apk
+*.usertasks
+*.resources
+/BUILD/

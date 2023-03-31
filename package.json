@@ -1,0 +1,41 @@
+{
+  "name": "com.trilitech.tezos-unity-sdk",
+  "version": "1.1.0",
+  "unity": "2021.3",
+  "displayName": "Tezos Unity SDK",
+  "description": "Unity SDK for Tezos",
+  "samples": [
+    {
+      "displayName": "Tezos game sample",
+      "description": "Simple game to interact with the Tezos blockchain",
+      "path": "Samples~"
+    }
+  ],
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0.2",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "keywords": [
+    "tezos",
+    "blockchain",
+    "game-dev",
+    "unity",
+    "sdk"
+  ],
+  "homepage": "https://tezos.com/unity/",
+  "bugs": {
+    "url": "https://github.com/trilitech/tezos-unity-sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:trilitech/tezos-unity-sdk.git"
+  },
+  "documentationUrl": "https://opentezos.com/gaming/unity-sdk/getting-started/",
+  "changelogUrl": "https://github.com/trilitech/tezos-unity-sdk/blob/main/CHANGELOG.md",
+  "author": {
+    "name": "Trilitech",
+    "email" : "contact@trili.tech",
+    "url": "https://tezos.com/unity/"
+  },
+  "license": "MIT"
+}
