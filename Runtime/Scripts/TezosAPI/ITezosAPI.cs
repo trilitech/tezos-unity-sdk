@@ -8,6 +8,10 @@ namespace TezosAPI
     public interface ITezosAPI
     {
         /// <summary>
+        /// Returns the network RPC andress (e.g https://rpc.ghostnet.teztnets.xyz)
+        /// </summary 
+        public string NetworkRPC { get; }
+        /// <summary>
         /// Makes a call to connect with a wallet (e.g. Temple Wallet)
         /// Works for iOS and Android builds
         /// </summary>
@@ -52,7 +56,7 @@ namespace TezosAPI
         /// <param name="input">parameters called on the entry point</param>
         /// <param name="amount">amount of Tez sent into the contract</param>
         public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0);
-        
+
         /// <summary>
         /// Sends a permission request to the blockchain network
         /// </summary>
@@ -64,6 +68,12 @@ namespace TezosAPI
         /// <param name="signingType">enumerates the signing type (0 = MICHELINE, 1 = OPERATION, 2 = RAW)</param>
         /// <param name="payload">payload string that is going to be signed</param>
         public void RequestSignPayload(int signingType, string payload);
+
+        /// <summary>
+        /// Verify a signed payload to check if it is valid
+        /// </summary>
+        /// <param name="payload">payload string that is going to be signed</param>
+        public bool VerifySignedPayload(string payload);
 
         /// <summary>
         /// Exposes a Monobehaviour class that exposes wallet events

@@ -9,15 +9,13 @@ using TezosAPI;
 
 public class ExampleManager : IExampleManager
 {
-    private const string networkName = "ghostnet";//"jakartanet";
-    private const string networkRPC = "https://rpc.ghostnet.teztnets.xyz";//"https://jakartanet.tezos.marigold.dev";
+    private string _networkRPC;
     private const string contractAddress = "KT1WguzxyLmuKbJhz3jNuoRzzaUCncfp6PFE";//"KT1DMWAeaP6wxKWPFDLGDkB7xUg563852AjD";
-    private const string indexerNode = "https://api.ghostnet.tzkt.io/v1/operations/{0}/status"; //"https://api.mainnet.tzkt.io/v1/operations/{transactionHash}/status";
     private const int softCurrencyID = 0;
 
-    private Tezos _tezos;
+    private ITezosAPI _tezos;
     private User _currentUser;
-    
+
     public User CurrentUser => _currentUser;
 
     public ExampleManager()
@@ -27,15 +25,16 @@ public class ExampleManager : IExampleManager
 
     public void Init(Action<bool> callback = null)
     {
-        _tezos = new Tezos(networkName, networkRPC, indexerNode);
+        _tezos = TezosSingleton.Instance;
+        _networkRPC = _tezos.NetworkRPC;
     }
-    
+
     public void Unpair()
     {
         _tezos.DisconnectWallet();
         _currentUser = null;
     }
-    
+
     public void FetchInventoryItems(Action<List<IItemModel>> callback)
     {
         var sender = _tezos.GetActiveWalletAddress(); // Address to the current active account
@@ -43,14 +42,14 @@ public class ExampleManager : IExampleManager
         var destination = contractAddress; // our temporary inventory contract
         var entrypoint = "view_items_of";
         var input = new { @string = sender };
-        
+
         CoroutineRunner.Instance.StartCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
                 Debug.Log("READING INVENTORY DATA");
                 // deserialize the json data to inventory items
                 CoroutineRunner.Instance.StartCoroutine(
-                    BeaconSDK.NetezosExtensions.HumanizeValue(result, networkRPC, destination, "humanizeInventory",
+                    BeaconSDK.NetezosExtensions.HumanizeValue(result, _networkRPC, destination, "humanizeInventory",
                         (ContractInventoryViewResult[] inventory) => OnInventoryFetched(inventory, callback))
                 );
             }));
@@ -59,10 +58,10 @@ public class ExampleManager : IExampleManager
     private void OnInventoryFetched(ContractInventoryViewResult[] inventory, Action<List<IItemModel>> callback)
     {
         List<IItemModel> dummyItemList = new List<IItemModel>();
-        
+
         var owner = _tezos.GetActiveWalletAddress();
-        
-        if(inventory != null)
+
+        if (inventory != null)
             foreach (var item in inventory)
             {
                 var id = Convert.ToInt32(item.id);
@@ -78,18 +77,18 @@ public class ExampleManager : IExampleManager
                 );
 
                 dummyItemList.Add(new Item(
-                    (ItemType)itemType, 
-                    "Items/TestItem " + itemType, 
-                    "Item " + id, 
-                    stats, 
-                    amount, 
+                    (ItemType)itemType,
+                    "Items/TestItem " + itemType,
+                    "Item " + id,
+                    stats,
+                    amount,
                     id,
                     owner));
             }
-        
+
         callback?.Invoke(dummyItemList);
     }
-    
+
     public class ContractItem
     {
         public string damage { get; set; }
@@ -120,7 +119,7 @@ public class ExampleManager : IExampleManager
     {
         var destination = contractAddress;
         var entrypoint = "view_items_on_market";
-        
+
         // Prepping parameters for Netezos and for Native is different.
         // Double serialization converts double quotes (") symbol into 'u0002' string
         // var input = "{\"prim\": \"Unit\"}";
@@ -128,13 +127,13 @@ public class ExampleManager : IExampleManager
         {
             Prim = PrimType.Unit
         };
-            
+
         CoroutineRunner.Instance.StartCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
                 // deserialize the json data to market items
                 CoroutineRunner.Instance.StartCoroutine(
-                    BeaconSDK.NetezosExtensions.HumanizeValue(result, networkRPC, destination, "humanizeMarketplace",
+                    BeaconSDK.NetezosExtensions.HumanizeValue(result, _networkRPC, destination, "humanizeMarketplace",
                         (ContractMarketplaceViewResult[] market) => OnMarketplaceFetched(market, callback))
                     );
             }));
@@ -144,15 +143,15 @@ public class ExampleManager : IExampleManager
     {
         List<IItemModel> dummyItemList = new List<IItemModel>();
 
-        if(market != null)
+        if (market != null)
             foreach (var item in market)
-            {      
+            {
                 var id = Convert.ToInt32(item.id);
                 var itemType = id == 0 ? 0 : Convert.ToInt32(item.item.itemType) % 4 + 1;
                 var currency = Convert.ToInt32(item.currency);
                 var price = Convert.ToInt32(item.price);
                 var owner = item.owner;
-                            
+
                 var stats = new StatParams(
                     Convert.ToInt32(item.item.damage),
                     Convert.ToInt32(item.item.armor),
@@ -162,16 +161,16 @@ public class ExampleManager : IExampleManager
                 );
 
                 dummyItemList.Add(new Item(
-                    (ItemType)itemType, 
-                    "Items/TestItem " + itemType, 
-                    "Item " + id, 
-                    stats, 
+                    (ItemType)itemType,
+                    "Items/TestItem " + itemType,
+                    "Item " + id,
+                    stats,
                     price,
                     id,
                     owner));
-                            
+
             }
-                        
+
         callback?.Invoke(dummyItemList);
     }
 
@@ -179,20 +178,20 @@ public class ExampleManager : IExampleManager
     {
         var destination = contractAddress;
         var entryPoint = "buy";
-        
+
         var parameter = new MichelinePrim
         {
             Prim = PrimType.Pair,
             Args = new List<IMicheline>
             {
-                new MichelineString(owner), 
+                new MichelineString(owner),
                 new MichelineInt(itemID)
             }
         }.ToJson();
 
         Debug.Log(destination + " " + entryPoint + parameter);
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
-        
+
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
@@ -211,17 +210,17 @@ public class ExampleManager : IExampleManager
 #endif
     }
 
-	public User GetCurrentUser()
-	{
+    public User GetCurrentUser()
+    {
         return CurrentUser;
-	}
+    }
 
     public void GetBalance(Action<ulong> callback)
     {
         var routine = _tezos.ReadBalance(callback);
         CoroutineRunner.Instance.StartCoroutine(routine);
     }
-    
+
     public void GetSoftBalance(Action<int> callback)
     {
         GetSoftBalanceRoutine(callback);
@@ -269,9 +268,9 @@ public class ExampleManager : IExampleManager
     public void AddItemToMarket(int itemID, int price)
     {
         Debug.Log("Adding Item " + itemID + " to Market with the price of " + price);
-        
+
         var entryPoint = "addToMarket";
-        
+
         var parameter = new MichelinePrim()
         {
             Prim = PrimType.Pair,
@@ -286,12 +285,12 @@ public class ExampleManager : IExampleManager
                         new MichelineInt(price),
                     }
                 },
-                new MichelineInt(itemID), 
+                new MichelineInt(itemID),
             }
         }.ToJson();
-        
+
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
-        
+
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
@@ -300,23 +299,23 @@ public class ExampleManager : IExampleManager
     public void RemoveItemFromMarket(int itemID)
     {
         Debug.Log("Removing Item " + itemID + " from market.");
-        
+
         var destination = contractAddress;
         var entryPoint = "removeFromMarket";
-        
+
         var sender = _tezos.GetActiveWalletAddress();
         var parameter = new MichelinePrim()
         {
             Prim = PrimType.Pair,
             Args = new List<IMicheline>()
             {
-                new MichelineString(sender), 
+                new MichelineString(sender),
                 new MichelineInt(itemID)
             }
         }.ToJson();
 
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
-        
+
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
@@ -338,7 +337,7 @@ public class ExampleManager : IExampleManager
     public void IsItemOnMarket(int itemID, string owner, Action<bool> callback)
     {
         var entrypoint = "is_item_on_market";
-        
+
         var input = new MichelinePrim()
         {
             Prim = PrimType.Pair,
@@ -348,13 +347,13 @@ public class ExampleManager : IExampleManager
                 new MichelineInt(itemID)
             }
         };
-        
+
         CoroutineRunner.Instance.StartCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
                 var boolString = result.GetProperty("prim");
                 var boolVal = boolString.GetString() == "True";
-                
+
                 callback?.Invoke(boolVal);
             }));
     }
@@ -367,7 +366,7 @@ public class ExampleManager : IExampleManager
     public void RequestSignPayload(int signingType, string payload)
     {
         _tezos.RequestSignPayload(signingType, payload);
-        
+
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
@@ -382,7 +381,7 @@ public class ExampleManager : IExampleManager
     {
         return _tezos.GetActiveWalletAddress();
     }
-    
+
     public void Deeplink()
     {
         _tezos.ConnectWallet();
