@@ -13,7 +13,6 @@ namespace TezosAPI
     public class Tezos : ITezosAPI
     {
         private string _networkName;
-        private string _networkNode;
         private string _indexerNode;
         private IBeaconConnector _beaconConnector;
 
@@ -22,13 +21,16 @@ namespace TezosAPI
         private string _signature;
         private string _transactionHash;
 
+        public string NetworkRPC { get; private set; }
+
         public BeaconMessageReceiver MessageReceiver { get; private set; }
 
-        public Tezos(string networkName = "", string customNode = "", string indexerNode = "")
+        public Tezos(string networkName = "ghostnet", string networkRPC = "https://rpc.ghostnet.teztnets.xyz",
+            string indexerNode = "https://api.ghostnet.tzkt.io/v1/operations/{0}/status")
         {
             _networkName = networkName;
-            _networkNode = customNode;
             _indexerNode = indexerNode;
+            NetworkRPC = networkRPC;
 
             InitBeaconConnector();
         }
@@ -41,15 +43,15 @@ namespace TezosAPI
             // Assign the BeaconConnector depending on the platform.
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_beaconConnector = new BeaconConnectorWebGl();
-			_beaconConnector.SetNetwork(_networkName, _networkNode);;
+			_beaconConnector.SetNetwork(_networkName, NetworkRPC);;
 #elif (UNITY_ANDROID && !UNITY_EDITOR) || (UNITY_IOS && !UNITY_EDITOR) || UNITY_STANDALONE || UNITY_EDITOR
-			_beaconConnector = new BeaconConnectorDotNet();
-			_beaconConnector.SetNetwork(_networkName, _networkNode);
-			(_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
-			_beaconConnector.ConnectAccount();
+            _beaconConnector = new BeaconConnectorDotNet();
+            _beaconConnector.SetNetwork(_networkName, NetworkRPC);
+            (_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
+            _beaconConnector.ConnectAccount();
             MessageReceiver.PairingCompleted += _ => RequestPermission();
 #else
-			_beaconConnector = new BeaconConnectorNull();
+            _beaconConnector = new BeaconConnectorNull();
 #endif
 
             MessageReceiver.ClientCreated += _ => { _beaconConnector.RequestHandshake(); };
@@ -102,24 +104,24 @@ namespace TezosAPI
         public IEnumerator ReadBalance(Action<ulong> callback)
         {
             var address = _beaconConnector.GetActiveAccountAddress();
-            return NetezosExtensions.ReadTZBalance(_networkNode, address, callback);
+            return NetezosExtensions.ReadTZBalance(NetworkRPC, address, callback);
         }
 
         public IEnumerator ReadView(string contractAddress, string entryPoint, object input,
             Action<JsonElement> callback)
         {
-            return NetezosExtensions.ReadView(_networkNode, contractAddress, entryPoint, input, callback);
+            return NetezosExtensions.ReadView(NetworkRPC, contractAddress, entryPoint, input, callback);
         }
 
         public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0)
         {
             _beaconConnector.RequestTezosOperation(contractAddress, entryPoint, input,
-                amount, _networkName, _networkNode);
+                amount, _networkName, NetworkRPC);
         }
 
         public void RequestPermission()
         {
-            _beaconConnector.RequestTezosPermission(_networkName, _networkNode);
+            _beaconConnector.RequestTezosPermission(_networkName, NetworkRPC);
         }
 
         public void RequestSignPayload(int signingType, string payload)
