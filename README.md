@@ -49,21 +49,31 @@ For more information about what protocols Unity supports, see [Git URLs](https:/
 A minimal example ends up looking like this. Please note that the version `X.Y.Z` stated here is to be replaced with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk) which is currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity-sdk?color=blue)](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk).
   ```json
   {
-    "scopedRegistries": [
-      {
-        "name": "npmjs",
-        "url": "https://registry.npmjs.org/",
-        "scopes": [
-          "com.trilitech"
-        ]
-      }
-    ],
-    "dependencies": {
-      "com.trilitech.tezos-unity-sdk": "X.Y.Z",
-      ...
+  "scopedRegistries": [
+    {
+      "name": "npmjs",
+      "url": "https://registry.npmjs.org/",
+      "scopes": [
+        "com.trilitech"
+      ]
     }
+  ],
+  "dependencies": {
+    "com.trilitech.tezos-unity-sdk": "X.Y.Z",
+    ...
   }
+}
   ```
 * Switch back to the Unity Editor and wait for it to finish importing the added package.
+
+### WebGL Support
+* Open Unity Editor.
+* Navigate to Project -> Packages and find the Tezos Unity SDK.
+* Double-click the package file WebGLSupport.unitypackage.
+  ![Project->Packages->Tezos-Unity-SDK](https://github.com/mismirnov/tezos-unity-sdk/blob/master/packages-tezos-unity-sdk.png?raw=true)
+* The Import Unity Package dialog box displays, with all the items in the package pre-checked, ready to install.
+  ![Import unity package](https://github.com/mismirnov/tezos-unity-sdk/blob/master/import-unity-package.png?raw=true)
+
+* This action create WebGL templates folders to your Project. Each template is a subfolder within the WebGLTemplates folder. Each template subfolder contains an index.html file along with any other resources the page needs, such as images or stylesheets.
 
 ### 📝 Read the [documentation.](https://opentezos.com/gaming/unity-sdk/)
