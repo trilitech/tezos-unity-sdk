@@ -92,5 +92,12 @@ namespace TezosAPI
             long maxItems,
             TokensForOwnerOrder orderBy
         );
+        
+        // Get the owner(s) for a token.
+        public IEnumerator GetOwnersForToken(Action<IEnumerable<TokenBalance>> cb,
+            string contractAddress,
+            uint tokenId,
+            long maxItems,
+            OwnersForTokenOrder orderBy);
     }
 }

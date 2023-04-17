@@ -147,24 +147,48 @@ namespace TezosAPI
             string owner,
             bool withMetadata,
             long maxItems,
-            TokensForOwnerOrder orderBy
-        )
+            TokensForOwnerOrder orderBy)
         {
             var sort = orderBy switch
             {
                 TokensForOwnerOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
                 TokensForOwnerOrder.ByLastTimeAsc byLastTimeAsc => $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
-                TokensForOwnerOrder.ByLastTimeDesc ByLastTimeDesc => $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                TokensForOwnerOrder.ByLastTimeDesc ByLastTimeDesc =>
+                    $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
                 _ => string.Empty
             };
 
-            var url = "tokens/balances?" +
-                      $"account={owner}&" +
-                      "balance.ne=0&" +
+            var url = $"tokens/balances?account={owner}&balance.ne=0&" +
                       "select=account.address as owner,balance,token.contract as token_contract," +
-                      "token.tokenId as token_id,token.metadata as token_metadata,lastTime as last_time,id&" +
-                      $"{sort}&" +
-                      $"limit={maxItems}";
+                      $"token.tokenId as token_id{(withMetadata ? ",token.metadata as token_metadata" : "")}," +
+                      "lastTime as last_time,id&" +
+                      $"{sort}&limit={maxItems}";
+
+            var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
+            return WrappedRequest(requestRoutine, cb);
+        }
+
+        public IEnumerator GetOwnersForToken(Action<IEnumerable<TokenBalance>> cb,
+            string contractAddress,
+            uint tokenId,
+            long maxItems,
+            OwnersForTokenOrder orderBy)
+        {
+            var sort = orderBy switch
+            {
+                OwnersForTokenOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
+                OwnersForTokenOrder.ByBalanceAsc byBalanceAsc => $"sort.asc=balance&offset.pg={byBalanceAsc.page}",
+                OwnersForTokenOrder.ByBalanceDesc byBalanceDesc => $"sort.desc=balance&offset.pg={byBalanceDesc.page}",
+                OwnersForTokenOrder.ByLastTimeAsc byLastTimeAsc => $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
+                OwnersForTokenOrder.ByLastTimeDesc byLastTimeDesc =>
+                    $"sort.desc=lastLevel&offset.pg={byLastTimeDesc.page}",
+                _ => string.Empty
+            };
+
+            var url = $"tokens/balances?token.contract={contractAddress}&balance.ne=0&token.tokenId={tokenId}&" +
+                      "select=account.address as owner,balance,token.contract as token_contract," +
+                      "token.tokenId as token_id,lastTime as last_time,id&" +
+                      $"{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
             return WrappedRequest(requestRoutine, cb);
