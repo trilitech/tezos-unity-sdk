@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Netezos.Contracts;
 using Netezos.Encoding;
-using Netezos.Rpc;
 using UnityEngine;
 using Netezos.Keys;
 using TezosAPI;
@@ -21,7 +19,7 @@ namespace BeaconSDK
         {
             var rpc = new Rpc(rpcUri);
             var getBalanceRequest = rpc.GetTzBalance<ulong>(sender);
-            return RpcRequest(getBalanceRequest, callback);
+            return HttpClient.WrappedRequest(getBalanceRequest, callback);
         }
 
         public static IEnumerator ReadView(string rpcUri, string destination, string entrypoint,
@@ -29,8 +27,8 @@ namespace BeaconSDK
         {
             var rpc = new Rpc(rpcUri);
             var runViewOp = rpc.RunView<JsonElement>(destination, entrypoint, input);
-
-            return RpcRequest(runViewOp, (JsonElement result) =>
+            
+            return HttpClient.WrappedRequest(runViewOp, (JsonElement result) =>
             {
                 if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
                     result.TryGetProperty("data", out var val))
@@ -56,22 +54,14 @@ namespace BeaconSDK
             if (_contracts.ContainsKey(contract)) yield break;
             var rpc = new Rpc(rpcUri);
             var scriptOp = rpc.GetContractCode<JsonElement>(contract);
-            yield return RpcRequest(scriptOp, (JsonElement script) =>
+            yield return HttpClient.WrappedRequest(scriptOp, (JsonElement script) =>
             {
                 var codeElement = script.GetProperty("code").GetRawText();
                 var code = Micheline.FromJson(codeElement);
                 _contracts[contract] = new ContractScript(code);
             });
         }
-
-        private static IEnumerator RpcRequest<T>(IEnumerator op, Action<T> callback)
-        {
-            var counterRoutine = new CoroutineWrapper<T>(op);
-            yield return counterRoutine;
-            var counter = counterRoutine.Result;
-            callback?.Invoke(counter);
-        }
-
+        
         public static IEnumerator CompileToJSONMichelson(string rpcUri, string destination,
             string entry, object objArg, Action<string> onComplete)
         {

@@ -15,15 +15,19 @@
   </p>
 </div>
 
-The Tezos Unity SDK invites developers to discover the future of Web3 gaming with a complete kit that empowers game developers with the ability to:
+The Tezos Unity SDK invites developers to discover the future of Web3 gaming with a complete kit that empowers game
+developers with the ability to:
+
 - Connect to a Tezos wallet
 - Utilize data on the blockchain
 - Call smart contracts
 - True ownership of in-game assets
 
-The Tezos SDK supports Desktop, Android, iOS and browsers. Beyond allowing game developers to interact with the Tezos blockchain, this SDK is a helpful resource for developing any Tezos decentralized application (dApp).
+The Tezos SDK supports Desktop, Android, iOS and browsers. Beyond allowing game developers to interact with the Tezos
+blockchain, this SDK is a helpful resource for developing any Tezos decentralized application (dApp).
 
 ### Install from a Git URL
+
 Yoy can install the UPM package via directly Git URL. To load a package from a Git URL:
 
 * Open [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui.html) window.
@@ -32,38 +36,58 @@ Yoy can install the UPM package via directly Git URL. To load a package from a G
 * Select Add package from git URL from the add menu. A text box and an Add button appear.
 * Enter the `https://github.com/trilitech/tezos-unity-sdk.git` Git URL in the text box and click Add.
 * You may also install a specific package version by using the URL with the specified version.
-  * `https://github.com/trilitech/tezos-unity-sdk.git#X.Y.Z`
-  * Please note that the version `X.Y.Z` stated here is to be replaced with the version you would like to get.
-  * You can find all the available releases [here](https://github.com/trilitech/tezos-unity-sdk/releases).
-  * The latest available release version is [![Last Release](https://img.shields.io/github/v/release/trilitech/tezos-unity-sdk)](https://github.com/trilitech/tezos-unity-sdk/releases/latest)
+    * `https://github.com/trilitech/tezos-unity-sdk.git#X.Y.Z`
+    * Please note that the version `X.Y.Z` stated here is to be replaced with the version you would like to get.
+    * You can find all the available releases [here](https://github.com/trilitech/tezos-unity-sdk/releases).
+    * The latest available release version
+      is [![Last Release](https://img.shields.io/github/v/release/trilitech/tezos-unity-sdk)](https://github.com/trilitech/tezos-unity-sdk/releases/latest)
 
 For more information about what protocols Unity supports, see [Git URLs](https://docs.unity3d.com/Manual/upm-git.html).
 
 ### Install from NPM
-* Navigate to the `Packages` directory of your project.
-* Adjust the [project manifest file](https://docs.unity3d.com/Manual/upm-manifestPrj.html) `manifest.json` in a text editor.
-* Ensure `https://registry.npmjs.org/` is part of `scopedRegistries`.
-  * Ensure `com.trilitech` is part of `scopes`.
-  * Add `com.trilitech.tezos-unity-sdk` to the `dependencies`, stating the latest version.
 
-A minimal example ends up looking like this. Please note that the version `X.Y.Z` stated here is to be replaced with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk) which is currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity-sdk?color=blue)](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk).
-  ```json
-  {
-    "scopedRegistries": [
-      {
-        "name": "npmjs",
-        "url": "https://registry.npmjs.org/",
-        "scopes": [
-          "com.trilitech"
-        ]
-      }
-    ],
-    "dependencies": {
-      "com.trilitech.tezos-unity-sdk": "X.Y.Z",
-      ...
+* Navigate to the `Packages` directory of your project.
+* Adjust the [project manifest file](https://docs.unity3d.com/Manual/upm-manifestPrj.html) `manifest.json` in a text
+  editor.
+* Ensure `https://registry.npmjs.org/` is part of `scopedRegistries`.
+    * Ensure `com.trilitech` is part of `scopes`.
+    * Add `com.trilitech.tezos-unity-sdk` to the `dependencies`, stating the latest version.
+
+A minimal example ends up looking like this. Please note that the version `X.Y.Z` stated here is to be replaced
+with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk) which is
+currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity-sdk?color=blue)](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk).
+
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "npmjs",
+      "url": "https://registry.npmjs.org/",
+      "scopes": [
+        "com.trilitech"
+      ]
     }
+  ],
+  "dependencies": {
+    "com.trilitech.tezos-unity-sdk": "X.Y.Z",
+    ...
   }
-  ```
+}
+```
+
 * Switch back to the Unity Editor and wait for it to finish importing the added package.
+
+### WebGL Support
+
+* Open Unity Editor.
+* Navigate to Project -> Packages and find the Tezos Unity SDK.
+* Double-click the package file WebGLSupport.unitypackage.
+  ![Project->Packages->Tezos-Unity-SDK](https://github.com/tezos-unity-sdk/tezos-unity-sdk/blob/master/packages-tezos-unity-sdk.png?raw=true)
+* The Import Unity Package dialog box displays, with all the items in the package pre-checked, ready to install.
+  ![Import unity package](https://github.com/tezos-unity-sdk/tezos-unity-sdk/blob/master/import-unity-package.png?raw=true)
+
+* This action create WebGL templates folders to your Project. Each template is a subfolder within the WebGLTemplates
+  folder. Each template subfolder contains an index.html file along with any other resources the page needs, such as
+  images or stylesheets.
 
 ### 📝 Read the [documentation.](https://opentezos.com/gaming/unity-sdk/)

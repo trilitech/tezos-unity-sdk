@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json;
 using BeaconSDK;
+using TezosAPI.Models;
+using TezosAPI.Models.Tokens;
 using UnityEngine;
 
 namespace TezosAPI
@@ -10,10 +13,9 @@ namespace TezosAPI
     /// Implementation of the ITezosAPI.
     /// Exposes the main functions of the Tezos API in Unity
     /// </summary>
-    public class Tezos : ITezosAPI
+    public class Tezos : HttpClient, ITezosAPI
     {
         private string _networkName;
-        private string _networkNode;
         private string _indexerNode;
         private IBeaconConnector _beaconConnector;
 
@@ -22,13 +24,19 @@ namespace TezosAPI
         private string _signature;
         private string _transactionHash;
 
+        public string NetworkRPC { get; private set; }
+
         public BeaconMessageReceiver MessageReceiver { get; private set; }
 
-        public Tezos(string networkName = "", string customNode = "", string indexerNode = "")
+        public Tezos(
+            string networkName = "ghostnet",
+            string networkRPC = "https://rpc.ghostnet.teztnets.xyz",
+            string indexerNode = "https://api.ghostnet.tzkt.io/v1/operations/{0}/status",
+            string tzKTApi = "https://api.tzkt.io/v1/") : base(tzKTApi)
         {
             _networkName = networkName;
-            _networkNode = customNode;
             _indexerNode = indexerNode;
+            NetworkRPC = networkRPC;
 
             InitBeaconConnector();
         }
@@ -41,15 +49,15 @@ namespace TezosAPI
             // Assign the BeaconConnector depending on the platform.
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_beaconConnector = new BeaconConnectorWebGl();
-			_beaconConnector.SetNetwork(_networkName, _networkNode);;
+			_beaconConnector.SetNetwork(_networkName, NetworkRPC);;
 #elif (UNITY_ANDROID && !UNITY_EDITOR) || (UNITY_IOS && !UNITY_EDITOR) || UNITY_STANDALONE || UNITY_EDITOR
-			_beaconConnector = new BeaconConnectorDotNet();
-			_beaconConnector.SetNetwork(_networkName, _networkNode);
-			(_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
-			_beaconConnector.ConnectAccount();
+            _beaconConnector = new BeaconConnectorDotNet();
+            _beaconConnector.SetNetwork(_networkName, NetworkRPC);
+            (_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
+            _beaconConnector.ConnectAccount();
             MessageReceiver.PairingCompleted += _ => RequestPermission();
 #else
-			_beaconConnector = new BeaconConnectorNull();
+            _beaconConnector = new BeaconConnectorNull();
 #endif
 
             MessageReceiver.ClientCreated += _ => { _beaconConnector.RequestHandshake(); };
@@ -82,7 +90,7 @@ namespace TezosAPI
         public void ConnectWallet()
         {
 #if UNITY_WEBGL
-			_beaconConnector.ConnectAccount();
+            _beaconConnector.ConnectAccount();
 #elif UNITY_ANDROID || UNITY_IOS
             RequestPermission();
             Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
@@ -102,24 +110,24 @@ namespace TezosAPI
         public IEnumerator ReadBalance(Action<ulong> callback)
         {
             var address = _beaconConnector.GetActiveAccountAddress();
-            return NetezosExtensions.ReadTZBalance(_networkNode, address, callback);
+            return NetezosExtensions.ReadTZBalance(NetworkRPC, address, callback);
         }
 
         public IEnumerator ReadView(string contractAddress, string entryPoint, object input,
             Action<JsonElement> callback)
         {
-            return NetezosExtensions.ReadView(_networkNode, contractAddress, entryPoint, input, callback);
+            return NetezosExtensions.ReadView(NetworkRPC, contractAddress, entryPoint, input, callback);
         }
 
         public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0)
         {
             _beaconConnector.RequestTezosOperation(contractAddress, entryPoint, input,
-                amount, _networkName, _networkNode);
+                amount, _networkName, NetworkRPC);
         }
 
         public void RequestPermission()
         {
-            _beaconConnector.RequestTezosPermission(_networkName, _networkNode);
+            _beaconConnector.RequestTezosPermission(_networkName, NetworkRPC);
         }
 
         public void RequestSignPayload(int signingType, string payload)
@@ -132,6 +140,34 @@ namespace TezosAPI
             var key = _pubKey;
             var signature = _signature;
             return NetezosExtensions.VerifySignature(key, payload, signature);
+        }
+
+        public IEnumerator GetTokensForOwner(
+            Action<IEnumerable<TokenBalance>> cb,
+            string owner,
+            bool withMetadata,
+            long maxItems,
+            TokensForOwnerOrder orderBy
+        )
+        {
+            var sort = orderBy switch
+            {
+                TokensForOwnerOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
+                TokensForOwnerOrder.ByLastTimeAsc byLastTimeAsc => $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
+                TokensForOwnerOrder.ByLastTimeDesc ByLastTimeDesc => $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                _ => string.Empty
+            };
+
+            var url = "tokens/balances?" +
+                      $"account={owner}&" +
+                      "balance.ne=0&" +
+                      "select=account.address as owner,balance,token.contract as token_contract," +
+                      "token.tokenId as token_id,token.metadata as token_metadata,lastTime as last_time,id&" +
+                      $"{sort}&" +
+                      $"limit={maxItems}";
+
+            var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
+            return WrappedRequest(requestRoutine, cb);
         }
     }
 }

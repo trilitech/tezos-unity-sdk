@@ -1,12 +1,20 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json;
 using BeaconSDK;
+using TezosAPI.Models;
+using TezosAPI.Models.Tokens;
 
 namespace TezosAPI
 {
     public interface ITezosAPI
     {
+        /// <summary>
+        /// Returns the network RPC andress (e.g https://rpc.ghostnet.teztnets.xyz)
+        /// </summary 
+        public string NetworkRPC { get; }
+
         /// <summary>
         /// Makes a call to connect with a wallet (e.g. Temple Wallet)
         /// Works for iOS and Android builds
@@ -52,7 +60,7 @@ namespace TezosAPI
         /// <param name="input">parameters called on the entry point</param>
         /// <param name="amount">amount of Tez sent into the contract</param>
         public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0);
-        
+
         /// <summary>
         /// Sends a permission request to the blockchain network
         /// </summary>
@@ -66,8 +74,23 @@ namespace TezosAPI
         public void RequestSignPayload(int signingType, string payload);
 
         /// <summary>
+        /// Verify a signed payload to check if it is valid
+        /// </summary>
+        /// <param name="payload">payload string that is going to be signed</param>
+        public bool VerifySignedPayload(string payload);
+
+        /// <summary>
         /// Exposes a Monobehaviour class that exposes wallet events
         /// </summary>
         public BeaconMessageReceiver MessageReceiver { get; }
+
+        // Gets all tokens currently owned by a given address.
+        public IEnumerator GetTokensForOwner(
+            Action<IEnumerable<TokenBalance>> cb,
+            string owner,
+            bool withMetadata,
+            long maxItems,
+            TokensForOwnerOrder orderBy
+        );
     }
 }
