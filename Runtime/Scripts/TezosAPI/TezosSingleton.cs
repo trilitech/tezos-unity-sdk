@@ -97,4 +97,13 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         string contractAddress,
         long maxItems,
         OwnersForContractOrder orderBy) => _tezos.GetOwnersForContract(cb, contractAddress, maxItems, orderBy);
+
+    public IEnumerator IsHolderOfContract(
+        Action<bool> cb,
+        string wallet,
+        string contractAddress) => _tezos.IsHolderOfContract(cb, wallet, contractAddress);
+
+    public IEnumerator GetTokenMetadata(Action<JsonElement> cb,
+        string contractAddress,
+        uint tokenId) => _tezos.GetTokenMetadata(cb, contractAddress, tokenId);
 }

@@ -91,7 +91,7 @@ namespace TezosAPI
             bool withMetadata,
             long maxItems,
             TokensForOwnerOrder orderBy);
-        
+
         // Get the owner(s) for a token.
         public IEnumerator GetOwnersForToken(
             Action<IEnumerable<TokenBalance>> cb,
@@ -99,12 +99,24 @@ namespace TezosAPI
             uint tokenId,
             long maxItems,
             OwnersForTokenOrder orderBy);
-        
+
         // Gets all owners for a given token contract.
         public IEnumerator GetOwnersForContract(
             Action<IEnumerable<TokenBalance>> cb,
             string contractAddress,
             long maxItems,
             OwnersForContractOrder orderBy);
+
+        // Checks whether a wallet holds a token in a given contract.
+        public IEnumerator IsHolderOfContract(
+            Action<bool> cb,
+            string wallet,
+            string contractAddress);
+
+        // Gets the metadata associated with a given token.
+        public IEnumerator GetTokenMetadata(
+            Action<JsonElement> cb,
+            string contractAddress,
+            uint tokenId);
     }
 }

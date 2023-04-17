@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using BeaconSDK;
+using Dynamic.Json;
+using Helpers;
 using TezosAPI.Models;
 using TezosAPI.Models.Tokens;
 using UnityEngine;
@@ -218,9 +221,47 @@ namespace TezosAPI
                       "select=account.address as owner,balance,token.contract as token_contract," +
                       "token.tokenId as token_id,id&" +
                       $"{sort}&limit={maxItems}";
-            
+
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
             return WrappedRequest(requestRoutine, cb);
+        }
+
+        public IEnumerator IsHolderOfContract(
+            Action<bool> cb,
+            string wallet,
+            string contractAddress)
+        {
+            var requestRoutine =
+                GetJson($"tokens/balances?account={wallet}&token.contract={contractAddress}&balance.ne=0&select=id");
+
+            yield return requestRoutine;
+
+            if (requestRoutine.Current is DJsonArray dJsonArray)
+            {
+                cb?.Invoke(dJsonArray.Length > 0);
+            }
+            else
+            {
+                cb?.Invoke(false);
+            }
+        }
+
+        public IEnumerator GetTokenMetadata(
+            Action<JsonElement> cb,
+            string contractAddress,
+            uint tokenId)
+        {
+            var url = $"tokens?contract={contractAddress}&tokenId={tokenId}&select=metadata";
+            var requestRoutine = GetJson(url);
+            yield return requestRoutine;
+
+            if (requestRoutine.Current is DJsonArray { Length: 1 } dJsonArray)
+            {
+                // todo: improve this
+                var result = JsonSerializer
+                    .Deserialize<JsonElement>(dJsonArray.First().ToString(), JsonOptions.DefaultOptions);
+                cb?.Invoke(result);
+            }
         }
     }
 }
