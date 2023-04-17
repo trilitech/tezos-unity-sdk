@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json;
 using BeaconSDK;
 using TezosAPI;
+using TezosAPI.Models;
+using TezosAPI.Models.Tokens;
+
 
 public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
 {
@@ -73,4 +77,12 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
     {
         return _tezos.VerifySignedPayload(payload);
     }
+
+    public IEnumerator GetTokensForOwner(
+        Action<IEnumerable<TokenBalance>> cb,
+        string owner,
+        bool withMetadata,
+        long maxItems,
+        TokensForOwnerOrder orderBy
+    ) => _tezos.GetTokensForOwner(cb, owner, withMetadata, maxItems, orderBy);
 }

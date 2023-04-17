@@ -1,10 +1,13 @@
 {
     "name": "com.trilitech.tezos-unity-sdk",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:11b8985f735c7ea47bf017c34f3fcc41",
+        "Unity.TextMeshPro"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
