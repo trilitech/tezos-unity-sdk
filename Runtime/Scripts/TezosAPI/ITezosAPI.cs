@@ -90,14 +90,21 @@ namespace TezosAPI
             string owner,
             bool withMetadata,
             long maxItems,
-            TokensForOwnerOrder orderBy
-        );
+            TokensForOwnerOrder orderBy);
         
         // Get the owner(s) for a token.
-        public IEnumerator GetOwnersForToken(Action<IEnumerable<TokenBalance>> cb,
+        public IEnumerator GetOwnersForToken(
+            Action<IEnumerable<TokenBalance>> cb,
             string contractAddress,
             uint tokenId,
             long maxItems,
             OwnersForTokenOrder orderBy);
+        
+        // Gets all owners for a given token contract.
+        public IEnumerator GetOwnersForContract(
+            Action<IEnumerable<TokenBalance>> cb,
+            string contractAddress,
+            long maxItems,
+            OwnersForContractOrder orderBy);
     }
 }

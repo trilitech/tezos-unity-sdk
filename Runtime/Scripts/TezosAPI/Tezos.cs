@@ -15,8 +15,8 @@ namespace TezosAPI
     /// </summary>
     public class Tezos : HttpClient, ITezosAPI
     {
-        private string _networkName;
-        private string _indexerNode;
+        private readonly string _networkName;
+        private readonly string _indexerNode;
         private IBeaconConnector _beaconConnector;
 
         private string _handshake;
@@ -73,7 +73,7 @@ namespace TezosAPI
                     Debug.Log("my pubkey: " + _pubKey);
                 }
             };
-            MessageReceiver.PayloadSigned += (payload) =>
+            MessageReceiver.PayloadSigned += payload =>
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(payload);
                 var signature = json.GetProperty("signature").GetString();
@@ -158,7 +158,8 @@ namespace TezosAPI
                 _ => string.Empty
             };
 
-            var url = $"tokens/balances?account={owner}&balance.ne=0&" +
+            var url = "tokens/balances?" +
+                      $"account={owner}&balance.ne=0&" +
                       "select=account.address as owner,balance,token.contract as token_contract," +
                       $"token.tokenId as token_id{(withMetadata ? ",token.metadata as token_metadata" : "")}," +
                       "lastTime as last_time,id&" +
@@ -168,7 +169,8 @@ namespace TezosAPI
             return WrappedRequest(requestRoutine, cb);
         }
 
-        public IEnumerator GetOwnersForToken(Action<IEnumerable<TokenBalance>> cb,
+        public IEnumerator GetOwnersForToken(
+            Action<IEnumerable<TokenBalance>> cb,
             string contractAddress,
             uint tokenId,
             long maxItems,
@@ -185,11 +187,38 @@ namespace TezosAPI
                 _ => string.Empty
             };
 
-            var url = $"tokens/balances?token.contract={contractAddress}&balance.ne=0&token.tokenId={tokenId}&" +
+            var url = "tokens/balances?" +
+                      $"token.contract={contractAddress}&balance.ne=0&token.tokenId={tokenId}&" +
                       "select=account.address as owner,balance,token.contract as token_contract," +
                       "token.tokenId as token_id,lastTime as last_time,id&" +
                       $"{sort}&limit={maxItems}";
 
+            var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
+            return WrappedRequest(requestRoutine, cb);
+        }
+
+        public IEnumerator GetOwnersForContract(
+            Action<IEnumerable<TokenBalance>> cb,
+            string contractAddress,
+            long maxItems,
+            OwnersForContractOrder orderBy)
+        {
+            var sort = orderBy switch
+            {
+                OwnersForContractOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
+                OwnersForContractOrder.ByLastTimeAsc byLastTimeAsc =>
+                    $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
+                OwnersForContractOrder.ByLastTimeDesc ByLastTimeDesc =>
+                    $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                _ => string.Empty
+            };
+
+            var url = "tokens/balances?" +
+                      $"token.contract={contractAddress}&balance.ne=0&" +
+                      "select=account.address as owner,balance,token.contract as token_contract," +
+                      "token.tokenId as token_id,id&" +
+                      $"{sort}&limit={maxItems}";
+            
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
             return WrappedRequest(requestRoutine, cb);
         }

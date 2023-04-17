@@ -85,9 +85,16 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         long maxItems,
         TokensForOwnerOrder orderBy) => _tezos.GetTokensForOwner(cb, owner, withMetadata, maxItems, orderBy);
 
-    public IEnumerator GetOwnersForToken(Action<IEnumerable<TokenBalance>> cb,
+    public IEnumerator GetOwnersForToken(
+        Action<IEnumerable<TokenBalance>> cb,
         string contractAddress,
         uint tokenId,
         long maxItems,
         OwnersForTokenOrder orderBy) => _tezos.GetOwnersForToken(cb, contractAddress, tokenId, maxItems, orderBy);
+
+    public IEnumerator GetOwnersForContract(
+        Action<IEnumerable<TokenBalance>> cb,
+        string contractAddress,
+        long maxItems,
+        OwnersForContractOrder orderBy) => _tezos.GetOwnersForContract(cb, contractAddress, maxItems, orderBy);
 }
