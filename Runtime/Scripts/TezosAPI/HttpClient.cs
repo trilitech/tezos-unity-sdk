@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -61,7 +61,7 @@ namespace TezosAPI
             request.timeout = RequestTimeout;
             return request;
         }
-        
+
         public static IEnumerator WrappedRequest<T>(IEnumerator op, Action<T> callback)
         {
             var counterRoutine = new CoroutineWrapper<T>(op);

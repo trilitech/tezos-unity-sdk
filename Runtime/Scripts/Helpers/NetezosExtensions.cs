@@ -27,7 +27,7 @@ namespace BeaconSDK
         {
             var rpc = new Rpc(rpcUri);
             var runViewOp = rpc.RunView<JsonElement>(destination, entrypoint, input);
-
+            
             return HttpClient.WrappedRequest(runViewOp, (JsonElement result) =>
             {
                 if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
@@ -61,7 +61,7 @@ namespace BeaconSDK
                 _contracts[contract] = new ContractScript(code);
             });
         }
-
+        
         public static IEnumerator CompileToJSONMichelson(string rpcUri, string destination,
             string entry, object objArg, Action<string> onComplete)
         {
