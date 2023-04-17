@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json;
 using BeaconSDK;
+using TezosAPI.Models;
+using TezosAPI.Models.Tokens;
 
 namespace TezosAPI
 {
@@ -11,6 +14,7 @@ namespace TezosAPI
         /// Returns the network RPC andress (e.g https://rpc.ghostnet.teztnets.xyz)
         /// </summary 
         public string NetworkRPC { get; }
+
         /// <summary>
         /// Makes a call to connect with a wallet (e.g. Temple Wallet)
         /// Works for iOS and Android builds
@@ -79,5 +83,14 @@ namespace TezosAPI
         /// Exposes a Monobehaviour class that exposes wallet events
         /// </summary>
         public BeaconMessageReceiver MessageReceiver { get; }
+
+        // Gets all tokens currently owned by a given address.
+        public IEnumerator GetTokensForOwner(
+            Action<IEnumerable<TokenBalance>> cb,
+            string owner,
+            bool withMetadata,
+            long maxItems,
+            TokensForOwnerOrder orderBy
+        );
     }
 }

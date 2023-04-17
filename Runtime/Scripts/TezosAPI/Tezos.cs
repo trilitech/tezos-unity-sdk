@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json;
 using BeaconSDK;
+using TezosAPI.Models;
+using TezosAPI.Models.Tokens;
 using UnityEngine;
 
 namespace TezosAPI
@@ -10,7 +13,7 @@ namespace TezosAPI
     /// Implementation of the ITezosAPI.
     /// Exposes the main functions of the Tezos API in Unity
     /// </summary>
-    public class Tezos : ITezosAPI
+    public class Tezos : HttpClient, ITezosAPI
     {
         private string _networkName;
         private string _indexerNode;
@@ -25,8 +28,11 @@ namespace TezosAPI
 
         public BeaconMessageReceiver MessageReceiver { get; private set; }
 
-        public Tezos(string networkName = "ghostnet", string networkRPC = "https://rpc.ghostnet.teztnets.xyz",
-            string indexerNode = "https://api.ghostnet.tzkt.io/v1/operations/{0}/status")
+        public Tezos(
+            string networkName = "ghostnet",
+            string networkRPC = "https://rpc.ghostnet.teztnets.xyz",
+            string indexerNode = "https://api.ghostnet.tzkt.io/v1/operations/{0}/status",
+            string tzKTApi = "https://api.tzkt.io/v1/") : base(tzKTApi)
         {
             _networkName = networkName;
             _indexerNode = indexerNode;
@@ -84,7 +90,7 @@ namespace TezosAPI
         public void ConnectWallet()
         {
 #if UNITY_WEBGL
-			_beaconConnector.ConnectAccount();
+            _beaconConnector.ConnectAccount();
 #elif UNITY_ANDROID || UNITY_IOS
             RequestPermission();
             Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
@@ -134,6 +140,34 @@ namespace TezosAPI
             var key = _pubKey;
             var signature = _signature;
             return NetezosExtensions.VerifySignature(key, payload, signature);
+        }
+
+        public IEnumerator GetTokensForOwner(
+            Action<IEnumerable<TokenBalance>> cb,
+            string owner,
+            bool withMetadata,
+            long maxItems,
+            TokensForOwnerOrder orderBy
+        )
+        {
+            var sort = orderBy switch
+            {
+                TokensForOwnerOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
+                TokensForOwnerOrder.ByLastTimeAsc byLastTimeAsc => $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
+                TokensForOwnerOrder.ByLastTimeDesc ByLastTimeDesc => $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                _ => string.Empty
+            };
+
+            var url = "tokens/balances?" +
+                      $"account={owner}&" +
+                      "balance.ne=0&" +
+                      "select=account.address as owner,balance,token.contract as token_contract," +
+                      "token.tokenId as token_id,token.metadata as token_metadata,lastTime as last_time,id&" +
+                      $"{sort}&" +
+                      $"limit={maxItems}";
+
+            var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
+            return WrappedRequest(requestRoutine, cb);
         }
     }
 }
