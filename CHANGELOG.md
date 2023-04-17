@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [1.2.0] - 2023-04-17
+### Added
+- Authentication.prefab
+- WebGl unitypackage plugin
+- API single entrypoint
 
 
 ## [1.1.0] - 2023-03-31
@@ -19,18 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Beacon SDK version
-
-
-## [Unreleased]
-### Changed
-- Added dependencies to manifest.json
-- Increase Android target Sdk version
-- Beacon dotnet SDK dApp metadata changed to Unity-related
-
-### Fixed
-- Fixed namespace name 'iOS'
-- Fixed namespace name 'Newtonsoft'
-- Update outdated unreleased diff link
 
 
 ## [0.0.2] - 2023-02-28
