@@ -118,5 +118,10 @@ namespace TezosAPI
             Action<JsonElement> cb,
             string contractAddress,
             uint tokenId);
+
+        // Queries token high-level collection/contract level information.
+        public IEnumerator GetContractMetadata(
+            Action<JsonElement> cb,
+            string contractAddress);
     }
 }

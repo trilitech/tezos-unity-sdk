@@ -260,7 +260,26 @@ namespace TezosAPI
                 // todo: improve this
                 var result = JsonSerializer
                     .Deserialize<JsonElement>(dJsonArray.First().ToString(), JsonOptions.DefaultOptions);
+
                 cb?.Invoke(result);
+            }
+        }
+
+        public IEnumerator GetContractMetadata(
+            Action<JsonElement> cb,
+            string contractAddress)
+        {
+            var url = $"contracts/{contractAddress}?legacy=false";
+            var requestRoutine = GetJson(url);
+            yield return requestRoutine;
+
+            if (requestRoutine.Current is DJsonObject dJsonObject)
+            {
+                // todo: improve this
+                var result = JsonSerializer
+                    .Deserialize<JsonElement>(dJsonObject.ToString(), JsonOptions.DefaultOptions);
+
+                cb?.Invoke(result.GetProperty("metadata"));
             }
         }
     }
