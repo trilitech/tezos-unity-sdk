@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bug with unnecessary `RequestPermission()` call while clicking on `Deeplink connect` button on mobiles
 - Package structure
 
+### Fixed
+- Package structure
+
 
 ## [1.2.1] - 2023-04-17
 ### Fixed
