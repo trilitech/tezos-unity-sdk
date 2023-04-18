@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API methods: `GetOwnersForToken`, `GetOwnersForContract`, `IsHolderOfContract`, `GetTokenMetadata`, `GetContractMetadata`
 - Updated Dll binaries
 
+### Fixed
+- Package structure
+
 
 ## [1.2.1] - 2023-04-17
 ### Fixed
