@@ -630,8 +630,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: AuthenticationManager, Assembly-CSharp
+      - m_Target: {fileID: 1900377933}
+        m_TargetAssemblyTypeName: AuthenticationManager, com.trilitech.tezos-unity-sdk
         m_MethodName: ConnectByDeeplink
         m_Mode: 1
         m_Arguments:
