@@ -1,6 +1,6 @@
 {
   "name": "com.trilitech.tezos-unity-sdk",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "unity": "2021.3",
   "displayName": "Tezos Unity SDK",
   "description": "Unity SDK for Tezos",
@@ -11,10 +11,7 @@
       "path": "Samples~"
     }
   ],
-  "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.0.2",
-    "com.unity.textmeshpro": "3.0.6"
-  },
+  "dependencies": {},
   "keywords": [
     "tezos",
     "blockchain",
