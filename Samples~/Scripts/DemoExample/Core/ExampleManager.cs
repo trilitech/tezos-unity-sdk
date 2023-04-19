@@ -358,11 +358,6 @@ public class ExampleManager : IExampleManager
             }));
     }
 
-    public void RequestTezosPermission()
-    {
-        _tezos.RequestPermission();
-    }
-
     public void RequestSignPayload(int signingType, string payload)
     {
         _tezos.RequestSignPayload(signingType, payload);
