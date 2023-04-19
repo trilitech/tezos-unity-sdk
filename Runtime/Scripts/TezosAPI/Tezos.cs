@@ -49,7 +49,7 @@ namespace TezosAPI
             // Assign the BeaconConnector depending on the platform.
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_beaconConnector = new BeaconConnectorWebGl();
-			_beaconConnector.SetNetwork(_networkName, NetworkRPC);;
+			_beaconConnector.SetNetwork(_networkName, NetworkRPC);
 #elif (UNITY_ANDROID && !UNITY_EDITOR) || (UNITY_IOS && !UNITY_EDITOR) || UNITY_STANDALONE || UNITY_EDITOR
             _beaconConnector = new BeaconConnectorDotNet();
             _beaconConnector.SetNetwork(_networkName, NetworkRPC);
@@ -92,7 +92,6 @@ namespace TezosAPI
 #if UNITY_WEBGL
             _beaconConnector.ConnectAccount();
 #elif UNITY_ANDROID || UNITY_IOS
-            RequestPermission();
             Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
 #endif
         }
