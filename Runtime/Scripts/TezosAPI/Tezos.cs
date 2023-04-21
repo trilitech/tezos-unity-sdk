@@ -245,6 +245,27 @@ namespace TezosAPI
                 cb?.Invoke(false);
             }
         }
+        
+        public IEnumerator IsHolderOfToken(
+            Action<bool> cb,
+            string wallet,
+            string contractAddress,
+            string tokenId)
+        {
+            var requestRoutine =
+                GetJson($"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id");
+
+            yield return requestRoutine;
+
+            if (requestRoutine.Current is DJsonArray dJsonArray)
+            {
+                cb?.Invoke(dJsonArray.Length > 0);
+            }
+            else
+            {
+                cb?.Invoke(false);
+            }
+        }
 
         public IEnumerator GetTokenMetadata(
             Action<JsonElement> cb,

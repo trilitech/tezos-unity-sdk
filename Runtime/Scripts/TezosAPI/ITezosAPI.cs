@@ -112,6 +112,13 @@ namespace TezosAPI
             Action<bool> cb,
             string wallet,
             string contractAddress);
+        
+        // Checks whether a wallet holds a particular token.
+        public IEnumerator IsHolderOfToken(
+            Action<bool> cb,
+            string wallet,
+            string contractAddress,
+            string tokenId);
 
         // Gets the metadata associated with a given token.
         public IEnumerator GetTokenMetadata(

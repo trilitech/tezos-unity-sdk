@@ -16,13 +16,15 @@ public class AuthenticationManager : MonoBehaviour
     [SerializeField] private GameObject qrCodePanel;
     [SerializeField] private InputField addressInputField;
     [SerializeField] private InputField contractInputField;
-    [SerializeField] private Text ResultText;
+    [SerializeField] private InputField tokenIdInputField;
+    [SerializeField] private Text resultText;
 
     private string _address;
     private bool _isMobile;
 
     private string checkContract;
     private string checkAddress;
+    private string checkTokenId;
 
     public const int MAX_TOKENS = 20;
 
@@ -41,6 +43,7 @@ public class AuthenticationManager : MonoBehaviour
 
         addressInputField.onEndEdit.AddListener(delegate { OnEndEditAddress(addressInputField); });
         contractInputField.onEndEdit.AddListener(delegate { OnEndEditContract(contractInputField); });
+        tokenIdInputField.onEndEdit.AddListener(delegate { OnEndEditTokenId(tokenIdInputField); });
     }
 
     void OnHandshakeReceived(string handshake)
@@ -82,11 +85,11 @@ public class AuthenticationManager : MonoBehaviour
 
         CoroutineRunner.Instance.StartCoroutine(_tezos.GetTokensForOwner((tbs) =>
             {
-                ResultText.text = string.Empty;
+                resultText.text = string.Empty;
                 
                 if (tbs == null)
                 {
-                    ResultText.text = $"Incorrect address - {walletAddress}";
+                    resultText.text = $"Incorrect address - {walletAddress}";
                     Debug.Log($"Incorrect address - {walletAddress}");
                     return;
                 }
@@ -96,14 +99,14 @@ public class AuthenticationManager : MonoBehaviour
                 {
                     foreach (var tb in tokens)
                     {
-                        var text = ResultText.text;
-                        ResultText.text = text + $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}" + "\r\n" + "\r\n" ;
+                        var text = resultText.text;
+                        resultText.text = text + $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}" + "\r\n" + "\r\n" ;
                         Debug.Log($"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}");
                     }
                 }
                 else
                 {
-                    ResultText.text = $"{walletAddress} has no tokens";
+                    resultText.text = $"{walletAddress} has no tokens";
                     Debug.Log($"{walletAddress} has no tokens");
                 }
             },
@@ -115,7 +118,7 @@ public class AuthenticationManager : MonoBehaviour
 
     public void IsHolderOfContract()
     {
-        ResultText.text = string.Empty;
+        resultText.text = string.Empty;
         
         var walletAddress = string.IsNullOrEmpty(checkAddress)
             ? _address
@@ -123,7 +126,7 @@ public class AuthenticationManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(checkContract))
         {
-            ResultText.text = "Enter contract address";
+            resultText.text = "Enter contract address";
             Debug.Log("Enter contract address");
             return;
         }
@@ -134,11 +137,44 @@ public class AuthenticationManager : MonoBehaviour
                     ? $"{walletAddress} is HOLDER of contract {checkContract}"
                     : $"{walletAddress} is NOT HOLDER of contract {checkContract}";
 
-                ResultText.text = message;
+                resultText.text = message;
                 Debug.Log(message);
             },
             wallet: walletAddress,
             contractAddress: checkContract));
+    }
+    
+    public void IsHolderOfToken()
+    {
+        resultText.text = string.Empty;
+        
+        var walletAddress = string.IsNullOrEmpty(checkAddress)
+            ? _address
+            : checkAddress;
+
+        var tokenId = string.IsNullOrEmpty(checkTokenId)
+            ? "0"
+            : checkTokenId;
+
+        if (string.IsNullOrEmpty(checkContract))
+        {
+            resultText.text = "Enter contract address";
+            Debug.Log("Enter contract address");
+            return;
+        }
+
+        CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfToken((flag) =>
+            {
+                var message = flag
+                    ? $"{walletAddress} is HOLDER of token"
+                    : $"{walletAddress} is NOT HOLDER of token";
+
+                resultText.text = message;
+                Debug.Log(message);
+            },
+            wallet: walletAddress,
+            contractAddress: checkContract,
+            tokenId: checkTokenId));
     }
 
     void OnEndEditAddress(InputField input)
@@ -149,6 +185,11 @@ public class AuthenticationManager : MonoBehaviour
     void OnEndEditContract(InputField input)
     {
         checkContract = input.text;
+    }
+    
+    void OnEndEditTokenId(InputField input)
+    {
+        checkTokenId = input.text;
     }
 
 

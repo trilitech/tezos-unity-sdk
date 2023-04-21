@@ -103,6 +103,12 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         string wallet,
         string contractAddress) => _tezos.IsHolderOfContract(cb, wallet, contractAddress);
 
+    public IEnumerator IsHolderOfToken(
+        Action<bool> cb,
+        string wallet,
+        string contractAddress,
+        string tokenId) => _tezos.IsHolderOfToken(cb, wallet, contractAddress, tokenId);
+
     public IEnumerator GetTokenMetadata(
         Action<JsonElement> cb,
         string contractAddress,
