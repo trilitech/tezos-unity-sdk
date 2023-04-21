@@ -60,7 +60,8 @@ public class CoroutineWrapper<T> : IEnumerator
         }
         catch (Exception e)
         {
-            Debug.LogError("Exception " + e.Message);
+            Debug.Log("EXCEPTION " + e.Message);
+            // Debug.LogError("Exception " + e.Message);
             Exception = e;
             Completed?.Invoke(default);
             return false;

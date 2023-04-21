@@ -35,7 +35,7 @@ namespace TezosAPI
             string networkName = "ghostnet",
             string networkRPC = "https://rpc.ghostnet.teztnets.xyz",
             string indexerNode = "https://api.ghostnet.tzkt.io/v1/operations/{0}/status",
-            string tzKTApi = "https://api.tzkt.io/v1/") : base(tzKTApi)
+            string tzKTApi = "https://api.ghostnet.tzkt.io/v1/") : base(tzKTApi)
         {
             _networkName = networkName;
             _indexerNode = indexerNode;
