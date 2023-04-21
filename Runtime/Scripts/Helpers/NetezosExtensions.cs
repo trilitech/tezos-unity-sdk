@@ -80,21 +80,13 @@ namespace BeaconSDK
             return parsedPubKey.Verify(Hex.Parse(GetPayloadHexString(payload)), signature);
         }
         
-        public static string GetPayloadHexString(string input)
+        public static string GetPayloadHexString(string plainTextPayload)
         {
-            var hexOutput = new StringBuilder();
-
-            foreach (var asciiCode in input.Select(character => (int)character))
-            {
-                hexOutput.Append(asciiCode.ToString("x2"));
-            }
-
-            var bytes = hexOutput.ToString();
+            var bytes = Hex.Convert(Encoding.UTF8.GetBytes(plainTextPayload));
             var bytesLength = (bytes.Length / 2).ToString("x");
             var addPadding = "00000000" + bytesLength;
             var paddedBytesLength = addPadding[^8..];
             var payloadBytes = "05" + "01" + paddedBytesLength + bytes;
-
             return payloadBytes;
         }
     }
