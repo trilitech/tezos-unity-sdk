@@ -104,9 +104,8 @@ public interface IExampleManager
     /// <summary>
     /// Sends a request to sign a payload
     /// </summary>
-    /// <param name="signingType"></param>
     /// <param name="payload"></param>
-    void RequestSignPayload(int signingType, string payload);
+    void RequestSignPayload(string payload);
     
     bool VerifyPayload(string payload);
 }

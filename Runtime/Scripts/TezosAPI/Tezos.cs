@@ -129,9 +129,9 @@ namespace TezosAPI
             _beaconConnector.RequestTezosPermission(_networkName, NetworkRPC);
         }
 
-        public void RequestSignPayload(int signingType, string payload)
+        public void RequestSignPayload(string payload)
         {
-            _beaconConnector.RequestTezosSignPayload(signingType, payload);
+            _beaconConnector.RequestTezosSignPayload(payload);
         }
 
         public bool VerifySignedPayload(string payload)

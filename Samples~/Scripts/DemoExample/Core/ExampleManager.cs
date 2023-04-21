@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text.Json;
 using BeaconSDK;
 using Netezos.Encoding;
 using UnityEngine;
@@ -358,9 +356,9 @@ public class ExampleManager : IExampleManager
             }));
     }
 
-    public void RequestSignPayload(int signingType, string payload)
+    public void RequestSignPayload(string payload)
     {
-        _tezos.RequestSignPayload(signingType, payload);
+        _tezos.RequestSignPayload(payload);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");

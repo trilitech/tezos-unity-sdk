@@ -69,9 +69,8 @@ namespace TezosAPI
         /// <summary>
         /// Sends a request to the sign a payload string
         /// </summary>
-        /// <param name="signingType">enumerates the signing type (0 = MICHELINE, 1 = OPERATION, 2 = RAW)</param>
         /// <param name="payload">payload string that is going to be signed</param>
-        public void RequestSignPayload(int signingType, string payload);
+        public void RequestSignPayload(string payload);
 
         /// <summary>
         /// Verify a signed payload to check if it is valid

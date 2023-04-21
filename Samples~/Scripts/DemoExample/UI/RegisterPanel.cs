@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +16,8 @@ public class RegisterPanel : PanelController
 	private bool _isMobile = false;
 	
 	private IExampleManager _exampleManager;
+
+	private const string _payloadToSign = "Tezos Signed Message: Confirming my identity as Tezos Unity SDK.";
 
 	private IEnumerator Start()
 	{
@@ -82,18 +82,12 @@ public class RegisterPanel : PanelController
 
 	public void SignPayloadTest()
 	{
-		var payload = "05010000004254657a6f73205369676e6564204d6573736167653a206d796461707" +
-		              "02e636f6d20323032312d30312d31345431353a31363a30345a2048656c6c6f20776f726c6421";
-		
-		ExampleFactory.Instance.GetExampleManager().RequestSignPayload(0, payload);
+		ExampleFactory.Instance.GetExampleManager().RequestSignPayload(_payloadToSign);
 	}
 
 	public void VerifySignatureTest()
 	{
-		var payload = "05010000004254657a6f73205369676e6564204d6573736167653a206d796461707" +
-		              "02e636f6d20323032312d30312d31345431353a31363a30345a2048656c6c6f20776f726c6421";
-		
-		var verified = ExampleFactory.Instance.GetExampleManager().VerifyPayload(payload);
+		var verified = ExampleFactory.Instance.GetExampleManager().VerifyPayload(_payloadToSign);
 		Debug.Log("Verification success: " + verified);
 	}
 }

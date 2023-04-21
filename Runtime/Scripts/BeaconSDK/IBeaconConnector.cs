@@ -56,7 +56,7 @@ namespace BeaconSDK
 		/// </summary>
 		/// <param name="signingType">An integer to select a SigningType: 0=Raw 1=Operation 2=Micheline allelse=Micheline</param>
 		/// <param name="payload"></param>
-		public void RequestTezosSignPayload(int signingType, string payload);
+		public void RequestTezosSignPayload(string payload);
 
 		/// <summary>
 		/// To use when broadcasts are required

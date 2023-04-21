@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Netezos.Contracts;
 using Netezos.Encoding;
@@ -27,7 +29,7 @@ namespace BeaconSDK
         {
             var rpc = new Rpc(rpcUri);
             var runViewOp = rpc.RunView<JsonElement>(destination, entrypoint, input);
-            
+
             return HttpClient.WrappedRequest(runViewOp, (JsonElement result) =>
             {
                 if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
@@ -61,7 +63,7 @@ namespace BeaconSDK
                 _contracts[contract] = new ContractScript(code);
             });
         }
-        
+
         public static IEnumerator CompileToJSONMichelson(string rpcUri, string destination,
             string entry, object objArg, Action<string> onComplete)
         {
@@ -74,9 +76,26 @@ namespace BeaconSDK
 
         public static bool VerifySignature(string pubKey, string payload, string signature)
         {
-            var pubkey = PubKey.FromBase58(pubKey);
-            var payloadBytes = Hex.Parse(payload);
-            return pubkey.Verify(payloadBytes, signature);
+            var parsedPubKey = PubKey.FromBase58(pubKey);
+            return parsedPubKey.Verify(Hex.Parse(GetPayloadHexString(payload)), signature);
+        }
+        
+        public static string GetPayloadHexString(string input)
+        {
+            var hexOutput = new StringBuilder();
+
+            foreach (var asciiCode in input.Select(character => (int)character))
+            {
+                hexOutput.Append(asciiCode.ToString("x2"));
+            }
+
+            var bytes = hexOutput.ToString();
+            var bytesLength = (bytes.Length / 2).ToString("x");
+            var addPadding = "00000000" + bytesLength;
+            var paddedBytesLength = addPadding[^8..];
+            var payloadBytes = "05" + "01" + paddedBytesLength + bytes;
+
+            return payloadBytes;
         }
     }
 }

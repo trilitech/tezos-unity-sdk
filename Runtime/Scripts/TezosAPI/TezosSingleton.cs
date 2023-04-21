@@ -68,9 +68,9 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         _tezos.RequestPermission();
     }
 
-    void ITezosAPI.RequestSignPayload(int signingType, string payload)
+    void ITezosAPI.RequestSignPayload(string payload)
     {
-        _tezos.RequestSignPayload(signingType, payload);
+        _tezos.RequestSignPayload(payload);
     }
 
     public bool VerifySignedPayload(string payload)
