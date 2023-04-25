@@ -18,6 +18,8 @@ public class QRCodeView : MonoBehaviour
     
     void Start()
     {
+        if (_texture != null) return;
+        
         _rawImage.texture = _texture = new Texture2D(256, 256);
         _texture.filterMode = FilterMode.Point;
     }
@@ -30,6 +32,12 @@ public class QRCodeView : MonoBehaviour
     
     public void EncodeTextToQrCode(string text)
     {
+        if (_texture == null)
+        {
+            _rawImage.texture = _texture = new Texture2D(256, 256);
+            _texture.filterMode = FilterMode.Point;
+        }
+
         var colors = Encode(text, _texture.width, _texture.height);
         _texture.SetPixels32(colors);
         _texture.Apply();
