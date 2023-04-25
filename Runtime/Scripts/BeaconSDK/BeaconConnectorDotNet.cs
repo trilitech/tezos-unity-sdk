@@ -181,9 +181,9 @@ namespace BeaconSDK
             await _beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
         }
 
-        public void RequestTezosSignPayload(string payload)
+        public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
         {
-            _beaconDappClient.RequestSign(NetezosExtensions.GetPayloadHexString(payload), SignPayloadType.micheline);
+            _beaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signingType, payload), signingType);
         }
         
         public void RequestTezosBroadcast(string signedTransaction, string networkName = "", string networkRPC = "")

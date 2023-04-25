@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 using TezosAPI.Models;
 using TezosAPI.Models.Tokens;
@@ -129,16 +130,16 @@ namespace TezosAPI
             _beaconConnector.RequestTezosPermission(_networkName, NetworkRPC);
         }
 
-        public void RequestSignPayload(string payload)
+        public void RequestSignPayload(SignPayloadType signingType, string payload)
         {
-            _beaconConnector.RequestTezosSignPayload(payload);
+            _beaconConnector.RequestTezosSignPayload(signingType, payload);
         }
 
-        public bool VerifySignedPayload(string payload)
+        public bool VerifySignedPayload(SignPayloadType signingType, string payload)
         {
             var key = _pubKey;
             var signature = _signature;
-            return NetezosExtensions.VerifySignature(key, payload, signature);
+            return NetezosExtensions.VerifySignature(key, signingType, payload, signature);
         }
 
         public IEnumerator GetTokensForOwner(

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 using TezosAPI;
 using TezosAPI.Models;
@@ -68,14 +69,14 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         _tezos.RequestPermission();
     }
 
-    void ITezosAPI.RequestSignPayload(string payload)
+    void ITezosAPI.RequestSignPayload(SignPayloadType signingType, string payload)
     {
-        _tezos.RequestSignPayload(payload);
+        _tezos.RequestSignPayload(signingType, payload);
     }
 
-    public bool VerifySignedPayload(string payload)
+    public bool VerifySignedPayload(SignPayloadType signingType, string payload)
     {
-        return _tezos.VerifySignedPayload(payload);
+        return _tezos.VerifySignedPayload(signingType, payload);
     }
 
     public IEnumerator GetTokensForOwner(

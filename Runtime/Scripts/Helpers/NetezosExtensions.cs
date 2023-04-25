@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using UnityEngine;
@@ -74,20 +75,35 @@ namespace BeaconSDK
             onComplete?.Invoke(asMichelson.ToJson());
         }
 
-        public static bool VerifySignature(string pubKey, string payload, string signature)
+        public static bool VerifySignature(string pubKey, SignPayloadType signingType, string payload, string signature)
         {
             var parsedPubKey = PubKey.FromBase58(pubKey);
-            return parsedPubKey.Verify(Hex.Parse(GetPayloadHexString(payload)), signature);
+            var payloadBytes = signingType == SignPayloadType.raw
+                ? Encoding.UTF8.GetBytes(GetPayloadString(signingType, payload))
+                : Hex.Parse(GetPayloadString(signingType, payload));
+
+            return parsedPubKey.Verify(payloadBytes, signature);
         }
-        
-        public static string GetPayloadHexString(string plainTextPayload)
+
+        public static string GetPayloadString(SignPayloadType signingType, string plainTextPayload)
         {
-            var bytes = Hex.Convert(Encoding.UTF8.GetBytes(plainTextPayload));
-            var bytesLength = (bytes.Length / 2).ToString("x");
-            var addPadding = "00000000" + bytesLength;
-            var paddedBytesLength = addPadding[^8..];
-            var payloadBytes = "05" + "01" + paddedBytesLength + bytes;
-            return payloadBytes;
+            switch (signingType)
+            {
+                case SignPayloadType.raw:
+                    return plainTextPayload;
+                case SignPayloadType.micheline or SignPayloadType.operation:
+                {
+                    var bytes = Hex.Convert(Encoding.UTF8.GetBytes(plainTextPayload));
+                    var bytesLength = (bytes.Length / 2).ToString("x");
+                    var addPadding = "00000000" + bytesLength;
+                    var paddedBytesLength = addPadding[^8..];
+                    var startPrefix = signingType == SignPayloadType.micheline ? "0501" : "0300";
+                    var payloadBytes = startPrefix + paddedBytesLength + bytes;
+                    return payloadBytes;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(signingType), signingType, null);
+            }
         }
     }
 }

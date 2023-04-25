@@ -1,4 +1,5 @@
 using System.Collections;
+using Beacon.Sdk.Beacon.Sign;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,7 @@ public class RegisterPanel : PanelController
 	
 	private IExampleManager _exampleManager;
 
-	private const string _payloadToSign = "Tezos Signed Message: Confirming my identity as Tezos Unity SDK.";
+	private const string _payloadToSign = "Tezos Signed Message: mydap.com 2021-01-14T15:16:04Z Hello world!";
 
 	private IEnumerator Start()
 	{
@@ -82,12 +83,12 @@ public class RegisterPanel : PanelController
 
 	public void SignPayloadTest()
 	{
-		ExampleFactory.Instance.GetExampleManager().RequestSignPayload(_payloadToSign);
+		ExampleFactory.Instance.GetExampleManager().RequestSignPayload(SignPayloadType.micheline, _payloadToSign);
 	}
 
 	public void VerifySignatureTest()
 	{
-		var verified = ExampleFactory.Instance.GetExampleManager().VerifyPayload(_payloadToSign);
+		var verified = ExampleFactory.Instance.GetExampleManager().VerifyPayload(SignPayloadType.micheline, _payloadToSign);
 		Debug.Log("Verification success: " + verified);
 	}
 }

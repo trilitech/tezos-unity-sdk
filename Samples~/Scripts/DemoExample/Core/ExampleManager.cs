@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 using Netezos.Encoding;
 using UnityEngine;
@@ -356,18 +357,18 @@ public class ExampleManager : IExampleManager
             }));
     }
 
-    public void RequestSignPayload(string payload)
+    public void RequestSignPayload(SignPayloadType signingType, string payload)
     {
-        _tezos.RequestSignPayload(payload);
+        _tezos.RequestSignPayload(signingType, payload);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
     }
 
-    public bool VerifyPayload(string payload)
+    public bool VerifyPayload(SignPayloadType signingType, string payload)
     {
-        return _tezos.VerifySignedPayload(payload);
+        return _tezos.VerifySignedPayload(signingType, payload);
     }
 
     public string GetActiveAccountAddress()
