@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using UnityEngine;
@@ -27,7 +30,7 @@ namespace BeaconSDK
         {
             var rpc = new Rpc(rpcUri);
             var runViewOp = rpc.RunView<JsonElement>(destination, entrypoint, input);
-            
+
             return HttpClient.WrappedRequest(runViewOp, (JsonElement result) =>
             {
                 if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
@@ -61,7 +64,7 @@ namespace BeaconSDK
                 _contracts[contract] = new ContractScript(code);
             });
         }
-        
+
         public static IEnumerator CompileToJSONMichelson(string rpcUri, string destination,
             string entry, object objArg, Action<string> onComplete)
         {
@@ -72,11 +75,35 @@ namespace BeaconSDK
             onComplete?.Invoke(asMichelson.ToJson());
         }
 
-        public static bool VerifySignature(string pubKey, string payload, string signature)
+        public static bool VerifySignature(string pubKey, SignPayloadType signingType, string payload, string signature)
         {
-            var pubkey = PubKey.FromBase58(pubKey);
-            var payloadBytes = Hex.Parse(payload);
-            return pubkey.Verify(payloadBytes, signature);
+            var parsedPubKey = PubKey.FromBase58(pubKey);
+            var payloadBytes = signingType == SignPayloadType.raw
+                ? Encoding.UTF8.GetBytes(GetPayloadString(signingType, payload))
+                : Hex.Parse(GetPayloadString(signingType, payload));
+
+            return parsedPubKey.Verify(payloadBytes, signature);
+        }
+
+        public static string GetPayloadString(SignPayloadType signingType, string plainTextPayload)
+        {
+            switch (signingType)
+            {
+                case SignPayloadType.raw:
+                    return plainTextPayload;
+                case SignPayloadType.micheline or SignPayloadType.operation:
+                {
+                    var bytes = Hex.Convert(Encoding.UTF8.GetBytes(plainTextPayload));
+                    var bytesLength = (bytes.Length / 2).ToString("x");
+                    var addPadding = "00000000" + bytesLength;
+                    var paddedBytesLength = addPadding[^8..];
+                    var startPrefix = signingType == SignPayloadType.micheline ? "0501" : "0300";
+                    var payloadBytes = startPrefix + paddedBytesLength + bytes;
+                    return payloadBytes;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(signingType), signingType, null);
+            }
         }
     }
 }

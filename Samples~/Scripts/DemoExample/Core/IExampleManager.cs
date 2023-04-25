@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 
 public interface IExampleManager
@@ -106,7 +107,7 @@ public interface IExampleManager
     /// </summary>
     /// <param name="signingType"></param>
     /// <param name="payload"></param>
-    void RequestSignPayload(int signingType, string payload);
+    void RequestSignPayload(SignPayloadType signingType, string payload);
     
-    bool VerifyPayload(string payload);
+    bool VerifyPayload(SignPayloadType signingType, string payload);
 }
