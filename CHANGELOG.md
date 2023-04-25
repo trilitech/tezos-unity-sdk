@@ -4,19 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased] - 2023-04-25
-### Fixed
-- Readme images
 
+## [1.3.0] - 2023-04-25
 ### Added
 - Custom unity readme
 
-
-## [unreleased] - 2023-04-19
 ### Fixed
 - Bug with unnecessary `RequestPermission()` call while clicking on `Deeplink connect` button on mobiles
+
+### Changed
 - Package structure
-- Reworked SignPayload method: now users can pass payload as plaintext without hex-encoding;
+- SignPayload method: now users can pass payload as plaintext without hex-encoding
+- Readme images
 
 
 ## [1.2.1] - 2023-04-17
@@ -58,7 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added auto releases with GH actions
 
 
-[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/1.2.1...HEAD
+[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.3.0
 [1.2.1]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.2.1
 [1.2.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.2.0
 [1.1.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.1.0
