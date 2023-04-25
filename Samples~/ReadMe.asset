@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36cf3b74950b299408cc642cd2423789, type: 3}
+  m_Name: ReadMe
+  m_EditorClassIdentifier: 
+  Title: Tezos SDK For Unity - Inventory Sample Game
+  Icon: {fileID: 2800000, guid: 639c542448d029e4099871c47dc40b03, type: 3}
+  Sections:
+  - TextHeading: 'About:'
+    TextSubheading: 
+    TextBody: This sample is a showcase that we consider to have some core use cases for game development based on the Tezos SDK. Essentially, we are modeling a scenario in which a user logs into a game, and then equips a player-character with certain game items which will be useful for combat or survival in an RPG/Adventure type game.
+    LinkName: More about this sample game.
+    LinkUrl: https://opentezos.com/gaming/unity-sdk/inventory-sample-game/
+    PingObjectName:
+    PingObjectGuid: 
+    MenuItemName: 
+    MenuItemPath: 
+  - TextHeading: 'How to execute this sample:'
+    TextSubheading: 
+    TextBody: 'First, you need to find the scene of this game.'
+    LinkName:
+    LinkUrl: 
+    PingObjectName: Assets/Scenes/Demo Example.unity
+    PingObjectGuid: 052b58d73b545cc4a85ac8ab2a3b670b
+    MenuItemName: 
+    MenuItemPath: 
+  - TextHeading: 
+    TextSubheading: 
+    TextBody: 'Move the scene to the hierarchy, and remove your previous scenes if you had.'
+    LinkName: 
+    LinkUrl: 
+    PingObjectName:
+    PingObjectGuid:
+    MenuItemName: Window/General/Hierarchy
+    MenuItemPath: Window/General/Hierarchy
+  - TextHeading: 
+    TextSubheading: 
+    TextBody: 'Select the "Game" window.' 
+    LinkName: 
+    LinkUrl: 
+    PingObjectName:
+    PingObjectGuid:
+    MenuItemName: Window/General/Game
+    MenuItemPath: Window/General/Game
+  - TextHeading: 
+    TextSubheading: 
+    TextBody: 'Then, click on the "Play" button.'
+    LinkName: 
+    LinkUrl: 
+    PingObjectName:
+    PingObjectGuid:
+    MenuItemName: Edit/Play
+    MenuItemPath: Edit/Play
+  HasLoadedLayout: 0
