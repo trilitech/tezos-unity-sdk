@@ -148,9 +148,9 @@ namespace BeaconSDK
         {
             var operationDetails = new List<TezosBaseOperation>();
             var partialTezosTransactionOperation = new PartialTezosTransactionOperation(
-                Amount: amount.ToString(),
-                Destination: destination,
-                Parameters: new JObject
+                amount.ToString(),
+                destination,
+                new JObject
                 {
                     ["entrypoint"] = entryPoint,
                     ["value"] = JObject.Parse(arg)
