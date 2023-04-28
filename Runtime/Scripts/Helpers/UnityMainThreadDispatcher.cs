@@ -45,7 +45,7 @@ public class UnityMainThreadDispatcher : MonoBehaviour
     {
         lock (_executionQueue)
         {
-            _executionQueue.Enqueue(() => { StartCoroutine(action); });
+            _executionQueue.Enqueue(() => { CoroutineUtils.TryWith(this, action); });
         }
     }
 

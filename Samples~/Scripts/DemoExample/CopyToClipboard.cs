@@ -19,16 +19,22 @@ public class CopyToClipboard : MonoBehaviour, IPointerClickHandler
     {
         if (_blockCopy)
             return;
-        
+
 #if UNITY_WEBGL
         inputField.gameObject.SetActive(true);
         inputField.text = text.text;
         text.gameObject.SetActive(false);
 #endif
-        
+
         // copy text to the clipboard
         GUIUtility.systemCopyBuffer = text.text;
-        CoroutineRunner.Instance.StartCoroutine(OnTextCopied());
+        CoroutineUtils.TryWith(CoroutineRunner.Instance,
+            OnTextCopied(),
+            (ex) =>
+            {
+                if (ex != null)
+                    Debug.Log("An exception related to CopyToClipboard: " + ex);
+            });
     }
 
     IEnumerator OnTextCopied()

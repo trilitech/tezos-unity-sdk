@@ -84,7 +84,13 @@ namespace TezosAPI
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(transaction);
                 var transactionHash = json.GetProperty("transactionHash").GetString();
-                MessageReceiver.StartCoroutine(MessageReceiver.ContractCallInjection(_indexerNode, transactionHash));
+                CoroutineUtils.TryWith(MessageReceiver,
+                    MessageReceiver.ContractCallInjection(_indexerNode, transactionHash),
+                    (ex) =>
+                    {
+                        if (ex != null)
+                            Debug.Log("An exception related to Tezos ContractCallInjection: " + ex);
+                    });
             };
         }
 
