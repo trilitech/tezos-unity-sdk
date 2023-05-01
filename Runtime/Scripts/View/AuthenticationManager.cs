@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class AuthenticationManager : MonoBehaviour
 {
-    private ITezosAPI _tezos;
     [SerializeField]
     private QRCodeView qrCodeView;
     [SerializeField]
@@ -21,11 +20,9 @@ public class AuthenticationManager : MonoBehaviour
 #else
         _isMobile = false;
 #endif
-        _tezos = TezosSingleton.Instance;
-
-        _tezos.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
-        _tezos.MessageReceiver.AccountConnected += OnAccountConnected;
-        _tezos.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+        TezosSingleton.Instance.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
+        TezosSingleton.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
+        TezosSingleton.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
     }
 
     void OnHandshakeReceived(string handshake)
@@ -48,12 +45,12 @@ public class AuthenticationManager : MonoBehaviour
     public void DisconnectWallet()
     {
         EnableUI(isAuthenticated: false);
-        _tezos.DisconnectWallet();
+        TezosSingleton.Instance.DisconnectWallet();
     }
 
     public void ConnectByDeeplink()
     {
-        _tezos.ConnectWallet();
+        TezosSingleton.Instance.ConnectWallet();
     }
 
     void EnableUI(bool isAuthenticated)

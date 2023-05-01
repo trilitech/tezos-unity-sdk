@@ -12,7 +12,6 @@ public class ExampleManager : IExampleManager
     private const string contractAddress = "KT1WguzxyLmuKbJhz3jNuoRzzaUCncfp6PFE";//"KT1DMWAeaP6wxKWPFDLGDkB7xUg563852AjD";
     private const int softCurrencyID = 0;
 
-    private ITezosAPI _tezos;
     private User _currentUser;
 
     public User CurrentUser => _currentUser;
@@ -24,26 +23,25 @@ public class ExampleManager : IExampleManager
 
     public void Init(Action<bool> callback = null)
     {
-        _tezos = TezosSingleton.Instance;
-        _networkRPC = _tezos.NetworkRPC;
+        _networkRPC = TezosSingleton.Instance.NetworkRPC;
     }
 
     public void Unpair()
     {
-        _tezos.DisconnectWallet();
+        TezosSingleton.Instance.DisconnectWallet();
         _currentUser = null;
     }
 
     public void FetchInventoryItems(Action<List<IItemModel>> callback)
     {
-        var sender = _tezos.GetActiveWalletAddress(); // Address to the current active account
+        var sender = TezosSingleton.Instance.GetActiveWalletAddress(); // Address to the current active account
 
         var destination = contractAddress; // our temporary inventory contract
         var entrypoint = "view_items_of";
         var input = new { @string = sender };
 
         CoroutineRunner.Instance.StartCoroutine(
-            _tezos.ReadView(contractAddress, entrypoint, input, result =>
+            TezosSingleton.Instance.ReadView(contractAddress, entrypoint, input, result =>
             {
                 Debug.Log("READING INVENTORY DATA");
                 // deserialize the json data to inventory items
@@ -58,7 +56,7 @@ public class ExampleManager : IExampleManager
     {
         List<IItemModel> dummyItemList = new List<IItemModel>();
 
-        var owner = _tezos.GetActiveWalletAddress();
+        var owner = TezosSingleton.Instance.GetActiveWalletAddress();
 
         if (inventory != null)
             foreach (var item in inventory)
@@ -128,7 +126,7 @@ public class ExampleManager : IExampleManager
         };
 
         CoroutineRunner.Instance.StartCoroutine(
-            _tezos.ReadView(contractAddress, entrypoint, input, result =>
+            TezosSingleton.Instance.ReadView(contractAddress, entrypoint, input, result =>
             {
                 // deserialize the json data to market items
                 CoroutineRunner.Instance.StartCoroutine(
@@ -189,7 +187,7 @@ public class ExampleManager : IExampleManager
         }.ToJson();
 
         Debug.Log(destination + " " + entryPoint + parameter);
-        _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
+        TezosSingleton.Instance.CallContract(contractAddress, entryPoint, parameter, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -202,7 +200,7 @@ public class ExampleManager : IExampleManager
         var entrypoint = "mint";
         var input = "{\"prim\": \"Unit\"}";
 
-        _tezos.CallContract(contractAddress, entrypoint, input, 0);
+        TezosSingleton.Instance.CallContract(contractAddress, entrypoint, input, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -216,7 +214,7 @@ public class ExampleManager : IExampleManager
 
     public void GetBalance(Action<ulong> callback)
     {
-        var routine = _tezos.ReadBalance(callback);
+        var routine = TezosSingleton.Instance.ReadBalance(callback);
         CoroutineRunner.Instance.StartCoroutine(routine);
     }
 
@@ -227,7 +225,7 @@ public class ExampleManager : IExampleManager
 
     private void GetSoftBalanceRoutine(Action<int> callback)
     {
-        var caller = _tezos.GetActiveWalletAddress();
+        var caller = TezosSingleton.Instance.GetActiveWalletAddress();
 
         var input = new MichelinePrim()
         {
@@ -240,7 +238,7 @@ public class ExampleManager : IExampleManager
         };
 
         CoroutineRunner.Instance.StartCoroutine(
-            _tezos.ReadView(contractAddress, "get_balance", input, result =>
+            TezosSingleton.Instance.ReadView(contractAddress, "get_balance", input, result =>
             {
                 var intProp = result.GetProperty("int");
                 var intValue = Convert.ToInt32(intProp.ToString());
@@ -250,14 +248,14 @@ public class ExampleManager : IExampleManager
 
     public void TransferItem(int itemID, int amount, string address)
     {
-        Debug.Log("Transfering Item " + itemID + " from " + _tezos.GetActiveWalletAddress() + " to Address: " + address);
+        Debug.Log("Transfering Item " + itemID + " from " + TezosSingleton.Instance.GetActiveWalletAddress() + " to Address: " + address);
 
         var destination = contractAddress; // our temporary inventory contract
-        var sender = _tezos.GetActiveWalletAddress();
+        var sender = TezosSingleton.Instance.GetActiveWalletAddress();
         var entrypoint = "transfer";
         var input = "[ { \"prim\": \"Pair\", \"args\": [ { \"string\": \"" + sender + "\" }, [ { \"prim\": \"Pair\", \"args\": [ { \"string\": \"" + address + "\" }, { \"prim\": \"Pair\", \"args\": [ { \"int\": \"" + itemID + "\" }, { \"int\": \"" + amount + "\" } ] } ] } ] ] } ]";
 
-        _tezos.CallContract(contractAddress, entrypoint, input, 0);
+        TezosSingleton.Instance.CallContract(contractAddress, entrypoint, input, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -288,7 +286,7 @@ public class ExampleManager : IExampleManager
             }
         }.ToJson();
 
-        _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
+        TezosSingleton.Instance.CallContract(contractAddress, entryPoint, parameter, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -302,7 +300,7 @@ public class ExampleManager : IExampleManager
         var destination = contractAddress;
         var entryPoint = "removeFromMarket";
 
-        var sender = _tezos.GetActiveWalletAddress();
+        var sender = TezosSingleton.Instance.GetActiveWalletAddress();
         var parameter = new MichelinePrim()
         {
             Prim = PrimType.Pair,
@@ -313,7 +311,7 @@ public class ExampleManager : IExampleManager
             }
         }.ToJson();
 
-        _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
+        TezosSingleton.Instance.CallContract(contractAddress, entryPoint, parameter, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -326,7 +324,7 @@ public class ExampleManager : IExampleManager
         var entryPoint = "login";
         var parameter = "{\"prim\": \"Unit\"}";
 
-        _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
+        TezosSingleton.Instance.CallContract(contractAddress, entryPoint, parameter, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -348,7 +346,7 @@ public class ExampleManager : IExampleManager
         };
 
         CoroutineRunner.Instance.StartCoroutine(
-            _tezos.ReadView(contractAddress, entrypoint, input, result =>
+            TezosSingleton.Instance.ReadView(contractAddress, entrypoint, input, result =>
             {
                 var boolString = result.GetProperty("prim");
                 var boolVal = boolString.GetString() == "True";
@@ -359,7 +357,7 @@ public class ExampleManager : IExampleManager
 
     public void RequestSignPayload(SignPayloadType signingType, string payload)
     {
-        _tezos.RequestSignPayload(signingType, payload);
+        TezosSingleton.Instance.RequestSignPayload(signingType, payload);
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -368,21 +366,21 @@ public class ExampleManager : IExampleManager
 
     public bool VerifyPayload(SignPayloadType signingType, string payload)
     {
-        return _tezos.VerifySignedPayload(signingType, payload);
+        return TezosSingleton.Instance.VerifySignedPayload(signingType, payload);
     }
 
     public string GetActiveAccountAddress()
     {
-        return _tezos.GetActiveWalletAddress();
+        return TezosSingleton.Instance.GetActiveWalletAddress();
     }
 
     public void Deeplink()
     {
-        _tezos.ConnectWallet();
+        TezosSingleton.Instance.ConnectWallet();
     }
 
     public BeaconMessageReceiver GetMessageReceiver()
     {
-        return _tezos.MessageReceiver;
+        return TezosSingleton.Instance.MessageReceiver;
     }
 }
