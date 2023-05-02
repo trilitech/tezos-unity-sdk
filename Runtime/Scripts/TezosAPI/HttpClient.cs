@@ -64,10 +64,9 @@ namespace TezosAPI
 
         public static IEnumerator WrappedRequest<T>(IEnumerator op, Action<T> callback)
         {
-            var counterRoutine = new CoroutineWrapper<T>(op);
+            var counterRoutine = CoroutineUtils.Try(op);
             yield return counterRoutine;
-            var counter = counterRoutine.Result;
-            callback?.Invoke(counter);
+            callback?.Invoke((T) counterRoutine.Current);
         }
     }
 
