@@ -106,8 +106,8 @@ public class DataManager : MonoBehaviour
             : _checkAddress;
 
         var tokenId = string.IsNullOrEmpty(_checkTokenId)
-            ? "0"
-            : _checkTokenId;
+            ? 0
+            : Convert.ToUInt32(_checkTokenId);
 
         if (string.IsNullOrEmpty(_checkContract))
         {

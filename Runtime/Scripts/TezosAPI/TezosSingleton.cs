@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 using TezosAPI;
 using TezosAPI.Models;
@@ -68,53 +69,60 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         _tezos.RequestPermission();
     }
 
-    void ITezosAPI.RequestSignPayload(int signingType, string payload)
+    void ITezosAPI.RequestSignPayload(SignPayloadType signingType, string payload)
     {
         _tezos.RequestSignPayload(signingType, payload);
     }
 
-    public bool VerifySignedPayload(string payload)
+    public bool VerifySignedPayload(SignPayloadType signingType, string payload)
     {
-        return _tezos.VerifySignedPayload(payload);
+        return _tezos.VerifySignedPayload(signingType, payload);
     }
 
     public IEnumerator GetTokensForOwner(
-        Action<IEnumerable<TokenBalance>> cb,
+        Action<IEnumerable<TokenBalance>> callback,
         string owner,
         bool withMetadata,
         long maxItems,
-        TokensForOwnerOrder orderBy) => _tezos.GetTokensForOwner(cb, owner, withMetadata, maxItems, orderBy);
+        TokensForOwnerOrder orderBy) => _tezos.GetTokensForOwner(callback, owner, withMetadata, maxItems, orderBy);
 
     public IEnumerator GetOwnersForToken(
-        Action<IEnumerable<TokenBalance>> cb,
+        Action<IEnumerable<TokenBalance>> callback,
         string contractAddress,
         uint tokenId,
         long maxItems,
-        OwnersForTokenOrder orderBy) => _tezos.GetOwnersForToken(cb, contractAddress, tokenId, maxItems, orderBy);
+        OwnersForTokenOrder orderBy) => _tezos.GetOwnersForToken(callback, contractAddress, tokenId, maxItems, orderBy);
 
     public IEnumerator GetOwnersForContract(
-        Action<IEnumerable<TokenBalance>> cb,
+        Action<IEnumerable<TokenBalance>> callback,
         string contractAddress,
         long maxItems,
-        OwnersForContractOrder orderBy) => _tezos.GetOwnersForContract(cb, contractAddress, maxItems, orderBy);
+        OwnersForContractOrder orderBy) => _tezos.GetOwnersForContract(callback, contractAddress, maxItems, orderBy);
 
     public IEnumerator IsHolderOfContract(
-        Action<bool> cb,
+        Action<bool> callback,
         string wallet,
-        string contractAddress) => _tezos.IsHolderOfContract(cb, wallet, contractAddress);
+        string contractAddress) => _tezos.IsHolderOfContract(callback, wallet, contractAddress);
 
-    public IEnumerator IsHolderOfToken(
-        Action<bool> cb,
+    public IEnumerator IsHolderOfToken(Action<bool> callback,
         string wallet,
         string contractAddress,
-        string tokenId) => _tezos.IsHolderOfToken(cb, wallet, contractAddress, tokenId);
+        uint tokenId) => _tezos.IsHolderOfToken(callback, wallet, contractAddress, tokenId);
 
     public IEnumerator GetTokenMetadata(
-        Action<JsonElement> cb,
+        Action<JsonElement> callback,
         string contractAddress,
-        uint tokenId) => _tezos.GetTokenMetadata(cb, contractAddress, tokenId);
+        uint tokenId) => _tezos.GetTokenMetadata(callback, contractAddress, tokenId);
 
     public IEnumerator GetContractMetadata(
-        Action<JsonElement> cb,
-        string contractAddress) => _tezos.GetContractMetadata(cb, contractAddress);
+        Action<JsonElement> callback,
+        string contractAddress) => _tezos.GetContractMetadata(callback, contractAddress);
+
+    public IEnumerator GetTokensForContract(
+        Action<IEnumerable<Token>> callback,
+        string contractAddress,
+        bool withMetadata,
+        long maxItems,
+        TokensForContractOrder orderBy) =>
+        _tezos.GetTokensForContract(callback, contractAddress, withMetadata, maxItems, orderBy);
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 using Dynamic.Json;
 using Helpers;
@@ -52,7 +53,7 @@ namespace TezosAPI
             // Assign the BeaconConnector depending on the platform.
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_beaconConnector = new BeaconConnectorWebGl();
-			_beaconConnector.SetNetwork(_networkName, NetworkRPC);;
+			_beaconConnector.SetNetwork(_networkName, NetworkRPC);
 #elif (UNITY_ANDROID && !UNITY_EDITOR) || (UNITY_IOS && !UNITY_EDITOR) || UNITY_STANDALONE || UNITY_EDITOR
             _beaconConnector = new BeaconConnectorDotNet();
             _beaconConnector.SetNetwork(_networkName, NetworkRPC);
@@ -95,7 +96,6 @@ namespace TezosAPI
 #if UNITY_WEBGL
             _beaconConnector.ConnectAccount();
 #elif UNITY_ANDROID || UNITY_IOS
-            RequestPermission();
             Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
 #endif
         }
@@ -133,20 +133,20 @@ namespace TezosAPI
             _beaconConnector.RequestTezosPermission(_networkName, NetworkRPC);
         }
 
-        public void RequestSignPayload(int signingType, string payload)
+        public void RequestSignPayload(SignPayloadType signingType, string payload)
         {
             _beaconConnector.RequestTezosSignPayload(signingType, payload);
         }
 
-        public bool VerifySignedPayload(string payload)
+        public bool VerifySignedPayload(SignPayloadType signingType, string payload)
         {
             var key = _pubKey;
             var signature = _signature;
-            return NetezosExtensions.VerifySignature(key, payload, signature);
+            return NetezosExtensions.VerifySignature(key, signingType, payload, signature);
         }
 
         public IEnumerator GetTokensForOwner(
-            Action<IEnumerable<TokenBalance>> cb,
+            Action<IEnumerable<TokenBalance>> callback,
             string owner,
             bool withMetadata,
             long maxItems,
@@ -169,11 +169,11 @@ namespace TezosAPI
                       $"{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
-            return WrappedRequest(requestRoutine, cb);
+            return WrappedRequest(requestRoutine, callback);
         }
 
         public IEnumerator GetOwnersForToken(
-            Action<IEnumerable<TokenBalance>> cb,
+            Action<IEnumerable<TokenBalance>> callback,
             string contractAddress,
             uint tokenId,
             long maxItems,
@@ -197,11 +197,11 @@ namespace TezosAPI
                       $"{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
-            return WrappedRequest(requestRoutine, cb);
+            return WrappedRequest(requestRoutine, callback);
         }
 
         public IEnumerator GetOwnersForContract(
-            Action<IEnumerable<TokenBalance>> cb,
+            Action<IEnumerable<TokenBalance>> callback,
             string contractAddress,
             long maxItems,
             OwnersForContractOrder orderBy)
@@ -223,11 +223,11 @@ namespace TezosAPI
                       $"{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
-            return WrappedRequest(requestRoutine, cb);
+            return WrappedRequest(requestRoutine, callback);
         }
 
         public IEnumerator IsHolderOfContract(
-            Action<bool> cb,
+            Action<bool> callback,
             string wallet,
             string contractAddress)
         {
@@ -238,19 +238,18 @@ namespace TezosAPI
 
             if (requestRoutine.Current is DJsonArray dJsonArray)
             {
-                cb?.Invoke(dJsonArray.Length > 0);
+                callback?.Invoke(dJsonArray.Length > 0);
             }
             else
             {
-                cb?.Invoke(false);
+                callback?.Invoke(false);
             }
         }
         
-        public IEnumerator IsHolderOfToken(
-            Action<bool> cb,
+        public IEnumerator IsHolderOfToken(Action<bool> callback,
             string wallet,
             string contractAddress,
-            string tokenId)
+            uint tokenId)
         {
             var requestRoutine =
                 GetJson($"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id");
@@ -259,16 +258,16 @@ namespace TezosAPI
 
             if (requestRoutine.Current is DJsonArray dJsonArray)
             {
-                cb?.Invoke(dJsonArray.Length > 0);
+                callback?.Invoke(dJsonArray.Length > 0);
             }
             else
             {
-                cb?.Invoke(false);
+                callback?.Invoke(false);
             }
         }
 
         public IEnumerator GetTokenMetadata(
-            Action<JsonElement> cb,
+            Action<JsonElement> callback,
             string contractAddress,
             uint tokenId)
         {
@@ -282,12 +281,12 @@ namespace TezosAPI
                 var result = JsonSerializer
                     .Deserialize<JsonElement>(dJsonArray.First().ToString(), JsonOptions.DefaultOptions);
 
-                cb?.Invoke(result);
+                callback?.Invoke(result);
             }
         }
 
         public IEnumerator GetContractMetadata(
-            Action<JsonElement> cb,
+            Action<JsonElement> callback,
             string contractAddress)
         {
             var url = $"contracts/{contractAddress}?legacy=false";
@@ -300,8 +299,38 @@ namespace TezosAPI
                 var result = JsonSerializer
                     .Deserialize<JsonElement>(dJsonObject.ToString(), JsonOptions.DefaultOptions);
 
-                cb?.Invoke(result.GetProperty("metadata"));
+                callback?.Invoke(result.GetProperty("metadata"));
             }
+        }
+
+        public IEnumerator GetTokensForContract(
+            Action<IEnumerable<Token>> callback,
+            string contractAddress,
+            bool withMetadata,
+            long maxItems,
+            TokensForContractOrder orderBy)
+        {
+            var sort = orderBy switch
+            {
+                TokensForContractOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
+                TokensForContractOrder.ByLastTimeAsc byLastTimeAsc =>
+                    $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
+                TokensForContractOrder.ByLastTimeDesc ByLastTimeDesc =>
+                    $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                TokensForContractOrder.ByHoldersCountAsc byHoldersCountAsc =>
+                    $"sort.asc=holdersCount&offset.pg={byHoldersCountAsc.page}",
+                TokensForContractOrder.ByHoldersCountDesc byHoldersCountDesc =>
+                    $"sort.desc=holdersCount&offset.pg={byHoldersCountDesc.page}",
+                _ => string.Empty
+            };
+
+            var url =
+                $"tokens?contract={contractAddress}&select=contract,tokenId as token_id" +
+                $"{(withMetadata ? ",metadata as token_metadata" : "")},holdersCount as holders_count,id," +
+                $"lastTime as last_time&{sort}&limit={maxItems}";
+            
+            var requestRoutine = GetJson<IEnumerable<Token>>(url);
+            return WrappedRequest(requestRoutine, callback);
         }
     }
 }

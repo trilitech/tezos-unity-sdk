@@ -11,7 +11,7 @@ public class AuthenticationManager : MonoBehaviour
     [SerializeField] private GameObject qrCodePanel;
     
     private bool _isMobile;
-
+    
     void Start()
     {
 #if (UNITY_IOS || UNITY_ANDROID)
@@ -53,7 +53,7 @@ public class AuthenticationManager : MonoBehaviour
     {
         _tezos.ConnectWallet();
     }
-
+    
     void EnableUI(bool isAuthenticated)
     {
         if (isAuthenticated)

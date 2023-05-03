@@ -148,9 +148,9 @@ namespace BeaconSDK
         {
             var operationDetails = new List<TezosBaseOperation>();
             var partialTezosTransactionOperation = new PartialTezosTransactionOperation(
-                Amount: amount.ToString(),
-                Destination: destination,
-                Parameters: new JObject
+                amount.ToString(),
+                destination,
+                new JObject
                 {
                     ["entrypoint"] = entryPoint,
                     ["value"] = JObject.Parse(arg)
@@ -181,28 +181,11 @@ namespace BeaconSDK
             await _beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
         }
 
-        public async void RequestTezosSignPayload(int signingType, string payload)
+        public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
         {
-            var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
-            if (activeAccountPermissions == null)
-            {
-                Debug.LogError("No active account permissions");
-                return;
-            }
-
-            var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
-
-            var signPayloadRequest = new SignPayloadRequest(
-                id: KeyPairService.CreateGuid(),
-                version: Constants.BeaconVersion,
-                senderId: _beaconDappClient.SenderId,
-                signingType: SignPayloadType.raw,
-                payload: payload,
-                sourceAddress: pubKey.Address);
-
-            await _beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, signPayloadRequest);
+            _beaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signingType, payload), signingType);
         }
-
+        
         public void RequestTezosBroadcast(string signedTransaction, string networkName = "", string networkRPC = "")
         {
         }

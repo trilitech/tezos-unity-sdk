@@ -367,6 +367,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: GetTokensForOwners
       objectReference: {fileID: 0}
+    - target: {fileID: 4616586832780915041, guid: ebe42ae2197554a718feda9bdc452a79, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a2c720a6b72445218600a2c92762141, type: 3}
 --- !u!1 &543835501 stripped

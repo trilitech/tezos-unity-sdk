@@ -1,4 +1,4 @@
-using BeaconSDK;
+using Beacon.Sdk.Beacon.Sign;
 using UnityEngine;
 
 namespace BeaconSDK
@@ -88,7 +88,7 @@ namespace BeaconSDK
 			throw new System.NotImplementedException();
 		}
 
-		public void RequestTezosSignPayload(int signingType, string payload)
+		public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
 		{
 			throw new System.NotImplementedException();
 		}
