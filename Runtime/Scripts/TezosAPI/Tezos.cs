@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 using Dynamic.Json;
 using Helpers;
@@ -52,7 +53,7 @@ namespace TezosAPI
             // Assign the BeaconConnector depending on the platform.
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_beaconConnector = new BeaconConnectorWebGl();
-			_beaconConnector.SetNetwork(_networkName, NetworkRPC);;
+			_beaconConnector.SetNetwork(_networkName, NetworkRPC);
 #elif (UNITY_ANDROID && !UNITY_EDITOR) || (UNITY_IOS && !UNITY_EDITOR) || UNITY_STANDALONE || UNITY_EDITOR
             _beaconConnector = new BeaconConnectorDotNet();
             _beaconConnector.SetNetwork(_networkName, NetworkRPC);
@@ -95,7 +96,6 @@ namespace TezosAPI
 #if UNITY_WEBGL
             _beaconConnector.ConnectAccount();
 #elif UNITY_ANDROID || UNITY_IOS
-            RequestPermission();
             Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
 #endif
         }
@@ -133,16 +133,16 @@ namespace TezosAPI
             _beaconConnector.RequestTezosPermission(_networkName, NetworkRPC);
         }
 
-        public void RequestSignPayload(int signingType, string payload)
+        public void RequestSignPayload(SignPayloadType signingType, string payload)
         {
             _beaconConnector.RequestTezosSignPayload(signingType, payload);
         }
 
-        public bool VerifySignedPayload(string payload)
+        public bool VerifySignedPayload(SignPayloadType signingType, string payload)
         {
             var key = _pubKey;
             var signature = _signature;
-            return NetezosExtensions.VerifySignature(key, payload, signature);
+            return NetezosExtensions.VerifySignature(key, signingType, payload, signature);
         }
 
         public IEnumerator GetTokensForOwner(

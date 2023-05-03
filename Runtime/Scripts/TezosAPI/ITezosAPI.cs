@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
 using TezosAPI.Models;
 using TezosAPI.Models.Tokens;
@@ -69,15 +70,14 @@ namespace TezosAPI
         /// <summary>
         /// Sends a request to the sign a payload string
         /// </summary>
-        /// <param name="signingType">enumerates the signing type (0 = MICHELINE, 1 = OPERATION, 2 = RAW)</param>
         /// <param name="payload">payload string that is going to be signed</param>
-        public void RequestSignPayload(int signingType, string payload);
+        public void RequestSignPayload(SignPayloadType signingType, string payload);
 
         /// <summary>
         /// Verify a signed payload to check if it is valid
         /// </summary>
         /// <param name="payload">payload string that is going to be signed</param>
-        public bool VerifySignedPayload(string payload);
+        public bool VerifySignedPayload(SignPayloadType signingType, string payload);
 
         /// <summary>
         /// Exposes a Monobehaviour class that exposes wallet events
