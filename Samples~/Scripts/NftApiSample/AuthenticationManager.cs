@@ -24,7 +24,7 @@ public class AuthenticationManager : MonoBehaviour
 
     private string checkContract;
     private string checkAddress;
-    private string checkTokenId;
+    private uint checkTokenId;
 
     public const int MAX_TOKENS = 20;
 
@@ -151,11 +151,7 @@ public class AuthenticationManager : MonoBehaviour
         var walletAddress = string.IsNullOrEmpty(checkAddress)
             ? _address
             : checkAddress;
-
-        var tokenId = string.IsNullOrEmpty(checkTokenId)
-            ? "0"
-            : checkTokenId;
-
+        
         if (string.IsNullOrEmpty(checkContract))
         {
             resultText.text = "Enter contract address";
@@ -189,7 +185,7 @@ public class AuthenticationManager : MonoBehaviour
     
     void OnEndEditTokenId(InputField input)
     {
-        checkTokenId = input.text;
+        checkTokenId = Convert.ToUInt32(input.text);
     }
 
 

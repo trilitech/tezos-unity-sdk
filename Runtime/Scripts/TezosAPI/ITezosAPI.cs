@@ -86,7 +86,7 @@ namespace TezosAPI
 
         // Gets all tokens currently owned by a given address.
         public IEnumerator GetTokensForOwner(
-            Action<IEnumerable<TokenBalance>> cb,
+            Action<IEnumerable<TokenBalance>> callback,
             string owner,
             bool withMetadata,
             long maxItems,
@@ -94,7 +94,7 @@ namespace TezosAPI
 
         // Get the owner(s) for a token.
         public IEnumerator GetOwnersForToken(
-            Action<IEnumerable<TokenBalance>> cb,
+            Action<IEnumerable<TokenBalance>> callback,
             string contractAddress,
             uint tokenId,
             long maxItems,
@@ -102,38 +102,38 @@ namespace TezosAPI
 
         // Gets all owners for a given token contract.
         public IEnumerator GetOwnersForContract(
-            Action<IEnumerable<TokenBalance>> cb,
+            Action<IEnumerable<TokenBalance>> callback,
             string contractAddress,
             long maxItems,
             OwnersForContractOrder orderBy);
 
         // Checks whether a wallet holds a token in a given contract.
         public IEnumerator IsHolderOfContract(
-            Action<bool> cb,
+            Action<bool> callback,
             string wallet,
             string contractAddress);
         
         // Checks whether a wallet holds a particular token.
         public IEnumerator IsHolderOfToken(
-            Action<bool> cb,
+            Action<bool> callback,
             string wallet,
             string contractAddress,
-            string tokenId);
+            uint tokenId);
 
         // Gets the metadata associated with a given token.
         public IEnumerator GetTokenMetadata(
-            Action<JsonElement> cb,
+            Action<JsonElement> callback,
             string contractAddress,
             uint tokenId);
 
         // Queries token high-level collection/contract level information.
         public IEnumerator GetContractMetadata(
-            Action<JsonElement> cb,
+            Action<JsonElement> callback,
             string contractAddress);
         
         // Gets all tokens for a given token contract.
         public IEnumerator GetTokensForContract(
-            Action<IEnumerable<Token>> cb,
+            Action<IEnumerable<Token>> callback,
             string contractAddress,
             bool withMetadata,
             long maxItems,
