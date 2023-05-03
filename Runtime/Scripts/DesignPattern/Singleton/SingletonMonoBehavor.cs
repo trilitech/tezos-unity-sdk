@@ -2,32 +2,12 @@ using UnityEngine;
 
 public abstract class SingletonMonoBehaviour : MonoBehaviour { }
 
-//--------------------------------------
-//  Namespace Properties
-//--------------------------------------
-
-
-//--------------------------------------
-//  Class Attributes
-//--------------------------------------
-
-
-//--------------------------------------
-//  Class
-//--------------------------------------
 /// <summary>
-/// GOALS: Easily allow a Singleton to be added to hierarchy at runtime with full MonoBehavior access and predictable lifecycle.
-/// Usage:
-///
+/// Easily allow a Singleton to be added to hierarchy at runtime with full MonoBehavior access and predictable lifecycle.
 /// </summary>
 public abstract class SingletonMonoBehaviour<T> : SingletonMonoBehaviour
     where T : MonoBehaviour
 {
-    //--------------------------------------
-    //  Properties
-    //--------------------------------------
-
-    //	GETTER / SETTER
     /// <summary>
     /// Do not call this from another scope within OnDestroy(). Instead use IsInstantiated()
     /// </summary>
@@ -47,9 +27,7 @@ public abstract class SingletonMonoBehaviour<T> : SingletonMonoBehaviour
     }
 
     /// <summary>
-    ///
     /// NOTE: Calling this will NEVER instantiate a new instance. That is useful and safe to call in any destructors / OnDestroy()
-    ///
     /// </summary>
     /// <returns><c>true</c> if is instantiated; otherwise, <c>false</c>.</returns>
     public static bool IsInstantiated()
@@ -57,21 +35,11 @@ public abstract class SingletonMonoBehaviour<T> : SingletonMonoBehaviour
         return _Instance != null;
     }
 
-    // 	PUBLIC
-
     public delegate void OnInstantiateCompletedDelegate(T instance);
     public static OnInstantiateCompletedDelegate OnInstantiateCompleted;
 
     public delegate void OnDestroyingDelegate(T instance);
     public static OnDestroyingDelegate OnDestroying;
-
-    // 	PRIVATE
-
-
-    //--------------------------------------
-    // 	Constructor / Creation
-    //--------------------------------------
-
 
     /// <summary>
     /// Instantiate this instance.
@@ -79,7 +47,6 @@ public abstract class SingletonMonoBehaviour<T> : SingletonMonoBehaviour
     /// 	2. Creates GameObject with name of subclass
     /// 	3. Persists by default (optional)
     /// 	4. Predictable life-cycle.
-    /// z
     /// </summary>
     public static T Instantiate()
     {
@@ -142,27 +109,5 @@ public abstract class SingletonMonoBehaviour<T> : SingletonMonoBehaviour
         }
     }
 
-    //--------------------------------------
-    // 	Unity Methods
-    //--------------------------------------
-
-
-    //--------------------------------------
-    // 	Methods
-    //--------------------------------------
-
-    //	PUBLIC
-
-
-
-    //	PRIVATE
-    protected virtual void OnDestroy()
-    {
-        //override as needed
-    }
-
-    //--------------------------------------
-    // 	Event Handlers
-    //--------------------------------------
+    protected virtual void OnDestroy() { }
 }
-
