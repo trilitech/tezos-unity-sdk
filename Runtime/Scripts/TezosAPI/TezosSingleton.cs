@@ -13,7 +13,7 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
 {
     private static Tezos _tezos;
 
-    BeaconMessageReceiver ITezosAPI.MessageReceiver => _tezos.MessageReceiver;
+    public BeaconMessageReceiver MessageReceiver => _tezos.MessageReceiver;
 
     public string NetworkRPC => _tezos.NetworkRPC;
 
@@ -24,27 +24,27 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         _tezos = new Tezos();
     }
 
-    void ITezosAPI.ConnectWallet()
+    public void ConnectWallet()
     {
         _tezos.ConnectWallet();
     }
 
-    void ITezosAPI.DisconnectWallet()
+    public void DisconnectWallet()
     {
         _tezos.DisconnectWallet();
     }
 
-    string ITezosAPI.GetActiveWalletAddress()
+    public string GetActiveWalletAddress()
     {
         return _tezos.GetActiveWalletAddress();
     }
 
-    IEnumerator ITezosAPI.ReadBalance(Action<ulong> callback)
+    public IEnumerator ReadBalance(Action<ulong> callback)
     {
         return _tezos.ReadBalance(callback);
     }
 
-    IEnumerator ITezosAPI.ReadView(
+    public IEnumerator ReadView(
         string contractAddress,
         string entryPoint,
         object input,
@@ -54,7 +54,7 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         return _tezos.ReadView(contractAddress, entryPoint, input, callback);
     }
 
-    void ITezosAPI.CallContract(
+    public void CallContract(
         string contractAddress,
         string entryPoint,
         string input,
@@ -64,12 +64,12 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         _tezos.CallContract(contractAddress, entryPoint, input, amount);
     }
 
-    void ITezosAPI.RequestPermission()
+    public void RequestPermission()
     {
         _tezos.RequestPermission();
     }
 
-    void ITezosAPI.RequestSignPayload(SignPayloadType signingType, string payload)
+    public void RequestSignPayload(SignPayloadType signingType, string payload)
     {
         _tezos.RequestSignPayload(signingType, payload);
     }
