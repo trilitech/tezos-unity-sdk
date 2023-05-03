@@ -1,6 +1,6 @@
 ﻿namespace TezosAPI.Models
 {
-    public abstract record OwnersForContractOrder()
+    public abstract record OwnersForContractOrder
     {
         public record Default(long lastId) : OwnersForContractOrder
         {

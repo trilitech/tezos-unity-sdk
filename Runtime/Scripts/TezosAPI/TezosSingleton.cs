@@ -118,4 +118,12 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
     public IEnumerator GetContractMetadata(
         Action<JsonElement> cb,
         string contractAddress) => _tezos.GetContractMetadata(cb, contractAddress);
+
+    public IEnumerator GetTokensForContract(
+        Action<IEnumerable<Token>> cb,
+        string contractAddress,
+        bool withMetadata,
+        long maxItems,
+        TokensForContractOrder orderBy) =>
+        _tezos.GetTokensForContract(cb, contractAddress, withMetadata, maxItems, orderBy);
 }

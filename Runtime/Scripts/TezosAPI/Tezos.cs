@@ -303,5 +303,35 @@ namespace TezosAPI
                 cb?.Invoke(result.GetProperty("metadata"));
             }
         }
+
+        public IEnumerator GetTokensForContract(
+            Action<IEnumerable<Token>> cb,
+            string contractAddress,
+            bool withMetadata,
+            long maxItems,
+            TokensForContractOrder orderBy)
+        {
+            var sort = orderBy switch
+            {
+                TokensForContractOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
+                TokensForContractOrder.ByLastTimeAsc byLastTimeAsc =>
+                    $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
+                TokensForContractOrder.ByLastTimeDesc ByLastTimeDesc =>
+                    $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                TokensForContractOrder.ByHoldersCountAsc byHoldersCountAsc =>
+                    $"sort.asc=holdersCount&offset.pg={byHoldersCountAsc.page}",
+                TokensForContractOrder.ByHoldersCountDesc byHoldersCountDesc =>
+                    $"sort.desc=holdersCount&offset.pg={byHoldersCountDesc.page}",
+                _ => string.Empty
+            };
+
+            var url =
+                $"tokens?contract={contractAddress}&select=contract,tokenId as token_id" +
+                $"{(withMetadata ? ",metadata as token_metadata" : "")},holdersCount as holders_count,id," +
+                $"lastTime as last_time&{sort}&limit={maxItems}";
+            
+            var requestRoutine = GetJson<IEnumerable<Token>>(url);
+            return WrappedRequest(requestRoutine, cb);
+        }
     }
 }

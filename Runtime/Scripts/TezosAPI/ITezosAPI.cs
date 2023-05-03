@@ -130,5 +130,13 @@ namespace TezosAPI
         public IEnumerator GetContractMetadata(
             Action<JsonElement> cb,
             string contractAddress);
+        
+        // Gets all tokens for a given token contract.
+        public IEnumerator GetTokensForContract(
+            Action<IEnumerable<Token>> cb,
+            string contractAddress,
+            bool withMetadata,
+            long maxItems,
+            TokensForContractOrder orderBy);
     }
 }
