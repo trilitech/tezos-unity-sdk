@@ -3452,22 +3452,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1335878711}
     m_Modifications:
-    - target: {fileID: 789172192540301288, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 789172192540301288, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 789172192540301288, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 789172192540301288, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3065014606143386912, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
       propertyPath: _uiManager
       value: 
@@ -3563,22 +3547,6 @@ PrefabInstance:
     - target: {fileID: 6818536486842882837, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
       propertyPath: m_Name
       value: RegisterPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 6895719909652766837, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6895719909652766837, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6895719909652766837, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6895719909652766837, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0599b6179aad1b42a6c2d5c8371a04f, type: 3}
