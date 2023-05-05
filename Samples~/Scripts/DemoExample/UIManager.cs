@@ -98,13 +98,7 @@ public class UIManager : MonoBehaviour
 			inventory.Init(items);
 			loadingPanel.SetActive(false);
 		};
-		CoroutineUtils.TryWith(this,
-            DoActionNextFrame(action),
-            (ex) =>
-            {
-                if (ex != null)
-                    Debug.Log("An exception related to PopulateInventory: " + ex);
-            });
+		StartCoroutine(DoActionNextFrame(action));
 	}
 	
 	private void PopulateMarket(List<IItemModel> items)
@@ -114,14 +108,7 @@ public class UIManager : MonoBehaviour
 			market.Init(items);
 			loadingPanel.SetActive(false);
 		};
-
-		CoroutineUtils.TryWith(this,
-            DoActionNextFrame(action),
-            (ex) =>
-            {
-                if (ex != null)
-                    Debug.Log("An exception related to PopulateMarket: " + ex);
-            });
+		StartCoroutine(DoActionNextFrame(action));
 	}
 
 	private IEnumerator DoActionNextFrame(Action action)
