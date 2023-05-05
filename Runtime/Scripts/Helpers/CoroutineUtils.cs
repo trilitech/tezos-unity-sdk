@@ -41,5 +41,6 @@ public static class CoroutineUtils
             }
             yield return current;
         }
+        exceptionHandler?.Invoke(null);
     }
 }
