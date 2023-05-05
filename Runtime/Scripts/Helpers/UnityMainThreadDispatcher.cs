@@ -45,7 +45,10 @@ public class UnityMainThreadDispatcher : MonoBehaviour
     {
         lock (_executionQueue)
         {
-            _executionQueue.Enqueue(() => { StartCoroutine(action); });
+            var coroutine = new CoroutineWrapper<object>(action, null, (exception) => Debug.LogError($"Exception on MainThread Queue: {exception.Message}"));
+            _executionQueue.Enqueue(() => { 
+                StartCoroutine(coroutine); 
+            });
         }
     }
 

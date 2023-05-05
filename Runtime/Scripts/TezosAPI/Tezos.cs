@@ -84,7 +84,7 @@ namespace TezosAPI
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(transaction);
                 var transactionHash = json.GetProperty("transactionHash").GetString();
-                MessageReceiver.StartCoroutine(MessageReceiver.ContractCallInjection(_indexerNode, transactionHash));
+                MessageReceiver.StartCoroutine(new CoroutineWrapper<object>(MessageReceiver.ContractCallInjection(_indexerNode, transactionHash)));
             };
         }
 
@@ -167,7 +167,7 @@ namespace TezosAPI
                       $"limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
-            return WrappedRequest(requestRoutine, cb);
+            return new CoroutineWrapper<IEnumerable<TokenBalance>>(requestRoutine, cb);
         }
     }
 }
