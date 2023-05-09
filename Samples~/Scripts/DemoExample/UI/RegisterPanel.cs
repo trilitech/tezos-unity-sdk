@@ -14,8 +14,6 @@ public class RegisterPanel : PanelController
 	[SerializeField, Header("Manager")]
 	private UIManager _uiManager;
 
-	private bool _isMobile = false;
-	
 	private IExampleManager _exampleManager;
 
 	private const string _payloadToSign = "Tezos Signed Message: mydap.com 2021-01-14T15:16:04Z Hello world!";
@@ -28,18 +26,17 @@ public class RegisterPanel : PanelController
 		_exampleManager = ExampleFactory.Instance.GetExampleManager();
 		_exampleManager.GetMessageReceiver().HandshakeReceived += (handshake) => _qrCodeView.SetQrCode(handshake);
 		
-#if (UNITY_IOS || UNITY_ANDROID)
-		_isMobile = true;
-#else
-		_isMobile = false;
-#endif
 
 #if UNITY_STANDALONE || UNITY_EDITOR
 		// make QR code available for Standalone
 		SetButtonState(_deepLinkPair, false, false);
 		_qrImage.gameObject.SetActive(true);
 #else
-		if (!_isMobile)
+    var isMobile = false;
+#if (UNITY_IOS || UNITY_ANDROID)
+		isMobile = true;
+#endif
+		if (!isMobile)
 		{
 			// Disable QR button and image
 			SetButtonState(_deepLinkPair, true, true);
