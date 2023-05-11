@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [unreleased]
+### Fixed
+- [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/57) with BeaconConnectorWebGl
+
+
 ## [1.3.1] - 2023-04-27
 ### Changed
 - Beacon SDK version to [1.0.23](https://github.com/baking-bad/beacon-dotnet-sdk/releases/tag/v1.0.23)
