@@ -74,7 +74,7 @@ namespace BeaconSDK
 		public IEnumerator ContractCallInjection(string uri, string transactionHash)
 		{
 			var success = false;
-			var timeout = 30f; // seconds
+			const float timeout = 30f; // seconds
 			var timestamp = Time.time;
 			Debug.Log("Operation injected into blockchain");
 			
