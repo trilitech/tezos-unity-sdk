@@ -41,7 +41,7 @@ public class ExampleManager : IExampleManager
         var destination = contractAddress; // our temporary inventory contract
         var entrypoint = "view_items_of";
         var input = new { @string = sender };
-
+        
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
@@ -126,7 +126,7 @@ public class ExampleManager : IExampleManager
         {
             Prim = PrimType.Unit
         };
-
+        
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
@@ -237,7 +237,7 @@ public class ExampleManager : IExampleManager
                 new MichelineInt(softCurrencyID)
             }
         };
-
+        
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, "get_balance", input, result =>
             {
@@ -342,7 +342,7 @@ public class ExampleManager : IExampleManager
                 new MichelineInt(itemID)
             }
         };
-
+        
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {

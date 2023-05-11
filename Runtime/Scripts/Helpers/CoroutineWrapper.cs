@@ -106,7 +106,7 @@ public class CoroutineRunner : MonoBehaviour
             return _instance;
         }
     }
-
+    
     public Coroutine StartWrappedCoroutine(IEnumerator coroutine)
     {
         return StartCoroutine(new CoroutineWrapper<object>(coroutine, null, (exception) => Debug.LogError($"Exception on Coroutine: {exception.Message}")));
