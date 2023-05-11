@@ -98,7 +98,7 @@ public class UIManager : MonoBehaviour
 			inventory.Init(items);
 			loadingPanel.SetActive(false);
 		};
-		StartCoroutine(DoActionNextFrame(action));
+		CoroutineRunner.Instance.StartWrappedCoroutine(DoActionNextFrame(action));
 	}
 	
 	private void PopulateMarket(List<IItemModel> items)
@@ -108,7 +108,7 @@ public class UIManager : MonoBehaviour
 			market.Init(items);
 			loadingPanel.SetActive(false);
 		};
-		StartCoroutine(DoActionNextFrame(action));
+		CoroutineRunner.Instance.StartWrappedCoroutine(DoActionNextFrame(action));
 	}
 
 	private IEnumerator DoActionNextFrame(Action action)

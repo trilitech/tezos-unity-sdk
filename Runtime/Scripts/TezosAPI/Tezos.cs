@@ -60,8 +60,6 @@ namespace TezosAPI
             (_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
             _beaconConnector.ConnectAccount();
             MessageReceiver.PairingCompleted += _ => RequestPermission();
-#else
-            _beaconConnector = new BeaconConnectorNull();
 #endif
 
             MessageReceiver.ClientCreated += _ => { _beaconConnector.RequestHandshake(); };
@@ -87,7 +85,7 @@ namespace TezosAPI
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(transaction);
                 var transactionHash = json.GetProperty("transactionHash").GetString();
-                MessageReceiver.StartCoroutine(MessageReceiver.ContractCallInjection(_indexerNode, transactionHash));
+                MessageReceiver.StartCoroutine(new CoroutineWrapper<object>(MessageReceiver.ContractCallInjection(_indexerNode, transactionHash)));
             };
         }
 
@@ -169,7 +167,7 @@ namespace TezosAPI
                       $"{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
-            return WrappedRequest(requestRoutine, callback);
+            return new CoroutineWrapper<IEnumerable<TokenBalance>>(requestRoutine, callback);
         }
 
         public IEnumerator GetOwnersForToken(
@@ -197,7 +195,7 @@ namespace TezosAPI
                       $"{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
-            return WrappedRequest(requestRoutine, callback);
+            return new CoroutineWrapper<IEnumerable<TokenBalance>>(requestRoutine, callback);
         }
 
         public IEnumerator GetOwnersForContract(
@@ -223,7 +221,7 @@ namespace TezosAPI
                       $"{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenBalance>>(url);
-            return WrappedRequest(requestRoutine, callback);
+            return new CoroutineWrapper<IEnumerable<TokenBalance>>(requestRoutine, callback);
         }
 
         public IEnumerator IsHolderOfContract(
@@ -312,7 +310,8 @@ namespace TezosAPI
         {
             var sort = orderBy switch
             {
-                TokensForContractOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
+                TokensForContractOrder.Default byDefault => 
+                    $"sort.asc=id&offset.cr={byDefault.lastId}",
                 TokensForContractOrder.ByLastTimeAsc byLastTimeAsc =>
                     $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
                 TokensForContractOrder.ByLastTimeDesc ByLastTimeDesc =>
@@ -330,7 +329,7 @@ namespace TezosAPI
                 $"lastTime as last_time&{sort}&limit={maxItems}";
             
             var requestRoutine = GetJson<IEnumerable<Token>>(url);
-            return WrappedRequest(requestRoutine, callback);
+            return new CoroutineWrapper<IEnumerable<Token>>(requestRoutine, callback);
         }
     }
 }

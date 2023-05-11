@@ -42,12 +42,12 @@ public class ExampleManager : IExampleManager
         var entrypoint = "view_items_of";
         var input = new { @string = sender };
 
-        CoroutineRunner.Instance.StartCoroutine(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
                 Debug.Log("READING INVENTORY DATA");
                 // deserialize the json data to inventory items
-                CoroutineRunner.Instance.StartCoroutine(
+                CoroutineRunner.Instance.StartWrappedCoroutine(
                     BeaconSDK.NetezosExtensions.HumanizeValue(result, _networkRPC, destination, "humanizeInventory",
                         (ContractInventoryViewResult[] inventory) => OnInventoryFetched(inventory, callback))
                 );
@@ -127,11 +127,11 @@ public class ExampleManager : IExampleManager
             Prim = PrimType.Unit
         };
 
-        CoroutineRunner.Instance.StartCoroutine(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
                 // deserialize the json data to market items
-                CoroutineRunner.Instance.StartCoroutine(
+                CoroutineRunner.Instance.StartWrappedCoroutine(
                     BeaconSDK.NetezosExtensions.HumanizeValue(result, _networkRPC, destination, "humanizeMarketplace",
                         (ContractMarketplaceViewResult[] market) => OnMarketplaceFetched(market, callback))
                     );
@@ -198,7 +198,6 @@ public class ExampleManager : IExampleManager
 
     public void MintItem()
     {
-        var destination = contractAddress;
         var entrypoint = "mint";
         var input = "{\"prim\": \"Unit\"}";
 
@@ -217,7 +216,7 @@ public class ExampleManager : IExampleManager
     public void GetBalance(Action<ulong> callback)
     {
         var routine = _tezos.ReadBalance(callback);
-        CoroutineRunner.Instance.StartCoroutine(routine);
+        CoroutineRunner.Instance.StartWrappedCoroutine(routine);
     }
 
     public void GetSoftBalance(Action<int> callback)
@@ -239,7 +238,7 @@ public class ExampleManager : IExampleManager
             }
         };
 
-        CoroutineRunner.Instance.StartCoroutine(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, "get_balance", input, result =>
             {
                 var intProp = result.GetProperty("int");
@@ -252,7 +251,6 @@ public class ExampleManager : IExampleManager
     {
         Debug.Log("Transfering Item " + itemID + " from " + _tezos.GetActiveWalletAddress() + " to Address: " + address);
 
-        var destination = contractAddress; // our temporary inventory contract
         var sender = _tezos.GetActiveWalletAddress();
         var entrypoint = "transfer";
         var input = "[ { \"prim\": \"Pair\", \"args\": [ { \"string\": \"" + sender + "\" }, [ { \"prim\": \"Pair\", \"args\": [ { \"string\": \"" + address + "\" }, { \"prim\": \"Pair\", \"args\": [ { \"int\": \"" + itemID + "\" }, { \"int\": \"" + amount + "\" } ] } ] } ] ] } ]";
@@ -299,7 +297,6 @@ public class ExampleManager : IExampleManager
     {
         Debug.Log("Removing Item " + itemID + " from market.");
 
-        var destination = contractAddress;
         var entryPoint = "removeFromMarket";
 
         var sender = _tezos.GetActiveWalletAddress();
@@ -322,7 +319,6 @@ public class ExampleManager : IExampleManager
 
     public void GetCoins()
     {
-        var destination = contractAddress;
         var entryPoint = "login";
         var parameter = "{\"prim\": \"Unit\"}";
 
@@ -347,7 +343,7 @@ public class ExampleManager : IExampleManager
             }
         };
 
-        CoroutineRunner.Instance.StartCoroutine(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
                 var boolString = result.GetProperty("prim");

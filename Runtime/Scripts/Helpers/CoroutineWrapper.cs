@@ -12,6 +12,10 @@ public class CoroutineWrapper<T> : IEnumerator
     /// Event raised when the coroutine is complete
     /// </summary>
     public readonly Action<T> Completed;
+    /// <summary>
+    /// Event raised when the coroutine throws an exception
+    /// </summary>
+    public readonly Action<Exception> ErrorHandler;
 
     private readonly IEnumerator _targetCoroutine;
 
@@ -33,12 +37,17 @@ public class CoroutineWrapper<T> : IEnumerator
     /// </summary>
     /// <param name="coroutine">Coroutine that will be executed</param>
     /// <param name="callback">Callback that will be called when the coroutine is complete</param>
-    public CoroutineWrapper(IEnumerator coroutine, Action<T> callback = null)
+    /// <param name="errorHandler">Callback that will be called when the coroutine throws an exception</param>
+    public CoroutineWrapper(IEnumerator coroutine, Action<T> callback = null, Action<Exception> errorHandler = null)
     {
         _targetCoroutine = coroutine;
         if (callback != null)
         {
             Completed += callback;
+        }
+        if (errorHandler != null)
+        {
+            ErrorHandler += errorHandler;
         }
     }
 
@@ -60,10 +69,15 @@ public class CoroutineWrapper<T> : IEnumerator
         }
         catch (Exception e)
         {
-            Debug.Log("EXCEPTION " + e.Message);
-            // Debug.LogError("Exception " + e.Message);
             Exception = e;
-            Completed?.Invoke(default);
+            if (ErrorHandler == null)
+            {
+                Debug.LogError($"Exception: {e.Message}");
+            }
+            else
+            {
+                ErrorHandler?.Invoke(e);
+            }
             return false;
         }
     }
@@ -91,6 +105,11 @@ public class CoroutineRunner : MonoBehaviour
 
             return _instance;
         }
+    }
+
+    public Coroutine StartWrappedCoroutine(IEnumerator coroutine)
+    {
+        return StartCoroutine(new CoroutineWrapper<object>(coroutine, null, (exception) => Debug.LogError($"Exception on Coroutine: {exception.Message}")));
     }
 
     private void Awake()

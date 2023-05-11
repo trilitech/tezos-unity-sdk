@@ -61,14 +61,6 @@ namespace TezosAPI
             request.timeout = RequestTimeout;
             return request;
         }
-
-        public static IEnumerator WrappedRequest<T>(IEnumerator op, Action<T> callback)
-        {
-            var counterRoutine = new CoroutineWrapper<T>(op);
-            yield return counterRoutine;
-            var counter = counterRoutine.Result;
-            callback?.Invoke(counter);
-        }
     }
 
     internal static class HttpHeaders
