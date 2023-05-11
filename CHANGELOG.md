@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/57) with BeaconConnectorWebGl
 
+### Added
+- Better [coroutine error handling](https://github.com/trilitech/tezos-unity-sdk/issues/39)
+
 
 ## [1.3.1] - 2023-04-27
 ### Changed
