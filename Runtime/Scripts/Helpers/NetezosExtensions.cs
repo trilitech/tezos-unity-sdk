@@ -22,7 +22,7 @@ namespace BeaconSDK
         {
             var rpc = new Rpc(rpcUri);
             var getBalanceRequest = rpc.GetTzBalance<ulong>(sender);
-            return HttpClient.WrappedRequest(getBalanceRequest, callback);
+            return new CoroutineWrapper<ulong>(getBalanceRequest, callback);
         }
 
         public static IEnumerator ReadView(string rpcUri, string destination, string entrypoint,
@@ -31,7 +31,7 @@ namespace BeaconSDK
             var rpc = new Rpc(rpcUri);
             var runViewOp = rpc.RunView<JsonElement>(destination, entrypoint, input);
 
-            return HttpClient.WrappedRequest(runViewOp, (JsonElement result) =>
+            return new CoroutineWrapper<JsonElement>(runViewOp, (JsonElement result) =>
             {
                 if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
                     result.TryGetProperty("data", out var val))
@@ -57,7 +57,7 @@ namespace BeaconSDK
             if (_contracts.ContainsKey(contract)) yield break;
             var rpc = new Rpc(rpcUri);
             var scriptOp = rpc.GetContractCode<JsonElement>(contract);
-            yield return HttpClient.WrappedRequest(scriptOp, (JsonElement script) =>
+            yield return new CoroutineWrapper<JsonElement>(scriptOp, (JsonElement script) =>
             {
                 var codeElement = script.GetProperty("code").GetRawText();
                 var code = Micheline.FromJson(codeElement);
