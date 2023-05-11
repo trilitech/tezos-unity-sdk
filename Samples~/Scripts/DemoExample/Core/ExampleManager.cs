@@ -198,7 +198,6 @@ public class ExampleManager : IExampleManager
 
     public void MintItem()
     {
-        var destination = contractAddress;
         var entrypoint = "mint";
         var input = "{\"prim\": \"Unit\"}";
 
@@ -252,7 +251,6 @@ public class ExampleManager : IExampleManager
     {
         Debug.Log("Transfering Item " + itemID + " from " + _tezos.GetActiveWalletAddress() + " to Address: " + address);
 
-        var destination = contractAddress; // our temporary inventory contract
         var sender = _tezos.GetActiveWalletAddress();
         var entrypoint = "transfer";
         var input = "[ { \"prim\": \"Pair\", \"args\": [ { \"string\": \"" + sender + "\" }, [ { \"prim\": \"Pair\", \"args\": [ { \"string\": \"" + address + "\" }, { \"prim\": \"Pair\", \"args\": [ { \"int\": \"" + itemID + "\" }, { \"int\": \"" + amount + "\" } ] } ] } ] ] } ]";
@@ -299,7 +297,6 @@ public class ExampleManager : IExampleManager
     {
         Debug.Log("Removing Item " + itemID + " from market.");
 
-        var destination = contractAddress;
         var entryPoint = "removeFromMarket";
 
         var sender = _tezos.GetActiveWalletAddress();
@@ -322,7 +319,6 @@ public class ExampleManager : IExampleManager
 
     public void GetCoins()
     {
-        var destination = contractAddress;
         var entryPoint = "login";
         var parameter = "{\"prim\": \"Unit\"}";
 
