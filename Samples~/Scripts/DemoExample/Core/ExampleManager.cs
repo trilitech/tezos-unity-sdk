@@ -5,6 +5,7 @@ using BeaconSDK;
 using Netezos.Encoding;
 using UnityEngine;
 using TezosAPI;
+using Logger = Helpers.Logger;
 
 public class ExampleManager : IExampleManager
 {
@@ -45,7 +46,7 @@ public class ExampleManager : IExampleManager
         CoroutineRunner.Instance.StartCoroutineWrapper(
             _tezos.ReadView(contractAddress, entrypoint, input, result =>
             {
-                Debug.Log("READING INVENTORY DATA");
+                Logger.LogDebug("READING INVENTORY DATA");
                 // deserialize the json data to inventory items
                 CoroutineRunner.Instance.StartCoroutineWrapper(
                     BeaconSDK.NetezosExtensions.HumanizeValue(result, _networkRPC, destination, "humanizeInventory",
@@ -187,8 +188,8 @@ public class ExampleManager : IExampleManager
                 new MichelineInt(itemID)
             }
         }.ToJson();
-
-        Debug.Log(destination + " " + entryPoint + parameter);
+        
+        Logger.LogDebug(destination + " " + entryPoint + parameter);
         _tezos.CallContract(contractAddress, entryPoint, parameter, 0);
 
 #if UNITY_IOS || UNITY_ANDROID
@@ -249,7 +250,7 @@ public class ExampleManager : IExampleManager
 
     public void TransferItem(int itemID, int amount, string address)
     {
-        Debug.Log("Transfering Item " + itemID + " from " + _tezos.GetActiveWalletAddress() + " to Address: " + address);
+        Logger.LogDebug("Transfering Item " + itemID + " from " + _tezos.GetActiveWalletAddress() + " to Address: " + address);
 
         var sender = _tezos.GetActiveWalletAddress();
         var entrypoint = "transfer";
@@ -264,7 +265,7 @@ public class ExampleManager : IExampleManager
 
     public void AddItemToMarket(int itemID, int price)
     {
-        Debug.Log("Adding Item " + itemID + " to Market with the price of " + price);
+        Logger.LogDebug("Adding Item " + itemID + " to Market with the price of " + price);
 
         var entryPoint = "addToMarket";
 
@@ -295,7 +296,7 @@ public class ExampleManager : IExampleManager
 
     public void RemoveItemFromMarket(int itemID)
     {
-        Debug.Log("Removing Item " + itemID + " from market.");
+        Logger.LogDebug("Removing Item " + itemID + " from market.");
 
         var entryPoint = "removeFromMarket";
 

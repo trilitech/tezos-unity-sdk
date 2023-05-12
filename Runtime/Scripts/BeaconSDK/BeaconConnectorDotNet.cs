@@ -15,6 +15,7 @@ using Netezos.Keys;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Logger = Helpers.Logger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace BeaconSDK
@@ -31,7 +32,7 @@ namespace BeaconSDK
         public async void ConnectAccount()
         {
             var pathToDb = Path.Combine(Application.persistentDataPath, "beacon.db");
-            Debug.Log($"DB file stored in {pathToDb}");
+            Logger.LogDebug($"DB file stored in {pathToDb}");
             
             var options = new BeaconOptions
             {
@@ -47,16 +48,16 @@ namespace BeaconSDK
             _beaconDappClient.OnBeaconMessageReceived += OnBeaconDappClientMessageReceived;
 
             await _beaconDappClient.InitAsync();
-            Debug.Log($"Dapp initialized: {_beaconDappClient.LoggedIn}");
+            Logger.LogInfo($"Dapp initialized: {_beaconDappClient.LoggedIn}");
             _beaconDappClient.Connect();
-            Debug.Log($"Dapp connected: {_beaconDappClient.Connected}");
+            Logger.LogInfo($"Dapp connected: {_beaconDappClient.Connected}");
 
             var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
             if (activeAccountPermissions != null)
             {
                 var permissionsString = activeAccountPermissions.Scopes.Aggregate(string.Empty,
                     (res, scope) => res + $"{scope}, ") ?? string.Empty;
-                Debug.Log(
+                Logger.LogInfo(
                     $"We have active peer {activeAccountPermissions.AppMetadata.Name} with permissions {permissionsString}");
 
                 UnityMainThreadDispatcher.Enqueue(
@@ -134,11 +135,11 @@ namespace BeaconSDK
             if (activePeer != null)
             {
                 await _beaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
-                Debug.Log("Permission request sent");
+                Logger.LogInfo("Permission request sent");
             }
             else
             {
-                Debug.LogError("No active peer found");
+                Logger.LogError("No active peer found");
             }
         }
 
@@ -162,7 +163,7 @@ namespace BeaconSDK
             var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
             if (activeAccountPermissions == null)
             {
-                Debug.LogError("No active permissions");
+                Logger.LogError("No active permissions");
                 return;
             }
 
@@ -177,7 +178,7 @@ namespace BeaconSDK
                 operationDetails: operationDetails,
                 sourceAddress: pubKey.Address);
 
-            Debug.Log("requesting operation: " + operationRequest);
+            Logger.LogDebug("requesting operation: " + operationRequest);
             await _beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
         }
 
