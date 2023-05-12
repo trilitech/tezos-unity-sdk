@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Logger = Helpers.Logger;
 
 [RequireComponent(typeof(SnapController))]
 public class InventoryManager : MonoBehaviour
@@ -51,7 +52,7 @@ public class InventoryManager : MonoBehaviour
 		if (itemRes != null)
 			newItem.Sprite = itemRes.ItemSprite;
 		else
-			Debug.LogError("Could find resource file for " + itemModel.ResourcePath);
+			Logger.LogError("Could find resource file for " + itemModel.ResourcePath);
 		newItem.Item = itemModel;
 		newItem.OnClick = OnItemClicked;
 		draggables.Add(newItem);
@@ -63,7 +64,7 @@ public class InventoryManager : MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Trying to add an item but Inventory is full!");
+			Logger.LogError("Trying to add an item but Inventory is full!");
 			return;
 		}
 	}
@@ -149,7 +150,7 @@ public class InventoryManager : MonoBehaviour
 			if (equippedSlots[i].HasItem)
 				PlayerPrefs.SetInt(eqSaveLoc + i, equippedSlots[i].CurrentItemInSlot.Item.ID);
 		}
-		Debug.Log("Inventory saved locally.");
+		Logger.LogDebug("Inventory saved locally.");
 	}
 
 	private void LoadLocalInventory()
@@ -174,7 +175,7 @@ public class InventoryManager : MonoBehaviour
 				_itemIDtoDraggable[itemID].SetCurrentSlot(equippedSlots[i]);
 			}
 		}
-		Debug.Log("Inventory loaded.");
+		Logger.LogDebug("Inventory loaded.");
 	}
 
 	public void UpdateStatsView()
