@@ -12,8 +12,9 @@ namespace Scripts.Tezos.Wallet
 
         /// <summary>
         /// Makes a call to connect with a wallet
+        /// <param name="withRedirectToWallet">Should we open wallet app on mobiles after connect?</param>
         /// </summary>
-        void Connect();
+        void Connect(bool withRedirectToWallet = true);
 
         /// <summary>
         /// Unpair with wallet and disconnect

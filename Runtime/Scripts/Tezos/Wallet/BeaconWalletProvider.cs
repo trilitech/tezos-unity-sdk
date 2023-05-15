@@ -36,7 +36,7 @@ namespace Scripts.Tezos.Wallet
             _beaconConnector = new BeaconConnectorDotNet();
             _beaconConnector.SetNetwork(TezosConfig.Instance.Network.ToString(), TezosConfig.Instance.RpcBaseUrl);
             (_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
-            Connect();
+            Connect(withRedirectToWallet: false);
 
             // todo: maybe call RequestTezosPermission from _beaconConnector?
             MessageReceiver.PairingCompleted += _ =>
@@ -67,17 +67,18 @@ namespace Scripts.Tezos.Wallet
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(transaction);
                 var transactionHash = json.GetProperty("transactionHash").GetString();
-                
+
                 CoroutineRunner.Instance.StartWrappedCoroutine(
                     new CoroutineWrapper<object>(MessageReceiver.TrackTransaction(transactionHash)));
             };
         }
 
-        public void Connect()
+        public void Connect(bool withRedirectToWallet)
         {
             _beaconConnector.ConnectAccount();
 #if UNITY_ANDROID || UNITY_IOS
-            Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
+            if (withRedirectToWallet)
+                Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
 #endif
         }
 
