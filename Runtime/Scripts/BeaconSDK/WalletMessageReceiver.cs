@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Text.Json;
+using Scripts.Tezos;
 using UnityEngine;
 using UnityEngine.Networking;
+using Logger = Scripts.Helpers.Logger;
 
 namespace BeaconSDK
 {
@@ -10,7 +12,7 @@ namespace BeaconSDK
 	/// Receives external messages
 	/// </summary>
 
-	public class BeaconMessageReceiver : MonoBehaviour
+	public class WalletMessageReceiver : MonoBehaviour
 	{
 		public event Action<string> ClientCreated;
 		public event Action<string> AccountConnected;
@@ -71,40 +73,29 @@ namespace BeaconSDK
 			public string transactionHash;
 		}
 
-		public IEnumerator ContractCallInjection(string uri, string transactionHash)
+		public IEnumerator TrackTransaction(string transactionHash)
 		{
 			var success = false;
 			const float timeout = 30f; // seconds
 			var timestamp = Time.time;
-			// Debug.Log("Operation injected into blockchain");
-			
+
 			// keep making requests until time out or success
 			while (!success && Time.time - timestamp < timeout)
 			{
-				uri = string.Format(uri, transactionHash);
-				// Debug.Log("WebRequest into " + uri);
-				using var webRequest = UnityWebRequest.Get(uri);
-				yield return webRequest.SendWebRequest();
-				var resultText = webRequest.downloadHandler.text;
-
-				if (!string.IsNullOrEmpty(webRequest.error))
+				if (success) break;
+				Logger.LogDebug($"Checking tx status: {transactionHash}");
+				yield return TezosSingleton.Instance.API.GetOperationStatus(result =>
 				{
-					Debug.LogError(webRequest.error);
-					break;
-				}
+					if (result != null)
+						success = JsonSerializer.Deserialize<bool>(result);
+				}, transactionHash);
 
-				if (!string.IsNullOrEmpty(resultText))
-				{
-					success = JsonSerializer.Deserialize<bool>(resultText);
-				}
-				
 				yield return new WaitForSecondsRealtime(3);
 			}
 
 			ContractCallInjectionResult result;
 			result.success = success;
 			result.transactionHash = transactionHash;
-			// Debug.Log($"Operation completed with success: {success}");
 			ContractCallCompleted?.Invoke(JsonUtility.ToJson(result));
 		}
 

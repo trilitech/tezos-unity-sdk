@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 
-namespace TezosAPI.Models.Tokens
+namespace Scripts.Tezos.API.Models.Tokens
 {
     public class TokenBalance
     {

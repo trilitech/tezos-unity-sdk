@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -8,8 +7,7 @@ using Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
 
-
-namespace TezosAPI
+namespace Scripts.Helpers
 {
     public class HttpClient
     {

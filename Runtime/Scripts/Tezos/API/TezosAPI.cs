@@ -1,146 +1,48 @@
-using System;
+﻿using System;
 using System.Collections;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using Beacon.Sdk.Beacon.Sign;
-using BeaconSDK;
 using Dynamic.Json;
 using Helpers;
-using TezosAPI.Models;
-using TezosAPI.Models.Tokens;
-using UnityEngine;
+using Scripts.Helpers;
+using Scripts.Tezos.API.Models.Filters;
+using Scripts.Tezos.API.Models.Tokens;
 
-namespace TezosAPI
+
+namespace Scripts.Tezos.API
 {
-    /// <summary>
-    /// Implementation of the ITezosAPI.
-    /// Exposes the main functions of the Tezos API in Unity
-    /// </summary>
-    public class Tezos : HttpClient, ITezosAPI
+    public class TezosAPI : HttpClient, ITezosAPI
     {
-        private readonly string _networkName;
-        private readonly string _indexerNode;
-        private IBeaconConnector _beaconConnector;
+        private Rpc Rpc { get; }
 
-        private string _handshake;
-        private string _pubKey;
-        private string _signature;
-        private string _transactionHash;
-
-        public string NetworkRPC { get; private set; }
-
-        public BeaconMessageReceiver MessageReceiver { get; private set; }
-
-        public Tezos(
-            string networkName = "ghostnet",
-            string networkRPC = "https://rpc.ghostnet.teztnets.xyz",
-            string indexerNode = "https://api.ghostnet.tzkt.io/v1/operations/{0}/status",
-            string tzKTApi = "https://api.ghostnet.tzkt.io/v1/") : base(tzKTApi)
+        public TezosAPI() : base(TezosConfig.Instance.TzKTBaseUrl)
         {
-            _networkName = networkName;
-            _indexerNode = indexerNode;
-            NetworkRPC = networkRPC;
-
-            InitBeaconConnector();
+            Rpc = new Rpc(TezosConfig.Instance.RpcBaseUrl);
         }
 
-        private void InitBeaconConnector()
+        public IEnumerator GetTezosBalance(Action<ulong> callback, string address)
         {
-            // Create a BeaconMessageReceiver Game object to receive callback messages
-            MessageReceiver = new GameObject("UnityBeacon").AddComponent<BeaconMessageReceiver>();
-
-            // Assign the BeaconConnector depending on the platform.
-#if UNITY_WEBGL && !UNITY_EDITOR
-			_beaconConnector = new BeaconConnectorWebGl();
-			_beaconConnector.SetNetwork(_networkName, NetworkRPC);
-#elif (UNITY_ANDROID && !UNITY_EDITOR) || (UNITY_IOS && !UNITY_EDITOR) || UNITY_STANDALONE || UNITY_EDITOR
-            _beaconConnector = new BeaconConnectorDotNet();
-            _beaconConnector.SetNetwork(_networkName, NetworkRPC);
-            (_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
-            _beaconConnector.ConnectAccount();
-            MessageReceiver.PairingCompleted += _ => RequestPermission();
-#endif
-
-            MessageReceiver.ClientCreated += _ => { _beaconConnector.RequestHandshake(); };
-            MessageReceiver.HandshakeReceived += handshake => { _handshake = handshake; };
-
-            MessageReceiver.AccountConnected += account =>
-            {
-                var json = JsonSerializer.Deserialize<JsonElement>(account);
-                if (json.TryGetProperty("account", out json))
-                {
-                    _pubKey = json.GetProperty("publicKey").GetString();
-
-                    Debug.Log("my pubkey: " + _pubKey);
-                }
-            };
-            MessageReceiver.PayloadSigned += payload =>
-            {
-                var json = JsonSerializer.Deserialize<JsonElement>(payload);
-                var signature = json.GetProperty("signature").GetString();
-                _signature = signature;
-            };
-            MessageReceiver.ContractCallInjected += transaction =>
-            {
-                var json = JsonSerializer.Deserialize<JsonElement>(transaction);
-                var transactionHash = json.GetProperty("transactionHash").GetString();
-                MessageReceiver.StartCoroutine(new CoroutineWrapper<object>(MessageReceiver.ContractCallInjection(_indexerNode, transactionHash)));
-            };
+            var getBalanceRequest = Rpc.GetTzBalance<ulong>(address);
+            return new CoroutineWrapper<ulong>(getBalanceRequest, callback);
         }
 
-        public void ConnectWallet()
-        {
-#if UNITY_WEBGL
-            _beaconConnector.ConnectAccount();
-#elif UNITY_ANDROID || UNITY_IOS
-            Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
-#endif
-        }
-
-        public void DisconnectWallet()
-        {
-            _beaconConnector.DisconnectAccount();
-        }
-
-        public string GetActiveWalletAddress()
-        {
-            return _beaconConnector.GetActiveAccountAddress();
-        }
-
-        public IEnumerator ReadBalance(Action<ulong> callback)
-        {
-            var address = _beaconConnector.GetActiveAccountAddress();
-            return NetezosExtensions.ReadTZBalance(NetworkRPC, address, callback);
-        }
-
-        public IEnumerator ReadView(string contractAddress, string entryPoint, object input,
+        public IEnumerator ReadView(
+            string contractAddress,
+            string entrypoint,
+            object input,
             Action<JsonElement> callback)
         {
-            return NetezosExtensions.ReadView(NetworkRPC, contractAddress, entryPoint, input, callback);
-        }
+            var runViewOp = Rpc.RunView<JsonElement>(contractAddress, entrypoint, input);
 
-        public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0)
-        {
-            _beaconConnector.RequestTezosOperation(contractAddress, entryPoint, input,
-                amount, _networkName, NetworkRPC);
-        }
-
-        public void RequestPermission()
-        {
-            _beaconConnector.RequestTezosPermission(_networkName, NetworkRPC);
-        }
-
-        public void RequestSignPayload(SignPayloadType signingType, string payload)
-        {
-            _beaconConnector.RequestTezosSignPayload(signingType, payload);
-        }
-
-        public bool VerifySignedPayload(SignPayloadType signingType, string payload)
-        {
-            var key = _pubKey;
-            var signature = _signature;
-            return NetezosExtensions.VerifySignature(key, signingType, payload, signature);
+            return new CoroutineWrapper<JsonElement>(runViewOp, result =>
+            {
+                if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
+                    result.TryGetProperty("data", out var val))
+                    callback(val);
+                else
+                    Logger.LogError("Can't parse response from run_script_view query");
+            });
         }
 
         public IEnumerator GetTokensForOwner(
@@ -243,14 +145,15 @@ namespace TezosAPI
                 callback?.Invoke(false);
             }
         }
-        
+
         public IEnumerator IsHolderOfToken(Action<bool> callback,
             string wallet,
             string contractAddress,
             uint tokenId)
         {
             var requestRoutine =
-                GetJson($"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id");
+                GetJson(
+                    $"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id");
 
             yield return requestRoutine;
 
@@ -310,7 +213,7 @@ namespace TezosAPI
         {
             var sort = orderBy switch
             {
-                TokensForContractOrder.Default byDefault => 
+                TokensForContractOrder.Default byDefault =>
                     $"sort.asc=id&offset.cr={byDefault.lastId}",
                 TokensForContractOrder.ByLastTimeAsc byLastTimeAsc =>
                     $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
@@ -327,9 +230,16 @@ namespace TezosAPI
                 $"tokens?contract={contractAddress}&select=contract,tokenId as token_id" +
                 $"{(withMetadata ? ",metadata as token_metadata" : "")},holdersCount as holders_count,id," +
                 $"lastTime as last_time&{sort}&limit={maxItems}";
-            
+
             var requestRoutine = GetJson<IEnumerable<Token>>(url);
             return new CoroutineWrapper<IEnumerable<Token>>(requestRoutine, callback);
+        }
+
+        public IEnumerator GetOperationStatus(Action<bool?> callback, string operationHash)
+        {
+            var url = $"operations/{operationHash}/status";
+            var requestRoutine = GetJson<bool?>(url);
+            return new CoroutineWrapper<bool?>(requestRoutine, callback);
         }
     }
 }

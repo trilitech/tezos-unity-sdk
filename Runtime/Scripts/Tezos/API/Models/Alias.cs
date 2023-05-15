@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace TezosAPI.Models
+namespace Scripts.Tezos.API.Models
 {
     public class Alias
     {

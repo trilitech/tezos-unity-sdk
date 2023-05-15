@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Beacon.Sdk.Beacon.Sign;
+using Scripts.BeaconSDK;
 using UnityEngine;
 
 namespace BeaconSDK

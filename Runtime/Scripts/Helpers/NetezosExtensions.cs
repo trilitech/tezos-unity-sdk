@@ -1,45 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Contracts;
 using Netezos.Encoding;
-using UnityEngine;
 using Netezos.Keys;
-using TezosAPI;
+using Scripts.Tezos.API;
 
-
-namespace BeaconSDK
+namespace Scripts.Helpers
 {
     public static class NetezosExtensions
     {
         private static readonly Dictionary<string, ContractScript> _contracts = new();
-
-        public static IEnumerator ReadTZBalance(string rpcUri, string sender, Action<ulong> callback)
-        {
-            var rpc = new Rpc(rpcUri);
-            var getBalanceRequest = rpc.GetTzBalance<ulong>(sender);
-            return new CoroutineWrapper<ulong>(getBalanceRequest, callback);
-        }
-
-        public static IEnumerator ReadView(string rpcUri, string destination, string entrypoint,
-            object input, Action<JsonElement> onComplete = null)
-        {
-            var rpc = new Rpc(rpcUri);
-            var runViewOp = rpc.RunView<JsonElement>(destination, entrypoint, input);
-
-            return new CoroutineWrapper<JsonElement>(runViewOp, (JsonElement result) =>
-            {
-                if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
-                    result.TryGetProperty("data", out var val))
-                    onComplete(val);
-                else
-                    Debug.LogError("Invalid data");
-            });
-        }
 
         public static IEnumerator HumanizeValue<T>(JsonElement val, string rpcUri, string destination,
             string humanizeEntrypoint, Action<T> onComplete)

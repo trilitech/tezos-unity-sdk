@@ -1,9 +1,9 @@
-using TezosAPI;
+using Scripts.Tezos;
 using UnityEngine;
 
 public class AuthenticationManager : MonoBehaviour
 {
-    private ITezosAPI _tezos;
+    private ITezos _tezos;
     [SerializeField] private QRCodeView qrCodeView;
     [SerializeField] private GameObject contentPanel;
     [SerializeField] private GameObject deepLinkButton;
@@ -21,9 +21,9 @@ public class AuthenticationManager : MonoBehaviour
 #endif
         _tezos = TezosSingleton.Instance;
 
-        _tezos.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
-        _tezos.MessageReceiver.AccountConnected += OnAccountConnected;
-        _tezos.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+        _tezos.Wallet.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
+        _tezos.Wallet.MessageReceiver.AccountConnected += OnAccountConnected;
+        _tezos.Wallet.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
     }
 
     void OnHandshakeReceived(string handshake)
@@ -46,12 +46,12 @@ public class AuthenticationManager : MonoBehaviour
     public void DisconnectWallet()
     {
         EnableUI(isAuthenticated: false);
-        _tezos.DisconnectWallet();
+        _tezos.Wallet.Disconnect();
     }
 
     public void ConnectByDeeplink()
     {
-        _tezos.ConnectWallet();
+        _tezos.Wallet.Connect();
     }
     
     void EnableUI(bool isAuthenticated)

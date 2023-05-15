@@ -1,4 +1,4 @@
-﻿namespace TezosAPI.Models
+﻿namespace Scripts.Tezos.API.Models.Filters
 {
     public abstract record OwnersForContractOrder
     {

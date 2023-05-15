@@ -9,7 +9,7 @@ public interface IExampleManager
     public void Unpair();
 
     public void GetCoins();
-    
+
     /// <summary>
     /// Returns the currently active user.
     /// </summary>
@@ -39,7 +39,7 @@ public interface IExampleManager
     /// <param name="itemID">ID of the item that will be bought</param>
     /// <param name="callback">callback takes a bool (true if the transaction is completed successfully)</param>
     public void BuyItem(string owner, int itemID);
-    
+
     /// <summary>
     /// Mints an item
     /// </summary>
@@ -50,13 +50,13 @@ public interface IExampleManager
     /// </summary>
     /// <param name="callback">callback that takes the retrieved balance (int)</param>
     public void GetBalance(Action<ulong> callback);
-    
+
     /// <summary>
     /// Get soft currency balance
     /// </summary>
     /// <param name="callback">callback that takes the retrieved balance (int)</param>
     public void GetSoftBalance(Action<int> callback);
-    
+
     /// <summary>
     /// Returns the address of the current active wallet
     /// </summary>
@@ -90,9 +90,9 @@ public interface IExampleManager
     public void RemoveItemFromMarket(int itemID);
 
     /// <summary>
-    /// Return the Tezos MessageReceiver for using callbacks
+    /// Return the Tezos wallet MessageReceiver for using callbacks
     /// </summary>
-    public BeaconMessageReceiver GetMessageReceiver();
+    public WalletMessageReceiver GetMessageReceiver();
 
     /// <summary>
     /// Checks if item is on the marketplace in the blockchain
@@ -101,13 +101,13 @@ public interface IExampleManager
     /// <param name="owner"></param>
     /// <param name="callback"></param>
     public void IsItemOnMarket(int itemID, string owner, Action<bool> callback);
-    
+
     /// <summary>
     /// Sends a request to sign a payload
     /// </summary>
     /// <param name="signingType"></param>
     /// <param name="payload"></param>
     void RequestSignPayload(SignPayloadType signingType, string payload);
-    
+
     bool VerifyPayload(SignPayloadType signingType, string payload);
 }

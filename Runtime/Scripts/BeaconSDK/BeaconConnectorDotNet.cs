@@ -13,17 +13,20 @@ using Beacon.Sdk.Core.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Netezos.Keys;
 using Newtonsoft.Json.Linq;
+using Scripts.BeaconSDK;
+using Scripts.Helpers;
+using Scripts.Tezos;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using Logger = Helpers.Logger;
+using Logger = Scripts.Helpers.Logger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace BeaconSDK
 {
     public class BeaconConnectorDotNet : IBeaconConnector
     {
-        private static BeaconMessageReceiver _messageReceiver;
-        private DappBeaconClient _beaconDappClient { get; set; }
+        private static WalletMessageReceiver _walletMessageReceiver;
+        private DappBeaconClient BeaconDappClient { get; set; }
         private string _network;
         private string _rpc;
 
@@ -43,16 +46,16 @@ namespace BeaconSDK
                 DatabaseConnectionString = $"Filename={pathToDb};Connection=direct;Upgrade=true"
             };
 
-            _beaconDappClient = (DappBeaconClient)BeaconClientFactory
+            BeaconDappClient = (DappBeaconClient)BeaconClientFactory
                 .Create<IDappBeaconClient>(options, new MyLoggerProvider());
-            _beaconDappClient.OnBeaconMessageReceived += OnBeaconDappClientMessageReceived;
+            BeaconDappClient.OnBeaconMessageReceived += OnBeaconDappClientMessageReceived;
 
-            await _beaconDappClient.InitAsync();
-            Logger.LogInfo($"Dapp initialized: {_beaconDappClient.LoggedIn}");
-            _beaconDappClient.Connect();
-            Logger.LogInfo($"Dapp connected: {_beaconDappClient.Connected}");
+            await BeaconDappClient.InitAsync();
+            Logger.LogInfo($"Dapp initialized: {BeaconDappClient.LoggedIn}");
+            BeaconDappClient.Connect();
+            Logger.LogInfo($"Dapp connected: {BeaconDappClient.Connected}");
 
-            var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
+            var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
             if (activeAccountPermissions != null)
             {
                 var permissionsString = activeAccountPermissions.Scopes.Aggregate(string.Empty,
@@ -61,7 +64,7 @@ namespace BeaconSDK
                     $"We have active peer {activeAccountPermissions.AppMetadata.Name} with permissions {permissionsString}");
 
                 UnityMainThreadDispatcher.Enqueue(
-                    _messageReceiver.OnAccountConnected,
+                    _walletMessageReceiver.OnAccountConnected,
                     new JObject
                     {
                         ["account"] = new JObject
@@ -73,12 +76,11 @@ namespace BeaconSDK
             }
             else
             {
-                var pairingRequestQrData = _beaconDappClient.GetPairingRequestInfo();
-                _messageReceiver.OnHandshakeReceived(pairingRequestQrData);
+                _walletMessageReceiver.OnHandshakeReceived(BeaconDappClient.GetPairingRequestInfo());
             }
         }
 
-        public string GetActiveAccountAddress() => _beaconDappClient?.GetActiveAccount()?.Address ?? string.Empty;
+        public string GetActiveAccountAddress() => BeaconDappClient?.GetActiveAccount()?.Address ?? string.Empty;
 
         public void RequestHandshake()
         {
@@ -86,10 +88,10 @@ namespace BeaconSDK
 
         public void DisconnectAccount()
         {
-            _beaconDappClient.RemoveActiveAccounts();
-            var pairingRequestQrData = _beaconDappClient.GetPairingRequestInfo();
-            _messageReceiver.OnHandshakeReceived(pairingRequestQrData);
-            UnityMainThreadDispatcher.Enqueue(_messageReceiver.OnAccountDisconnected, string.Empty);
+            BeaconDappClient.RemoveActiveAccounts();
+            var pairingRequestQrData = BeaconDappClient.GetPairingRequestInfo();
+            _walletMessageReceiver.OnHandshakeReceived(pairingRequestQrData);
+            UnityMainThreadDispatcher.Enqueue(_walletMessageReceiver.OnAccountDisconnected, string.Empty);
         }
 
         public void SetNetwork(string network, string rpc)
@@ -98,15 +100,15 @@ namespace BeaconSDK
             _rpc = rpc;
         }
 
-        public void SetBeaconMessageReceiver(BeaconMessageReceiver messageReceiver)
+        public void SetBeaconMessageReceiver(WalletMessageReceiver messageReceiver)
         {
-            _messageReceiver = messageReceiver;
+            _walletMessageReceiver = messageReceiver;
         }
 
         public async void RequestTezosPermission(string networkName = "", string networkRPC = "")
         {
-            if (!Enum.TryParse(networkName, out Beacon.Sdk.Beacon.Permission.NetworkType networkType))
-                networkType = Beacon.Sdk.Beacon.Permission.NetworkType.ghostnet;
+            if (!Enum.TryParse(networkName, out NetworkType networkType))
+                networkType = TezosConfig.Instance.Network;
 
             var network = new Beacon.Sdk.Beacon.Permission.Network
             {
@@ -125,16 +127,16 @@ namespace BeaconSDK
                 type: BeaconMessageType.permission_request,
                 version: Constants.BeaconVersion,
                 id: KeyPairService.CreateGuid(),
-                senderId: _beaconDappClient.SenderId,
-                appMetadata: _beaconDappClient.Metadata,
+                senderId: BeaconDappClient.SenderId,
+                appMetadata: BeaconDappClient.Metadata,
                 network: network,
                 scopes: permissionScopes
             );
 
-            var activePeer = _beaconDappClient.GetActivePeer();
+            var activePeer = BeaconDappClient.GetActivePeer();
             if (activePeer != null)
             {
-                await _beaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
+                await BeaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
                 Logger.LogInfo("Permission request sent");
             }
             else
@@ -143,9 +145,13 @@ namespace BeaconSDK
             }
         }
 
-        public async void RequestTezosOperation(string destination, string entryPoint = "default", string arg = null,
+        public async void RequestTezosOperation(
+            string destination,
+            string entryPoint = "default",
+            string arg = null,
             ulong amount = 0,
-            string networkName = "", string networkRPC = "")
+            string networkName = "",
+            string networkRPC = "")
         {
             var operationDetails = new List<TezosBaseOperation>();
             var partialTezosTransactionOperation = new PartialTezosTransactionOperation(
@@ -160,7 +166,7 @@ namespace BeaconSDK
 
             operationDetails.Add(partialTezosTransactionOperation);
 
-            var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
+            var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
             if (activeAccountPermissions == null)
             {
                 Logger.LogError("No active permissions");
@@ -173,18 +179,18 @@ namespace BeaconSDK
                 type: BeaconMessageType.operation_request,
                 version: Constants.BeaconVersion,
                 id: KeyPairService.CreateGuid(),
-                senderId: _beaconDappClient.SenderId,
+                senderId: BeaconDappClient.SenderId,
                 network: activeAccountPermissions.Network,
                 operationDetails: operationDetails,
                 sourceAddress: pubKey.Address);
 
             Logger.LogDebug("requesting operation: " + operationRequest);
-            await _beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
+            await BeaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
         }
 
         public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
         {
-            _beaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signingType, payload), signingType);
+            BeaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signingType, payload), signingType);
         }
         
         public void RequestTezosBroadcast(string signedTransaction, string networkName = "", string networkRPC = "")
@@ -199,7 +205,7 @@ namespace BeaconSDK
         {
             if (e.PairingDone)
             {
-                _messageReceiver.OnPairingCompleted("paired");
+                _walletMessageReceiver.OnPairingCompleted("paired");
                 return;
             }
 
@@ -213,11 +219,11 @@ namespace BeaconSDK
 
                     var permissionsString = permissionResponse.Scopes.Aggregate(string.Empty,
                         (res, scope) => res + $"{scope}, ");
-                    Debug.Log(
-                        $"{_beaconDappClient.AppName} received permissions {permissionsString} from {permissionResponse.AppMetadata.Name} with public key {permissionResponse.PublicKey}");
+                    Logger.LogDebug(
+                        $"{BeaconDappClient.AppName} received permissions {permissionsString} from {permissionResponse.AppMetadata.Name} with public key {permissionResponse.PublicKey}");
 
                     UnityMainThreadDispatcher.Enqueue(
-                        _messageReceiver.OnAccountConnected, //permissionResponse.PublicKey);
+                        _walletMessageReceiver.OnAccountConnected, //permissionResponse.PublicKey);
                         new JObject
                         {
                             ["account"] = new JObject
@@ -236,14 +242,14 @@ namespace BeaconSDK
                         return;
 
                     UnityMainThreadDispatcher.Enqueue(
-                        _messageReceiver.OnContractCallInjected, //operationResponse.TransactionHash);
+                        _walletMessageReceiver.OnContractCallInjected, //operationResponse.TransactionHash);
                         new JObject
                         {
                             ["transactionHash"] = operationResponse.TransactionHash,
                             ["success"] = "true"
                         }.ToString());
 
-                    Debug.Log($"Operation completed with transaction hash {operationResponse.TransactionHash}");
+                    Logger.LogDebug($"Received operation with hash {operationResponse.TransactionHash}");
                     break;
                 }
 
@@ -252,12 +258,12 @@ namespace BeaconSDK
                     if (message is not SignPayloadResponse signPayloadResponse)
                         return;
 
-                    var senderPermissions = await _beaconDappClient
+                    var senderPermissions = await BeaconDappClient
                         .PermissionInfoRepository
                         .TryReadBySenderIdAsync(signPayloadResponse.SenderId);
                     if (senderPermissions == null) return;
 
-                    _messageReceiver.OnPayloadSigned( //signPayloadResponse.Signature);
+                    _walletMessageReceiver.OnPayloadSigned( //signPayloadResponse.Signature);
                         new JObject
                         {
                             ["signature"] = signPayloadResponse.Signature
@@ -272,6 +278,7 @@ namespace BeaconSDK
     }
 }
 
+// todo: this logger didn't work inside Beacon, improve this.
 public class MyLoggerProvider : ILoggerProvider
 {
     public class MyLogger : ILogger
