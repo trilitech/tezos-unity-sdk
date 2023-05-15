@@ -6,7 +6,7 @@ using Netezos.Encoding;
 using Scripts.Helpers;
 using Scripts.Tezos;
 using UnityEngine;
-using Logger = Helpers.Logger;
+using Logger = Scripts.Helpers.Logger;
 
 public class ExampleManager : IExampleManager
 {

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Text.Json;
 using Scripts.Tezos;
 using UnityEngine;
-using UnityEngine.Networking;
 using Logger = Scripts.Helpers.Logger;
 
 namespace BeaconSDK
