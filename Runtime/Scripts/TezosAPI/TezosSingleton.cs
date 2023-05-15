@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
+using Helpers;
 using TezosAPI;
 using TezosAPI.Models;
 using TezosAPI.Models.Tokens;
@@ -22,6 +23,7 @@ public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
         base.Awake();
 
         _tezos = new Tezos();
+        Logger.CurrentLogLevel = Logger.LogLevel.Info;
     }
 
     public void ConnectWallet()
