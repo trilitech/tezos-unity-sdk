@@ -16,7 +16,7 @@ namespace Scripts.Tezos
 {
     public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
     {
-        private static ITezosAPI _tezos;
+        private static TezosAPI _tezos;
         public BeaconMessageReceiver MessageReceiver => _tezos.MessageReceiver;
         public ITezosDataAPI API => _tezos.API;
         public IWalletProvider Wallet => _tezos.Wallet;

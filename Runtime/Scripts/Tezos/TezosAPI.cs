@@ -26,8 +26,8 @@ namespace Scripts.Tezos
         {
             API = new TezosDataAPI();
             Wallet = new BeaconWalletProvider();
-
-            MessageReceiver = (BeaconMessageReceiver)Wallet.MessageReceiver;
+            
+            MessageReceiver = Wallet.MessageReceiver;
         }
 
         public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)

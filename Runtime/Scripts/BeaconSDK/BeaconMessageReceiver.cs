@@ -10,13 +10,16 @@ namespace Scripts.BeaconSDK
     /// <summary>
     /// Receives external messages
     /// </summary>
-    [Obsolete(
-        "BeaconMessageReceiver will be renamed to WalletMessageReceiver in future versions, please use WalletMessageReceiver type instead")]
-    public class BeaconMessageReceiver : WalletMessageReceiver
+    public class WalletMessageReceiver : BeaconMessageReceiver
     {
     }
 
-    public class WalletMessageReceiver : MonoBehaviour
+    /// <summary>
+    /// Receives external messages
+    /// </summary>
+    [Obsolete(
+        "BeaconMessageReceiver will be renamed to WalletMessageReceiver in future versions, please use WalletMessageReceiver type instead")]
+    public class BeaconMessageReceiver : MonoBehaviour
     {
         public event Action<string> ClientCreated;
         public event Action<string> AccountConnected;
