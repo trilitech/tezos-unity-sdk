@@ -16,7 +16,7 @@ namespace Scripts.Tezos.API
     {
         private Rpc Rpc { get; }
 
-        public TezosDataAPI() : base(TezosConfig.Instance.TzKTBaseUrl)
+        public TezosDataAPI(IDataProviderConfig config) : base(config)
         {
             Rpc = new Rpc(TezosConfig.Instance.RpcBaseUrl);
         }

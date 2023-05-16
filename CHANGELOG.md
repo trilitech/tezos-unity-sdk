@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API methods: `GetOwnersForToken`, `GetOwnersForContract`, `IsHolderOfContract`, `GetTokenMetadata`, `GetContractMetadata`, `GetTokensForContract`, `GetOperationStatus`
 - User ability to specify logging level
 - Tezos config singleton class
+- `IDataProviderConfig` and `TzKTProviderConfig` implementation
 
 ### Changed
 - Refactor: Tezos divided into two parts: Wallet and API

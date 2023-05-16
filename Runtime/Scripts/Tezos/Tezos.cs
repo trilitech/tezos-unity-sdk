@@ -16,15 +16,16 @@ namespace Scripts.Tezos
     /// Tezos API and Wallet features
     /// Exposes the main functions of the Tezos in Unity
     /// </summary>
-    public class TezosAPI : ITezosAPI
+    public class Tezos : ITezosAPI
     {
         public BeaconMessageReceiver MessageReceiver { get; }
         public ITezosDataAPI API { get; }
         public IWalletProvider Wallet { get; }
 
-        public TezosAPI()
+        public Tezos()
         {
-            API = new TezosDataAPI();
+            var dataProviderConfig = new TzKTProviderConfig();
+            API = new TezosDataAPI(dataProviderConfig);
             Wallet = new BeaconWalletProvider();
             
             MessageReceiver = Wallet.MessageReceiver;

@@ -16,7 +16,7 @@ namespace Scripts.Tezos
 {
     public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
     {
-        private static TezosAPI _tezos;
+        private static Tezos _tezos;
         public BeaconMessageReceiver MessageReceiver => _tezos.MessageReceiver;
         public ITezosDataAPI API => _tezos.API;
         public IWalletProvider Wallet => _tezos.Wallet;
@@ -27,12 +27,12 @@ namespace Scripts.Tezos
 
             Logger.CurrentLogLevel = Logger.LogLevel.Debug;
             TezosConfig.Instance.Network = NetworkType.ghostnet;
-            _tezos = new TezosAPI();
+            _tezos = new Tezos();
         }
 
         public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)
         {
-            throw new NotImplementedException();
+            return _tezos.GetCurrentWalletBalance(callback);
         }
 
         public void ConnectWallet(bool withRedirectToWallet = true)

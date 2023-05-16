@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using Dynamic.Json;
 using Helpers;
+using Scripts.Tezos;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -14,10 +15,17 @@ namespace Scripts.Helpers
         private string BaseAddress { get; }
         private int RequestTimeout { get; }
 
-        protected HttpClient(string baseAddress, int timeoutSec = 30)
+        protected HttpClient(string baseAddress)
         {
             BaseAddress = baseAddress.EndsWith("/") ? baseAddress : $"{baseAddress}/";
-            RequestTimeout = timeoutSec;
+            RequestTimeout = TezosConfig.Instance.DefaultTimeoutSeconds;
+        }
+        
+        protected HttpClient(IDataProviderConfig config)
+        {
+            var configBaseAddress = config.BaseUrl;
+            BaseAddress = configBaseAddress.EndsWith("/") ? configBaseAddress : $"{configBaseAddress}/";
+            RequestTimeout = config.TimeoutSeconds;
         }
 
         protected IEnumerator GetJson(string path)
