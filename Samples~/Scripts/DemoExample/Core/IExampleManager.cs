@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 using Beacon.Sdk.Beacon.Sign;
-using BeaconSDK;
+using Scripts.BeaconSDK;
 
 public interface IExampleManager
 {
@@ -92,7 +92,7 @@ public interface IExampleManager
     /// <summary>
     /// Return the Tezos wallet MessageReceiver for using callbacks
     /// </summary>
-    public WalletMessageReceiver GetMessageReceiver();
+    public BeaconMessageReceiver GetMessageReceiver();
 
     /// <summary>
     /// Checks if item is on the marketplace in the blockchain

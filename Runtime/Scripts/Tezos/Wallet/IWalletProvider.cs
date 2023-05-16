@@ -1,5 +1,6 @@
 ﻿using Beacon.Sdk.Beacon.Sign;
 using BeaconSDK;
+using Scripts.BeaconSDK;
 
 namespace Scripts.Tezos.Wallet
 {

@@ -25,7 +25,7 @@ namespace Scripts.Tezos.Wallet
 
         private void InitBeaconConnector()
         {
-            // Create a BeaconMessageReceiver Game object to receive callback messages
+            // Create a WalletMessageReceiver Game object to receive callback messages
             MessageReceiver = new GameObject("UnityBeacon").AddComponent<WalletMessageReceiver>();
 
             // Assign the BeaconConnector depending on the platform.
@@ -35,7 +35,7 @@ namespace Scripts.Tezos.Wallet
 #else
             _beaconConnector = new BeaconConnectorDotNet();
             _beaconConnector.SetNetwork(TezosConfig.Instance.Network.ToString(), TezosConfig.Instance.RpcBaseUrl);
-            (_beaconConnector as BeaconConnectorDotNet)?.SetBeaconMessageReceiver(MessageReceiver);
+            (_beaconConnector as BeaconConnectorDotNet)?.SetWalletMessageReceiver(MessageReceiver);
             Connect(withRedirectToWallet: false);
 
             // todo: maybe call RequestTezosPermission from _beaconConnector?

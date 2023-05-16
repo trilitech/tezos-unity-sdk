@@ -9,9 +9,9 @@ public class AuthenticationManager : MonoBehaviour
     [SerializeField] private GameObject deepLinkButton;
     [SerializeField] private GameObject logoutButton;
     [SerializeField] private GameObject qrCodePanel;
-    
+
     private bool _isMobile;
-    
+
     void Start()
     {
 #if (UNITY_IOS || UNITY_ANDROID)
@@ -53,7 +53,7 @@ public class AuthenticationManager : MonoBehaviour
     {
         _tezos.Wallet.Connect();
     }
-    
+
     void EnableUI(bool isAuthenticated)
     {
         if (isAuthenticated)
@@ -74,9 +74,9 @@ public class AuthenticationManager : MonoBehaviour
                 deepLinkButton.SetActive(false);
             }
         }
-        
+
         logoutButton.SetActive(isAuthenticated);
-        
+
         if (contentPanel == null) return;
         contentPanel.SetActive(isAuthenticated);
     }

@@ -7,7 +7,7 @@ using Scripts.Tezos.API.Models.Tokens;
 
 namespace Scripts.Tezos.API
 {
-    public interface ITezosAPI
+    public interface ITezosDataAPI
     {
         /// <summary>
         /// An IEnumerator for reading the account's balance

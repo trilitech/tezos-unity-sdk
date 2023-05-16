@@ -12,11 +12,11 @@ using Scripts.Tezos.API.Models.Tokens;
 
 namespace Scripts.Tezos.API
 {
-    public class TezosAPI : HttpClient, ITezosAPI
+    public class TezosDataAPI : HttpClient, ITezosDataAPI
     {
         private Rpc Rpc { get; }
 
-        public TezosAPI() : base(TezosConfig.Instance.TzKTBaseUrl)
+        public TezosDataAPI() : base(TezosConfig.Instance.TzKTBaseUrl)
         {
             Rpc = new Rpc(TezosConfig.Instance.RpcBaseUrl);
         }

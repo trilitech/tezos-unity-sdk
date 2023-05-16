@@ -25,7 +25,7 @@ namespace BeaconSDK
 {
     public class BeaconConnectorDotNet : IBeaconConnector
     {
-        private static WalletMessageReceiver _walletMessageReceiver;
+        private static WalletMessageReceiver  _walletMessageReceiver;
         private DappBeaconClient BeaconDappClient { get; set; }
         private string _network;
         private string _rpc;
@@ -100,7 +100,7 @@ namespace BeaconSDK
             _rpc = rpc;
         }
 
-        public void SetBeaconMessageReceiver(WalletMessageReceiver messageReceiver)
+        public void SetWalletMessageReceiver(WalletMessageReceiver  messageReceiver)
         {
             _walletMessageReceiver = messageReceiver;
         }
