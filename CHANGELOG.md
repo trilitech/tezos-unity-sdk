@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - User ability to specify logging level
 - Tezos config singleton class
 - `IDataProviderConfig` and `TzKTProviderConfig` implementation
+- Test runner with GH actions
 
 ### Changed
 - Refactor: Tezos divided into two parts: Wallet and API

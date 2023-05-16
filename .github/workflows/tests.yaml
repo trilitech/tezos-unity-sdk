@@ -1,0 +1,38 @@
+name: Run Unity Tests
+on: [ pull_request, workflow_dispatch ]
+
+jobs:
+  tests:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: copy dir to new dir
+        run: |
+          pwd
+          folderName=$(echo "${PWD##*/}")
+          rsync -r "$GITHUB_WORKSPACE" "copiedProject" 
+          ls -F "copiedProject/$folderName"
+      - name: Run tests
+        id: runTests
+        uses: trudeaua21/unity-test-runner@main
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          projectPath: ./copiedProject/tezos-unity-sdk
+          unityVersion: "2021.3.22f1"
+          testMode: all
+          # coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+tezos-unity-sdk.*,-*Tests*'
+          artifactsPath: result-artifacts
+          packageMode: true
+
+      # Upload results
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package Coverage results (all)
+          path: ${{ steps.runTests.outputs.artifactsPath }}
+          retention-days: 1
