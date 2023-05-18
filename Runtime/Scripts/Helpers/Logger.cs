@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Helpers
+namespace Scripts.Helpers
 {
     public static class Logger
     {

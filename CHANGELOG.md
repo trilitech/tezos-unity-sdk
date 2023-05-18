@@ -4,9 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
-### Added
-- User ability to specify logging level
 
 ## [unreleased]
 ### Fixed
@@ -14,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Better [coroutine error handling](https://github.com/trilitech/tezos-unity-sdk/issues/39)
+- API methods: `GetOwnersForToken`, `GetOwnersForContract`, `IsHolderOfContract`, `GetTokenMetadata`, `GetContractMetadata`, `GetTokensForContract`, `GetOperationStatus`
+- User ability to specify logging level
+- Tezos config singleton class
+- `IDataProviderConfig` and `TzKTProviderConfig` implementation
+- Test runner with GH actions
+
+### Changed
+- Refactor: Tezos divided into two parts: Wallet and API
 
 
 ## [1.3.1] - 2023-04-27

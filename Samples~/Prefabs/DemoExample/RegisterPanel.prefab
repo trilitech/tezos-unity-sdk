@@ -1041,7 +1041,7 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 0
-  m_fontSizeMax: 9001
+  m_fontSizeMax: 24
   m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1115,7 +1115,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 87.525, y: -15}
+  m_AnchoredPosition: {x: 87.5249, y: -15}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2770193349559581556
@@ -1459,7 +1459,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4754352999720981482
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2391,7 +2391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _deepLinkPair: {fileID: 7580025468252638738}
   _qrImage: {fileID: 845853786785863931}
-  _qrCodeView: {fileID: 2656511422170555018}
+  _qrCodeView: {fileID: 607318709}
   _uiManager: {fileID: 0}
 --- !u!1 &6977438149725271032
 GameObject:
@@ -2580,7 +2580,7 @@ GameObject:
   - component: {fileID: 6895719909652766837}
   - component: {fileID: 1679391660344038116}
   - component: {fileID: 845853786785863931}
-  - component: {fileID: 2656511422170555018}
+  - component: {fileID: 607318709}
   m_Layer: 5
   m_Name: QRCode
   m_TagString: Untagged
@@ -2643,7 +2643,7 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!114 &2656511422170555018
+--- !u!114 &607318709
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2652,7 +2652,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7056710031957289478}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbe7a6d01d6f4562a0f332d1606f574d, type: 3}
+  m_Script: {fileID: 11500000, guid: a6b34a11c0bbb4c9e9c3c933d831d3e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _rawImage: {fileID: 845853786785863931}

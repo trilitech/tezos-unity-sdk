@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
-using Logger = Helpers.Logger;
+using Logger = Scripts.Helpers.Logger;
+
 
 [RequireComponent(typeof(SnapController))]
 public class InventoryManager : MonoBehaviour

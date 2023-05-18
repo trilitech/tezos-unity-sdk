@@ -1,6 +1,6 @@
 using Beacon.Sdk.Beacon.Sign;
 
-namespace BeaconSDK
+namespace Scripts.BeaconSDK
 {
 	/// <summary>
 	/// Implement this interface to create a class that can connect to native code
@@ -8,6 +8,7 @@ namespace BeaconSDK
 	/// </summary>
 	public interface IBeaconConnector
 	{
+		// todo: remove this?
 		/// <summary>
 		/// Specifies to which network the Beacon Client should connect
 		/// (Take in consideration that not all wallets support all available networks)
