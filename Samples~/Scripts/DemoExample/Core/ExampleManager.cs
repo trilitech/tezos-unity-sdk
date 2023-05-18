@@ -45,7 +45,7 @@ public class ExampleManager : IExampleManager
         const string entrypoint = "view_items_of";
         var input = new { @string = activeWalletAddress };
 
-        CoroutineRunner.Instance.StartWrappedCoroutine(
+        CoroutineRunner.Instance.StartCoroutineWrapper(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
@@ -55,7 +55,7 @@ public class ExampleManager : IExampleManager
                     Logger.LogDebug("READING INVENTORY DATA");
 
                     // deserialize the json data to inventory items
-                    CoroutineRunner.Instance.StartWrappedCoroutine(
+                    CoroutineRunner.Instance.StartCoroutineWrapper(
                         NetezosExtensions.HumanizeValue(
                             val: result,
                             rpcUri: _networkRPC,
@@ -140,7 +140,7 @@ public class ExampleManager : IExampleManager
             Prim = PrimType.Unit
         };
 
-        CoroutineRunner.Instance.StartWrappedCoroutine(
+        CoroutineRunner.Instance.StartCoroutineWrapper(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
@@ -148,7 +148,7 @@ public class ExampleManager : IExampleManager
                 callback: result =>
                 {
                     // deserialize the json data to market items
-                    CoroutineRunner.Instance.StartWrappedCoroutine(
+                    CoroutineRunner.Instance.StartCoroutineWrapper(
                         NetezosExtensions.HumanizeValue(
                             val: result,
                             rpcUri: _networkRPC,
@@ -238,7 +238,7 @@ public class ExampleManager : IExampleManager
     public void GetBalance(Action<ulong> callback)
     {
         var routine = _tezos.ReadBalance(callback);
-        CoroutineRunner.Instance.StartWrappedCoroutine(routine);
+        CoroutineRunner.Instance.StartCoroutineWrapper(routine);
     }
 
     public void GetSoftBalance(Action<int> callback)
@@ -260,7 +260,7 @@ public class ExampleManager : IExampleManager
             }
         };
 
-        CoroutineRunner.Instance.StartWrappedCoroutine(
+        CoroutineRunner.Instance.StartCoroutineWrapper(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: "get_balance",
@@ -373,7 +373,7 @@ public class ExampleManager : IExampleManager
             }
         };
 
-        CoroutineRunner.Instance.StartWrappedCoroutine(
+        CoroutineRunner.Instance.StartCoroutineWrapper(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
