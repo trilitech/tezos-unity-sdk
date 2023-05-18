@@ -53,7 +53,7 @@ type return_ = [listOfOps, storage];
 
 
 // @view
-let view_inventory_of = ([addr , s]: [address , storage]) : itemSet => 
+const view_inventory_of = ([addr , s]: [address , storage]) : itemSet => 
 { 
     let inv : inventory = match(
       Big_map.find_opt(addr, s.inventories) as option<inventory>, {
@@ -85,7 +85,7 @@ let sendToCallback = (addr : address, s : storage) : listOfOps => {
 };
 */
 
-let mint = (seed: int, store: storage) : storage => {
+const mint = (seed: int, store: storage) : storage => {
 
   let dmg = (seed * 13) % 9 + 1;
   let arm = (seed / 13) % (9) + 1;
@@ -147,7 +147,7 @@ let mint = (seed: int, store: storage) : storage => {
   return new_store;
 };
 
-let main = ([action, store]: [parameter, storage]) : return_ => {
+const main = ([action, store]: [parameter, storage]) : return_ => {
 
   let noop : listOfOps = list([]);
     match(action, {

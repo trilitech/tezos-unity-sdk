@@ -18,13 +18,13 @@ export type update_operators_param = list<unit_update>;
 
 const update_ops = ([updates, s]: [update_operators_param, storage]): [list<operation>, storage] => {
    const update_operator = ([operators,update] : [Operators.t, unit_update]) : Operators.t => match (update, 
-   { Add_operator    : (operator: operator) => Operators.add_operator (operators, operator.owner, operator.operator, operator.token_id)
-   , Remove_operator : (operator: operator) => Operators.remove_operator (operators, operator.owner, operator.operator, operator.token_id)
+   { Add_operator    : (operator: operator) => Operators.add_operator ([operators, operator.owner, operator.operator, operator.token_id])
+   , Remove_operator : (operator: operator) => Operators.remove_operator ([operators, operator.owner, operator.operator, operator.token_id])
    });
    let operators = Storage.get_operators (s);
    operators = List.fold_left (update_operator, operators, updates);
-   const s = Storage.set_operators (s, operators);
-   [list([]),s]
+   const s = Storage.set_operators ([s, operators]);
+   return [list([]),s];
 };
 
 // If transfer_policy is  No_transfer or Owner_transfer

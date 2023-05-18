@@ -36,15 +36,13 @@ const assert_update_permission = (owner : owner) : unit =>
     // added extra from:
     // https://gitlab.com/ligolang/contract-catalogue/-/blob/main/lib/fa2/nft/NFT.jsligo
     
-    export const is_operator = ([operators, owner, operator, token_id] : [t , address , address , nat]) : bool => {
-   
-      const authorized = 
-      match (Big_map.find_opt ([owner, operator], operators), {
-         Some: (a : set<token_id>) => a , 
-         None : () => Set.empty
-      });
+export const is_operator = ([operators, owner, operator, token_id] : [t , address , address , nat]) : bool => {
+    const authorized = match (Big_map.find_opt ([owner, operator], operators), {
+        Some: (a : set<token_id>) => a , 
+        None : () => Set.empty
+    });
 
-   (Set.mem (token_id, authorized) || owner == operator)  
+   return (Set.mem (token_id, authorized) || owner == operator);
 };
 
 // add a new operator to the list
