@@ -28,7 +28,7 @@ public class CopyToClipboard : MonoBehaviour, IPointerClickHandler
         
         // copy text to the clipboard
         GUIUtility.systemCopyBuffer = text.text;
-        CoroutineRunner.Instance.StartWrappedCoroutine(OnTextCopied());
+        CoroutineRunner.Instance.StartCoroutineWrapper(OnTextCopied());
     }
 
     IEnumerator OnTextCopied()

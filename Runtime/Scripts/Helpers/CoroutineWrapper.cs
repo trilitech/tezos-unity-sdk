@@ -12,6 +12,7 @@ public class CoroutineWrapper<T> : IEnumerator
     /// Event raised when the coroutine is complete
     /// </summary>
     public readonly Action<T> Completed;
+
     /// <summary>
     /// Event raised when the coroutine throws an exception
     /// </summary>
@@ -45,6 +46,7 @@ public class CoroutineWrapper<T> : IEnumerator
         {
             Completed += callback;
         }
+
         if (errorHandler != null)
         {
             ErrorHandler += errorHandler;
@@ -78,6 +80,7 @@ public class CoroutineWrapper<T> : IEnumerator
             {
                 ErrorHandler?.Invoke(e);
             }
+
             return false;
         }
     }
@@ -106,10 +109,17 @@ public class CoroutineRunner : MonoBehaviour
             return _instance;
         }
     }
-    
+
     public Coroutine StartWrappedCoroutine(IEnumerator coroutine)
     {
-        return StartCoroutine(new CoroutineWrapper<object>(coroutine, null, (exception) => Debug.LogError($"Exception on Coroutine: {exception.Message}")));
+        return StartCoroutine(new CoroutineWrapper<object>(coroutine, null,
+            (exception) => Debug.LogError($"Exception on Coroutine: {exception.Message}")));
+    }
+
+    [Obsolete("StartCoroutineWrapper is obsolete and will be replaced by StartWrappedCoroutine in future releases")]
+    public Coroutine StartCoroutineWrapper(IEnumerator coroutine)
+    {
+        return StartWrappedCoroutine(coroutine);
     }
 
     private void Awake()
