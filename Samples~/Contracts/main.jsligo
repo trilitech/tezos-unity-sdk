@@ -163,7 +163,7 @@ const view_item_meta = ([token_id , s]: [nat , storage]) : item =>
 {
    let meta = 
       match (Big_map.find_opt (token_id, s.token_metadata), {
-         Some : (data : data) => data,
+         Some : (data) => data,
          None : () => failwith ("Meta not found")
       });
 
@@ -197,7 +197,7 @@ const view_items_of = ([owner , s]: [address , storage]) : set<view_inventory_re
          {
             let meta = 
                match (Big_map.find_opt (token_id, s.token_metadata), {
-                  Some : (data : data) => data,
+                  Some : (data) => data,
                   None : () => failwith ("Meta not found")
                });
 
@@ -239,7 +239,7 @@ const view_items_on_market = ([_p, s] : [unit, storage]) : set<view_marketplace_
          const [currency, price] = marketPrice;
 
          let meta = match (Big_map.find_opt (token_id, s.token_metadata), {
-                Some : (data : data) => data,
+                Some : (data) => data,
                 None : () => failwith ("Meta not found")
             });
 

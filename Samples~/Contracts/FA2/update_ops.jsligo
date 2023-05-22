@@ -23,8 +23,8 @@ const update_ops = ([updates, s]: [update_operators_param, storage]): [list<oper
    });
    let operators = Storage.get_operators (s);
    operators = List.fold_left (update_operator, operators, updates);
-   const s = Storage.set_operators ([s, operators]);
-   return [list([]),s];
+   const storage_result = Storage.set_operators ([s, operators]);
+   return [list([]), storage_result];
 };
 
 // If transfer_policy is  No_transfer or Owner_transfer

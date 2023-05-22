@@ -38,14 +38,12 @@ const decrease_token_amount_for_user = (ledger: t , from_: owner, token_id: toke
     let balance_ = get_for_user (ledger, from_, token_id);
     assert_with_error ((balance_ >= amount_), Errors.ins_balance);
     balance_ = abs(balance_ - amount_);
-    const ledger = set_for_user(ledger, from_, token_id, balance_);
-    return ledger;
+    return set_for_user(ledger, from_, token_id, balance_);
 };
 
 // increases the amount of items on the given user
 const increase_token_amount_for_user = ([ledger, to_, token_id, amount_]: [t, owner, token_id, amount_]) : t => {
     let balance_ = get_for_user (ledger, to_, token_id);
     balance_ = balance_ + amount_;
-    const ledger = set_for_user(ledger, to_, token_id, balance_);
-    return ledger;
+    return set_for_user(ledger, to_, token_id, balance_);
 }; 

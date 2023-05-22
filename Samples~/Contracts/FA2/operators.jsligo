@@ -64,8 +64,8 @@ export const remove_operator = ([operators,owner,operator,token_id]: [t, owner, 
       assert_update_permission (owner);
       const auth_tokens : option<set<token_id>> = match (Big_map.find_opt ([owner,operator], operators),
       {Some : (ts : set<token_id>) => {
-         const ts = Set.remove (token_id, ts);
-         if (Set.cardinal (ts) == (0 as nat)) { return None ()} else { return Some (ts)};
+         const ts_result = Set.remove (token_id, ts);
+         if (Set.cardinal (ts_result) == (0 as nat)) { return None ()} else { return Some (ts_result)};
       },
       None : () => None ()
       });
