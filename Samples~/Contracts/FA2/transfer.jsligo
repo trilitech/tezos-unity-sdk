@@ -39,7 +39,7 @@ export type transfer_param = list<transfer_from>;
 const atomic_transfer_new_ledger = (l: Ledger.t, from_: address, to_ : address, token_id : nat, token_amount : nat) : Ledger.t =>
 {                 
    let ledger = Ledger.decrease_token_amount_for_user (l, from_, token_id, token_amount);
-   ledger = Ledger.increase_token_amount_for_user (ledger, to_, token_id, token_amount);
+   ledger = Ledger.increase_token_amount_for_user ([ledger, to_, token_id, token_amount]);
                
    return ledger;
 }
@@ -52,33 +52,28 @@ const transfer = ([t, s]: [transfer_param, storage]): [list<operation>, storage]
    const transfer_new_storage = (t : transfer_param, s : storage) : storage => {
 
    // This function process the "tx" list. Since all transfer share the same "from_" address, we use a se
-      const process_atomic_transfer = (from_ : address) : (s: storage, t: atomic_trans) => storage => {
-         return (s: storage, t: atomic_trans) : storage => 
-         {
+      const process_atomic_transfer = (from_ : address) => ([s, t]: [storage, atomic_trans]) => {
             //const {to_,token_id,token_amount} = t;
             const to_ = t.to_;
             const token_id = t.token_id; 
             const token_amount = t.token_amount;
 
             TokenMetadata.assert_token_exist (s.token_metadata, token_id);
-            Operators.assert_authorisation (s.operators, from_, token_id);
+            Operators.assert_authorisation ([s.operators, from_, token_id]);
 
             let new_marketplace = s.marketplace;
-            if(Marketplace.is_item_on_market([from_, token_id], s.marketplace))
+            if(Marketplace.is_item_on_market([[from_, token_id], s.marketplace]))
                new_marketplace = Marketplace.remove_from_market([from_, token_id], s.marketplace);
 
             let new_ledger = atomic_transfer_new_ledger(s.ledger, from_, to_, token_id, token_amount);
 
             return ({...s, marketplace : new_marketplace, ledger: new_ledger});
-         };
       }; 
    
-      const process_single_transfer = ([s, t]: [storage, transfer_from]) : storage => {
-         //const {from_,tx} = t;
-         const from_ = t.from_;
-         const tx = t.tx;
-      
-         return List.fold_left (process_atomic_transfer (from_), s, tx);
+      const process_single_transfer = ([s, t]: [storage, transfer_from]) => {
+        const {from_,tx} = t;
+        const ledger     = List.fold_left (process_atomic_transfer (from_), s, tx);
+        return ledger
       };
 
       return List.fold_left (process_single_transfer, s, t);
@@ -105,13 +100,13 @@ const marketplace_buy = ([p, s]: [buy_param, storage]): [list<operation>, storag
    let caller = Tezos.get_sender();
 
    // check if enough coins
-   let currency_balance = Storage.get_balance([s, caller, currency]);
+   let currency_balance = Storage.get_balance(s, caller, currency);
    if(currency_balance < price)
    {
        return failwith("Insufficient funds");
    };
 
-   let item_balance = Storage.get_balance([s, owner, token_id]);
+   let item_balance = Storage.get_balance(s, owner, token_id);
    if(item_balance <= (0 as nat))
    {
        return failwith("Negative balance");

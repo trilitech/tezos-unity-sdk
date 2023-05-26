@@ -1,27 +1,34 @@
-alias ligo="docker run --rm -v "$PWD":"$PWD" -w "$PWD" ligolang/ligo:0.51.0"
-export TEZOS_CLIENT_UNSAFE_DISABLE_DISCLAIMER=yes
-tezos-client --endpoint https://rpc.tzkt.io/jakartanet config update
-tezos-client --endpoint https://rpc.ghostnet.teztnets.xyz/ config update
-tezos-client --endpoint https://jakartanet.tezos.marigold.dev/ config update
-tezos-client activate account alice with 'NFT_myRepo/_Misc/jakartanet.json'
-tezos-client get balance for alice
-tezos-client --wait none transfer 0 from alice to KT1DCcniV9tatQFVLnPv15i4kGYNgpdE6GhS --arg '4' --burn-cap '1.0'
-ligo compile parameter 'main.jsligo' '{val1:"str1",val2:"str2"}'
-tezos-client --wait none transfer 0 from alice to KT1E4xgc9iniojkZqs1BDs117bzaYfMHZcPs --arg '(Pair "str1" "str2")' --burn-cap '1.0'
-ligo compile storage 'NFT_myRepo/incrementer.jsligo' '{inventories:Big_map.empty as big_map<address,inventory>, viewerContract:"KT1KvDaiC7sn6sdYyWncaYFUoivwHoK1pJM7" as address}'
-tezos-client originate contract MINTER transferring 0 from alice running incrementer.tz --init 'Pair {} "KT1KvDaiC7sn6sdYyWncaYFUoivwHoK1pJM7"' --burn-cap 1.0
+alias ligo="docker run --rm -v "$PWD":"$PWD" --platform linux/amd64 -w "$PWD" ligolang/ligo:0.65.0"
+export OCTEZ_CLIENT_UNSAFE_DISABLE_DISCLAIMER=yes
+# octez-client --endpoint https://rpc.tzkt.io/jakartanet config update
+# octez-client --endpoint https://rpc.ghostnet.teztnets.xyz/ config update
+octez-client --endpoint https://ghostnet.tezos.marigold.dev/ config update
+octez-client import secret key holder unencrypted:edsk3oRzLs4nUp4TrqsSJxqX9yMN1Jd6h2dx1SJf9DDWgr4tXbkRqm --force
+octez-client get balance for holder
+octez-client --wait none transfer 0 from holder to KT1DCcniV9tatQFVLnPv15i4kGYNgpdE6GhS --arg '4' --burn-cap '1.0'
+ligo compile parameter '../main.jsligo' '{val1:"str1",val2:"str2"}'
+octez-client --wait none transfer 0 from holder to KT1E4xgc9iniojkZqs1BDs117bzaYfMHZcPs --arg '(Pair "str1" "str2")' --burn-cap '1.0'
+ligo compile storage 'incrementer.jsligo' '{inventories:Big_map.empty as big_map<address,inventory>, viewerContract:"KT1KvDaiC7sn6sdYyWncaYFUoivwHoK1pJM7" as address}'
+octez-client originate contract MINTER transferring 0 from holder running incrementer.tz --init 'Pair {} "KT1KvDaiC7sn6sdYyWncaYFUoivwHoK1pJM7"' --burn-cap 1.0
 
 
-tezos-client gen keys alice
-tezos-client list known addresses
-tezos-client show address alice -S
+octez-client gen keys holder
+octez-client list known addresses
+octez-client show address holder -S
 
-ligo compile contract 'NFT_myRepo/main.jsligo' > 'FA2.tz'
-ligo compile storage 'NFT_myRepo/main.jsligo' '{ ledger: Big_map.empty as big_map<address,map<nat,nat>>, marketplace: Big_map.empty as big_map<[address,nat], [nat, nat]>, operators: Big_map.empty as big_map<[address, address], set<nat>>, token_counter:(1 as nat), token_metadata: Big_map.empty as big_map<nat, {token_id : nat, token_info : map<string, bytes>}>}'
-tezos-client originate contract FA2 transferring 0 from alice running FA2.tz --init '(Pair (Pair (Pair {} {}) {} 1) {})' --burn-cap 5.0
+ligo compile contract '../main.jsligo' > 'FA2.tz'
+ligo compile storage '../main.jsligo' '{
+    ledger: Big_map.empty as big_map<address,map<nat,nat>>,
+    token_metadata: Big_map.empty as big_map<nat, {token_id : nat, token_info : map<string, bytes>}>,
+    operators: Big_map.empty as big_map<[address, address], set<nat>>,
+    marketplace: Big_map.empty as big_map<[address, nat], [nat, nat]>,
+    token_counter:(1 as nat)
+}'
+
+octez-client originate contract FA2 transferring 0 from holder running FA2.tz --init '(Pair (Pair (Pair {} {}) {} 1) {})' --burn-cap 5.0
 
 
-ligo compile parameter 'NFT_myRepo/main.jsligo' 'SetMeta({token_id:0 as nat, token_info:Map.literal( list([
+ligo compile parameter '../main.jsligo' 'SetMeta({token_id:0 as nat, token_info:Map.literal( list([
     ["item", Bytes.pack( {itemType:0, damage:0,armor:0,attackSpeed:0,healthPoints:0,manaPoints:0} )],
 
     ["name", Bytes.pack("Example Coin")],
@@ -32,7 +39,6 @@ ligo compile parameter 'NFT_myRepo/main.jsligo' 'SetMeta({token_id:0 as nat, tok
     ["artifactUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")],
     ["displayUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")],
     ["thumbnailUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")],
-
     ["description", Bytes.pack("Unity Tezos Example Project coins used as soft currency")],
     ["minter", Bytes.pack(Tezos.get_sender())],
     ["creators", Bytes.pack(["https://assetstore.unity.com/packages/essentials/tutorial-projects/ui-toolkit-sample-dragon-crashers-231178"])],
@@ -43,7 +49,7 @@ ligo compile parameter 'NFT_myRepo/main.jsligo' 'SetMeta({token_id:0 as nat, tok
     ]) )})'
     
 // as one line:
-ligo compile parameter 'NFT_myRepo/main.jsligo' 'SetMeta({token_id:0 as nat, token_info:Map.literal( list([ ["item", Bytes.pack( {itemType:0, damage:0,armor:0,attackSpeed:0,healthPoints:0,manaPoints:0} )],  ["name", Bytes.pack("Example Coin")], ["symbol", Bytes.pack("UnityTezos")], ["decimals", Bytes.pack(0)],  ["image", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")], ["artifactUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")],  ["displayUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")], ["thumbnailUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")], ["description", Bytes.pack("Unity Tezos Example Project coins used as soft currency")], ["minter", Bytes.pack(Tezos.get_sender())], ["creators", Bytes.pack(["https://assetstore.unity.com/packages/essentials/tutorial-projects/ui-toolkit-sample-dragon-crashers-231178"])],  ["isBooleanAmount", Bytes.pack(false)], ["date", Bytes.pack(Tezos.get_now())]]) )})'
+ligo compile parameter '../main.jsligo' 'SetMeta({token_id:0 as nat, token_info:Map.literal( list([ ["item", Bytes.pack( {itemType:0, damage:0,armor:0,attackSpeed:0,healthPoints:0,manaPoints:0} )],  ["name", Bytes.pack("Example Coin")], ["symbol", Bytes.pack("UnityTezos")], ["decimals", Bytes.pack(0)],  ["image", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")], ["artifactUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")],  ["displayUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")], ["thumbnailUri", Bytes.pack("ipfs://bafybeian23odhsho6gufacrcpcr65ft6bpqavzk36pt22lhcjoxy45mqpa")], ["description", Bytes.pack("Unity Tezos Example Project coins used as soft currency")], ["minter", Bytes.pack(Tezos.get_sender())], ["creators", Bytes.pack(["https://assetstore.unity.com/packages/essentials/tutorial-projects/ui-toolkit-sample-dragon-crashers-231178"])],  ["isBooleanAmount", Bytes.pack(false)], ["date", Bytes.pack(Tezos.get_now())]]) )})'
 
 //result:
 (Right

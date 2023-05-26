@@ -36,7 +36,7 @@ export const set_token_metadata = ([meta, tm] : [data, t]) : t =>
    Big_map.update(meta.token_id, Some(meta), tm);
 
 // checks if the ID has ever been minted
-export const assert_token_exist = ([m, token_id]: [t, nat]) : unit => {
+export const assert_token_exist = (m:t, token_id:nat) : unit => {
    const _ = Option.unopt_with_error (
       Big_map.find_opt (token_id, m),
          Errors.undefined_token);
