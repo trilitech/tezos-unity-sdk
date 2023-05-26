@@ -8,12 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/68) with UnityBeacon gameobject
+- [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/61) fix contracts compilation on Ligo `0.65.0`
 
 ## [1.4.0] - 2023-05-18
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/57) with BeaconConnectorWebGl
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/63), updated Netezos to `v2.8.0`
-- [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/61) fix contracts compilation on Ligo `0.65.0`
 
 ### Added
 - Better [coroutine error handling](https://github.com/trilitech/tezos-unity-sdk/issues/39)
