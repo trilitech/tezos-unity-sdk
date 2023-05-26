@@ -21,7 +21,7 @@
   "dependencies": {
     "@airgap/beacon-sdk": "^4.0.4",
     "@taquito/utils": "^16.1.2",
-    "kukai-embed": "^0.8.4",
+    "kukai-embed": "0.8.4",
     "node-polyfill-webpack-plugin": "^2.0.1"
   }
 }
