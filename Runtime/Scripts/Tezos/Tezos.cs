@@ -37,9 +37,9 @@ namespace Scripts.Tezos
             return API.GetTezosBalance(callback, address);
         }
 
-        public void ConnectWallet(bool withRedirectToWallet = true)
+        public void ConnectWallet(WalletProviderType walletProvider, bool withRedirectToWallet = true)
         {
-            Wallet.Connect(withRedirectToWallet);
+            Wallet.Connect(walletProvider, withRedirectToWallet);
         }
 
         public void DisconnectWallet()

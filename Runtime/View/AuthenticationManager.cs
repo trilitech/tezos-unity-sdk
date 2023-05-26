@@ -1,4 +1,5 @@
 using Scripts.Tezos;
+using Scripts.Tezos.Wallet;
 using UnityEngine;
 
 public class AuthenticationManager : MonoBehaviour
@@ -51,7 +52,7 @@ public class AuthenticationManager : MonoBehaviour
 
     public void ConnectByDeeplink()
     {
-        _tezos.Wallet.Connect();
+        _tezos.Wallet.Connect(WalletProviderType.beacon);
     }
 
     void EnableUI(bool isAuthenticated)

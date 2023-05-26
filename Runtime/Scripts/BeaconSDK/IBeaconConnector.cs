@@ -1,4 +1,5 @@
 using Beacon.Sdk.Beacon.Sign;
+using Scripts.Tezos.Wallet;
 
 namespace Scripts.BeaconSDK
 {
@@ -8,32 +9,18 @@ namespace Scripts.BeaconSDK
 	/// </summary>
 	public interface IBeaconConnector
 	{
-		// todo: remove this?
-		/// <summary>
-		/// Specifies to which network the Beacon Client should connect
-		/// (Take in consideration that not all wallets support all available networks)
-		/// </summary>
-		/// <param name="network">Name of the network to connect</param>
-		/// <param name="rpc">Uri of an specific RPC. (It can be left empty to use
-		/// the default RPC</param>
-		void SetNetwork(string network, string rpc);
-
 		/// <summary>
 		/// Starts the connection between Beacon SDK and a wallet to connect to
 		/// an account
 		/// </summary>
-		void ConnectAccount();
+		/// <param name="walletProvider"></param>
+		void ConnectAccount(WalletProviderType walletProvider);
 
 		/// <summary>
 		/// Checks if there is an active account paired.
 		/// </summary>
 		/// <returns>Returns only the account address as a string.</returns>
 		public string GetActiveAccountAddress();
-
-		/// <summary>
-		/// Requests a handshake to be used in QR and Deeplink Pairing (same as the previously removed Pair)
-		/// </summary>
-		void RequestHandshake();
 
 		/// <summary>
 		/// Allows waiting for permissions to be granted for pairing.
@@ -60,14 +47,6 @@ namespace Scripts.BeaconSDK
 		/// <param name="signingType">An integer to select a SigningType: 0=Raw 1=Operation 2=Micheline allelse=Micheline</param>
 		/// <param name="payload"></param>
 		public void RequestTezosSignPayload(SignPayloadType signingType, string payload);
-
-		/// <summary>
-		/// To use when broadcasts are required
-		/// </summary>
-		/// <param name="signedTransaction">The signed transaction to be broadcasted</param>
-		/// <param name="networkName">The name of the desired network.</param>
-		/// <param name="networkRPC">The RPC to the desired network</param>
-		public void RequestTezosBroadcast(string signedTransaction, string networkName = "", string networkRPC = "");
 
 		/// <summary>
 		/// Removes the connection to the current active account.

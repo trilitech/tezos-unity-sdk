@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using Beacon.Sdk.Beacon.Sign;
 using Scripts.BeaconSDK;
+using Scripts.Tezos.Wallet;
 
 public interface IExampleManager
 {
@@ -63,7 +64,7 @@ public interface IExampleManager
     /// <returns></returns>
     public string GetActiveAccountAddress();
 
-    public void Deeplink();
+    public void Login(WalletProviderType walletProvider);
 
     /// <summary>
     /// Transfers an item to an account address
