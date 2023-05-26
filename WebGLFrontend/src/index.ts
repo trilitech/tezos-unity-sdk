@@ -18,7 +18,7 @@ function InitWalletProvider(walletType: WalletType) {
 window.InitWalletProvider = InitWalletProvider;
 
 declare global {
-  interface Window extends Wallet {
+  interface Window {
     unityInstance: any;
     WalletProvider: Wallet | null;
     InitWalletProvider(walletType: WalletType): void;
