@@ -19,7 +19,7 @@ module.exports = {
     },
   },
   output: {
-    filename: "webgl-frontend.js",
+    filename: "StreamingAssets/webgl-frontend.js",
     path: path.resolve(__dirname, "dist"),
   },
   plugins: [new NodePolyfillPlugin()],
