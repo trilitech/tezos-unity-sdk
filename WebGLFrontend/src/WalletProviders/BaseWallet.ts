@@ -1,14 +1,14 @@
 import {
-  SigningType,
   PartialTezosTransactionOperation,
+  SigningType,
   TezosOperationType,
 } from "@airgap/beacon-types";
 import { char2Bytes } from "@taquito/utils";
 import {
   AbstractWallet,
   AccountInfo,
-  SignResult,
   OperationResult,
+  SignResult,
 } from "./Types";
 
 class BaseWallet implements AbstractWallet {

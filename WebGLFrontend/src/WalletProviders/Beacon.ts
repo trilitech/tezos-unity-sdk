@@ -1,11 +1,11 @@
-import { Wallet } from "./Types";
-import BaseWallet from "./BaseWallet";
 import { DAppClient } from "@airgap/beacon-sdk";
 import {
   Network,
   NetworkType,
   PermissionResponseOutput,
 } from "@airgap/beacon-types";
+import BaseWallet from "./BaseWallet";
+import { Wallet } from "./Types";
 
 class BeaconWallet extends BaseWallet implements Wallet {
   beaconClient: DAppClient | null;

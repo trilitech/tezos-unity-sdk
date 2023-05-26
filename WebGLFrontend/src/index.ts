@@ -1,6 +1,6 @@
-import { Wallet, WalletType } from "./WalletProviders/Types";
-import KukaiWallet from "./WalletProviders/Kukai";
 import BeaconWallet from "./WalletProviders/Beacon";
+import KukaiWallet from "./WalletProviders/Kukai";
+import { Wallet, WalletType } from "./WalletProviders/Types";
 
 let cachedKukaiWallet: KukaiWallet;
 
