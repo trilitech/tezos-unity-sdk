@@ -6,6 +6,7 @@ enum WalletType {
 // this methods called from Unity.
 interface Wallet {
   ConnectAccount(): void;
+  SetNetwork(networkName: string, rpcUrl: string): void;
   GetActiveAccountAddress(): string;
   SendContract(
     destination: string,

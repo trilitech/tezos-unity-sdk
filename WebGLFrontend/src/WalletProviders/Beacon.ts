@@ -8,25 +8,31 @@ import BaseWallet from "./BaseWallet";
 import { Wallet } from "./Types";
 
 class BeaconWallet extends BaseWallet implements Wallet {
+  clientName: string = "Tezos Unity SDK";
   beaconClient: DAppClient | null;
   activePermissions: PermissionResponseOutput | null;
+  networkType: NetworkType;
+  rpcUrl: string;
 
-  constructor() {
-    super();
-
-    this.beaconClient = new DAppClient({
-      name: "Tezos Unity SDK",
-      //todo: make configurable.
-      preferredNetwork: NetworkType.GHOSTNET,
-    });
+  SetNetwork(networkName: string, rpcUrl: string) {
+    this.networkType =
+      NetworkType[networkName.toUpperCase() as keyof typeof NetworkType];
+    this.rpcUrl = rpcUrl;
   }
 
   async ConnectAccount() {
+    if (!this.beaconClient) {
+      this.beaconClient = new DAppClient({
+        name: this.clientName,
+        preferredNetwork: this.networkType,
+      });
+    }
+
     try {
       const network: Network = {
         type: this.beaconClient.preferredNetwork,
         name: this.beaconClient.preferredNetwork,
-        rpcUrl: `https://rpc.${this.beaconClient.preferredNetwork}.teztnets.xyz`,
+        rpcUrl: this.rpcUrl,
       };
 
       this.activePermissions = await this.beaconClient.requestPermissions({

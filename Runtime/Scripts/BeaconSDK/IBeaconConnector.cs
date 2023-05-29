@@ -10,11 +10,18 @@ namespace Scripts.BeaconSDK
 	public interface IBeaconConnector
 	{
 		/// <summary>
+		/// Initially configure wallet before using.
+		/// </summary>
+		/// <param name="network">Name of the network to connect</param>
+		/// <param name="rpc">Uri of an specific RPC.</param>
+		/// <param name="walletProviderType">Type of wallet, e.g. "beacon" or "kukai"</param>
+		void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType);
+
+		/// <summary>
 		/// Starts the connection between Beacon SDK and a wallet to connect to
 		/// an account
 		/// </summary>
-		/// <param name="walletProvider"></param>
-		void ConnectAccount(WalletProviderType walletProvider);
+		void ConnectAccount();
 
 		/// <summary>
 		/// Checks if there is an active account paired.

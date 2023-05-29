@@ -1,18 +1,22 @@
-import { KukaiEmbed, Networks, Template } from "kukai-embed";
+import { KukaiEmbed, Template } from "kukai-embed";
 import BaseWallet from "./BaseWallet";
 import { Wallet } from "./Types";
 
 class KukaiWallet extends BaseWallet implements Wallet {
   kukaiEmbed: KukaiEmbed | null;
   defaultUIConfig: Template = { silent: true };
+  networkName: string;
+
+  SetNetwork(networkName: string, rpcUrl: string) {
+    this.networkName = networkName;
+  }
 
   async ConnectAccount() {
     if (!this.kukaiEmbed?.initialized) {
       this.kukaiEmbed = new KukaiEmbed({
-        // todo: remove
-        // net: network,
-        net: Networks.local,
+        net: this.networkName,
       });
+
       await this.kukaiEmbed.init();
     }
 
@@ -63,8 +67,8 @@ class KukaiWallet extends BaseWallet implements Wallet {
       plainTextPayload
     );
     const signature = await this.kukaiEmbed.signExpr(
-        hexPayload,
-        this.defaultUIConfig
+      hexPayload,
+      this.defaultUIConfig
     );
     this.CallUnityOnPayloadSigned({ signature });
   }

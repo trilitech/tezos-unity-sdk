@@ -33,7 +33,7 @@ namespace BeaconSDK
 
         #region IBeaconConnector
 
-        public async void ConnectAccount(WalletProviderType walletProvider)
+        public async void ConnectAccount()
         {
             var pathToDb = Path.Combine(Application.persistentDataPath, "beacon.db");
             Logger.LogDebug($"DB file stored in {pathToDb}");
@@ -89,6 +89,12 @@ namespace BeaconSDK
             var pairingRequestQrData = BeaconDappClient.GetPairingRequestInfo();
             _walletMessageReceiver.OnHandshakeReceived(pairingRequestQrData);
             UnityMainThreadDispatcher.Enqueue(_walletMessageReceiver.OnAccountDisconnected, string.Empty);
+        }
+        
+        public void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType)
+        {
+            _network = network;
+            _rpc = rpc;
         }
 
         public void SetWalletMessageReceiver(WalletMessageReceiver  messageReceiver)
