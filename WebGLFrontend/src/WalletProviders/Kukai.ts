@@ -62,9 +62,9 @@ class KukaiWallet extends BaseWallet implements Wallet {
       this.NumToSigningType(signingType),
       plainTextPayload
     );
-    var signature = await this.kukaiEmbed.signExpr(
-      hexPayload,
-      this.defaultUIConfig
+    const signature = await this.kukaiEmbed.signExpr(
+        hexPayload,
+        this.defaultUIConfig
     );
     this.CallUnityOnPayloadSigned({ signature });
   }
