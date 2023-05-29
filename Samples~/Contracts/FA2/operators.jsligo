@@ -36,15 +36,13 @@ const assert_update_permission = (owner : owner) : unit =>
     // added extra from:
     // https://gitlab.com/ligolang/contract-catalogue/-/blob/main/lib/fa2/nft/NFT.jsligo
     
-    export const is_operator = ([operators, owner, operator, token_id] : [t , address , address , nat]) : bool => {
-   
-      const authorized = 
-      match (Big_map.find_opt ([owner, operator], operators), {
-         Some: (a : set<token_id>) => a , 
-         None : () => Set.empty
-      });
+export const is_operator = ([operators, owner, operator, token_id] : [t , address , address , nat]) : bool => {
+    const authorized = match (Big_map.find_opt ([owner, operator], operators), {
+        Some: (a : set<token_id>) => a , 
+        None : () => Set.empty
+    });
 
-   (Set.mem (token_id, authorized) || owner == operator)  
+   return (Set.mem (token_id, authorized) || owner == operator);
 };
 
 // add a new operator to the list
@@ -66,8 +64,8 @@ export const remove_operator = ([operators,owner,operator,token_id]: [t, owner, 
       assert_update_permission (owner);
       const auth_tokens : option<set<token_id>> = match (Big_map.find_opt ([owner,operator], operators),
       {Some : (ts : set<token_id>) => {
-         const ts = Set.remove (token_id, ts);
-         if (Set.cardinal (ts) == (0 as nat)) { return None ()} else { return Some (ts)};
+         const ts_result = Set.remove (token_id, ts);
+         if (Set.cardinal (ts_result) == (0 as nat)) { return None ()} else { return Some (ts_result)};
       },
       None : () => None ()
       });

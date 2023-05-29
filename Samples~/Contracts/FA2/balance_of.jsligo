@@ -47,9 +47,9 @@ const balance_of = ([b, s] : [balance_of_param, storage]): [list<operation>, sto
       // let balance_ = 0 as nat;
       // if (Storage.is_owner_of (s, owner, token_id)) balance_ = 1 as nat;
 
-      ({request:request,balance:balance_})
+      return ({request:request,balance:balance_});
    };
    const callback_param = List.map (get_balance_info, requests);
    const operation = Tezos.transaction (callback_param, (0 as tez), callback);
-   [list([operation]),s]
+   return [list([operation]),s];
 };

@@ -99,11 +99,11 @@ const main = ([p, s]: [parameter, storage]) : [list<operation>, storage] => matc
       let caller = Tezos.get_sender();
        
       TokenMetadata.assert_token_exist (s.token_metadata, p.token_id);
-      Operators.assert_authorisation (s.operators, caller, p.token_id);
+      Operators.assert_authorisation ([s.operators, caller, p.token_id]);
 
       let new_marketplace = Marketplace.add_to_market(p, s.marketplace);
-      let new_storage = Storage.set_marketplace (s, new_marketplace);
-      [list([]), new_storage]
+      let new_storage = Storage.set_marketplace ([s, new_marketplace]);
+      return [list([]), new_storage];
    } ,
 
    RemoveFromMarket : (p : remove_from_market_param      ) => 
@@ -113,21 +113,21 @@ const main = ([p, s]: [parameter, storage]) : [list<operation>, storage] => matc
       const [_, token_id] = p;
 
       TokenMetadata.assert_token_exist (s.token_metadata, token_id);
-      Operators.assert_authorisation (s.operators, caller, token_id);
+      Operators.assert_authorisation ([s.operators, caller, token_id]);
       
       let new_marketplace = Marketplace.remove_from_market(p, s.marketplace);
-      let new_storage = Storage.set_marketplace (s, new_marketplace);
-      [list([]), new_storage]
+      let new_storage = Storage.set_marketplace ([s, new_marketplace]);
+      return [list([]), new_storage];
    } ,
 
-   Buy              : (p : buy_param         ) => Transfer.marketplace_buy(p, s),
+   Buy              : (p : buy_param         ) => Transfer.marketplace_buy([p, s]),
 
-   Transfer         : (p : transfer_param        ) => Transfer.transfer   (p, s) ,
-   Balance_of       : (p : balance_of_param      ) => BalanceOf.balance_of (p, s) ,
-   Update_operators : (p : update_operators_param) => UpdateOps.update_ops (p, s),
+   Transfer         : (p : transfer_param        ) => Transfer.transfer   ([p, s]) ,
+   Balance_of       : (p : balance_of_param      ) => BalanceOf.balance_of ([p, s]) ,
+   Update_operators : (p : update_operators_param) => UpdateOps.update_ops ([p, s]),
 
    // utility
-   SetMeta:                (p : set_meta_param       ) => Storage.set_token_metadata(p, s) , // to be removed for security
+   SetMeta:                (p : set_meta_param       ) => Storage.set_token_metadata([p, s]) , // to be removed for security
 
    // Humanize utility function do not need to execute any code, because they are never actually called
    HumanizeItem:           (_p : item                          ) => failwith("Netezos use only"),
@@ -141,29 +141,29 @@ const main = ([p, s]: [parameter, storage]) : [list<operation>, storage] => matc
 // @view
 const get_balance = ([p, s] : [[address , nat] , storage]) : nat => {
    const [owner, token_id] = p;
-   Storage.get_balance (s, owner, token_id);
+   return Storage.get_balance (s, owner, token_id);
 };
    
 // @view
 const is_operator = ([op, s] : [Operators.operator_info , storage]) : bool =>
-   Operators.is_operator (s.operators, op.owner, op.operator, op.token_id);
+   Operators.is_operator ([s.operators, op.owner, op.operator, op.token_id]);
 
 // @view
 const total_supply = ([token_id, s] : [nat , storage]) : nat => {
    TokenMetadata.assert_token_exist (s.token_metadata, token_id);
-   (1 as nat)
+   return (1 as nat);
 };
 
 // @view
 const token_metadata = ([p, s] : [nat, storage]) : TokenMetadata.data =>
-   TokenMetadata.get_token_metadata(p, s.token_metadata);
+   TokenMetadata.get_token_metadata([p, s.token_metadata]);
 
 // @view
 const view_item_meta = ([token_id , s]: [nat , storage]) : item =>
 {
    let meta = 
       match (Big_map.find_opt (token_id, s.token_metadata), {
-         Some : (data : data) => data,
+         Some : (data) => data,
          None : () => failwith ("Meta not found")
       });
 
@@ -182,7 +182,7 @@ const view_item_meta = ([token_id , s]: [nat , storage]) : item =>
 };
  
 // @view
-let view_items_of = ([owner , s]: [address , storage]) : set<view_inventory_result> => 
+const view_items_of = ([owner , s]: [address , storage]) : set<view_inventory_result> => 
 { 
    let inv = match(
       Big_map.find_opt(owner, s.ledger), {
@@ -190,14 +190,14 @@ let view_items_of = ([owner , s]: [address , storage]) : set<view_inventory_resu
         None: () => Map.empty
       });
 
-   Map.fold(
-      (acc: set<view_inventory_result>, [token_id, amount]: [token_id, amount]) => 
+   return Map.fold(
+      ([acc, [token_id, amount]]: [set<view_inventory_result>, [token_id, amount]]) => 
       {
          if(amount > (0 as nat))
          {
             let meta = 
                match (Big_map.find_opt (token_id, s.token_metadata), {
-                  Some : (data : data) => data,
+                  Some : (data) => data,
                   None : () => failwith ("Meta not found")
                });
 
@@ -230,25 +230,23 @@ let view_items_of = ([owner , s]: [address , storage]) : set<view_inventory_resu
 };
 
 // @view
-let view_items_on_market = ([_p, s] : [unit, storage]) : set<view_marketplace_result> => 
+const view_items_on_market = ([_p, s] : [unit, storage]) : set<view_marketplace_result> => 
 { 
-   Map.fold(
-      (acc: set<view_marketplace_result>, [marketToken, marketPrice]: [marketToken, marketPrice]) => 
+   return Map.fold(
+      ([acc, [marketToken, marketPrice]]: [set<view_marketplace_result>, [marketToken, marketPrice]]) => 
       {
          const [owner, token_id] = marketToken;
          const [currency, price] = marketPrice;
 
-         let meta = 
-               match (Big_map.find_opt (token_id, s.token_metadata), {
-                  Some : (data : data) => data,
-                  None : () => failwith ("Meta not found")
-               });
+         let meta = match (Big_map.find_opt (token_id, s.token_metadata), {
+                Some : (data) => data,
+                None : () => failwith ("Meta not found")
+            });
 
-         let info =
-               match(Map.find_opt ("item", meta.token_info), {
-                  Some : (info : bytes) => info,
-                  None : () => failwith ("Property not found")
-               });
+         let info = match(Map.find_opt ("item", meta.token_info), {
+                Some : (info : bytes) => info,
+                None : () => failwith ("Property not found")
+            });
 
          let item = match( Bytes.unpack(info) as option<item>, {
                Some: (it : item) => it,
@@ -265,7 +263,7 @@ let view_items_on_market = ([_p, s] : [unit, storage]) : set<view_marketplace_re
             };
 
 
-         Set.add(result, acc)
+         return Set.add(result, acc);
       },
       s.marketplace, 
       Set.empty
@@ -273,14 +271,14 @@ let view_items_on_market = ([_p, s] : [unit, storage]) : set<view_marketplace_re
 };
 
 // @view
-let is_item_on_market = ([p, s] : [[address, nat], storage]) : bool => Map.mem(p, s.marketplace);
+const is_item_on_market = ([p, s] : [[address, nat], storage]) : bool => Map.mem(p, s.marketplace);
 
 // @view
-let is_items_on_market = ([p, s] : [[address, list<nat>], storage]) : set<[nat, bool]> =>
-   List.fold( 
-      (acc: set<[nat, bool]>, token_id : nat) => {
+const is_items_on_market = ([p, s] : [[address, list<nat>], storage]) : set<[nat, bool]> =>
+    List.fold( 
+      ([acc, token_id] : [set<[nat, bool]>, nat]) => {
          let is_present = Map.mem([p[0], token_id], s.marketplace);
-         Set.add([token_id, is_present], acc);
+         return Set.add([token_id, is_present], acc);
       },
       p[1], 
       Set.empty
