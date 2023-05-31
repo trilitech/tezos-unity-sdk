@@ -1,6 +1,9 @@
-mergeInto(LibraryManager.library, { 
-  JsConnectAccount: function(walletProvider){
-    InitWalletProvider(UTF8ToString(walletProvider))
+mergeInto(LibraryManager.library, {
+  JsInitWallet: function(network, rpc, walletProvider){
+    InitWalletProvider(UTF8ToString(network), UTF8ToString(rpc), UTF8ToString(walletProvider))
+  },
+
+  JsConnectAccount: function(){
     WalletProvider.ConnectAccount();
   },
 

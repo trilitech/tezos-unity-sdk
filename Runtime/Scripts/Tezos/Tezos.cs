@@ -26,7 +26,7 @@ namespace Scripts.Tezos
         {
             var dataProviderConfig = new TzKTProviderConfig();
             API = new TezosDataAPI(dataProviderConfig);
-            Wallet = new BeaconWalletProvider();
+            Wallet = new WalletProvider();
             
             MessageReceiver = Wallet.MessageReceiver;
         }

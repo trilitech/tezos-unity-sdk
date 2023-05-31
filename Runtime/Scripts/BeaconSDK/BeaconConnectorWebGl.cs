@@ -14,9 +14,12 @@ namespace BeaconSDK
     public class BeaconConnectorWebGl : IBeaconConnector
     {
         #region Bridge to external functions
+        
+        [DllImport("__Internal")]
+        private static extern void JsInitWallet(string network, string rpc, string walletProvider);
 
         [DllImport("__Internal")]
-        private static extern void JsConnectAccount(string walletProvider);
+        private static extern void JsConnectAccount();
 
         [DllImport("__Internal")]
         private static extern void JsDisconnectAccount();
@@ -34,9 +37,14 @@ namespace BeaconSDK
 
         private string _activeAccountAddress;
 
-        public void ConnectAccount(WalletProviderType walletProvider)
+        public void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType)
         {
-            JsConnectAccount(walletProvider.ToString());
+            JsInitWallet(network, rpc, walletProviderType.ToString());
+        }
+
+        public void ConnectAccount()
+        {
+            JsConnectAccount();
         }
 
         public void DisconnectAccount()

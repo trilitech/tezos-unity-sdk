@@ -31,7 +31,7 @@ const login = (p: login_param, s: storage) : [list<operation> , storage]  =>
         let amount_ =  1000 as nat;
 
         // modifying the ledger (giving 1000 coins to the new user)
-        let new_ledger = Ledger.set_for_user([s.ledger, sender, token_id, amount_]);
+        let new_ledger = Ledger.set_for_user(s.ledger, sender, token_id, amount_);
         
         // the old metadata cached
         let new_metadata = s.token_metadata;

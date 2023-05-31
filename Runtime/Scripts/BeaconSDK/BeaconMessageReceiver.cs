@@ -30,40 +30,45 @@ namespace Scripts.BeaconSDK
         public event Action<string> PayloadSigned;
         public event Action<string> HandshakeReceived;
         public event Action<string> PairingCompleted;
-        public event Action<string> AccountReceived;
+
 
         public void OnAccountConnected(string address)
         {
             // result is the json permission response
-            // Debug.Log("From unity, OnAccountConnected: " + address);
+            Logger.LogDebug("From unity, OnAccountConnected: " + address);
             AccountConnected?.Invoke(address);
         }
 
         public void OnAccountFailedToConnect(string result)
         {
             // result is the json error
-            // Debug.Log("From unity, OnAccountFailedToConnect: " + result);
+            Logger.LogDebug("From unity, OnAccountFailedToConnect: " + result);
             AccountConnectionFailed?.Invoke(result);
         }
 
         public void OnAccountDisconnected(string result)
         {
-            // Debug.Log("From unity, OnAccountDisconnect: " + result);
+            Logger.LogDebug("From unity, OnAccountDisconnect: " + result);
             AccountDisconnected?.Invoke(result);
         }
 
         public void OnContractCallCompleted(string result)
         {
             // result is the json of transaction response
-            // Debug.Log("From unity, OnContractCallCompleted: " + result);
+            Logger.LogDebug("From unity, OnContractCallCompleted: " + result);
             ContractCallCompleted?.Invoke(result);
         }
 
         public void OnContractCallInjected(string result)
         {
             // result is the json of transaction response
-            // Debug.Log("From unity, OnContractCallInjected: " + result);
+            Logger.LogDebug("From unity, OnContractCallInjected: " + result);
             ContractCallInjected?.Invoke(result);
+        }
+
+        private void Awake()
+        {
+            DontDestroyOnLoad(this.gameObject);
         }
 
         [Serializable]
@@ -102,34 +107,29 @@ namespace Scripts.BeaconSDK
         public void OnContractCallFailed(string result)
         {
             // result is error or empty
-            // Debug.Log("From unity, OnContractCallFailed: " + result);
+            Logger.LogDebug("From unity, OnContractCallFailed: " + result);
             ContractCallFailed?.Invoke(result);
         }
 
-        public void OnPayloadSigned(string response)
+        public void OnPayloadSigned(string signature)
         {
             // result is the json string of payload signing result
-            // Debug.Log("From unity, OnPayloadSigned: " + signature);
-            PayloadSigned?.Invoke(response);
+            Logger.LogDebug("From unity, OnPayloadSigned: " + signature);
+            PayloadSigned?.Invoke(signature);
+
         }
 
         public void OnHandshakeReceived(string handshake)
         {
             // result is serialized p2p pairing request
-            // Debug.Log("From unity, OnHandshakeReceived: " + handshake);
+            Logger.LogDebug("From unity, OnHandshakeReceived: " + handshake);
             HandshakeReceived?.Invoke(handshake);
         }
 
         public void OnPairingCompleted(string message)
         {
-            // Debug.Log("From unity, OnPairingCompleted: " + message);
+            Logger.LogDebug("From unity, OnPairingCompleted: " + message);
             PairingCompleted?.Invoke(message);
-        }
-
-        public void OnAccountReceived(string message)
-        {
-            // Debug.Log("From unity, OnAccountReceived: " + message);
-            AccountReceived?.Invoke(message);
         }
     }
 }
