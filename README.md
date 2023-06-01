@@ -82,10 +82,11 @@ currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity
 * Open Unity Editor.
 * Navigate to `Packages` and find the `Tezos Unity SDK`.
 * Go to `WebGLFrontend/output` and copy the `StreamingAssets` and `WebGLTemplates` folders.
-* Navigate to the `Assets` folder of your project and paste the copied files.
-* This action create WebGL templates folders to your Project. Each template is a subfolder within the `WebGLTemplates`
-  folder. Each template subfolder contains an `index.html` file along with any other resources the page needs, such as
-  images or stylesheets.
+* Navigate to the `Assets` folder of your project and paste copied folders.
+* This action will create WebGL templates folders to your Project. Each template is a subfolder within the
+  `WebGLTemplates` folder. Each template subfolder contains an `index.html` file along with any other resources the page
+  needs, such as images or stylesheets. You can choose appropriate template to use in WebGL build in
+  `Project settings/Player/Web tab/Resolution and Presentation`
 * By default unfortunately Web builds didn't support copy and paste operations, to be able handle them install with
   double-clicking `WebGLFrontend/output/WebGLCopyAndPaste.unitypackage`, this action will create `WebGLCopyAndPaste`
   alongside with `StreamingAssets` and `WebGLTemplates` folders inside your project Assets directory.
