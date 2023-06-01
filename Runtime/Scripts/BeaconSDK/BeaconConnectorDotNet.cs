@@ -16,6 +16,7 @@ using Newtonsoft.Json.Linq;
 using Scripts.BeaconSDK;
 using Scripts.Helpers;
 using Scripts.Tezos;
+using Scripts.Tezos.Wallet;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Logger = Scripts.Helpers.Logger;
@@ -67,7 +68,7 @@ namespace BeaconSDK
                     _walletMessageReceiver.OnAccountConnected,
                     new JObject
                     {
-                        ["account"] = new JObject
+                        ["accountInfo"] = new JObject
                         {
                             ["address"] = activeAccountPermissions.Address,
                             ["publicKey"] = activeAccountPermissions.PublicKey
@@ -82,10 +83,6 @@ namespace BeaconSDK
 
         public string GetActiveAccountAddress() => BeaconDappClient?.GetActiveAccount()?.Address ?? string.Empty;
 
-        public void RequestHandshake()
-        {
-        }
-
         public void DisconnectAccount()
         {
             BeaconDappClient.RemoveActiveAccounts();
@@ -93,8 +90,8 @@ namespace BeaconSDK
             _walletMessageReceiver.OnHandshakeReceived(pairingRequestQrData);
             UnityMainThreadDispatcher.Enqueue(_walletMessageReceiver.OnAccountDisconnected, string.Empty);
         }
-
-        public void SetNetwork(string network, string rpc)
+        
+        public void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType)
         {
             _network = network;
             _rpc = rpc;
@@ -192,10 +189,6 @@ namespace BeaconSDK
         {
             BeaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signingType, payload), signingType);
         }
-        
-        public void RequestTezosBroadcast(string signedTransaction, string networkName = "", string networkRPC = "")
-        {
-        }
 
         #endregion
 
@@ -226,7 +219,7 @@ namespace BeaconSDK
                         _walletMessageReceiver.OnAccountConnected, //permissionResponse.PublicKey);
                         new JObject
                         {
-                            ["account"] = new JObject
+                            ["accountInfo"] = new JObject
                             {
                                 ["address"] = PubKey.FromBase58(permissionResponse.PublicKey).Address,
                                 ["publicKey"] = permissionResponse.PublicKey

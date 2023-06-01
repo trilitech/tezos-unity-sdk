@@ -5,6 +5,7 @@ using Netezos.Encoding;
 using Scripts.BeaconSDK;
 using Scripts.Helpers;
 using Scripts.Tezos;
+using Scripts.Tezos.Wallet;
 using UnityEngine;
 using Logger = Scripts.Helpers.Logger;
 
@@ -45,7 +46,7 @@ public class ExampleManager : IExampleManager
         const string entrypoint = "view_items_of";
         var input = new { @string = activeWalletAddress };
 
-        CoroutineRunner.Instance.StartCoroutineWrapper(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
@@ -55,7 +56,7 @@ public class ExampleManager : IExampleManager
                     Logger.LogDebug("READING INVENTORY DATA");
 
                     // deserialize the json data to inventory items
-                    CoroutineRunner.Instance.StartCoroutineWrapper(
+                    CoroutineRunner.Instance.StartWrappedCoroutine(
                         NetezosExtensions.HumanizeValue(
                             val: result,
                             rpcUri: _networkRPC,
@@ -140,7 +141,7 @@ public class ExampleManager : IExampleManager
             Prim = PrimType.Unit
         };
 
-        CoroutineRunner.Instance.StartCoroutineWrapper(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
@@ -148,7 +149,7 @@ public class ExampleManager : IExampleManager
                 callback: result =>
                 {
                     // deserialize the json data to market items
-                    CoroutineRunner.Instance.StartCoroutineWrapper(
+                    CoroutineRunner.Instance.StartWrappedCoroutine(
                         NetezosExtensions.HumanizeValue(
                             val: result,
                             rpcUri: _networkRPC,
@@ -238,7 +239,7 @@ public class ExampleManager : IExampleManager
     public void GetBalance(Action<ulong> callback)
     {
         var routine = _tezos.ReadBalance(callback);
-        CoroutineRunner.Instance.StartCoroutineWrapper(routine);
+        CoroutineRunner.Instance.StartWrappedCoroutine(routine);
     }
 
     public void GetSoftBalance(Action<int> callback)
@@ -260,7 +261,7 @@ public class ExampleManager : IExampleManager
             }
         };
 
-        CoroutineRunner.Instance.StartCoroutineWrapper(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: "get_balance",
@@ -373,7 +374,7 @@ public class ExampleManager : IExampleManager
             }
         };
 
-        CoroutineRunner.Instance.StartCoroutineWrapper(
+        CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
@@ -405,9 +406,9 @@ public class ExampleManager : IExampleManager
         return _tezos.GetActiveWalletAddress();
     }
 
-    public void Deeplink()
+    public void Login(WalletProviderType walletProvider)
     {
-        _tezos.ConnectWallet();
+        _tezos.ConnectWallet(walletProvider);
     }
 
     public BeaconMessageReceiver GetMessageReceiver()

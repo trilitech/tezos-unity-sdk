@@ -4,11 +4,10 @@ using BeaconSDK;
 using Scripts.BeaconSDK;
 using Scripts.Helpers;
 using UnityEngine;
-using Logger = Scripts.Helpers.Logger;
 
 namespace Scripts.Tezos.Wallet
 {
-    public class BeaconWalletProvider : IWalletProvider
+    public class WalletProvider : IWalletProvider
     {
         public WalletMessageReceiver MessageReceiver { get; private set; }
         private IBeaconConnector _beaconConnector;
@@ -18,7 +17,7 @@ namespace Scripts.Tezos.Wallet
         private string _signature;
         private string _transactionHash;
 
-        public BeaconWalletProvider()
+        public WalletProvider()
         {
             InitBeaconConnector();
         }
@@ -33,13 +32,11 @@ namespace Scripts.Tezos.Wallet
 
             // Assign the BeaconConnector depending on the platform.
 #if !UNITY_EDITOR && UNITY_WEBGL
-			_beaconConnector = new BeaconConnectorWebGl();
-			_beaconConnector.SetNetwork(TezosConfig.Instance.Network.ToString(), TezosConfig.Instance.RpcBaseUrl);
+            _beaconConnector = new BeaconConnectorWebGl();
 #else
             _beaconConnector = new BeaconConnectorDotNet();
-            _beaconConnector.SetNetwork(TezosConfig.Instance.Network.ToString(), TezosConfig.Instance.RpcBaseUrl);
             (_beaconConnector as BeaconConnectorDotNet)?.SetWalletMessageReceiver(MessageReceiver);
-            Connect(withRedirectToWallet: false);
+            Connect(WalletProviderType.beacon, withRedirectToWallet: false);
 
             // todo: maybe call RequestTezosPermission from _beaconConnector?
             MessageReceiver.PairingCompleted += _ =>
@@ -49,21 +46,19 @@ namespace Scripts.Tezos.Wallet
                     networkRPC: TezosConfig.Instance.RpcBaseUrl);
             };
 #endif
-            MessageReceiver.ClientCreated += _ => { _beaconConnector.RequestHandshake(); };
             MessageReceiver.HandshakeReceived += handshake => { _handshake = handshake; };
-
             MessageReceiver.AccountConnected += account =>
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(account);
-                if (!json.TryGetProperty("account", out json)) return;
+                if (!json.TryGetProperty("accountInfo", out json)) return;
 
                 _pubKey = json.GetProperty("publicKey").GetString();
-                Logger.LogDebug($"my public key is: {_pubKey}");
             };
             MessageReceiver.PayloadSigned += payload =>
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(payload);
                 var signature = json.GetProperty("signature").GetString();
+
                 _signature = signature;
             };
             MessageReceiver.ContractCallInjected += transaction =>
@@ -76,8 +71,13 @@ namespace Scripts.Tezos.Wallet
             };
         }
 
-        public void Connect(bool withRedirectToWallet)
+        public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
         {
+            _beaconConnector.InitWalletProvider(
+                network: TezosConfig.Instance.Network.ToString(),
+                rpc: TezosConfig.Instance.RpcBaseUrl,
+                walletProviderType: walletProvider);
+
             _beaconConnector.ConnectAccount();
 #if UNITY_ANDROID || UNITY_IOS
             if (withRedirectToWallet)

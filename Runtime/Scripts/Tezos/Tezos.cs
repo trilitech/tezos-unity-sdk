@@ -26,7 +26,7 @@ namespace Scripts.Tezos
         {
             var dataProviderConfig = new TzKTProviderConfig();
             API = new TezosDataAPI(dataProviderConfig);
-            Wallet = new BeaconWalletProvider();
+            Wallet = new WalletProvider();
             
             MessageReceiver = Wallet.MessageReceiver;
         }
@@ -37,9 +37,9 @@ namespace Scripts.Tezos
             return API.GetTezosBalance(callback, address);
         }
 
-        public void ConnectWallet(bool withRedirectToWallet = true)
+        public void ConnectWallet(WalletProviderType walletProvider, bool withRedirectToWallet = true)
         {
-            Wallet.Connect(withRedirectToWallet);
+            Wallet.Connect(walletProvider, withRedirectToWallet);
         }
 
         public void DisconnectWallet()

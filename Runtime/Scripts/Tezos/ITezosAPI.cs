@@ -25,7 +25,7 @@ namespace Scripts.Tezos
         /// <param name="withRedirectToWallet">Should we open wallet app on mobiles after connect?</param>
         /// </summary>
         [Obsolete("ConnectWallet is deprecated, please use ITezos.IWalletProvider.Connect instead")]
-        void ConnectWallet(bool withRedirectToWallet = true);
+        void ConnectWallet(WalletProviderType walletProvider, bool withRedirectToWallet = true);
 
         /// <summary>
         /// Unpair with wallet and disconnect

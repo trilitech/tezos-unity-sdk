@@ -1,5 +1,6 @@
 using System.Collections;
 using Beacon.Sdk.Beacon.Sign;
+using Scripts.Tezos.Wallet;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +8,8 @@ public class RegisterPanel : PanelController
 {
 	[SerializeField, Header("Components")]
 	private Button _deepLinkPair;
+	[SerializeField, Header("Components")]
+	private Button _socialLoginButton;
 	[SerializeField]
 	private RawImage _qrImage;
 	[SerializeField]
@@ -30,9 +33,10 @@ public class RegisterPanel : PanelController
 #if UNITY_STANDALONE || UNITY_EDITOR
 		// make QR code available for Standalone
 		SetButtonState(_deepLinkPair, false, false);
+		SetButtonState(_socialLoginButton, false, false);
 		_qrImage.gameObject.SetActive(true);
 #else
-    var isMobile = false;
+		var isMobile = false;
 #if (UNITY_IOS || UNITY_ANDROID)
 		isMobile = true;
 #endif
@@ -40,7 +44,7 @@ public class RegisterPanel : PanelController
 		{
 			// Disable QR button and image
 			SetButtonState(_deepLinkPair, true, true);
-			_deepLinkPair.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "LOGIN";
+			SetButtonState(_socialLoginButton, true, true);
 			_qrImage.gameObject.SetActive(false);
 		}
 		else if (!Debug.isDebugBuild)
@@ -55,7 +59,15 @@ public class RegisterPanel : PanelController
 	/// </summary>
 	public void DeepLinkPair()
 	{
-		_exampleManager.Deeplink();
+		_exampleManager.Login(WalletProviderType.beacon);
+	}
+	
+	/// <summary>
+	/// Login with social networks.
+	/// </summary>
+	public void SocialLoginHandler()
+	{
+		_exampleManager.Login(WalletProviderType.kukai);
 	}
 
 	/// <summary>

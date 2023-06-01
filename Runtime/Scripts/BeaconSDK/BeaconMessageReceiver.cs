@@ -21,7 +21,6 @@ namespace Scripts.BeaconSDK
         "BeaconMessageReceiver will be renamed to WalletMessageReceiver in future versions, please use WalletMessageReceiver type instead")]
     public class BeaconMessageReceiver : MonoBehaviour
     {
-        public event Action<string> ClientCreated;
         public event Action<string> AccountConnected;
         public event Action<string> AccountConnectionFailed;
         public event Action<string> AccountDisconnected;
@@ -31,13 +30,7 @@ namespace Scripts.BeaconSDK
         public event Action<string> PayloadSigned;
         public event Action<string> HandshakeReceived;
         public event Action<string> PairingCompleted;
-        public event Action<string> AccountReceived;
 
-        public void OnClientCreated(string result)
-        {
-            Logger.LogDebug("From unity, OnClientCreated: " + result);
-            ClientCreated?.Invoke(result);
-        }
 
         public void OnAccountConnected(string address)
         {
@@ -123,6 +116,7 @@ namespace Scripts.BeaconSDK
             // result is the json string of payload signing result
             Logger.LogDebug("From unity, OnPayloadSigned: " + signature);
             PayloadSigned?.Invoke(signature);
+
         }
 
         public void OnHandshakeReceived(string handshake)
@@ -136,12 +130,6 @@ namespace Scripts.BeaconSDK
         {
             Logger.LogDebug("From unity, OnPairingCompleted: " + message);
             PairingCompleted?.Invoke(message);
-        }
-
-        public void OnAccountReceived(string message)
-        {
-            Logger.LogDebug("From unity, OnAccountReceived: " + message);
-            AccountReceived?.Invoke(message);
         }
     }
 }
