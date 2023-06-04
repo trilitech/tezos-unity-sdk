@@ -87,7 +87,6 @@ namespace Scripts.BeaconSDK
             // keep making requests until time out or success
             while (!success && Time.time - timestamp < timeout)
             {
-                if (success) break;
                 Logger.LogDebug($"Checking tx status: {transactionHash}");
                 yield return TezosSingleton.Instance.GetOperationStatus(result =>
                 {
