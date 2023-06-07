@@ -247,7 +247,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-WebGLFrontend/*.meta
-WebGLFrontend/**/*.meta
 WebGLFrontend/node_modules/
 WebGLFrontend/dist/
