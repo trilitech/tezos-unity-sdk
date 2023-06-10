@@ -6,33 +6,37 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TestGetYourTezosBalance : MonoBehaviour
+namespace Tezos.StarterSample
 {
-    [SerializeField] private Button _button;
-    [SerializeField] private TextMeshProUGUI _resultText;
-
-    private void OnEnable()
+    public class TestGetYourTezosBalance : MonoBehaviour
     {
-        _button.onClick.AddListener(OnGetYourTezosBalanceButtonClicked);
-    }
+        [Header("References")] [SerializeField]
+        private Button _button;
 
-    private void OnDisable()
-    {
-        _button.onClick.RemoveListener(OnGetYourTezosBalanceButtonClicked);
-    }
+        [SerializeField] private TextMeshProUGUI _resultText;
 
-    private void OnGetYourTezosBalanceButtonClicked()
-    {
-        _resultText.text = "Pending...";
-        
-        string address = StarterTezosManager.Instance.GetActiveAddress();
-        var routine = StarterTezosManager.Instance.GetTezosBalance(balance =>
+        private void OnEnable()
         {
-            // 6 decimals
-            var doubleBalance = balance / 1e6;
-            _resultText.text = doubleBalance.ToString();
-        }, address);
-        CoroutineRunner.Instance.StartWrappedCoroutine(routine);
+            _button.onClick.AddListener(OnGetYourTezosBalanceButtonClicked);
+        }
+
+        private void OnDisable()
+        {
+            _button.onClick.RemoveListener(OnGetYourTezosBalanceButtonClicked);
+        }
+
+        private void OnGetYourTezosBalanceButtonClicked()
+        {
+            _resultText.text = "Pending...";
+
+            string address = StarterTezosManager.Instance.GetActiveAddress();
+            var routine = StarterTezosManager.Instance.GetTezosBalance(balance =>
+            {
+                // 6 decimals
+                var doubleBalance = balance / 1e6;
+                _resultText.text = doubleBalance.ToString();
+            }, address);
+            CoroutineRunner.Instance.StartWrappedCoroutine(routine);
+        }
     }
 }
-

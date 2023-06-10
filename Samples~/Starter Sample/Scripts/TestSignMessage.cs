@@ -4,40 +4,44 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Text.Json;
-
-public class TestSignMessage : MonoBehaviour
+namespace Tezos.StarterSample
 {
-    [SerializeField] private Button _button;
-    [SerializeField] private TextMeshProUGUI _resultText;
-    [SerializeField] private TMP_InputField _inputField;
-    
-    private void OnEnable()
+    public class TestSignMessage : MonoBehaviour
     {
-        _button.onClick.AddListener(OnSignMessageButtonClicked);
-        StarterTezosManager.Instance.MessageReceiver.PayloadSigned += OnMessageSigned;
-    }
+        [Header("References")] [SerializeField]
+        private Button _button;
 
-    private void OnDisable()
-    {
-        _button.onClick.RemoveListener(OnSignMessageButtonClicked);
-        StarterTezosManager.Instance.MessageReceiver.PayloadSigned -= OnMessageSigned;
-    }
+        [SerializeField] private TextMeshProUGUI _resultText;
+        [SerializeField] private TMP_InputField _inputField;
 
-    private void OnSignMessageButtonClicked()
-    {
-        _resultText.text = "";
-
-        StarterTezosManager.Instance.RequestSignPayload(SignPayloadType.raw, _inputField.text);
-    }
-
-    private void OnMessageSigned(string result)
-    {
-        UnityMainThreadDispatcher.Enqueue(() =>
+        private void OnEnable()
         {
-            _resultText.text = result;
-            var json = JsonSerializer.Deserialize<JsonElement>(result);
-            var signature = json.GetProperty("signature").GetString();
-            _resultText.text = "Signed.";
-        });
+            _button.onClick.AddListener(OnSignMessageButtonClicked);
+            StarterTezosManager.Instance.MessageReceiver.PayloadSigned += OnMessageSigned;
+        }
+
+        private void OnDisable()
+        {
+            _button.onClick.RemoveListener(OnSignMessageButtonClicked);
+            StarterTezosManager.Instance.MessageReceiver.PayloadSigned -= OnMessageSigned;
+        }
+
+        private void OnSignMessageButtonClicked()
+        {
+            _resultText.text = "";
+
+            StarterTezosManager.Instance.RequestSignPayload(SignPayloadType.raw, _inputField.text);
+        }
+
+        private void OnMessageSigned(string result)
+        {
+            UnityMainThreadDispatcher.Enqueue(() =>
+            {
+                _resultText.text = result;
+                var json = JsonSerializer.Deserialize<JsonElement>(result);
+                var signature = json.GetProperty("signature").GetString();
+                _resultText.text = "Signed.";
+            });
+        }
     }
 }

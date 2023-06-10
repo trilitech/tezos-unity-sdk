@@ -3,9 +3,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace Tezos.StarterSample
+{
     public class TestGetBlockNumber : MonoBehaviour
     {
-        [SerializeField] private Button _button;
+        [Header("References")] [SerializeField]
+        private Button _button;
+
         [SerializeField] private TextMeshProUGUI _resultText;
 
         private void OnEnable()
@@ -23,3 +27,4 @@ using UnityEngine.UI;
             // TODO:
         }
     }
+}

@@ -1825,6 +1825,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2375458989141006796, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
   m_PrefabInstance: {fileID: 1339204128}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1339204131 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2375458989141006786, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
+  m_PrefabInstance: {fileID: 1339204128}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1480122547
 GameObject:
   m_ObjectHideFlags: 0
@@ -2075,6 +2086,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2375458989141006796, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
   m_PrefabInstance: {fileID: 1555770215}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1555770217 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2375458989141006786, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
+  m_PrefabInstance: {fileID: 1555770215}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1624542378
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2609,6 +2631,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2375458989141006796, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
   m_PrefabInstance: {fileID: 2080824601}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2080824604 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2375458989141006786, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
+  m_PrefabInstance: {fileID: 2080824601}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4114444793612386324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7151,7 +7184,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 6151788101175638368}
   m_OnClick:
     m_PersistentCalls:
@@ -7828,6 +7861,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6151788101270671070}
+  - component: {fileID: 6151788101270671071}
   m_Layer: 5
   m_Name: MintNFT
   m_TagString: Untagged
@@ -7858,6 +7892,22 @@ RectTransform:
   m_AnchoredPosition: {x: 500, y: 0}
   m_SizeDelta: {x: 300, y: 500}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!114 &6151788101270671071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6151788101270671057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ff67d6289818fb43b84c38fee7afae6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _button: {fileID: 6151788101158822466}
+  _textTxnHash: {fileID: 6151788101257062237}
+  _hyperlinkButton: {fileID: 1555770217}
+  _contractAddress: KT1WguzxyLmuKbJhz3jNuoRzzaUCncfp6PFE
 --- !u!224 &6151788101302252692
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11256,6 +11306,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6151788102276206030}
+  - component: {fileID: 6151788102276206031}
   m_Layer: 5
   m_Name: DeployNFTContract
   m_TagString: Untagged
@@ -11287,6 +11338,25 @@ RectTransform:
   m_AnchoredPosition: {x: 100, y: -0.0000076293945}
   m_SizeDelta: {x: 300, y: 800}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!114 &6151788102276206031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6151788102276206017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb7e58e0440c9524c99c4db31753fac7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deployButton: {fileID: 6151788101966281328}
+  _textTxnHash: {fileID: 6151788100759330387}
+  _hyperlinkButtonTxnHash: {fileID: 2080824604}
+  _textContractAddress: {fileID: 6151788100744962446}
+  _hyperlinkButtonContractAddress: {fileID: 1339204131}
+  _testMintNFT: {fileID: 6151788101270671071}
+  _testGetNFTs: {fileID: 7418263947803637750}
 --- !u!224 &6151788102280188976
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11606,13 +11676,31 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7418263947803637748}
+  - component: {fileID: 7418263947803637750}
   m_Layer: 5
-  m_Name: TestButton-GetNFTs
+  m_Name: GetNFTs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7418263947803637750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418263947803637749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86878d9817b980345a5152e680b053d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _button: {fileID: 7418263948081787322}
+  _resultText: {fileID: 7418263948412326297}
+  _trContent: {fileID: 6151788100525859709}
+  _nftElementPrefab: {fileID: 1514682739688599846, guid: a53923ef6f23ae843a06d3e093dd812c, type: 3}
+  _contractAddress: KT1WguzxyLmuKbJhz3jNuoRzzaUCncfp6PFE
 --- !u!224 &7418263947919136334
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11706,7 +11794,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 7418263947068337786}
   m_OnClick:
     m_PersistentCalls:

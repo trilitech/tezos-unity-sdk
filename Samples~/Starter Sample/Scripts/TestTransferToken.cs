@@ -5,26 +5,36 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TestTransferToken : MonoBehaviour
+namespace Tezos.StarterSample
 {
-    [SerializeField] private Button _button;
-    [SerializeField] private TextMeshProUGUI _resultText;
-    [SerializeField] private TMP_InputField _inputFieldAddress;
-    [SerializeField] private TMP_InputField _inputFieldAmount;
-
-    public void OnTransferTokenButtonClicked()
+    public class TestTransferToken : MonoBehaviour
     {
-        TransferToken();
-    }
+        [Header("References")] [SerializeField]
+        private Button _button;
 
-    private void TransferToken()
-    {
-        _button.interactable = false;
-        _resultText.text = "Pending...";
+        [SerializeField] private TextMeshProUGUI _resultText;
+        [SerializeField] private TMP_InputField _inputFieldAddress;
+        [SerializeField] private TMP_InputField _inputFieldAmount;
 
-        string toAddress = _inputFieldAddress.text;
-        decimal amount = decimal.Parse(_inputFieldAmount.text);
+        private void OnEnable()
+        {
+            _button.onClick.AddListener(OnTransferTokenButtonClicked);
+        }
 
-        // TODO:
+        private void OnDisable()
+        {
+            _button.onClick.RemoveListener(OnTransferTokenButtonClicked);
+        }
+
+        private void OnTransferTokenButtonClicked()
+        {
+            _button.interactable = false;
+            _resultText.text = "Pending...";
+
+            string toAddress = _inputFieldAddress.text;
+            decimal amount = decimal.Parse(_inputFieldAmount.text);
+
+            // TODO:
+        }
     }
 }
