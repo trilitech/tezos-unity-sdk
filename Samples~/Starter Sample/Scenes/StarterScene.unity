@@ -2203,6 +2203,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2375458989141006796, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
   m_PrefabInstance: {fileID: 1624542378}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1624542381 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2375458989141006786, guid: 318b2a032b3c8604a8972ca38f512e45, type: 3}
+  m_PrefabInstance: {fileID: 1624542378}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1749303335
 GameObject:
   m_ObjectHideFlags: 0
@@ -6131,7 +6142,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 6151788101169473530}
   m_OnClick:
     m_PersistentCalls:
@@ -9000,6 +9011,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6151788101738372724}
+  - component: {fileID: 6151788101738372728}
   m_Layer: 5
   m_Name: TransferToken
   m_TagString: Untagged
@@ -9007,6 +9019,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &6151788101738372728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6151788101738372727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c2cc18180378d4caa2786082a99dae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _button: {fileID: 6151788100817766999}
+  _hyperlinkButton: {fileID: 1624542381}
+  _resultText: {fileID: 6151788101899178042}
+  _inputFieldAddress: {fileID: 6151788100734049286}
+  _inputFieldAmount: {fileID: 6151788100619651090}
 --- !u!224 &6151788101739564740
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9828,7 +9857,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 6151788100933791780}
   m_OnClick:
     m_PersistentCalls:
@@ -10540,7 +10569,7 @@ GameObject:
   - component: {fileID: 6151788102107205470}
   - component: {fileID: 6151788102107205471}
   m_Layer: 5
-  m_Name: GetBlockNumber
+  m_Name: GetLatestBlockLevel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10873,7 +10902,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Get Block Number
+  m_text: Get Latest Block Level
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 456b911b08036b34f8f72354ef2b25c9, type: 2}
   m_sharedMaterial: {fileID: -2522044612105043573, guid: 456b911b08036b34f8f72354ef2b25c9, type: 2}

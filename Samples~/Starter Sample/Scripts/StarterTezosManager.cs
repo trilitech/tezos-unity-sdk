@@ -114,10 +114,26 @@ public class StarterTezosManager : MonoBehaviour
     {
         return API.GetTezosBalance(callback, address);
     }
+    
+    public IEnumerator GetLatestBlockLevel(Action<int> callback)
+    {
+        return API.GetLatestBlockLevel(callback);
+    }
 
     public void RequestSignPayload(SignPayloadType signingType, string payload)
     {
         BeaconConnector.RequestTezosSignPayload(signingType, payload);
+    }
+    
+    public void RequestTransferTezos(string to, ulong amount = 0)
+    {
+        BeaconConnector.RequestTezosOperation(
+            destination: to,
+            entryPoint: "default",
+            arg: "{\"prim\": \"Unit\"}",
+            amount: amount,
+            networkName: TezosConfig.Instance.Network.ToString(),
+            networkRPC: TezosConfig.Instance.RpcBaseUrl);
     }
 
     public bool VerifySignedPayload(SignPayloadType signingType, string payload, string pubKey, string signature)
@@ -204,8 +220,6 @@ public class StarterTezosManager : MonoBehaviour
         Debug.Log("ContractCallInjected: " + transaction);
         var json = JsonSerializer.Deserialize<JsonElement>(transaction);
         var transactionHash = json.GetProperty("transactionHash").GetString();
-
-        CoroutineRunner.Instance.StartWrappedCoroutine(new CoroutineWrapper<object>(MessageReceiver.TrackTransaction(transactionHash)));
     }
     
     private void Callback_OnContractCallFailed(string result)
