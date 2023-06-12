@@ -325,6 +325,12 @@ MonoBehaviour:
   _nftImage: {fileID: 1514682740187580392}
   _idText: {fileID: 3240751689099729466}
   _amountText: {fileID: 5543347214614131231}
+  _items:
+  - {fileID: 21300000, guid: d20abf6b9a2984239b2618a6da8d3506, type: 3}
+  - {fileID: 21300000, guid: d659f7396cd57754eba78763cf986c51, type: 3}
+  - {fileID: 21300000, guid: 719c2201c2f5f6c4aafffaeb5abdf5f9, type: 3}
+  - {fileID: 21300000, guid: 9895f5f95566ceb47bb239149d90cb44, type: 3}
+  - {fileID: 21300000, guid: 108ca3e7dda90d945b0914bf9259ec94, type: 3}
 --- !u!1 &1514682740187580398
 GameObject:
   m_ObjectHideFlags: 0
