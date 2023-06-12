@@ -92,5 +92,9 @@ namespace Scripts.Tezos.API
         public IEnumerator GetOperationStatus(
             Action<bool?> callback,
             string operationHash);
+
+        // Returns a level of the block closest to the current timestamp.
+        public IEnumerator GetLatestBlockLevel(
+            Action<int> callback);
     }
 }
