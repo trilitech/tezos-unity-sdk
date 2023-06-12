@@ -23,12 +23,12 @@ developers with the ability to:
 - Call smart contracts
 - True ownership of in-game assets
 
-The Tezos SDK supports Desktop, Android, iOS and browsers. Beyond allowing game developers to interact with the Tezos
+The Tezos SDK supports Desktop, Android, iOS, and browsers. Beyond allowing game developers to interact with the Tezos
 blockchain, this SDK is a helpful resource for developing any Tezos decentralized application (dApp).
 
 ### Install from a Git URL
 
-Yoy can install the UPM package via directly Git URL. To load a package from a Git URL:
+You can install the UPM package via directly Git URL. To load a package from a Git URL:
 
 * Open [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui.html) window.
 * Click the add **+** button in the status bar.
@@ -54,7 +54,7 @@ For more information about what protocols Unity supports, see [Git URLs](https:/
     * Add `com.trilitech.tezos-unity-sdk` to the `dependencies`, stating the latest version.
 
 A minimal example ends up looking like this. Please note that the version `X.Y.Z` stated here is to be replaced
-with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk) which is
+with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk), which is
 currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity-sdk?color=blue)](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk).
 
 ```json
@@ -83,11 +83,11 @@ currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity
 * Navigate to `Packages` and find the `Tezos Unity SDK`.
 * Go to `WebGLFrontend/output` and copy the `StreamingAssets` and `WebGLTemplates` folders.
 * Navigate to the `Assets` folder of your project and paste copied folders.
-* This action will create WebGL templates folders to your Project. Each template is a subfolder within the
+* This action will create WebGL template folders for your project. Each template is a subfolder within the
   `WebGLTemplates` folder. Each template subfolder contains an `index.html` file along with any other resources the page
-  needs, such as images or stylesheets. You can choose appropriate template to use in WebGL build in
+  needs, such as images or stylesheets. You can choose the appropriate template to use in the WebGL build in
   `Project settings/Player/Web tab/Resolution and Presentation`
-* By default unfortunately Web builds didn't support copy and paste operations, to be able handle them install with
+* By default, unfortunately, Web builds didn't support copy-and-paste operations. To handle them properly, install with
   double-clicking `WebGLFrontend/output/WebGLCopyAndPaste.unitypackage`, this action will create `WebGLCopyAndPaste`
   alongside with `StreamingAssets` and `WebGLTemplates` folders inside your project Assets directory.
 
