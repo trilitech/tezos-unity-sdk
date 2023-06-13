@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
-using Scripts.BeaconSDK;
-using Scripts.Helpers;
-using Scripts.Tezos;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Beacon;
+using TezosSDK.Helpers;
+using TezosSDK.Tezos;
+using TezosSDK.Tezos.Wallet;
 using UnityEngine;
-using Logger = Scripts.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logger;
 
 public class ExampleManager : IExampleManager
 {

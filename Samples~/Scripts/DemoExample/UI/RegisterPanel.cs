@@ -1,6 +1,6 @@
 using System.Collections;
 using Beacon.Sdk.Beacon.Sign;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using UnityEngine.UI;
 
