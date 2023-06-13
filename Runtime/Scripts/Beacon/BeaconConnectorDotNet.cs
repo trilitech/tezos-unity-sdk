@@ -19,6 +19,7 @@ using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Logger = TezosSDK.Helpers.Logger;
+using BeaconNetwork = global::Beacon.Sdk.Beacon.Permission.Network;
 
 namespace TezosSDK.Beacon
 {
@@ -105,7 +106,7 @@ namespace TezosSDK.Beacon
             if (!Enum.TryParse(networkName, out NetworkType networkType))
                 networkType = TezosConfig.Instance.Network;
 
-            var network = new global::Beacon.Sdk.Beacon.Permission.Network
+            var network = new BeaconNetwork
             {
                 Type = networkType,
                 Name = _network,
