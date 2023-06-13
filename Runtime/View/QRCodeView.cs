@@ -1,35 +1,28 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using ZXing;
 using ZXing.QrCode;
 
-#if UNITY_ANDROID || UNITY_IOS
-using BeaconSDK;
-#endif
 
 public class QRCodeView : MonoBehaviour
 {
     [SerializeField] private RawImage _rawImage;
     private Texture2D _texture;
-    
+
     void Start()
     {
         if (_texture != null) return;
-        
+
         _rawImage.texture = _texture = new Texture2D(256, 256);
         _texture.filterMode = FilterMode.Point;
     }
-    
+
     public void SetQrCode(string handshake)
     {
         var uri = "tezos://?type=tzip10&data=" + handshake;
         EncodeTextToQrCode(uri);
     }
-    
+
     public void EncodeTextToQrCode(string text)
     {
         if (_texture == null)
