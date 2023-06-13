@@ -1,7 +1,7 @@
 using Beacon.Sdk.Beacon.Sign;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Tezos.Wallet;
 
-namespace Scripts.BeaconSDK
+namespace TezosSDK.Beacon
 {
 	/// <summary>
 	/// Implement this interface to create a class that can connect to native code

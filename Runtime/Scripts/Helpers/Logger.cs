@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Scripts.Helpers
+namespace TezosSDK.Helpers
 {
     public static class Logger
     {

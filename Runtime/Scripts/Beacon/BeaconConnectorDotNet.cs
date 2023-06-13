@@ -13,20 +13,19 @@ using Beacon.Sdk.Core.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Netezos.Keys;
 using Newtonsoft.Json.Linq;
-using Scripts.BeaconSDK;
-using Scripts.Helpers;
-using Scripts.Tezos;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Helpers;
+using TezosSDK.Tezos;
+using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using Logger = Scripts.Helpers.Logger;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using Logger = TezosSDK.Helpers.Logger;
+using BeaconNetwork = global::Beacon.Sdk.Beacon.Permission.Network;
 
-namespace BeaconSDK
+namespace TezosSDK.Beacon
 {
     public class BeaconConnectorDotNet : IBeaconConnector
     {
-        private static WalletMessageReceiver  _walletMessageReceiver;
+        private static WalletMessageReceiver _walletMessageReceiver;
         private DappBeaconClient BeaconDappClient { get; set; }
         private string _network;
         private string _rpc;
@@ -107,7 +106,7 @@ namespace BeaconSDK
             if (!Enum.TryParse(networkName, out NetworkType networkType))
                 networkType = TezosConfig.Instance.Network;
 
-            var network = new Beacon.Sdk.Beacon.Permission.Network
+            var network = new BeaconNetwork
             {
                 Type = networkType,
                 Name = _network,
@@ -269,29 +268,29 @@ namespace BeaconSDK
 
         #endregion
     }
-}
 
 // todo: this logger didn't work inside Beacon, improve this.
-public class MyLoggerProvider : ILoggerProvider
-{
-    public class MyLogger : ILogger
+    public class MyLoggerProvider : ILoggerProvider
     {
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-            Func<TState, Exception, string> formatter)
+        public class MyLogger : ILogger
         {
-            if (exception != null)
-                Debug.LogException(exception);
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+                Func<TState, Exception, string> formatter)
+            {
+                if (exception != null)
+                    Debug.LogException(exception);
 
-            //Debug.Log(state.ToString());
+                //Debug.Log(state.ToString());
+            }
+
+            public bool IsEnabled(LogLevel logLevel) => true;
+            public IDisposable BeginScope<TState>(TState state) => null;
         }
 
-        public bool IsEnabled(LogLevel logLevel) => true;
-        public IDisposable BeginScope<TState>(TState state) => null;
-    }
+        public void Dispose()
+        {
+        }
 
-    public void Dispose()
-    {
+        public ILogger CreateLogger(string categoryName) => new MyLogger();
     }
-
-    public ILogger CreateLogger(string categoryName) => new MyLogger();
 }

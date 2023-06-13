@@ -7,9 +7,9 @@ using Beacon.Sdk.Beacon.Sign;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using Netezos.Keys;
-using Scripts.Tezos.API;
+using TezosSDK.Tezos.API;
 
-namespace Scripts.Helpers
+namespace TezosSDK.Helpers
 {
     public static class NetezosExtensions
     {

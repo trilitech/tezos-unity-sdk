@@ -1,4 +1,4 @@
-﻿namespace Scripts.Tezos.API.Models.Filters
+﻿namespace TezosSDK.Tezos.API.Models.Filters
 {
     public abstract record TokensForOwnerOrder
     {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System;
 using Beacon.Sdk.Beacon.Sign;
-using Scripts.BeaconSDK;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Beacon;
+using TezosSDK.Tezos.Wallet;
 
 public interface IExampleManager
 {

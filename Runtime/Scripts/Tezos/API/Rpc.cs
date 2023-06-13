@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using Netezos.Rpc.Queries.Post;
-using Scripts.Helpers;
+using TezosSDK.Helpers;
 
-namespace Scripts.Tezos.API
+namespace TezosSDK.Tezos.API
 {
     public class Rpc : HttpClient
     {

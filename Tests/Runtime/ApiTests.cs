@@ -2,9 +2,9 @@ using System.Collections;
 using System.Linq;
 using Beacon.Sdk.Beacon.Permission;
 using NUnit.Framework;
-using Scripts.Tezos;
-using Scripts.Tezos.API;
-using Scripts.Tezos.API.Models.Filters;
+using TezosSDK.Tezos;
+using TezosSDK.Tezos.API;
+using TezosSDK.Tezos.API.Models.Filters;
 using UnityEngine.TestTools;
 
 namespace Tests.Runtime

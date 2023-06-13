@@ -1,11 +1,10 @@
 ﻿using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
-using BeaconSDK;
-using Scripts.BeaconSDK;
-using Scripts.Helpers;
+using TezosSDK.Beacon;
+using TezosSDK.Helpers;
 using UnityEngine;
 
-namespace Scripts.Tezos.Wallet
+namespace TezosSDK.Tezos.Wallet
 {
     public class WalletProvider : IWalletProvider
     {

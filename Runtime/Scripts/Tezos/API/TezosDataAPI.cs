@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections;
-using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using Dynamic.Json;
-using Helpers;
-using Scripts.Helpers;
-using Scripts.Tezos.API.Models.Filters;
-using Scripts.Tezos.API.Models.Tokens;
+using TezosSDK.Helpers;
+using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.API.Models.Tokens;
 
-
-namespace Scripts.Tezos.API
+namespace TezosSDK.Tezos.API
 {
     public class TezosDataAPI : HttpClient, ITezosDataAPI
     {

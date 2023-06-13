@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using Scripts.Tezos;
-using Scripts.Tezos.API.Models.Filters;
-using Scripts.Tezos.API.Models.Tokens;
+using TezosSDK.Helpers;
+using TezosSDK.Tezos;
+using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.API.Models.Tokens;
 using UnityEngine;
 
 public class DataManager : MonoBehaviour

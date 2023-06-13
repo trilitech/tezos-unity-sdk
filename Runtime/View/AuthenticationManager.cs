@@ -1,5 +1,5 @@
-using Scripts.Tezos;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Tezos;
+using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 
 public class AuthenticationManager : MonoBehaviour

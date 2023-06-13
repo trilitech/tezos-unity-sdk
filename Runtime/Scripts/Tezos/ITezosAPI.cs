@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
-using Scripts.BeaconSDK;
-using Scripts.Tezos.API;
-using Scripts.Tezos.API.Models.Filters;
-using Scripts.Tezos.API.Models.Tokens;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Beacon;
+using TezosSDK.Tezos.API;
+using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.API.Models.Tokens;
+using TezosSDK.Tezos.Wallet;
 
-namespace Scripts.Tezos
+namespace TezosSDK.Tezos
 {
     [Obsolete("ITezosAPI will be renamed to ITezos in future versions, please use ITezos type instead")]
     public interface ITezosAPI : ITezos

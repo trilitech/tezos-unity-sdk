@@ -1,4 +1,5 @@
-﻿namespace Scripts.Tezos.Wallet
+﻿// ReSharper disable InconsistentNaming
+namespace TezosSDK.Tezos.Wallet
 {
     public enum WalletProviderType
     {

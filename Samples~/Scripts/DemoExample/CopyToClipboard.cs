@@ -2,6 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using CoroutineRunner = TezosSDK.Helpers.CoroutineRunner;
 
 public class CopyToClipboard : MonoBehaviour, IPointerClickHandler
 {

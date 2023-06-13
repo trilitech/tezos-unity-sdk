@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Text.Json;
-using Scripts.Tezos;
+using TezosSDK.Tezos;
 using UnityEngine;
-using Logger = Scripts.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logger;
 
-namespace Scripts.BeaconSDK
+namespace TezosSDK.Beacon
 {
     /// <summary>
     /// Receives external messages

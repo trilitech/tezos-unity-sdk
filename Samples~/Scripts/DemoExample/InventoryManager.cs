@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using Logger = Scripts.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logger;
 
 
 [RequireComponent(typeof(SnapController))]

@@ -1,8 +1,7 @@
 ﻿using Beacon.Sdk.Beacon.Sign;
-using BeaconSDK;
-using Scripts.BeaconSDK;
+using TezosSDK.Beacon;
 
-namespace Scripts.Tezos.Wallet
+namespace TezosSDK.Tezos.Wallet
 {
     public interface IWalletProvider
     {
