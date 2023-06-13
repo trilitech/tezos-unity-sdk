@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
-using Scripts.Tezos.API.Models.Filters;
-using Scripts.Tezos.API.Models.Tokens;
+using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.API.Models.Tokens;
 
-namespace Scripts.Tezos.API
+namespace TezosSDK.Tezos.API
 {
     public interface ITezosDataAPI
     {

@@ -1,6 +1,6 @@
 ﻿using Beacon.Sdk.Beacon.Permission;
 
-namespace Scripts.Tezos
+namespace TezosSDK.Tezos
 {
     public class TezosConfig
     {

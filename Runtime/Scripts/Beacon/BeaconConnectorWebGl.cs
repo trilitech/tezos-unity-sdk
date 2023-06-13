@@ -1,11 +1,10 @@
 #if UNITY_WEBGL
+
 using System.Runtime.InteropServices;
 using Beacon.Sdk.Beacon.Sign;
-using Scripts.BeaconSDK;
-using Scripts.Tezos.Wallet;
+using TezosSDK.Tezos.Wallet;
 
-
-namespace BeaconSDK
+namespace TezosSDK.Beacon
 {
     /// <summary>
     /// WebGL implementation of the BeaconConnector.

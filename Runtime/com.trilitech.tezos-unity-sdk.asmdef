@@ -1,6 +1,6 @@
 {
     "name": "com.trilitech.tezos-unity-sdk",
-    "rootNamespace": "",
+    "rootNamespace": "TezosSDK",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

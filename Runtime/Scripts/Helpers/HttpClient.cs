@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using Dynamic.Json;
-using Helpers;
-using Scripts.Tezos;
+using TezosSDK.Tezos;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Scripts.Helpers
+namespace TezosSDK.Helpers
 {
     public class HttpClient
     {
