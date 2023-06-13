@@ -135,5 +135,17 @@ namespace Tests.Runtime
             yield return api.GetOperationStatus(status => { Assert.AreEqual(expectedResult, status); },
                 "oo4gj5tfvnE1LKsRp6BSm7VB5LAoqzogJXPwGWSYBjmUgNsmk8M");
         }
+
+        [UnityTest]
+        public IEnumerator GetLatestBlockLevelTest()
+        {
+            TezosConfig.Instance.Network = NetworkType.mainnet;
+            var api = new TezosDataAPI(GetDataProviderConfig());
+
+            yield return api.GetLatestBlockLevel(latestBlockLevel =>
+            {
+                Assert.IsTrue(latestBlockLevel > 0);
+            });
+        }
     }
 }
