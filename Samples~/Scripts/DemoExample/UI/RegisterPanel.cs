@@ -35,24 +35,6 @@ public class RegisterPanel : PanelController
 		SetButtonState(_deepLinkPair, true, true);
 		SetButtonState(_socialLoginButton, true, true);
 #endif
-
-// 		
-// 		var isMobile = false;
-// #if (UNITY_IOS || UNITY_ANDROID)
-// 		isMobile = true;
-// #endif
-// 		if (!isMobile)
-// 		{
-// 			// Disable QR button and image
-// 			SetButtonState(_deepLinkPair, true, true);
-// 			SetButtonState(_socialLoginButton, true, true);
-// 			_qrImage.gameObject.SetActive(false);
-// 		}
-// 		else
-// 		{
-// 			_qrImage.gameObject.SetActive(false);
-// 		}
-// #endif
     }
 
     /// <summary>
