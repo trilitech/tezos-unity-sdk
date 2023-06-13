@@ -241,5 +241,15 @@ namespace Scripts.Tezos.API
             var requestRoutine = GetJson<bool?>(url);
             return new CoroutineWrapper<bool?>(requestRoutine, callback);
         }
+        
+        public IEnumerator GetLatestBlockLevel(Action<int> callback)
+        {
+            var url = $"blocks/{System.DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}/level";
+            var requestRoutine = GetJson<int>(url);
+
+            yield return requestRoutine;
+
+            callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
+        }
     }
 }

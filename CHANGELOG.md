@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Kukai embed login option for WebGL builds
 - Ability to build WebGL frontend bundle with Webpack, refactored WebGL fronted app structure
+- API method: `GetLatestBlockLevel`
 
 ### Changed
 - [Updated](https://github.com/trilitech/tezos-unity-sdk/issues/70) Beacon TypeScript dependency
