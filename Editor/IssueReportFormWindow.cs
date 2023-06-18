@@ -144,7 +144,7 @@ namespace Tezos.Editor.Windows
             if (!string.IsNullOrEmpty(errorMessage))
                 return;
             
-            string url = "https://docs.google.com/forms/d/e/1FAIpQLScUslljbVpQztjqB96D2c8dSlPpeYkM2sJdZlnOz7qyN3g4nw/viewform?usp=pp_url";
+            string url = "https://docs.google.com/forms/d/e/1FAIpQLScUslljbVpQztjqB96D2c8dSlPpeYkM2sJdZlnOz7qyN3g4nw/formResponse?usp=pp_url";
             url += "&entry.2052348936=" + UnityWebRequest.EscapeURL(issueDefinition);
             url += "&entry.1859623235=" + UnityWebRequest.EscapeURL(stepsToReproduce);
             url += "&entry.1214054480=" + UnityWebRequest.EscapeURL(additionalContext);
@@ -152,7 +152,8 @@ namespace Tezos.Editor.Windows
             url += "&entry.1546304813=" + UnityWebRequest.EscapeURL(sdkVersion);
             url += "&entry.334812445=" + UnityWebRequest.EscapeURL(email);
             url += "&entry.1713563215=" + UnityWebRequest.EscapeURL(issueTypes[issueTypeIndex]);
-
+            url += "&submit=Submit";
+            
             Application.OpenURL(url);
             successMessage = "Report submitted. Thanks!";
         }
