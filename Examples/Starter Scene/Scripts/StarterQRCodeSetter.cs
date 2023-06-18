@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ZXing;
@@ -47,7 +45,7 @@ namespace Tezos.StarterSample
 
         private IEnumerator IEGenerateQrCode()
         {
-            while (StarterTezosManager.Instance.Handshake == "")
+            while (TezosManager.Instance.Handshake == "")
             {
                 Logger.LogError("Handshake is not set!");
                 yield return null;
@@ -59,7 +57,7 @@ namespace Tezos.StarterSample
                 _texture.filterMode = FilterMode.Point;
             }
 
-            var colors = Encode(StarterTezosManager.Instance.HandshakeURI, _texture.width, _texture.height);
+            var colors = Encode(TezosManager.Instance.HandshakeURI, _texture.width, _texture.height);
             _texture.SetPixels32(colors);
             _texture.Apply();
         }

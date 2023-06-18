@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Netezos.Encoding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,8 +25,8 @@ namespace Tezos.StarterSample
         {
             _resultText.text = "Pending...";
 
-            string address = StarterTezosManager.Instance.GetActiveAddress();
-            var routine = StarterTezosManager.Instance.GetTezosBalance(balance =>
+            string address = TezosManager.Instance.GetActiveAddress();
+            var routine = TezosManager.Instance.GetTezosBalance(balance =>
             {
                 // 6 decimals
                 var doubleBalance = balance / 1e6;

@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,7 +28,7 @@ namespace Tezos.StarterSample
             _resultText.text = "Pending...";
 
             string address = _inputField.text;
-            var routine = StarterTezosManager.Instance.GetTezosBalance(balance =>
+            var routine = TezosManager.Instance.GetTezosBalance(balance =>
             {
                 double doubleBalance = balance / 1e6; // 6 decimals
                 _resultText.text = doubleBalance.ToString();

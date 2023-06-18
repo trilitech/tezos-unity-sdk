@@ -1,7 +1,6 @@
 using Scripts.Tezos.Wallet;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Tezos.StarterSample
@@ -22,12 +21,12 @@ namespace Tezos.StarterSample
             _connectPanel.SetActive(true);
             _testingPanel.SetActive(false);
             _qrCodePanel.SetActive(false);
-            StarterTezosManager.Instance.OnIsConnectedChanged += OnIsConnectedChanged;
+            TezosManager.Instance.OnIsConnectedChanged += OnIsConnectedChanged;
         }
 
         private void OnDestroy()
         {
-            StarterTezosManager.Instance.OnIsConnectedChanged -= OnIsConnectedChanged;
+            TezosManager.Instance.OnIsConnectedChanged -= OnIsConnectedChanged;
         }
 
         private void OnIsConnectedChanged(bool newValue)
@@ -38,7 +37,7 @@ namespace Tezos.StarterSample
 
             if (newValue)
             {
-                _accountAddressText.text = StarterTezosManager.Instance.GetActiveAddress();
+                _accountAddressText.text = TezosManager.Instance.GetActiveAddress();
                 _transferPanel.SetActive(true);
                 _nftPanel.SetActive(false);
                 _transferPanelToggle.isOn = true;
@@ -48,12 +47,12 @@ namespace Tezos.StarterSample
 
         public void OnNativeConnectButtonClicked()
         {
-            StarterTezosManager.Instance.Connect(WalletProviderType.beacon, true);
+            TezosManager.Instance.Connect(WalletProviderType.beacon, true);
         }
 
         public void OnDisconnectButtonClicked()
         {
-            StarterTezosManager.Instance.Disconnect();
+            TezosManager.Instance.Disconnect();
         }
     }
 }

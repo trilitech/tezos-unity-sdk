@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +24,7 @@ namespace Tezos.StarterSample
         {
             _resultText.text = "Pending...";
             
-            var routine = StarterTezosManager.Instance.GetLatestBlockLevel(latestBlockLevel =>
+            var routine = TezosManager.Instance.GetLatestBlockLevel(latestBlockLevel =>
             {
                 _resultText.text = latestBlockLevel.ToString();
             });

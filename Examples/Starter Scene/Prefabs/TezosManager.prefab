@@ -44,3 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2114d6a9946fc70408f1f2a1fdd843cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  appName: Starter Sample
+  appDescription: Tezos Starter Sample
+  appUrl: https://tezos.com
+  appIcons:
+  - https://tezos.com/favicon.ico
+  storageIpfsGatewayUrl: https://infura-ipfs.io/ipfs/

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,15 +27,11 @@ namespace Tezos.StarterSample
         [SerializeField] private Image _nftImage;
         [SerializeField] private TextMeshProUGUI _idText;
         [SerializeField] private TextMeshProUGUI _amountText;
-        [SerializeField] private List<Sprite> _items;
         
         public void InitNFT(NFTData nftData)
         {
-            //_nftImage.sprite = nftData.sprite;
             _idText.text = "ID: " + nftData.id;
             _amountText.text = "Amount: " + nftData.amount;
-            Debug.Log(nftData.item);
-            _nftImage.sprite = _items[Convert.ToInt32(nftData.id) == 0 ? 0 : Convert.ToInt32(nftData.item.itemType) % 4 + 1];
         }
     }
 }

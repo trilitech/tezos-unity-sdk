@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using Scripts.Helpers;
 using Scripts.Tezos;
-using Scripts.Tezos.API;
 using TMPro;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
@@ -44,13 +41,13 @@ namespace Tezos.StarterSample
                 Destroy(tr.gameObject);
             }
 
-            var activeWalletAddress = StarterTezosManager.Instance.GetActiveAddress(); // Address to the current active account
+            var activeWalletAddress = TezosManager.Instance.GetActiveAddress(); // Address to the current active account
 
             const string entrypoint = "view_items_of";
             var input = new { @string = activeWalletAddress };
 
             CoroutineRunner.Instance.StartWrappedCoroutine(
-                StarterTezosManager.Instance.API.ReadView(
+                TezosManager.Instance.API.ReadView(
                     contractAddress: _contractAddress,
                     entrypoint: entrypoint,
                     input: input,

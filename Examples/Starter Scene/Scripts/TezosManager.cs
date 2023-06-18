@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
@@ -12,14 +11,22 @@ using Scripts.Tezos.API;
 using Scripts.Tezos.Wallet;
 using Logger = Scripts.Helpers.Logger;
 
-public class StarterTezosManager : MonoBehaviour
+public class TezosManager : MonoBehaviour
 {
+    [Header("App Configurations")]
+    public string appName = "Starter Sample";
+    public string appDescription = "Tezos Starter Sample";
+    public string appUrl = "https://tezos.com";
+    public string[] appIcons = new string[] { "https://tezos.com/favicon.ico" };
+
+    [Header("Storage Options")]
+    [Tooltip("IPFS Gateway Override")]
+    public string storageIpfsGatewayUrl = "https://infura-ipfs.io/ipfs/";
+    
     public WalletMessageReceiver MessageReceiver { get; private set; }
     public ITezosDataAPI API { get; private set; }
-    //public IWalletProvider Wallet { get; private set; }
     public IBeaconConnector BeaconConnector { get; private set; }
-    
-    public static StarterTezosManager Instance;
+    //public IWalletProvider Wallet { get; private set; }
 
     private string _pubKey;
     private string _handshake = "";
@@ -41,11 +48,14 @@ public class StarterTezosManager : MonoBehaviour
         }
     }
     
+    public static TezosManager Instance { get; private set; }
+    
     private void Awake()
     { 
-        // If there is an instance, and it's not me, delete myself.
+        // Single persistent instance check
         if (Instance != null && Instance != this)
         {
+            Debug.LogWarning("Two TezosManager instances were found, removing this one.");
             Destroy(gameObject);
         }
         else
@@ -65,10 +75,6 @@ public class StarterTezosManager : MonoBehaviour
         MessageReceiver.AccountConnected += Callback_OnAccountConnected;
         MessageReceiver.AccountConnectionFailed += Callback_OnAccountConnectionFailed;
         MessageReceiver.AccountDisconnected += Callback_OnAccountDisconnected;
-        MessageReceiver.ContractCallCompleted += Callback_OnContractCallCompleted;
-        MessageReceiver.ContractCallInjected += Callback_OnContractCallInjected;
-        MessageReceiver.ContractCallFailed += Callback_OnContractCallFailed;
-        MessageReceiver.PayloadSigned += Callback_OnPayloadSigned;
         MessageReceiver.HandshakeReceived += Callback_OnHandshakeReceived;
         MessageReceiver.PairingCompleted += Callback_OnPairingCompleted;
     }
@@ -208,30 +214,6 @@ public class StarterTezosManager : MonoBehaviour
         Debug.Log("AccountDisconnected: " + result);
         _pubKey = "";
         IsConnected = false;
-    }
-    
-    private void Callback_OnContractCallCompleted(string result)
-    {
-        Debug.Log("ContractCallCompleted: " + result);
-    }
-    
-    private void Callback_OnContractCallInjected(string transaction)
-    {
-        Debug.Log("ContractCallInjected: " + transaction);
-        var json = JsonSerializer.Deserialize<JsonElement>(transaction);
-        var transactionHash = json.GetProperty("transactionHash").GetString();
-    }
-    
-    private void Callback_OnContractCallFailed(string result)
-    {
-        Debug.Log("ContractCallFailed: " + result);
-    }
-    
-    private void Callback_OnPayloadSigned(string payload)
-    {
-        Debug.Log("PayloadSigned: " + payload);
-        var json = JsonSerializer.Deserialize<JsonElement>(payload);
-        var signature = json.GetProperty("signature").GetString();
     }
     
     private void Callback_OnHandshakeReceived(string handshake)

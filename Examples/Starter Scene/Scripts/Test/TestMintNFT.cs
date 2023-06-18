@@ -39,16 +39,17 @@ namespace Tezos.StarterSample
             string entrypoint = "mint";
             string input = "{\"prim\": \"Unit\"}";
 
-            StarterTezosManager.Instance.MessageReceiver.ContractCallInjected += OnContractCallInjected;
-            StarterTezosManager.Instance.CallContract(_contractAddress, entrypoint, input, 0);
+            TezosManager.Instance.MessageReceiver.ContractCallInjected += OnContractCallInjected;
+            TezosManager.Instance.CallContract(_contractAddress, entrypoint, input, 0);
+            
         }
 
         private void OnContractCallInjected(string transaction)
         {
-            StarterTezosManager.Instance.MessageReceiver.ContractCallInjected -= OnContractCallInjected;
+            TezosManager.Instance.MessageReceiver.ContractCallInjected -= OnContractCallInjected;
             var json = JsonSerializer.Deserialize<JsonElement>(transaction);
             var transactionHash = json.GetProperty("transactionHash").GetString();
-            IEnumerator routine = StarterTezosManager.Instance.TrackTransaction(transactionHash, result =>
+            IEnumerator routine = TezosManager.Instance.TrackTransaction(transactionHash, result =>
             {
                 if (result.success)
                 {
@@ -60,7 +61,7 @@ namespace Tezos.StarterSample
                     _textTxnHash.text = "Failed.";
                 }
             });
-            StarterTezosManager.Instance.StartCoroutine(routine);
+            TezosManager.Instance.StartCoroutine(routine);
             _textTxnHash.text = "Pending...";
         }
     }
