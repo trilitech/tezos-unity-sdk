@@ -1,4 +1,5 @@
 ﻿using Beacon.Sdk.Beacon.Sign;
+using Netezos.Forging.Models;
 using TezosSDK.Beacon;
 
 namespace TezosSDK.Tezos.Wallet
@@ -53,5 +54,14 @@ namespace TezosSDK.Tezos.Wallet
             string entryPoint,
             string input,
             ulong amount = 0);
+
+        /// <summary>
+        /// Originate new contract.
+        /// </summary>
+        /// <param name="script">Code of contract</param>
+        /// <param name="delegateAddress">Delegator address</param>
+        void OriginateContract(
+            string script,
+            string delegateAddress = null);
     }
 }

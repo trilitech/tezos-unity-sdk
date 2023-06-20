@@ -28,6 +28,7 @@ namespace TezosSDK.Tezos
             Wallet = new WalletProvider();
             
             MessageReceiver = Wallet.MessageReceiver;
+            // CoroutineRunner.Instance.StartWrappedCoroutine(OriginateContract());
         }
 
         public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)
@@ -124,6 +125,11 @@ namespace TezosSDK.Tezos
         public IEnumerator GetOperationStatus(Action<bool?> callback, string operationHash)
         {
             return API.GetOperationStatus(callback, operationHash);
+        }
+
+        public void OriginateContract(string contractCode)
+        {
+            Wallet.OriginateContract(contractCode);
         }
     }
 }

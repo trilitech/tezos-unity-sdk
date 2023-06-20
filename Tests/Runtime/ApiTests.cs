@@ -147,5 +147,18 @@ namespace Tests.Runtime
                 Assert.IsTrue(latestBlockLevel > 0);
             });
         }
+        
+        [UnityTest]
+        public IEnumerator GetContractAddressByOperationHashTest()
+        {
+            TezosConfig.Instance.Network = NetworkType.ghostnet;
+            var api = new TezosDataAPI(GetDataProviderConfig());
+            const string expected = "KT1DHiWG3qh9FsFYDLhSMF13MK8tV8DSdhRh";
+
+            yield return api.GetContractAddressByOperationHash(contractAddress =>
+            {
+                Assert.AreEqual(expected, contractAddress);
+            }, "onzbMWm9RDGPcAAPbUSWkoxoHY7eJ2EuEwcR246VnDcWWDXbho3");
+        }
     }
 }

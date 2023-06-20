@@ -179,7 +179,12 @@ namespace TezosSDK.Tezos
         /// Fetch current wallet Tezos balance in micro tez
         /// </summary>
         /// <param name="callback">callback action that runs with the ulong balance is fetched</param>
-        /// <returns></returns>
         IEnumerator GetCurrentWalletBalance(Action<ulong> callback);
+
+        /// <summary>
+        /// Originate new contract
+        /// </summary>
+        /// <param name="contractCode">Code of contract in json</param>
+        void OriginateContract(string contractCode);
     }
 }

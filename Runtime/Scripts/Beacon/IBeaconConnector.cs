@@ -1,4 +1,5 @@
 using Beacon.Sdk.Beacon.Sign;
+using Netezos.Forging.Models;
 using TezosSDK.Tezos.Wallet;
 
 namespace TezosSDK.Beacon
@@ -47,6 +48,13 @@ namespace TezosSDK.Beacon
 		/// <param name="networkRPC">The RPC to the desired network</param>
 		public void RequestTezosOperation(string destination, string entryPoint = "default", string arg = null,
 			ulong amount = 0, string networkName = "", string networkRPC = "");
+
+		/// <summary>
+		/// Originate new contract
+		/// </summary>
+		/// <param name="script">Contract code.</param>
+		/// <param name="delegateAddress">Delegator address</param>
+		public void RequestContractOrigination(string script, string delegateAddress = null);
 
 		/// <summary>
 		/// To make a request to sign a payload

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
+using Netezos.Forging.Models;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using UnityEngine;
@@ -118,6 +119,13 @@ namespace TezosSDK.Tezos.Wallet
                 amount: amount,
                 networkName: TezosConfig.Instance.Network.ToString(),
                 networkRPC: TezosConfig.Instance.RpcBaseUrl);
+        }
+
+        public void OriginateContract(
+            string script,
+            string delegateAddress)
+        {
+            _beaconConnector.RequestContractOrigination(script, delegateAddress);
         }
     }
 }

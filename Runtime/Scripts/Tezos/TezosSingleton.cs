@@ -124,5 +124,10 @@ namespace TezosSDK.Tezos
         {
             return _tezos.GetOperationStatus(callback, operationHash);
         }
+        
+        public void OriginateContract(string contractCode)
+        {
+            _tezos.OriginateContract(contractCode);
+        }
     }
 }
