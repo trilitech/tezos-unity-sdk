@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
 using TezosSDK.Helpers;
 
@@ -27,7 +28,7 @@ namespace TezosSDK.Tezos.API
             {
                 contract,
                 view,
-                input,
+                input = input is string serializedInput ? JsonDocument.Parse(serializedInput) : input,
                 chain_id = chainId,
                 unlimited_gas = gas == null,
                 unparsing_mode = mode.ToString(),
