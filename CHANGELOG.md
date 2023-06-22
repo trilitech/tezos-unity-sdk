@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to build WebGL frontend bundle with Webpack, refactored WebGL fronted app structure
 - API method: `GetLatestBlockLevel`
 - Editor Issue Report Form window
+- Readme section about mobile-platforms building with disabled `Managed Stripping Level`
 
 ### Changed
 - [Updated](https://github.com/trilitech/tezos-unity-sdk/issues/70) Beacon TypeScript dependency

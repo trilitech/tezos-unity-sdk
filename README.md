@@ -92,4 +92,14 @@ currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity
   alongside with `StreamingAssets` and `WebGLTemplates` folders inside your project Assets directory.
 
 
+### Mobiles Support
+If you are using SDK on mobile platforms (IOS or Android) you need to build your project with Disabled Managed Stripping
+Level, otherwise you may encounter [assembly errors](https://github.com/trilitech/tezos-unity-sdk/issues/90).
+
+To do this:
+* Open Project settings.
+* Navigate to Player tab.
+* Chose platform-specific settings (Android or IOS).
+* Make sure that `Managed Stripping Level` is disabled. (It's in optimization section)
+
 ### 📝 Read the [documentation.](https://opentezos.com/gaming/unity-sdk/)
