@@ -19,7 +19,7 @@ namespace TezosSDK.Tezos.API
         public IEnumerator GetContractCode<T>(string contract)
             => GetJson<T>($"chains/main/blocks/head/context/contracts/{contract}/script/");
 
-        public IEnumerator RunView<T>(string contract, string view, object input, string chainId = chainId,
+        public IEnumerator RunView<T>(string contract, string view, string input, string chainId = chainId,
             string source = null, string payer = null, long? gas = null,
             NormalizedQuery.UnparsingMode mode = NormalizedQuery.UnparsingMode.Readable, int? now = null,
             int? level = null)
@@ -28,7 +28,7 @@ namespace TezosSDK.Tezos.API
             {
                 contract,
                 view,
-                input = input is string serializedInput ? JsonDocument.Parse(serializedInput) : input,
+                input = JsonDocument.Parse(input),
                 chain_id = chainId,
                 unlimited_gas = gas == null,
                 unparsing_mode = mode.ToString(),

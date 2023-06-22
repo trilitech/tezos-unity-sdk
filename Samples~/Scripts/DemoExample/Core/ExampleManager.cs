@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using TezosSDK.Beacon;
@@ -45,12 +46,12 @@ public class ExampleManager : IExampleManager
 
         const string entrypoint = "view_items_of";
         var input = new { @string = activeWalletAddress };
-
+        
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
-                input: input,
+                input: JsonSerializer.Serialize(input, JsonOptions.DefaultOptions),
                 callback: result =>
                 {
                     Logger.LogDebug("READING INVENTORY DATA");
@@ -372,7 +373,7 @@ public class ExampleManager : IExampleManager
                 new MichelineString(owner),
                 new MichelineInt(itemID)
             }
-        };
+        }.ToJson();
 
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
