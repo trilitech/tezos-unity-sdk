@@ -34,15 +34,11 @@ namespace TezosSDK.Beacon
 
         public async void ConnectAccount()
         {
-            if (BeaconDappClient != null)
-            {
-                Logger.LogDebug("BeaconDappClient != null");
-                return;
-            }
+            if (BeaconDappClient != null) return;
 
-            var pathToDb = Path.Combine(Application.persistentDataPath, "beacon232.db");
+            var pathToDb = Path.Combine(Application.persistentDataPath, "beacon.db");
             Logger.LogDebug($"DB file stored in {pathToDb}");
-            
+
             var options = new BeaconOptions
             {
                 AppName = "Tezos Unity SDK",
@@ -95,14 +91,14 @@ namespace TezosSDK.Beacon
             _walletMessageReceiver.OnHandshakeReceived(pairingRequestQrData);
             UnityMainThreadDispatcher.Enqueue(_walletMessageReceiver.OnAccountDisconnected, string.Empty);
         }
-        
+
         public void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType)
         {
             _network = network;
             _rpc = rpc;
         }
 
-        public void SetWalletMessageReceiver(WalletMessageReceiver  messageReceiver)
+        public void SetWalletMessageReceiver(WalletMessageReceiver messageReceiver)
         {
             _walletMessageReceiver = messageReceiver;
         }
