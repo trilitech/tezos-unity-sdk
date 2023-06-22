@@ -71,7 +71,7 @@ namespace TezosSDK.Tezos
             return GetCurrentWalletBalance(callback);
         }
 
-        public IEnumerator ReadView(string contractAddress, string entrypoint, object input,
+        public IEnumerator ReadView(string contractAddress, string entrypoint, string input,
             Action<JsonElement> callback)
         {
             return API.ReadView(contractAddress, entrypoint, input, callback);
