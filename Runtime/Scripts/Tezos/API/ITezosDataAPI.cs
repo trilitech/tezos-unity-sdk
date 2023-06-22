@@ -27,10 +27,9 @@ namespace TezosSDK.Tezos.API
         /// <param name="input">parameters called on the entry point</param>
         /// <param name="callback">callback action that runs with the json data is fetched</param>
         /// <returns></returns>
-        public IEnumerator ReadView(
-            string contractAddress,
+        public IEnumerator ReadView(string contractAddress,
             string entrypoint,
-            object input,
+            string input,
             Action<JsonElement> callback);
 
         // Gets all tokens currently owned by a given address.
