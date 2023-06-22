@@ -34,7 +34,13 @@ namespace TezosSDK.Beacon
 
         public async void ConnectAccount()
         {
-            var pathToDb = Path.Combine(Application.persistentDataPath, "beacon.db");
+            if (BeaconDappClient != null)
+            {
+                Logger.LogDebug("BeaconDappClient != null");
+                return;
+            }
+
+            var pathToDb = Path.Combine(Application.persistentDataPath, "beacon232.db");
             Logger.LogDebug($"DB file stored in {pathToDb}");
             
             var options = new BeaconOptions
