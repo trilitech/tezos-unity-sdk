@@ -27,10 +27,9 @@ namespace TezosSDK.Tezos.API
             return new CoroutineWrapper<ulong>(getBalanceRequest, callback);
         }
 
-        public IEnumerator ReadView(
-            string contractAddress,
+        public IEnumerator ReadView(string contractAddress,
             string entrypoint,
-            object input,
+            string input,
             Action<JsonElement> callback)
         {
             var runViewOp = Rpc.RunView<JsonElement>(contractAddress, entrypoint, input);

@@ -70,7 +70,7 @@ namespace TezosSDK.Tezos
             return _tezos.ReadBalance(callback);
         }
 
-        public IEnumerator ReadView(string contractAddress, string entrypoint, object input,
+        public IEnumerator ReadView(string contractAddress, string entrypoint, string input,
             Action<JsonElement> callback)
         {
             return _tezos.ReadView(contractAddress, entrypoint, input, callback);

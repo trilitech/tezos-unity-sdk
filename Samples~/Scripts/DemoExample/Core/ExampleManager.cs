@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using TezosSDK.Beacon;
@@ -45,12 +46,12 @@ public class ExampleManager : IExampleManager
 
         const string entrypoint = "view_items_of";
         var input = new { @string = activeWalletAddress };
-
+        
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
                 contractAddress: contractAddress,
                 entrypoint: entrypoint,
-                input: input,
+                input: JsonSerializer.Serialize(input, JsonOptions.DefaultOptions),
                 callback: result =>
                 {
                     Logger.LogDebug("READING INVENTORY DATA");
@@ -139,7 +140,7 @@ public class ExampleManager : IExampleManager
         var input = new MichelinePrim
         {
             Prim = PrimType.Unit
-        };
+        }.ToJson();
 
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
@@ -259,7 +260,7 @@ public class ExampleManager : IExampleManager
                 new MichelineString(caller),
                 new MichelineInt(softCurrencyID)
             }
-        };
+        }.ToJson();
 
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
@@ -299,15 +300,15 @@ public class ExampleManager : IExampleManager
 
         const string entryPoint = "addToMarket";
 
-        var parameter = new MichelinePrim()
+        var parameter = new MichelinePrim
         {
             Prim = PrimType.Pair,
-            Args = new List<IMicheline>()
+            Args = new List<IMicheline>
             {
-                new MichelinePrim()
+                new MichelinePrim
                 {
                     Prim = PrimType.Pair,
-                    Args = new List<IMicheline>()
+                    Args = new List<IMicheline>
                     {
                         new MichelineInt(0), // (currency ID = 0) represents coins
                         new MichelineInt(price),
@@ -331,10 +332,10 @@ public class ExampleManager : IExampleManager
         const string entryPoint = "removeFromMarket";
 
         var sender = _tezos.GetActiveWalletAddress();
-        var parameter = new MichelinePrim()
+        var parameter = new MichelinePrim
         {
             Prim = PrimType.Pair,
-            Args = new List<IMicheline>()
+            Args = new List<IMicheline>
             {
                 new MichelineString(sender),
                 new MichelineInt(itemID)
@@ -364,15 +365,15 @@ public class ExampleManager : IExampleManager
     {
         const string entrypoint = "is_item_on_market";
 
-        var input = new MichelinePrim()
+        var input = new MichelinePrim
         {
             Prim = PrimType.Pair,
-            Args = new List<IMicheline>()
+            Args = new List<IMicheline>
             {
                 new MichelineString(owner),
                 new MichelineInt(itemID)
             }
-        };
+        }.ToJson();
 
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(

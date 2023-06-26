@@ -248,4 +248,5 @@ dist
 .pnp.*
 
 WebGLFrontend/node_modules/
+WebGLFrontend/node_modules.meta
 WebGLFrontend/dist/
