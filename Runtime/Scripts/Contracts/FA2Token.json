@@ -3704,7 +3704,7 @@
             "prim": "Pair",
             "args": [
               {
-                "string": "KT1Jvxy7E1mBDpS34CJaTVGWosFiuimShMXn"
+                "string": "CONTRACT_ADMIN"
               },
               {
                 "int": "0"

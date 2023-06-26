@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Netezos.Encoding;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
 
@@ -25,12 +23,12 @@ namespace TezosSDK.Tezos.API.Models
 
         public Task<string> Mint()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public Task<string> Transfer()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void Deploy(Action<string> contractAddressReceived)
@@ -39,6 +37,7 @@ namespace TezosSDK.Tezos.API.Models
             var stringScript = File
                 .ReadAllText($@"{currentDir}/../../../Contracts/FA2Token.json");
             
+            // todo: refactor this
             TezosSingleton
                 .Instance
                 .Wallet
