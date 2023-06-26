@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [unreleased]
+### Fixed
+- [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/99) with game items transfer not working
+
+
 ## [1.5.0] - 2023-06-22
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/68) with UnityBeacon gameobject
