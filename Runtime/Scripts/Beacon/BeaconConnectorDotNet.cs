@@ -166,7 +166,7 @@ namespace TezosSDK.Beacon
                 new JObject
                 {
                     ["entrypoint"] = entryPoint,
-                    ["value"] = JObject.Parse(arg)
+                    ["value"] = JToken.Parse(arg)
                 }
             );
 

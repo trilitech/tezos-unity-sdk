@@ -5,7 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [unreleased]
+### Fixed
+- [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/99) with game items transfer not working
+
+
+## [1.5.0] - 2023-06-22
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/68) with UnityBeacon gameobject
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/61) fix contracts compilation on Ligo `0.65.0`
@@ -18,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to build WebGL frontend bundle with Webpack, refactored WebGL fronted app structure
 - API method: `GetLatestBlockLevel`
 - Editor Issue Report Form window
+- Readme section about mobile-platforms building with disabled `Managed Stripping Level`
 
 ### Changed
 - [Updated](https://github.com/trilitech/tezos-unity-sdk/issues/70) Beacon TypeScript dependency
@@ -98,7 +104,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added auto releases with GH actions
 
 
-[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/1.4.0...HEAD
+[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.5.0
 [1.4.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.4.0
 [1.3.1]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.3.1
 [1.3.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.3.0
