@@ -84,4 +84,9 @@ public class RegisterPanel : PanelController
             .VerifyPayload(SignPayloadType.micheline, PayloadToSign);
         Debug.Log("Verification success: " + verified);
     }
+    
+    public void DeployContract()
+    {
+        _exampleManager.DeployContract();
+    }
 }

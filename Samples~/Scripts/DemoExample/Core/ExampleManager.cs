@@ -6,6 +6,7 @@ using Netezos.Encoding;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
@@ -347,6 +348,21 @@ public class ExampleManager : IExampleManager
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
 #endif
+    }
+    
+    public void DeployContract()
+    {
+        var address = _tezos.GetActiveWalletAddress();
+        
+        var tc = new TokenContract
+        {
+            Address = address
+        };
+        
+        tc.Deploy((string fa2ContractAddress) =>
+        {
+            Debug.Log("NEW CONTRACT ADDRESS: " + fa2ContractAddress);
+        });
     }
 
     public void GetCoins()

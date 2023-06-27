@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
+using UnityEngine;
 
 namespace TezosSDK.Tezos.API.Models
 {
     public class TokenContract : IFA2
     {
-        [CanBeNull] public string Address { get; private set; }
+        [CanBeNull] public string Address { get; set; }
 
         public TokenContract(string address)
         {
@@ -36,7 +37,9 @@ namespace TezosSDK.Tezos.API.Models
             var currentDir = Utils.GetThisFileDir();
             var stringScript = File
                 .ReadAllText($@"{currentDir}/../../../Contracts/FA2Token.json");
-            
+
+            var script = stringScript.Replace("CONTRACT_ADMIN", Address);
+
             // todo: refactor this
             TezosSingleton
                 .Instance
@@ -76,7 +79,7 @@ namespace TezosSDK.Tezos.API.Models
 
             TezosSingleton
                 .Instance
-                .OriginateContract(stringScript);
+                .OriginateContract(script);
         }
     }
 }

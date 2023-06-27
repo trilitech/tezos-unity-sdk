@@ -111,4 +111,10 @@ public interface IExampleManager
     void RequestSignPayload(SignPayloadType signingType, string payload);
 
     bool VerifyPayload(SignPayloadType signingType, string payload);
+
+    /// <summary>
+    /// Deploy FA2 contract
+    /// </summary>
+    /// <param name="callback">callback that takes the KT-address of deployed contract (string)</param>
+    void DeployContract();
 }
