@@ -65,10 +65,15 @@ namespace TezosSDK.Beacon
         {
             JsSendContractCall(destination, amount.ToString(), entryPoint, arg);
         }
-
+        
         public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
         {
             JsSignPayload((int)signingType, payload);
+        }
+        
+        public void RequestContractOrigination(string script, string delegateAddress = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
