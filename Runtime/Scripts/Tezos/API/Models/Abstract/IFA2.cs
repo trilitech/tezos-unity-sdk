@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System;
 
 namespace TezosSDK.Tezos.API.Models.Abstract
 {
@@ -6,8 +6,10 @@ namespace TezosSDK.Tezos.API.Models.Abstract
     {
         public string Address { get; }
 
-        Task<string> Mint();
+        void Mint();
 
-        Task<string> Transfer();
+        void Transfer(Action<string> transactionHash);
+
+        void Deploy(Action<string> contractAddress);
     }
 }

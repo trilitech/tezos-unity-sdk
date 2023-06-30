@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Netezos.Contracts;
+using Netezos.Encoding;
+using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
 using UnityEngine;
@@ -22,14 +25,87 @@ namespace TezosSDK.Tezos.API.Models
         {
         }
 
-        public Task<string> Mint()
+        public void Mint()
         {
             throw new NotImplementedException();
         }
 
-        public Task<string> Transfer()
+        public void Transfer(Action<string> transactionHash)
         {
-            throw new NotImplementedException();
+            var address = TezosSingleton
+                .Instance
+                .GetActiveWalletAddress();
+            
+            // TezosSingleton
+            //     .Instance
+            //     .API
+            //     .GetAccountCounter(counter =>
+            //     {
+            //         Debug.Log("Counter: " + counter);
+            //     }, address);
+            
+            var currentDir = Utils.GetThisFileDir();
+            var script = File
+                .ReadAllText($@"{currentDir}/../../../Contracts/FA2Token.json");
+            
+            var code = JObject
+                .Parse(script)
+                .SelectToken("code");
+
+            var michelineCode = Micheline.FromJson(code.ToString());
+            var cs = new ContractScript(michelineCode);
+
+            const string CONTRACT_ADDRESS = "KT1DTJEAte2SE1dTJNWS1qSck8pCmGpVpD6X";
+            const string entryPoint = "transfer";
+            
+            var param = cs.BuildParameter(
+                "transfer",
+                new List<object>
+                {
+                    new
+                    {
+                        from_ = address,
+                        txs = new List<object>
+                        {
+                            new
+                            {
+                                // todo: get from UI
+                                to_ = "tz1Z7tMm4kwdXWhxLVcPr1ZyvFdCH6MnfNYN",
+                                token_id = 0,
+                                amount = "11"
+                            }
+                        }
+                    }
+                }).ToJson();
+
+            TezosSingleton
+                .Instance
+                .Wallet
+                .MessageReceiver
+                .ContractCallCompleted += ContractCallCompleted;
+
+            void ContractCallCompleted(string response)
+            {
+                TezosSingleton
+                    .Instance
+                    .Wallet
+                    .MessageReceiver
+                    .ContractCallCompleted -= ContractCallCompleted;
+                
+                var transactionHash = JsonSerializer
+                    .Deserialize<JsonElement>(response)
+                    .GetProperty("transactionHash")
+                    .ToString();
+                
+                Debug.Log("TOKEN TRANSFERRED. HASH: " + transactionHash);
+            }
+            
+            TezosSingleton
+                .Instance
+                .CallContract(
+                    CONTRACT_ADDRESS,
+                    entryPoint,
+                    param);
         }
 
         public void Deploy(Action<string> contractAddressReceived)
@@ -38,7 +114,10 @@ namespace TezosSDK.Tezos.API.Models
             var stringScript = File
                 .ReadAllText($@"{currentDir}/../../../Contracts/FA2Token.json");
 
-            var script = stringScript.Replace("CONTRACT_ADMIN", Address);
+            var address = TezosSingleton
+                .Instance
+                .GetActiveWalletAddress();
+            var script = stringScript.Replace("CONTRACT_ADMIN", address);
 
             // todo: refactor this
             TezosSingleton

@@ -95,6 +95,11 @@ namespace TezosSDK.Tezos.API
         // Returns a level of the block closest to the current timestamp.
         public IEnumerator GetLatestBlockLevel(
             Action<int> callback);
+        
+        // Get account's counter.
+        public IEnumerator GetAccountCounter(
+            Action<int> callback,
+            string address);
 
         // Get originated contract address by operation hash
         public IEnumerator GetContractAddressByOperationHash(

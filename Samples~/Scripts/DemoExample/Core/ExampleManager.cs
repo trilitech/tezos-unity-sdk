@@ -352,16 +352,21 @@ public class ExampleManager : IExampleManager
     
     public void DeployContract()
     {
-        var address = _tezos.GetActiveWalletAddress();
-        
-        var tc = new TokenContract
-        {
-            Address = address
-        };
-        
-        tc.Deploy((string fa2ContractAddress) =>
+        var tc = new TokenContract();
+        tc.Deploy(fa2ContractAddress =>
         {
             Debug.Log("NEW CONTRACT ADDRESS: " + fa2ContractAddress);
+            tc.Address = fa2ContractAddress;
+        });
+        // Transfer();
+    }
+
+    public void Transfer()
+    {
+        var tc = new TokenContract();
+        tc.Transfer(transactionHash =>
+        {
+            Debug.Log("TOKEN TRANSFERRED. HASH: " + transactionHash);
         });
     }
 

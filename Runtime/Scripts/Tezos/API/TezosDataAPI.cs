@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Dynamic.Json;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Operations;
 using TezosSDK.Tezos.API.Models.Tokens;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos.API
 {
@@ -251,6 +251,15 @@ namespace TezosSDK.Tezos.API
 
             yield return requestRoutine;
 
+            callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
+        }
+        
+        public IEnumerator GetAccountCounter(Action<int> callback, string address)
+        {
+            var url = $"accounts/{address}/counter";
+            var requestRoutine = GetJson<int>(url);
+            yield return requestRoutine;
+            
             callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
         }
 
