@@ -363,13 +363,13 @@ public class ExampleManager : IExampleManager
 
     public void UploadToIpfs()
     {
-        var fileUploader = WebUploaderHelper.InitWebFileLoader();
-        
+        var uploader = UploaderFactory.GetUploader();
+
         CoroutineRunner
             .Instance
-            .StartWrappedCoroutine(fileUploader.UploadFile(hash =>
+            .StartWrappedCoroutine(uploader.UploadFile(ipfsResponse =>
             {
-                Logger.LogDebug($"Link to uploaded file: https://ipfs.io/ipfs/{hash}");
+                Logger.LogDebug($"Link to uploaded file: https://ipfs.io/ipfs/{ipfsResponse.IpfsHash}");
             }));
     }
 

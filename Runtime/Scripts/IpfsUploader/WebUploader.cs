@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using UnityEngine;
 
 namespace TezosSDK.Scripts.IpfsUploader
@@ -12,7 +13,7 @@ namespace TezosSDK.Scripts.IpfsUploader
             WebUploaderHelper.SetResult(path);
         }
 
-        public IEnumerator UploadFile(Action<string> callback)
+        public IEnumerator UploadFile(Action<IpfsResponse> callback)
         {
             yield return null;
             WebUploaderHelper.RequestFile(callback, SupportedFileExtensions);
@@ -21,7 +22,7 @@ namespace TezosSDK.Scripts.IpfsUploader
     
     public static class WebUploaderHelper
     {
-        private static Action<string> _responseCallback;
+        private static Action<IpfsResponse> _responseCallback;
 
         public static WebUploader InitWebFileLoader()
         {
@@ -29,7 +30,6 @@ namespace TezosSDK.Scripts.IpfsUploader
             const string callbackMethodName = nameof(WebUploader.FileRequestCallback);
 
             var webUploaderGameObject = GameObject.Find(nameof(WebUploader));
-            
             var webFileUploader = webUploaderGameObject != null
                 ? webUploaderGameObject.GetComponent<WebUploader>()
                 : new GameObject(nameof(WebUploader)).AddComponent<WebUploader>();
@@ -43,7 +43,7 @@ namespace TezosSDK.Scripts.IpfsUploader
             return webFileUploader;
         }
 
-        public static void RequestFile(Action<string> callback, string extensions)
+        public static void RequestFile(Action<IpfsResponse> callback, string extensions)
         {
             JsRequestUserFile(extensions);
             _responseCallback = callback;
@@ -51,7 +51,8 @@ namespace TezosSDK.Scripts.IpfsUploader
         
         public static void SetResult(string response)
         {
-            _responseCallback.Invoke(response);
+            var ipfsResponse = JsonSerializer.Deserialize<IpfsResponse>(response);
+            _responseCallback.Invoke(ipfsResponse);
             Dispose();
         }
 

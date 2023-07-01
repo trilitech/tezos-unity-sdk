@@ -1,4 +1,4 @@
-import { FileUploader, FileUploaderConfig, IpfsResponse } from "./Types";
+import { FileUploader, FileUploaderConfig } from "./Types";
 
 class IpfsUploader implements FileUploader {
   Config: FileUploaderConfig;
@@ -58,14 +58,20 @@ class IpfsUploader implements FileUploader {
       },
     };
 
-    const request = await fetch(this.Config.ApiUrl, options);
-    const data: IpfsResponse = await request.json();
+    try {
+      const request = await fetch(this.Config.ApiUrl, options);
+      const data: string = await request.text();
 
-    window.unityInstance.SendMessage(
-      this.Config.CallbackObjectName,
-      this.Config.CallbackMethodName,
-      data.IpfsHash
-    );
+      window.unityInstance.SendMessage(
+        this.Config.CallbackObjectName,
+        this.Config.CallbackMethodName,
+        data
+      );
+    } catch (error) {
+      console.error(
+        `Error during uploading file to ${this.Config.ApiUrl}\n${error}`
+      );
+    }
 
     this.ResetFileUploader();
   }
