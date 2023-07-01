@@ -31,6 +31,9 @@ namespace TezosSDK.Beacon
 
         [DllImport("__Internal")]
         private static extern string JsGetActiveAccountAddress();
+        
+        [DllImport("__Internal")]
+        private static extern string JsRequestContractOrigination(string script, string delegateAddress);
 
         #endregion
 
@@ -73,7 +76,7 @@ namespace TezosSDK.Beacon
         
         public void RequestContractOrigination(string script, string delegateAddress = null)
         {
-            throw new System.NotImplementedException();
+            JsRequestContractOrigination(script, delegateAddress);
         }
     }
 }

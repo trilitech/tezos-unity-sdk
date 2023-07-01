@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos.API.Models
 {
@@ -44,9 +45,7 @@ namespace TezosSDK.Tezos.API.Models
             //         Debug.Log("Counter: " + counter);
             //     }, address);
             
-            var currentDir = Utils.GetThisFileDir();
-            var script = File
-                .ReadAllText($@"{currentDir}/../../../Contracts/FA2Token.json");
+            var script = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
             
             var code = JObject
                 .Parse(script)
@@ -110,9 +109,7 @@ namespace TezosSDK.Tezos.API.Models
 
         public void Deploy(Action<string> contractAddressReceived)
         {
-            var currentDir = Utils.GetThisFileDir();
-            var stringScript = File
-                .ReadAllText($@"{currentDir}/../../../Contracts/FA2Token.json");
+            var stringScript = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
 
             var address = TezosSingleton
                 .Instance

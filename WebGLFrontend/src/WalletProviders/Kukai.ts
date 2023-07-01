@@ -1,5 +1,5 @@
-import { KukaiEmbed, Template } from "kukai-embed";
 import BaseWallet from "./BaseWallet";
+import { KukaiEmbed, Template } from "kukai-embed";
 import { Wallet } from "./Types";
 
 class KukaiWallet extends BaseWallet implements Wallet {
@@ -52,6 +52,20 @@ class KukaiWallet extends BaseWallet implements Wallet {
     try {
       const transactionHash = await this.kukaiEmbed.send(
         this.GetOperationsList(destination, amount, entryPoint, parameter),
+        this.defaultUIConfig
+      );
+
+      this.CallUnityOnContractCallCompleted({ transactionHash });
+    } catch (error) {
+      this.CallUnityOnContractCallFailed(error);
+    }
+  }
+
+  async OriginateContract(script: string, delegateAddress?: string) {
+    try {
+      const transactionHash = await this.kukaiEmbed.send(
+        // @ts-ignore
+        this.GetOriginationOperationsList(script, delegateAddress),
         this.defaultUIConfig
       );
 

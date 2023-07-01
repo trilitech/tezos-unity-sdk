@@ -16,6 +16,7 @@ interface Wallet {
   ): void;
   SignPayload(signingType: number, plainTextPayload: string): void;
   DisconnectAccount(): void;
+  OriginateContract(script: string, delegateAddress?: string): void;
 }
 
 interface AbstractWallet {

@@ -1,11 +1,13 @@
+import BaseWallet from "./BaseWallet";
 import { DAppClient } from "@airgap/beacon-sdk";
+import { Wallet } from "./Types";
 import {
   Network,
   NetworkType,
+  PartialTezosOriginationOperation,
   PermissionResponseOutput,
+  TezosOperationType,
 } from "@airgap/beacon-types";
-import BaseWallet from "./BaseWallet";
-import { Wallet } from "./Types";
 
 class BeaconWallet extends BaseWallet implements Wallet {
   clientName: string = "Tezos Unity SDK";
@@ -66,6 +68,23 @@ class BeaconWallet extends BaseWallet implements Wallet {
           amount,
           entryPoint,
           parameter
+        ),
+      });
+
+      this.CallUnityOnContractCallCompleted({
+        transactionHash: operationResult.transactionHash,
+      });
+    } catch (error) {
+      this.CallUnityOnContractCallFailed(error);
+    }
+  }
+
+  async OriginateContract(script: string, delegateAddress?: string) {
+    try {
+      const operationResult = await this.beaconClient.requestOperation({
+        operationDetails: this.GetOriginationOperationsList(
+          script,
+          delegateAddress
         ),
       });
 
