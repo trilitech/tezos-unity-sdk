@@ -89,4 +89,9 @@ public class RegisterPanel : PanelController
     {
         _exampleManager.DeployContract();
     }
+    
+    public void UploadToIpfs()
+    {
+        _exampleManager.UploadToIpfs();
+    }
 }

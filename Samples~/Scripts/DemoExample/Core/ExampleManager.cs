@@ -5,6 +5,7 @@ using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
+using TezosSDK.Scripts.IpfsUploader;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.Wallet;
@@ -353,21 +354,23 @@ public class ExampleManager : IExampleManager
     public void DeployContract()
     {
         var tc = new TokenContract();
-        tc.Deploy(fa2ContractAddress =>
+
+        tc.Deploy((string fa2ContractAddress) =>
         {
-            Debug.Log("NEW CONTRACT ADDRESS: " + fa2ContractAddress);
-            tc.Address = fa2ContractAddress;
+            Logger.LogDebug("NEW CONTRACT ADDRESS: " + fa2ContractAddress);
         });
-        // Transfer();
     }
 
-    public void Transfer()
+    public void UploadToIpfs()
     {
-        var tc = new TokenContract();
-        tc.Transfer(transactionHash =>
-        {
-            Debug.Log("TOKEN TRANSFERRED. HASH: " + transactionHash);
-        });
+        var fileUploader = WebUploaderHelper.InitWebFileLoader();
+        
+        CoroutineRunner
+            .Instance
+            .StartWrappedCoroutine(fileUploader.UploadFile(hash =>
+            {
+                Logger.LogDebug($"Link to uploaded file: https://ipfs.io/ipfs/{hash}");
+            }));
     }
 
     public void GetCoins()

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/99) with game items transfer not working
 
+### Added
+- Ipfs web uploader
 
 ## [1.5.0] - 2023-06-22
 ### Fixed

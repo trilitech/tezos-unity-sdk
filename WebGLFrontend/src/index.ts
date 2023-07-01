@@ -1,6 +1,8 @@
-import BeaconWallet from "./WalletProviders/Beacon";
-import KukaiWallet from "./WalletProviders/Kukai";
-import { Wallet, WalletType } from "./WalletProviders/Types";
+import BeaconWallet from './WalletProviders/Beacon';
+import IpfsUploader from './IpfsUploader/IpfsUploader';
+import KukaiWallet from './WalletProviders/Kukai';
+import { FileUploader, FileUploaderConfig } from './IpfsUploader/Types';
+import { Wallet, WalletType } from './WalletProviders/Types';
 
 let cachedKukaiWallet: KukaiWallet;
 let cachedBeqaconWallet: BeaconWallet;
@@ -23,7 +25,16 @@ function InitWalletProvider(
   window.WalletProvider.SetNetwork(networkName, rpcUrl);
 }
 
+function InitFileUploader(config: FileUploaderConfig) {
+  if (window.FileUploader) return;
+  const ipfsUploader: FileUploader = new IpfsUploader();
+  ipfsUploader.InitFileUploader(config);
+
+  window.FileUploader = ipfsUploader;
+}
+
 window.InitWalletProvider = InitWalletProvider;
+window.InitFileUploader = InitFileUploader;
 
 declare global {
   interface Window {
@@ -34,5 +45,7 @@ declare global {
       rpcUrl: string,
       walletType: WalletType
     ): void;
+    InitFileUploader(config: FileUploaderConfig): void;
+    FileUploader: FileUploader | null;
   }
 }

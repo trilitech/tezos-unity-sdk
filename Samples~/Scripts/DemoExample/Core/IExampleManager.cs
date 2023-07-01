@@ -115,6 +115,10 @@ public interface IExampleManager
     /// <summary>
     /// Deploy FA2 contract
     /// </summary>
-    /// <param name="callback">callback that takes the KT-address of deployed contract (string)</param>
     void DeployContract();
+    
+    /// <summary>
+    /// Select and upload file to IPFS.
+    /// </summary>
+    void UploadToIpfs();
 }
