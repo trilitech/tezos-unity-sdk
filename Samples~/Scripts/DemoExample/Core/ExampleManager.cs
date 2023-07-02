@@ -8,9 +8,11 @@ using TezosSDK.Helpers;
 using TezosSDK.Scripts.IpfsUploader;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models;
+using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
+using Random = System.Random;
 
 public class ExampleManager : IExampleManager
 {
@@ -48,7 +50,7 @@ public class ExampleManager : IExampleManager
 
         const string entrypoint = "view_items_of";
         var input = new { @string = activeWalletAddress };
-        
+
         CoroutineRunner.Instance.StartWrappedCoroutine(
             _tezos.ReadView(
                 contractAddress: contractAddress,
@@ -224,10 +226,46 @@ public class ExampleManager : IExampleManager
 
     public void MintItem()
     {
-        const string entrypoint = "mint";
-        const string input = "{\"prim\": \"Unit\"}";
+        // const string entrypoint = "mint";
+        // const string input = "{\"prim\": \"Unit\"}";
+        //
+        // _tezos.CallContract(contractAddress, entrypoint, input, 0);
 
-        _tezos.CallContract(contractAddress, entrypoint, input, 0);
+        var rnd = new Random();
+        var randomInt = rnd.Next(1, int.MaxValue);
+        var randomAmount = rnd.Next(1, 1024);
+
+        var uploader = UploaderFactory.GetUploader();
+        var activeAccount = _tezos.Wallet.GetActiveAddress();
+
+        CoroutineRunner
+            .Instance
+            .StartWrappedCoroutine(uploader.UploadFile(ImageUploaded));
+
+        void ImageUploaded(IpfsResponse ipfsResponse)
+        {
+            var imageAddress = $"ipfs://{ipfsResponse.IpfsHash}";
+            var contract = new TokenContract("KT1Tsp4W9aaTeMHnok2Y4Q99Mg1BBjN2qrdA");
+
+            var metadata = new TokenMetadata
+            {
+                Name = $"testName_{randomInt}",
+                Description = $"testDescription_{randomInt}",
+                Symbol = $"TST_{randomInt}",
+                Decimals = "0",
+                DisplayUri = imageAddress,
+                ArtifactUri = imageAddress,
+                ThumbnailUri = imageAddress
+            };
+
+
+            contract
+                .Mint((txHash) => { Logger.LogDebug($"Mint completed with Hash {txHash}"); },
+                    metadata,
+                    destination: activeAccount,
+                    amount: randomAmount);
+        }
+
 
 #if UNITY_IOS || UNITY_ANDROID
         Application.OpenURL("tezos://");
@@ -350,15 +388,12 @@ public class ExampleManager : IExampleManager
         Application.OpenURL("tezos://");
 #endif
     }
-    
+
     public void DeployContract()
     {
         var tc = new TokenContract();
 
-        tc.Deploy((string fa2ContractAddress) =>
-        {
-            Logger.LogDebug("NEW CONTRACT ADDRESS: " + fa2ContractAddress);
-        });
+        tc.Deploy((string fa2ContractAddress) => { Logger.LogDebug("NEW CONTRACT ADDRESS: " + fa2ContractAddress); });
     }
 
     public void UploadToIpfs()

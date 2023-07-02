@@ -1,4 +1,5 @@
 using System;
+using TezosSDK.Tezos.API.Models.Tokens;
 
 namespace TezosSDK.Tezos.API.Models.Abstract
 {
@@ -6,7 +7,13 @@ namespace TezosSDK.Tezos.API.Models.Abstract
     {
         public string Address { get; }
 
-        void Mint();
+
+        void Mint(
+            // todo: Action<TokenBalance> ?
+            Action<string> callback,
+            TokenMetadata tokenMetadata,
+            string destination,
+            int amount);
 
         void Transfer(Action<string> transactionHash);
 

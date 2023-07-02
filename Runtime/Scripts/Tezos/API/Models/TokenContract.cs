@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Text.Json;
 using JetBrains.Annotations;
 using Netezos.Contracts;
@@ -8,8 +8,10 @@ using Netezos.Encoding;
 using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
+using TezosSDK.Tezos.API.Models.Tokens;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using TezosSDK.Tezos.API.Models.Filters;
+
 
 namespace TezosSDK.Tezos.API.Models
 {
@@ -26,9 +28,75 @@ namespace TezosSDK.Tezos.API.Models
         {
         }
 
-        public void Mint()
+        public void Mint(Action<string> callback,
+            TokenMetadata tokenMetadata,
+            string destination,
+            int amount)
         {
-            throw new NotImplementedException();
+            var getTokenIdRoutine = TezosSingleton
+                .Instance
+                .GetTokensForContract(
+                    callback: tokens => { TokensCountReceived(tokens.Count()); },
+                    contractAddress: Address,
+                    withMetadata: false,
+                    maxItems: 10_000,
+                    orderBy: new TokensForContractOrder.Default(0));
+
+            CoroutineRunner.Instance.StartWrappedCoroutine(getTokenIdRoutine);
+
+            void TokensCountReceived(int tokensCount)
+            {
+                var script = Resources
+                    .Load<TextAsset>("Contracts/FA2TokenContract")
+                    .text;
+
+                var code = JObject
+                    .Parse(script)
+                    .SelectToken("code");
+
+                var michelineCode = Micheline.FromJson(code!.ToString());
+                var cs = new ContractScript(michelineCode!);
+
+                var mintParameters = cs.BuildParameter(
+                        "mint",
+                        new
+                        {
+                            address = destination,
+                            amount = amount.ToString(),
+                            metadata = tokenMetadata.GetMetadataDict(),
+                            token_id = tokensCount.ToString()
+                        })
+                    .ToJson();
+
+                TezosSingleton
+                    .Instance
+                    .Wallet
+                    .MessageReceiver
+                    .ContractCallCompleted += ContractCallCompleted;
+
+                void ContractCallCompleted(string response)
+                {
+                    TezosSingleton
+                        .Instance
+                        .Wallet
+                        .MessageReceiver
+                        .ContractCallCompleted -= ContractCallCompleted;
+
+                    var transactionHash = JsonSerializer
+                        .Deserialize<JsonElement>(response)
+                        .GetProperty("transactionHash")
+                        .ToString();
+
+                    callback.Invoke(transactionHash);
+                }
+
+                TezosSingleton
+                    .Instance
+                    .CallContract(
+                        Address,
+                        "mint",
+                        mintParameters);
+            }
         }
 
         public void Transfer(Action<string> transactionHash)
@@ -36,7 +104,7 @@ namespace TezosSDK.Tezos.API.Models
             var address = TezosSingleton
                 .Instance
                 .GetActiveWalletAddress();
-            
+
             // TezosSingleton
             //     .Instance
             //     .API
@@ -44,9 +112,8 @@ namespace TezosSDK.Tezos.API.Models
             //     {
             //         Debug.Log("Counter: " + counter);
             //     }, address);
-            
+
             var script = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
-            
             var code = JObject
                 .Parse(script)
                 .SelectToken("code");
@@ -56,7 +123,7 @@ namespace TezosSDK.Tezos.API.Models
 
             const string CONTRACT_ADDRESS = "KT1DTJEAte2SE1dTJNWS1qSck8pCmGpVpD6X";
             const string entryPoint = "transfer";
-            
+
             var param = cs.BuildParameter(
                 "transfer",
                 new List<object>
@@ -90,15 +157,15 @@ namespace TezosSDK.Tezos.API.Models
                     .Wallet
                     .MessageReceiver
                     .ContractCallCompleted -= ContractCallCompleted;
-                
+
                 var transactionHash = JsonSerializer
                     .Deserialize<JsonElement>(response)
                     .GetProperty("transactionHash")
                     .ToString();
-                
+
                 Debug.Log("TOKEN TRANSFERRED. HASH: " + transactionHash);
             }
-            
+
             TezosSingleton
                 .Instance
                 .CallContract(
@@ -136,12 +203,12 @@ namespace TezosSDK.Tezos.API.Models
                     .Wallet
                     .MessageReceiver
                     .ContractCallCompleted -= DeployCompleted;
-                
+
                 var transactionHash = JsonSerializer
                     .Deserialize<JsonElement>(response)
                     .GetProperty("transactionHash")
                     .ToString();
-                
+
                 CoroutineRunner.Instance.StartWrappedCoroutine(
                     TezosSingleton
                         .Instance
