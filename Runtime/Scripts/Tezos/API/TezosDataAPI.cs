@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using Dynamic.Json;
 using TezosSDK.Helpers;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Operations;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -238,10 +239,8 @@ namespace TezosSDK.Tezos.API
         {
             var url = $"operations/{operationHash}/status";
             var requestRoutine = GetJson<bool?>(url);
-            return new CoroutineWrapper<bool?>(requestRoutine, callback, error =>
-            {
-                Logger.LogDebug($"Can't parse response from API on URL: {url}\n{error.Message}");
-            });
+            return new CoroutineWrapper<bool?>(requestRoutine, callback,
+                error => { Logger.LogDebug($"Can't parse response from API on URL: {url}\n{error.Message}"); });
         }
 
         public IEnumerator GetLatestBlockLevel(Action<int> callback)
@@ -253,13 +252,13 @@ namespace TezosSDK.Tezos.API
 
             callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
         }
-        
+
         public IEnumerator GetAccountCounter(Action<int> callback, string address)
         {
             var url = $"accounts/{address}/counter";
             var requestRoutine = GetJson<int>(url);
             yield return requestRoutine;
-            
+
             callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
         }
 
@@ -267,14 +266,30 @@ namespace TezosSDK.Tezos.API
         {
             var url = $"operations/{operationHash}";
             var requestRoutine = GetJson<IEnumerable<OriginationOperation>>(url);
-            yield return new CoroutineWrapper<IEnumerable<OriginationOperation>>(requestRoutine, null, error =>
-            {
-                Logger.LogDebug(error.Message);
-            });
+            yield return new CoroutineWrapper<IEnumerable<OriginationOperation>>(requestRoutine, null,
+                error => { Logger.LogDebug(error.Message); });
 
             if (requestRoutine.Current is not IEnumerable<OriginationOperation> operations) yield break;
             var originationOperation = operations.First(op => op.Type == "origination");
             callback.Invoke(originationOperation.Contract.Address);
+        }
+
+        public IEnumerator GetOriginatedFa2Contracts(
+            Action<IEnumerable<TokenContract>> callback,
+            string creator,
+            string codeHash = null)
+        {
+            var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&select=address,tokensCount";
+            var requestRoutine = GetJson<IEnumerable<TokenContract>>(url);
+
+            yield return new CoroutineWrapper<IEnumerable<TokenContract>>(
+                requestRoutine,
+                callback: callback,
+                errorHandler: error =>
+                {
+                    callback.Invoke(new List<TokenContract>());
+                    Logger.LogDebug($"Error during GetOriginatedFa2Contracts: {error}");
+                });
         }
     }
 }

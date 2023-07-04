@@ -5,6 +5,7 @@ using NUnit.Framework;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models.Filters;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests.Runtime
@@ -15,7 +16,7 @@ namespace Tests.Runtime
         {
             return new TzKTProviderConfig();
         }
-        
+
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
         // `yield return null;` to skip a frame.
         [UnityTest]
@@ -142,12 +143,9 @@ namespace Tests.Runtime
             TezosConfig.Instance.Network = NetworkType.mainnet;
             var api = new TezosDataAPI(GetDataProviderConfig());
 
-            yield return api.GetLatestBlockLevel(latestBlockLevel =>
-            {
-                Assert.IsTrue(latestBlockLevel > 0);
-            });
+            yield return api.GetLatestBlockLevel(latestBlockLevel => { Assert.IsTrue(latestBlockLevel > 0); });
         }
-        
+
         [UnityTest]
         public IEnumerator GetContractAddressByOperationHashTest()
         {
@@ -155,10 +153,27 @@ namespace Tests.Runtime
             var api = new TezosDataAPI(GetDataProviderConfig());
             const string expected = "KT1DHiWG3qh9FsFYDLhSMF13MK8tV8DSdhRh";
 
-            yield return api.GetContractAddressByOperationHash(contractAddress =>
-            {
-                Assert.AreEqual(expected, contractAddress);
-            }, "onzbMWm9RDGPcAAPbUSWkoxoHY7eJ2EuEwcR246VnDcWWDXbho3");
+            yield return api.GetContractAddressByOperationHash(
+                contractAddress => { Assert.AreEqual(expected, contractAddress); },
+                "onzbMWm9RDGPcAAPbUSWkoxoHY7eJ2EuEwcR246VnDcWWDXbho3");
+        }
+
+        [UnityTest]
+        public IEnumerator GetOriginatedFa2ContractsTest()
+        {
+            TezosConfig.Instance.Network = NetworkType.ghostnet;
+            var api = new TezosDataAPI(GetDataProviderConfig());
+
+            var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash")
+                .text;
+
+            yield return api.GetOriginatedFa2Contracts(
+                callback: originatedContracts =>
+                {
+                    Assert.IsTrue(originatedContracts.Any());
+                },
+                creator: "tz1Xqbt2AZcSqRXxBZp6fBnnm1eEm9JxJPRB",
+                codeHash: codeHash);
         }
     }
 }

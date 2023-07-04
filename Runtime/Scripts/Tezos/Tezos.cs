@@ -5,6 +5,7 @@ using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos.API;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
@@ -66,6 +67,11 @@ namespace TezosSDK.Tezos
         {
             Wallet.CallContract(contractAddress, entryPoint, input, amount);
         }
+        
+        public void OriginateContract(string contractCode)
+        {
+            Wallet.OriginateContract(contractCode);
+        }
 
         public IEnumerator ReadBalance(Action<ulong> callback)
         {
@@ -126,10 +132,13 @@ namespace TezosSDK.Tezos
         {
             return API.GetOperationStatus(callback, operationHash);
         }
-
-        public void OriginateContract(string contractCode)
+        
+        public IEnumerator GetOriginatedFa2Contracts(
+            Action<IEnumerable<TokenContract>> callback,
+            string creator,
+            string codeHash)
         {
-            Wallet.OriginateContract(contractCode);
+            return API.GetOriginatedFa2Contracts(callback, creator, codeHash);
         }
     }
 }

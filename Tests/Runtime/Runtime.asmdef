@@ -1,6 +1,5 @@
 {
     "name": "Runtime",
-    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",

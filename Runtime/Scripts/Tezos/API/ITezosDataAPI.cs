@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 
@@ -105,5 +106,10 @@ namespace TezosSDK.Tezos.API
         public IEnumerator GetContractAddressByOperationHash(
             Action<string> callback,
             string operationHash);
+        
+        public IEnumerator GetOriginatedFa2Contracts(
+            Action<IEnumerable<TokenContract>> callback, 
+            string creator,
+            string codeHash);
     }
 }

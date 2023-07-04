@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using JetBrains.Annotations;
+using System.Text.Json.Serialization;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using Newtonsoft.Json.Linq;
@@ -17,7 +17,11 @@ namespace TezosSDK.Tezos.API.Models
 {
     public class TokenContract : IFA2
     {
-        [CanBeNull] public string Address { get; set; }
+        [JsonPropertyName("address")]
+        public string Address { get; set; }
+
+        [JsonPropertyName("tokensCount")]
+        public int TokensCount { get; set; }
 
         public TokenContract(string address)
         {
@@ -26,6 +30,7 @@ namespace TezosSDK.Tezos.API.Models
 
         public TokenContract()
         {
+            
         }
 
         public void Mint(Action<string> callback,

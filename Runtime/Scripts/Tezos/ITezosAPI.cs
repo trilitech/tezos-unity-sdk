@@ -5,6 +5,7 @@ using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos.API;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
@@ -69,6 +70,12 @@ namespace TezosSDK.Tezos
             string entryPoint,
             string input,
             ulong amount = 0);
+        
+        /// <summary>
+        /// Originate new contract
+        /// </summary>
+        /// <param name="contractCode">Code of contract in json</param>
+        void OriginateContract(string contractCode);
 
         /// <summary>
         /// Fetch current wallet Tezos balance in micro tez
@@ -179,11 +186,16 @@ namespace TezosSDK.Tezos
         /// </summary>
         /// <param name="callback">callback action that runs with the ulong balance is fetched</param>
         IEnumerator GetCurrentWalletBalance(Action<ulong> callback);
-
+        
         /// <summary>
-        /// Originate new contract
+        /// Fetch current wallet Tezos balance in micro tez
         /// </summary>
-        /// <param name="contractCode">Code of contract in json</param>
-        void OriginateContract(string contractCode);
+        /// <param name="callback">callback action that runs with the latest originated contract by address</param>
+        /// <param name="creator">Creator of the contracts</param>
+        /// <param name="codeHash">Contract code hash</param>
+        IEnumerator GetOriginatedFa2Contracts(
+            Action<IEnumerable<TokenContract>> callback,
+            string creator,
+            string codeHash);
     }
 }
