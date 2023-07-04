@@ -7,7 +7,7 @@ namespace TezosSDK.Scripts.IpfsUploader
         public static IFileUploader GetUploader()
         {
             IFileUploader uploader = null;
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
             uploader = WebUploaderHelper.InitWebFileLoader();
 #elif UNITY_EDITOR
             var editorUploaderGameObject = GameObject.Find(nameof(EditorUploader));
