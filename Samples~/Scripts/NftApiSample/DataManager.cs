@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    private ITezosAPI _tezos;
+    private ITezos _tezos;
 
     private string _connectedAddress;
     private string _checkContract;
@@ -23,7 +23,10 @@ public class DataManager : MonoBehaviour
     void Start()
     {
         _tezos = TezosSingleton.Instance;
-        _tezos.MessageReceiver.AccountConnected += OnAccountConnected;
+        _tezos
+            .Wallet
+            .MessageReceiver
+            .AccountConnected += OnAccountConnected;
     }
 
     void OnAccountConnected(string result)
@@ -40,7 +43,7 @@ public class DataManager : MonoBehaviour
             : _checkAddress;
 
         CoroutineRunner.Instance.StartCoroutine(
-            _tezos.GetTokensForOwner((tbs) =>
+            _tezos.API.GetTokensForOwner((tbs) =>
                 {
                     if (tbs == null)
                     {
@@ -89,7 +92,7 @@ public class DataManager : MonoBehaviour
             return;
         }
 
-        CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfContract((flag) =>
+        CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfContract((flag) =>
             {
                 var message = flag
                     ? $"{walletAddress} is HOLDER of contract {_checkContract}"
@@ -119,7 +122,7 @@ public class DataManager : MonoBehaviour
             return;
         }
 
-        CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfToken((flag) =>
+        CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfToken((flag) =>
             {
                 var message = flag
                     ? $"{walletAddress} is HOLDER of token"

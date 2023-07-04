@@ -10,16 +10,7 @@ namespace TezosSDK.Beacon
     /// <summary>
     /// Receives external messages
     /// </summary>
-    public class WalletMessageReceiver : BeaconMessageReceiver
-    {
-    }
-
-    /// <summary>
-    /// Receives external messages
-    /// </summary>
-    [Obsolete(
-        "BeaconMessageReceiver will be renamed to WalletMessageReceiver in future versions, please use WalletMessageReceiver type instead")]
-    public class BeaconMessageReceiver : MonoBehaviour
+    public class WalletMessageReceiver : MonoBehaviour
     {
         public event Action<string> AccountConnected;
         public event Action<string> AccountConnectionFailed;
@@ -88,7 +79,10 @@ namespace TezosSDK.Beacon
             while (!success && Time.time - timestamp < timeout)
             {
                 Logger.LogDebug($"Checking tx status: {transactionHash}");
-                yield return TezosSingleton.Instance.GetOperationStatus(result =>
+                yield return TezosSingleton
+                    .Instance
+                    .API
+                    .GetOperationStatus(result =>
                 {
                     if (result != null)
                         success = JsonSerializer.Deserialize<bool>(result);

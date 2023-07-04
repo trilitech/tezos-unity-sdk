@@ -21,7 +21,7 @@ public class RegisterPanel : PanelController
         yield return null;
 
         _exampleManager = ExampleFactory.Instance.GetExampleManager();
-        _exampleManager.GetMessageReceiver().HandshakeReceived += (handshake) => _qrCodeView.SetQrCode(handshake);
+        _exampleManager.GetWalletMessageReceiver().HandshakeReceived += (handshake) => _qrCodeView.SetQrCode(handshake);
 
         SetButtonState(_deepLinkPair, false, false);
         SetButtonState(_socialLoginButton, false, false);
@@ -75,7 +75,10 @@ public class RegisterPanel : PanelController
 
     public void SignPayloadTest()
     {
-        ExampleFactory.Instance.GetExampleManager().RequestSignPayload(SignPayloadType.micheline, PayloadToSign);
+        ExampleFactory
+            .Instance
+            .GetExampleManager()
+            .RequestSignPayload(SignPayloadType.micheline, PayloadToSign);
     }
 
     public void VerifySignatureTest()
@@ -84,12 +87,12 @@ public class RegisterPanel : PanelController
             .VerifyPayload(SignPayloadType.micheline, PayloadToSign);
         Debug.Log("Verification success: " + verified);
     }
-    
+
     public void DeployContract()
     {
-        _exampleManager.DeployContract();
+        _exampleManager.DeployContract(_ => { _uiManager.UpdateContractAddress(); });
     }
-    
+
     public void UploadToIpfs()
     {
         _exampleManager.UploadToIpfs();

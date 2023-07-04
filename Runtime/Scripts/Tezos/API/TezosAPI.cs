@@ -13,11 +13,11 @@ using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos.API
 {
-    public class TezosDataAPI : HttpClient, ITezosDataAPI
+    public class TezosAPI : HttpClient, ITezosAPI
     {
         private Rpc Rpc { get; }
 
-        public TezosDataAPI(IDataProviderConfig config) : base(config)
+        public TezosAPI(IDataProviderConfig config) : base(config)
         {
             Rpc = new Rpc(TezosConfig.Instance.RpcBaseUrl);
         }
@@ -217,8 +217,8 @@ namespace TezosSDK.Tezos.API
                     $"sort.asc=id&offset.cr={byDefault.lastId}",
                 TokensForContractOrder.ByLastTimeAsc byLastTimeAsc =>
                     $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
-                TokensForContractOrder.ByLastTimeDesc ByLastTimeDesc =>
-                    $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                TokensForContractOrder.ByLastTimeDesc byLastTimeDesc =>
+                    $"sort.desc=lastLevel&offset.pg={byLastTimeDesc.page}",
                 TokensForContractOrder.ByHoldersCountAsc byHoldersCountAsc =>
                     $"sort.asc=holdersCount&offset.pg={byHoldersCountAsc.page}",
                 TokensForContractOrder.ByHoldersCountDesc byHoldersCountDesc =>
@@ -262,26 +262,29 @@ namespace TezosSDK.Tezos.API
             callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
         }
 
-        public IEnumerator GetContractAddressByOperationHash(Action<string> callback, string operationHash)
-        {
-            var url = $"operations/{operationHash}";
-            var requestRoutine = GetJson<IEnumerable<OriginationOperation>>(url);
-            yield return new CoroutineWrapper<IEnumerable<OriginationOperation>>(requestRoutine, null,
-                error => { Logger.LogDebug(error.Message); });
-
-            if (requestRoutine.Current is not IEnumerable<OriginationOperation> operations) yield break;
-            var originationOperation = operations.First(op => op.Type == "origination");
-            callback.Invoke(originationOperation.Contract.Address);
-        }
-
-        public IEnumerator GetOriginatedFa2Contracts(
+        public IEnumerator GetOriginatedContractsForOwner(
             Action<IEnumerable<TokenContract>> callback,
             string creator,
-            string codeHash = null)
+            string codeHash,
+            long maxItems,
+            OriginatedContractsForOwnerOrder orderBy)
         {
-            var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&select=address,tokensCount";
-            var requestRoutine = GetJson<IEnumerable<TokenContract>>(url);
+            var sort = orderBy switch
+            {
+                OriginatedContractsForOwnerOrder.Default byDefault =>
+                    $"sort.asc=id&offset.cr={byDefault.lastId}",
+                OriginatedContractsForOwnerOrder.ByLastActivityTimeAsc byLastTimeAsc =>
+                    $"sort.asc=lastActivity&offset.pg={byLastTimeAsc.page}",
+                OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc byLastTimeDesc =>
+                    $"sort.desc=lastActivity&offset.pg={byLastTimeDesc.page}",
+                _ => string.Empty
+            };
 
+            var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&" +
+                      "select=address,tokensCount,lastActivity,lastActivityTime,id&" +
+                      $"{sort}&limit={maxItems}";
+
+            var requestRoutine = GetJson<IEnumerable<TokenContract>>(url);
             yield return new CoroutineWrapper<IEnumerable<TokenContract>>(
                 requestRoutine,
                 callback: callback,

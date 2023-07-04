@@ -17,6 +17,6 @@ namespace TezosSDK.Tezos.API.Models.Abstract
 
         void Transfer(Action<string> transactionHash);
 
-        void Deploy(Action<string> contractAddress);
+        void Deploy(Action<string> deployedContractAddress);
     }
 }

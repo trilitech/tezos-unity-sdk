@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
+using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 
 public interface IExampleManager
 {
+    ITezos Tezos { get; }
     public void Init(Action<bool> callback = null);
     public void Unpair();
 
@@ -93,7 +95,7 @@ public interface IExampleManager
     /// <summary>
     /// Return the Tezos wallet MessageReceiver for using callbacks
     /// </summary>
-    public BeaconMessageReceiver GetMessageReceiver();
+    public WalletMessageReceiver GetWalletMessageReceiver();
 
     /// <summary>
     /// Checks if item is on the marketplace in the blockchain
@@ -115,7 +117,7 @@ public interface IExampleManager
     /// <summary>
     /// Deploy FA2 contract
     /// </summary>
-    void DeployContract();
+    void DeployContract(Action<string> deployedContractAddress);
     
     /// <summary>
     /// Select and upload file to IPFS.

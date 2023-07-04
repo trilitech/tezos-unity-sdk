@@ -8,7 +8,7 @@ using TezosSDK.Tezos.API.Models.Tokens;
 
 namespace TezosSDK.Tezos.API
 {
-    public interface ITezosDataAPI
+    public interface ITezosAPI
     {
         /// <summary>
         /// An IEnumerator for reading the account's balance
@@ -102,14 +102,12 @@ namespace TezosSDK.Tezos.API
             Action<int> callback,
             string address);
 
-        // Get originated contract address by operation hash
-        public IEnumerator GetContractAddressByOperationHash(
-            Action<string> callback,
-            string operationHash);
-        
-        public IEnumerator GetOriginatedFa2Contracts(
-            Action<IEnumerable<TokenContract>> callback, 
+        // Get list of originated contracts by creator
+        public IEnumerator GetOriginatedContractsForOwner(
+            Action<IEnumerable<TokenContract>> callback,
             string creator,
-            string codeHash);
+            string codeHash,
+            long maxItems,
+            OriginatedContractsForOwnerOrder orderBy);
     }
 }

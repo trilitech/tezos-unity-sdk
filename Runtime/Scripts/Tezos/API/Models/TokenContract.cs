@@ -17,11 +17,11 @@ namespace TezosSDK.Tezos.API.Models
 {
     public class TokenContract : IFA2
     {
-        [JsonPropertyName("address")]
-        public string Address { get; set; }
+        [JsonPropertyName("address")] public string Address { get; set; }
 
-        [JsonPropertyName("tokensCount")]
-        public int TokensCount { get; set; }
+        [JsonPropertyName("tokensCount")] public int TokensCount { get; set; }
+
+        [JsonPropertyName("lastActivityTime")] public DateTime LastActivityTime { get; set; }
 
         public TokenContract(string address)
         {
@@ -30,7 +30,6 @@ namespace TezosSDK.Tezos.API.Models
 
         public TokenContract()
         {
-            
         }
 
         public void Mint(Action<string> callback,
@@ -40,6 +39,7 @@ namespace TezosSDK.Tezos.API.Models
         {
             var getTokenIdRoutine = TezosSingleton
                 .Instance
+                .API
                 .GetTokensForContract(
                     callback: tokens => { TokensCountReceived(tokens.Count()); },
                     contractAddress: Address,
@@ -97,6 +97,7 @@ namespace TezosSDK.Tezos.API.Models
 
                 TezosSingleton
                     .Instance
+                    .Wallet
                     .CallContract(
                         Address,
                         "mint",
@@ -108,16 +109,8 @@ namespace TezosSDK.Tezos.API.Models
         {
             var address = TezosSingleton
                 .Instance
-                .GetActiveWalletAddress();
-
-            // TezosSingleton
-            //     .Instance
-            //     .API
-            //     .GetAccountCounter(counter =>
-            //     {
-            //         Debug.Log("Counter: " + counter);
-            //     }, address);
-
+                .Wallet
+                .GetActiveAddress();
             var script = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
             var code = JObject
                 .Parse(script)
@@ -125,8 +118,7 @@ namespace TezosSDK.Tezos.API.Models
 
             var michelineCode = Micheline.FromJson(code.ToString());
             var cs = new ContractScript(michelineCode);
-
-            const string CONTRACT_ADDRESS = "KT1DTJEAte2SE1dTJNWS1qSck8pCmGpVpD6X";
+            
             const string entryPoint = "transfer";
 
             var param = cs.BuildParameter(
@@ -168,24 +160,28 @@ namespace TezosSDK.Tezos.API.Models
                     .GetProperty("transactionHash")
                     .ToString();
 
-                Debug.Log("TOKEN TRANSFERRED. HASH: " + transactionHash);
+                Debug.Log($"TOKEN TRANSFERRED. HASH: {transactionHash}");
             }
 
             TezosSingleton
                 .Instance
+                .Wallet
                 .CallContract(
-                    CONTRACT_ADDRESS,
+                    Address,
                     entryPoint,
                     param);
         }
 
-        public void Deploy(Action<string> contractAddressReceived)
+        public void Deploy(Action<string> deployedContractAddress)
         {
             var stringScript = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
+            var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 
             var address = TezosSingleton
                 .Instance
-                .GetActiveWalletAddress();
+                .Wallet
+                .GetActiveAddress();
+
             var script = stringScript.Replace("CONTRACT_ADMIN", address);
 
             // todo: refactor this
@@ -209,24 +205,29 @@ namespace TezosSDK.Tezos.API.Models
                     .MessageReceiver
                     .ContractCallCompleted -= DeployCompleted;
 
-                var transactionHash = JsonSerializer
-                    .Deserialize<JsonElement>(response)
-                    .GetProperty("transactionHash")
-                    .ToString();
-
                 CoroutineRunner.Instance.StartWrappedCoroutine(
                     TezosSingleton
                         .Instance
                         .API
-                        .GetContractAddressByOperationHash(contractAddress =>
-                        {
-                            Address = contractAddress;
-                            contractAddressReceived?.Invoke(contractAddress);
-                        }, transactionHash));
+                        .GetOriginatedContractsForOwner(contracts =>
+                            {
+                                var tokenContracts = contracts.ToList();
+                                if (!tokenContracts.Any()) return;
+
+                                var lastUsedContract = tokenContracts.Last();
+                                Address = lastUsedContract.Address;
+                                PlayerPrefs.SetString("CurrentContract", lastUsedContract.Address);
+                                deployedContractAddress?.Invoke(lastUsedContract.Address);
+                            },
+                            creator: address,
+                            codeHash: codeHash,
+                            maxItems: 1000,
+                            new OriginatedContractsForOwnerOrder.Default(0)));
             }
 
             TezosSingleton
                 .Instance
+                .Wallet
                 .OriginateContract(script);
         }
     }

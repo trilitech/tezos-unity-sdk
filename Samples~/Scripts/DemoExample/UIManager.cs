@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using TezosSDK.Helpers;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -19,6 +18,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private MarketManager market;
     [SerializeField] private GameObject loadingPanel;
     [SerializeField] private TMPro.TextMeshProUGUI accountText;
+    [SerializeField] private TMPro.TextMeshProUGUI contractAddressText;
     [SerializeField] private TMPro.TextMeshProUGUI balanceText;
     [SerializeField] private TMPro.TextMeshProUGUI softBalanceText;
     [SerializeField] private GameObject popupPanel;
@@ -40,13 +40,13 @@ public class UIManager : MonoBehaviour
 
     private void InitializeCallbacks()
     {
-        _manager.GetMessageReceiver().AccountConnected += OnAccountConnected;
-        _manager.GetMessageReceiver().AccountConnectionFailed += OnAccountConnectionFailed;
-        _manager.GetMessageReceiver().AccountDisconnected += OnAccountDisconnected;
-        _manager.GetMessageReceiver().ContractCallCompleted += OnContractCallCompleted;
-        _manager.GetMessageReceiver().ContractCallFailed += OnContractCallFailed;
-        _manager.GetMessageReceiver().ContractCallInjected += OnContractCallInjected;
-        _manager.GetMessageReceiver().PayloadSigned += OnPayloadSigned;
+        _manager.GetWalletMessageReceiver().AccountConnected += OnAccountConnected;
+        _manager.GetWalletMessageReceiver().AccountConnectionFailed += OnAccountConnectionFailed;
+        _manager.GetWalletMessageReceiver().AccountDisconnected += OnAccountDisconnected;
+        _manager.GetWalletMessageReceiver().ContractCallCompleted += OnContractCallCompleted;
+        _manager.GetWalletMessageReceiver().ContractCallFailed += OnContractCallFailed;
+        _manager.GetWalletMessageReceiver().ContractCallInjected += OnContractCallInjected;
+        _manager.GetWalletMessageReceiver().PayloadSigned += OnPayloadSigned;
     }
 
     private void AccessInventory()
@@ -122,15 +122,17 @@ public class UIManager : MonoBehaviour
 
     public void ResetWalletData()
     {
-        SetAccountText("0");
+        SetAccountText(string.Empty);
         SetBalanceText(0);
         SetSoftBalanceText(0);
+        SetContract(string.Empty);
     }
 
     private void DisplayWalletData()
     {
-        string address = _manager.GetActiveAccountAddress();
+        var address = _manager.GetActiveAccountAddress();
         SetAccountText(address);
+        UpdateContractAddress();
         _manager.GetBalance(SetBalanceText);
         _manager.GetSoftBalance(SetSoftBalanceText);
     }
@@ -151,6 +153,11 @@ public class UIManager : MonoBehaviour
     private void SetAccountText(string account)
     {
         accountText.text = account;
+    }
+
+    private void SetContract(string contractAddress)
+    {
+        contractAddressText.text = contractAddress;
     }
 
     private void DisplayPopup(string message)
@@ -195,6 +202,19 @@ public class UIManager : MonoBehaviour
         DisplayPopup("Transaction completed!\n \n" +
                      "Transaction hash:\n" + transactionHash +
                      "\n \nResponse:\n" + response);
+    }
+
+    public void UpdateContractAddress()
+    {
+        var currentContractAddressText = _manager
+            .Tezos
+            .TokenContract
+            .Address;
+
+        if (contractAddressText.text != currentContractAddressText)
+        {
+            SetContract(currentContractAddressText);
+        }
     }
 
     private void OnContractCallFailed(string response)

@@ -913,6 +913,7 @@ MonoBehaviour:
   market: {fileID: 91183864}
   loadingPanel: {fileID: 1186911592}
   accountText: {fileID: 3028198140820506503}
+  contractAddressText: {fileID: 3028198140820506505}
   balanceText: {fileID: 21987555}
   softBalanceText: {fileID: 3028198140820506504}
   popupPanel: {fileID: 449307338}
@@ -4941,6 +4942,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3028198140820506505 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3540454626689635234, guid: 7446bf7afc73cea489f7f2f5aa2b5b3d, type: 3}
+  m_PrefabInstance: {fileID: 3028198140820506502}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3286999662730121241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7864,7 +7876,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6709298975032544263, guid: e498629a470d8da42a969e517cfe84ba, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.9963074
+      value: -0.9963112
       objectReference: {fileID: 0}
     - target: {fileID: 6725411246497768125, guid: e498629a470d8da42a969e517cfe84ba, type: 3}
       propertyPath: m_AnchorMax.y

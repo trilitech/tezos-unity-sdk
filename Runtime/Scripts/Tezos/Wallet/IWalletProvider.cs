@@ -1,5 +1,4 @@
 ﻿using Beacon.Sdk.Beacon.Sign;
-using Netezos.Forging.Models;
 using TezosSDK.Beacon;
 
 namespace TezosSDK.Tezos.Wallet
