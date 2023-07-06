@@ -25,6 +25,14 @@ namespace TezosSDK.Tezos
             TezosConfig.Instance.Network = NetworkType.ghostnet;
             _tezos = new Tezos();
         }
+        
+        void OnApplicationQuit()
+        {
+            if (Wallet is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
 
         public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)
         {

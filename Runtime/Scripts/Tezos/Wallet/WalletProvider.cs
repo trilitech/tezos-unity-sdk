@@ -1,13 +1,13 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
-using Netezos.Forging.Models;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using UnityEngine;
 
 namespace TezosSDK.Tezos.Wallet
 {
-    public class WalletProvider : IWalletProvider
+    public class WalletProvider : IWalletProvider, IDisposable
     {
         public WalletMessageReceiver MessageReceiver { get; private set; }
         private IBeaconConnector _beaconConnector;
@@ -26,9 +26,9 @@ namespace TezosSDK.Tezos.Wallet
         {
             // Create or get a WalletMessageReceiver Game object to receive callback messages
             var unityBeacon = GameObject.Find("UnityBeacon");
-            MessageReceiver = unityBeacon != null 
-                    ? unityBeacon.GetComponent<WalletMessageReceiver>() 
-                    : new GameObject("UnityBeacon").AddComponent<WalletMessageReceiver>();
+            MessageReceiver = unityBeacon != null
+                ? unityBeacon.GetComponent<WalletMessageReceiver>()
+                : new GameObject("UnityBeacon").AddComponent<WalletMessageReceiver>();
 
             // Assign the BeaconConnector depending on the platform.
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -126,6 +126,14 @@ namespace TezosSDK.Tezos.Wallet
             string delegateAddress)
         {
             _beaconConnector.RequestContractOrigination(script, delegateAddress);
+        }
+
+        public void Dispose()
+        {
+            if (_beaconConnector is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }
