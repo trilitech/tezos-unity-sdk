@@ -4,7 +4,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 
-namespace Tezos.Editor.Windows
+namespace TezosSDK.Editor.Windows
 {
     public class IssueReportFormWindow : EditorWindow
     {
@@ -19,7 +19,7 @@ namespace Tezos.Editor.Windows
         private string errorMessage = "";
         private string successMessage = "";
 
-        [MenuItem("Tezos SDK/Issue Report Form")]
+        [MenuItem("Window/Tezos SDK for Unity/Report an Issue")]
         public static void ShowWindow()
         {
             GetWindow<IssueReportFormWindow>("Issue Report Form");

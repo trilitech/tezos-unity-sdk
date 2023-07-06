@@ -7,144 +7,147 @@ using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using UnityEngine;
 
-public class DataManager : MonoBehaviour
+namespace TezosSDK.Samples.NFTApiSample
 {
-    private ITezosAPI _tezos;
-
-    private string _connectedAddress;
-    private string _checkContract;
-    private string _checkAddress;
-    private string _checkTokenId;
-
-    public Action<string> DataReceived;
-
-    private const int MaxTokens = 20;
-
-    void Start()
+    public class DataManager : MonoBehaviour
     {
-        _tezos = TezosSingleton.Instance;
-        _tezos.MessageReceiver.AccountConnected += OnAccountConnected;
-    }
+        private ITezosAPI _tezos;
 
-    void OnAccountConnected(string result)
-    {
-        var json = JsonSerializer.Deserialize<JsonElement>(result);
-        var account = json.GetProperty("account");
-        _connectedAddress = account.GetProperty("address").GetString();
-    }
+        private string _connectedAddress;
+        private string _checkContract;
+        private string _checkAddress;
+        private string _checkTokenId;
 
-    public void GetTokensForOwners()
-    {
-        var walletAddress = string.IsNullOrEmpty(_checkAddress)
-            ? _connectedAddress
-            : _checkAddress;
+        public Action<string> DataReceived;
 
-        CoroutineRunner.Instance.StartCoroutine(
-            _tezos.GetTokensForOwner((tbs) =>
-                {
-                    if (tbs == null)
+        private const int MaxTokens = 20;
+
+        void Start()
+        {
+            _tezos = TezosSingleton.Instance;
+            _tezos.MessageReceiver.AccountConnected += OnAccountConnected;
+        }
+
+        void OnAccountConnected(string result)
+        {
+            var json = JsonSerializer.Deserialize<JsonElement>(result);
+            var account = json.GetProperty("account");
+            _connectedAddress = account.GetProperty("address").GetString();
+        }
+
+        public void GetTokensForOwners()
+        {
+            var walletAddress = string.IsNullOrEmpty(_checkAddress)
+                ? _connectedAddress
+                : _checkAddress;
+
+            CoroutineRunner.Instance.StartCoroutine(
+                _tezos.GetTokensForOwner((tbs) =>
                     {
-                        DataReceived.Invoke($"Incorrect address - {walletAddress}");
-                        Debug.Log($"Incorrect address - {walletAddress}");
-                        return;
-                    }
-
-                    List<TokenBalance> tokens = new List<TokenBalance>(tbs);
-                    if (tokens.Count > 0)
-                    {
-                        var result = "";
-                        foreach (var tb in tokens)
+                        if (tbs == null)
                         {
-                            result +=
-                                $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}" +
-                                "\r\n" + "\r\n";
-                            Debug.Log(
-                                $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}");
+                            DataReceived.Invoke($"Incorrect address - {walletAddress}");
+                            Debug.Log($"Incorrect address - {walletAddress}");
+                            return;
                         }
 
-                        DataReceived.Invoke(result);
-                    }
-                    else
-                    {
-                        DataReceived.Invoke($"{walletAddress} has no tokens");
-                        Debug.Log($"{walletAddress} has no tokens");
-                    }
+                        List<TokenBalance> tokens = new List<TokenBalance>(tbs);
+                        if (tokens.Count > 0)
+                        {
+                            var result = "";
+                            foreach (var tb in tokens)
+                            {
+                                result +=
+                                    $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}" +
+                                    "\r\n" + "\r\n";
+                                Debug.Log(
+                                    $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}");
+                            }
+
+                            DataReceived.Invoke(result);
+                        }
+                        else
+                        {
+                            DataReceived.Invoke($"{walletAddress} has no tokens");
+                            Debug.Log($"{walletAddress} has no tokens");
+                        }
+                    },
+                    owner: walletAddress,
+                    withMetadata: false,
+                    maxItems: MaxTokens,
+                    orderBy: new TokensForOwnerOrder.Default(0)));
+        }
+
+        public void IsHolderOfContract()
+        {
+            var walletAddress = string.IsNullOrEmpty(_checkAddress)
+                ? _connectedAddress
+                : _checkAddress;
+
+            if (string.IsNullOrEmpty(_checkContract))
+            {
+                DataReceived.Invoke("Enter contract address");
+                Debug.Log("Enter contract address");
+                return;
+            }
+
+            CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfContract((flag) =>
+                {
+                    var message = flag
+                        ? $"{walletAddress} is HOLDER of contract {_checkContract}"
+                        : $"{walletAddress} is NOT HOLDER of contract {_checkContract}";
+
+                    DataReceived.Invoke(message);
+                    Debug.Log(message);
                 },
-                owner: walletAddress,
-                withMetadata: false,
-                maxItems: MaxTokens,
-                orderBy: new TokensForOwnerOrder.Default(0)));
-    }
-
-    public void IsHolderOfContract()
-    {
-        var walletAddress = string.IsNullOrEmpty(_checkAddress)
-            ? _connectedAddress
-            : _checkAddress;
-
-        if (string.IsNullOrEmpty(_checkContract))
-        {
-            DataReceived.Invoke("Enter contract address");
-            Debug.Log("Enter contract address");
-            return;
+                wallet: walletAddress,
+                contractAddress: _checkContract));
         }
 
-        CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfContract((flag) =>
-            {
-                var message = flag
-                    ? $"{walletAddress} is HOLDER of contract {_checkContract}"
-                    : $"{walletAddress} is NOT HOLDER of contract {_checkContract}";
-
-                DataReceived.Invoke(message);
-                Debug.Log(message);
-            },
-            wallet: walletAddress,
-            contractAddress: _checkContract));
-    }
-
-    public void IsHolderOfToken()
-    {
-        var walletAddress = string.IsNullOrEmpty(_checkAddress)
-            ? _connectedAddress
-            : _checkAddress;
-
-        var tokenId = string.IsNullOrEmpty(_checkTokenId)
-            ? 0
-            : Convert.ToUInt32(_checkTokenId);
-
-        if (string.IsNullOrEmpty(_checkContract))
+        public void IsHolderOfToken()
         {
-            DataReceived.Invoke("Enter contract address");
-            Debug.Log("Enter contract address");
-            return;
+            var walletAddress = string.IsNullOrEmpty(_checkAddress)
+                ? _connectedAddress
+                : _checkAddress;
+
+            var tokenId = string.IsNullOrEmpty(_checkTokenId)
+                ? 0
+                : Convert.ToUInt32(_checkTokenId);
+
+            if (string.IsNullOrEmpty(_checkContract))
+            {
+                DataReceived.Invoke("Enter contract address");
+                Debug.Log("Enter contract address");
+                return;
+            }
+
+            CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfToken((flag) =>
+                {
+                    var message = flag
+                        ? $"{walletAddress} is HOLDER of token"
+                        : $"{walletAddress} is NOT HOLDER of token";
+
+                    DataReceived.Invoke(message);
+                    Debug.Log(message);
+                },
+                wallet: walletAddress,
+                contractAddress: _checkContract,
+                tokenId: tokenId));
         }
 
-        CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfToken((flag) =>
-            {
-                var message = flag
-                    ? $"{walletAddress} is HOLDER of token"
-                    : $"{walletAddress} is NOT HOLDER of token";
+        public void SetCheckAddress(string address)
+        {
+            _checkAddress = address;
+        }
 
-                DataReceived.Invoke(message);
-                Debug.Log(message);
-            },
-            wallet: walletAddress,
-            contractAddress: _checkContract,
-            tokenId: tokenId));
-    }
+        public void SetCheckTokenId(string tokenId)
+        {
+            _checkTokenId = tokenId;
+        }
 
-    public void SetCheckAddress(string address)
-    {
-        _checkAddress = address;
-    }
-
-    public void SetCheckTokenId(string tokenId)
-    {
-        _checkTokenId = tokenId;
-    }
-
-    public void SetCheckContract(string contract)
-    {
-        _checkContract = contract;
+        public void SetCheckContract(string contract)
+        {
+            _checkContract = contract;
+        }
     }
 }

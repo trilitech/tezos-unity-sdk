@@ -2,66 +2,70 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
 
-public class MarketManager : MonoBehaviour
+namespace TezosSDK.Samples.DemoExample
 {
-    [SerializeField] private ItemView itemViewPrefab;
-    [SerializeField] private ItemView itemFullDisplay;
-    [SerializeField] private Transform contentParent;
-
-    private List<ItemView> _marketItems = new List<ItemView>();
-    private ItemView _currentSelectedItem;
-    
-    public void Init(List<IItemModel> items)
+    public class MarketManager : MonoBehaviour
     {
-        ClearMarket();
-        
-        foreach (var item in items)
-            AddItem(item);
-    }
+        [SerializeField] private ItemView itemViewPrefab;
+        [SerializeField] private ItemView itemFullDisplay;
+        [SerializeField] private Transform contentParent;
 
-    public void CheckSelection()
-    {
-        if (_currentSelectedItem == null) return;
+        private List<ItemView> _marketItems = new List<ItemView>();
+        private ItemView _currentSelectedItem;
 
-        itemFullDisplay.DisplayItem(null, null);
-    }
-    
-    private void AddItem(IItemModel itemModel)
-    {
-        ItemView newItem = Instantiate(itemViewPrefab, contentParent);
-        newItem.DisplayItem(itemModel);
-        newItem.OnItemSelected = OnItemSelected;
-        _marketItems.Add(newItem);
-    }
-
-    private void ClearMarket()
-    {
-        _marketItems = new List<ItemView>();
-        foreach (Transform child in contentParent)
+        public void Init(List<IItemModel> items)
         {
-            Destroy(child.gameObject);
+            ClearMarket();
+
+            foreach (var item in items)
+                AddItem(item);
         }
-        CheckSelection();
-    }
 
-    private void OnItemSelected(ItemView selectedItem)
-    {
-        if (_currentSelectedItem != null)
-            _currentSelectedItem.Unselect();
-
-        if (_currentSelectedItem == selectedItem)
+        public void CheckSelection()
         {
-            selectedItem.Unselect();
+            if (_currentSelectedItem == null) return;
+
+            itemFullDisplay.DisplayItem(null, null);
+        }
+
+        private void AddItem(IItemModel itemModel)
+        {
+            ItemView newItem = Instantiate(itemViewPrefab, contentParent);
+            newItem.DisplayItem(itemModel);
+            newItem.OnItemSelected = OnItemSelected;
+            _marketItems.Add(newItem);
+        }
+
+        private void ClearMarket()
+        {
+            _marketItems = new List<ItemView>();
+            foreach (Transform child in contentParent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            CheckSelection();
+        }
+
+        private void OnItemSelected(ItemView selectedItem)
+        {
+            if (_currentSelectedItem != null)
+                _currentSelectedItem.Unselect();
+
+            if (_currentSelectedItem == selectedItem)
+            {
+                selectedItem.Unselect();
+                if (itemFullDisplay != null)
+                    itemFullDisplay.ClearItem();
+                _currentSelectedItem = null;
+                return;
+            }
+
+            selectedItem.Select();
+            _currentSelectedItem = selectedItem;
             if (itemFullDisplay != null)
-                itemFullDisplay.ClearItem();
-            _currentSelectedItem = null;
-            return;
+                itemFullDisplay.DisplayItem(selectedItem.Item, selectedItem.CachedSprite);
+            itemFullDisplay.GetComponent<MarketItemController>().SetItem(selectedItem.Item);
         }
-
-        selectedItem.Select();
-        _currentSelectedItem = selectedItem;
-        if (itemFullDisplay != null)
-            itemFullDisplay.DisplayItem(selectedItem.Item, selectedItem.CachedSprite);
-        itemFullDisplay.GetComponent<MarketItemController>().SetItem(selectedItem.Item);
     }
 }

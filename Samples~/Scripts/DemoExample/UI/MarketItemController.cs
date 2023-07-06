@@ -3,32 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MarketItemController : MonoBehaviour
+namespace TezosSDK.Samples.DemoExample
 {
-    private IItemModel item;
-    
-    public void SetItem(IItemModel newItem)
+    public class MarketItemController : MonoBehaviour
     {
-        item = newItem;
-    }
+        private IItemModel item;
 
-    public void BuyItemFromMarket()
-    {
-        if(item != null)
-            ExampleFactory.Instance.GetExampleManager().BuyItem(item.Owner, item.ID);
-        else
-            Debug.LogError("No item selected!");
-    }
-    
-    public void OnItemBoughtFromMarket(bool success)
-    {
-        if (success)
+        public void SetItem(IItemModel newItem)
         {
-            Debug.Log("Item removed from market!");
+            item = newItem;
         }
-        else
+
+        public void BuyItemFromMarket()
         {
-            Debug.Log("Failed to remove item from market.");
+            if (item != null)
+                ExampleFactory.Instance.GetExampleManager().BuyItem(item.Owner, item.ID);
+            else
+                Debug.LogError("No item selected!");
+        }
+
+        public void OnItemBoughtFromMarket(bool success)
+        {
+            if (success)
+            {
+                Debug.Log("Item removed from market!");
+            }
+            else
+            {
+                Debug.Log("Failed to remove item from market.");
+            }
         }
     }
 }
