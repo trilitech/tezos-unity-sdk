@@ -229,17 +229,15 @@ public class ExampleManager : IExampleManager
         var randomInt = rnd.Next(1, int.MaxValue);
         var randomAmount = rnd.Next(1, 1024);
 
-        var uploader = UploaderFactory.GetUploader();
+        var uploader = UploaderFactory.GetOnchainUploader();
         var activeAccount = Tezos.Wallet.GetActiveAddress();
 
         CoroutineRunner
             .Instance
             .StartWrappedCoroutine(uploader.UploadFile(ImageUploaded));
 
-        void ImageUploaded(IpfsResponse ipfsResponse)
+        void ImageUploaded(string imageAddress)
         {
-            var imageAddress = $"ipfs://{ipfsResponse.IpfsHash}";
-
             var metadata = new TokenMetadata
             {
                 Name = $"testName_{randomInt}",
@@ -397,13 +395,13 @@ public class ExampleManager : IExampleManager
 
     public void UploadToIpfs()
     {
-        var uploader = UploaderFactory.GetUploader();
+        var uploader = UploaderFactory.GetPinataUploader();
 
         CoroutineRunner
             .Instance
             .StartWrappedCoroutine(uploader.UploadFile(ipfsResponse =>
             {
-                Logger.LogDebug($"Link to uploaded file: https://ipfs.io/ipfs/{ipfsResponse.IpfsHash}");
+                Logger.LogDebug($"Link to uploaded file: https://ipfs.io/ipfs/{ipfsResponse}");
             }));
     }
 
