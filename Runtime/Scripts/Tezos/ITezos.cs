@@ -2,6 +2,7 @@
 using System.Collections;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models;
+using TezosSDK.Tezos.API.Models.Abstract;
 using TezosSDK.Tezos.Wallet;
 
 namespace TezosSDK.Tezos
@@ -21,7 +22,7 @@ namespace TezosSDK.Tezos
         /// <summary>
         /// Currently used FA2 Contract.
         /// </summary>
-        TokenContract TokenContract { get; }
+        IFA2 TokenContract { get; }
 
         /// <summary>
         /// Current wallet tz balance.

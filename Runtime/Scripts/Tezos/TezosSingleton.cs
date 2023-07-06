@@ -5,6 +5,7 @@ using TezosSDK.DesignPattern.Singleton;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models;
+using TezosSDK.Tezos.API.Models.Abstract;
 using TezosSDK.Tezos.Wallet;
 
 
@@ -15,7 +16,7 @@ namespace TezosSDK.Tezos
         private static Tezos _tezos;
         public ITezosAPI API => _tezos?.API;
         public IWalletProvider Wallet => _tezos?.Wallet;
-        public TokenContract TokenContract => _tezos?.TokenContract;
+        public IFA2 TokenContract => _tezos?.TokenContract;
 
         protected override void Awake()
         {
