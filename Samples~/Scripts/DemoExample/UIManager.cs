@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private InventoryManager inventory;
     [SerializeField] private MarketManager market;
     [SerializeField] private GameObject loadingPanel;
+    [SerializeField] private GameObject deployPanel;
     [SerializeField] private TMPro.TextMeshProUGUI accountText;
     [SerializeField] private TMPro.TextMeshProUGUI contractAddressText;
     [SerializeField] private TMPro.TextMeshProUGUI balanceText;
@@ -193,6 +194,11 @@ public class UIManager : MonoBehaviour
         }, message);
     }
 
+    public void ShowDeployPanel()
+    {
+        deployPanel.SetActive(true);
+    }
+
     #region Tezos Callbacks
 
     private void OnAccountConnected(string account)
@@ -277,6 +283,7 @@ public class UIManager : MonoBehaviour
         string successString = JsonSerializer.Deserialize<JsonElement>(result).GetProperty("success").ToString();
         string transactionHash =
             JsonSerializer.Deserialize<JsonElement>(result).GetProperty("transactionHash").ToString();
+        
         bool success = successString != null && bool.Parse(successString);
         if (success)
         {
@@ -285,7 +292,7 @@ public class UIManager : MonoBehaviour
             market.CheckSelection();
             DisplayWalletData();
         }
-
+        
         DisplayPopup("Call injected!\n \n" +
                      "Response:\n" + success +
                      "\n \nTransaction Hash:\n" + transactionHash);

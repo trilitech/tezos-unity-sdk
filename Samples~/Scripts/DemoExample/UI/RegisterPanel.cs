@@ -83,7 +83,8 @@ public class RegisterPanel : PanelController
 
     public void VerifySignatureTest()
     {
-        var verified = ExampleFactory.Instance.GetExampleManager()
+        var verified = ExampleFactory
+            .Instance.GetExampleManager()
             .VerifyPayload(SignPayloadType.micheline, PayloadToSign);
         Debug.Log("Verification success: " + verified);
     }
