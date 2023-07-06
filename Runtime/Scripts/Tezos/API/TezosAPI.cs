@@ -239,8 +239,14 @@ namespace TezosSDK.Tezos.API
         {
             var url = $"operations/{operationHash}/status";
             var requestRoutine = GetJson<bool?>(url);
-            return new CoroutineWrapper<bool?>(requestRoutine, callback,
-                error => { Logger.LogDebug($"Can't parse response from API on URL: {url}\n{error.Message}"); });
+            return new CoroutineWrapper<bool?>(
+                coroutine: requestRoutine,
+                callback: callback,
+                errorHandler: error =>
+                {
+                    Logger.LogDebug($"Can't get operation {operationHash} status, {error.Message}");
+                    callback.Invoke(false);
+                });
         }
 
         public IEnumerator GetLatestBlockLevel(Action<int> callback)
@@ -281,8 +287,8 @@ namespace TezosSDK.Tezos.API
             };
 
             var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&" +
-                      "select=address,tokensCount,lastActivity,lastActivityTime,id&" +
-                      $"{sort}&limit={maxItems}";
+                      "select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time" +
+                      $",id&{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenContract>>(url);
             yield return new CoroutineWrapper<IEnumerable<TokenContract>>(
