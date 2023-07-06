@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Abstract;
@@ -28,5 +29,10 @@ namespace TezosSDK.Tezos
         /// Current wallet tz balance.
         /// </summary>
         public IEnumerator GetCurrentWalletBalance(Action<ulong> callback);
+        
+        /// <summary>
+        /// Get all originated contracts by the account.
+        /// </summary>
+        public IEnumerator GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback);
     }
 }
