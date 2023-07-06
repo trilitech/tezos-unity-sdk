@@ -12,7 +12,9 @@ namespace TezosSDK.Scripts.IpfsUploader
         /// <summary>
         /// Upload file that user will select through native menu file picker.
         /// </summary>
-        /// <param name="callback">Will be invoked with IpfsResponse object after successful uploading.</param>
-        IEnumerator UploadFile(Action<IpfsResponse> callback);
+        /// <param name="callback">
+        ///     Executes after asset uploaded with data address.
+        /// </param>
+        IEnumerator UploadFile(Action<string> callback);
     }
 }

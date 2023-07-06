@@ -4,7 +4,6 @@ using Beacon.Sdk.Beacon.Permission;
 using TezosSDK.DesignPattern.Singleton;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Abstract;
 using TezosSDK.Tezos.Wallet;
 

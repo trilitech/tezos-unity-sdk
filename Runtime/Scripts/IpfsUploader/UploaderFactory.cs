@@ -4,7 +4,7 @@ namespace TezosSDK.Scripts.IpfsUploader
 {
     public static class UploaderFactory
     {
-        public static IFileUploader GetUploader()
+        public static IFileUploader GetPinataUploader()
         {
             IFileUploader uploader = null;
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -16,6 +16,11 @@ namespace TezosSDK.Scripts.IpfsUploader
                 : new GameObject(nameof(EditorUploader)).AddComponent<EditorUploader>();
 #endif
             return uploader;
+        }
+
+        public static IFileUploader GetOnchainUploader()
+        {
+            return new EditorUploader();
         }
     }
 }

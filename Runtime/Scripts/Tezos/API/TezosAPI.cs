@@ -7,7 +7,6 @@ using Dynamic.Json;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
-using TezosSDK.Tezos.API.Models.Operations;
 using TezosSDK.Tezos.API.Models.Tokens;
 using Logger = TezosSDK.Helpers.Logger;
 

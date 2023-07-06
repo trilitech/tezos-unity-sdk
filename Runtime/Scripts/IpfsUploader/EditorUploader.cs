@@ -12,7 +12,7 @@ namespace TezosSDK.Scripts.IpfsUploader
 {
     public class EditorUploader : BaseUploader, IFileUploader
     {
-        public IEnumerator UploadFile(Action<IpfsResponse> callback)
+        public IEnumerator UploadFile(Action<string> callback)
         {
             yield return null;
 
@@ -35,7 +35,7 @@ namespace TezosSDK.Scripts.IpfsUploader
             if (request.result == UnityWebRequest.Result.Success)
             {
                 var ipfsResponse = JsonSerializer.Deserialize<IpfsResponse>(request.downloadHandler.text);
-                callback.Invoke(ipfsResponse);
+                callback.Invoke($"ipfs://{ipfsResponse.IpfsHash}");
             }
             else
             {
