@@ -236,9 +236,16 @@ namespace TezosSDK.Tezos.API
         {
             var url = $"operations/{operationHash}/status";
             var requestRoutine = GetJson<bool?>(url);
-            return new CoroutineWrapper<bool?>(requestRoutine, callback);
+            return new CoroutineWrapper<bool?>(
+                coroutine: requestRoutine,
+                callback: callback,
+                errorHandler: error =>
+                {
+                    Logger.LogDebug($"Can't get operation {operationHash} status, {error.Message}");
+                    callback.Invoke(false);
+                });
         }
-        
+
         public IEnumerator GetLatestBlockLevel(Action<int> callback)
         {
             var url = $"blocks/{System.DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}/level";
