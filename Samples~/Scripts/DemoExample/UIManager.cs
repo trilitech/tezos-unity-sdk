@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using TezosSDK.Helpers;
 using UnityEngine;
@@ -22,6 +23,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI balanceText;
     [SerializeField] private TMPro.TextMeshProUGUI softBalanceText;
     [SerializeField] private GameObject popupPanel;
+    [SerializeField] private GameObject initContractPanel;
 
     private IExampleManager _manager;
 
@@ -30,10 +32,8 @@ public class UIManager : MonoBehaviour
         _manager = ExampleFactory.Instance.GetExampleManager();
         InitializeCallbacks();
 
-        AllowUIAccess(false);
         inventoryButton.OnTabSelected.AddListener(AccessInventory);
         marketButton.OnTabSelected.AddListener(AccessMarket);
-
         inventory.onInventoryRefresh.AddListener(AccessInventory);
         inventory.onItemMint.AddListener(MintItem);
     }
@@ -79,7 +79,20 @@ public class UIManager : MonoBehaviour
 
     public void OnSignIn(bool success)
     {
-        AllowUIAccess(success);
+        _manager.GetOriginatedContracts(contracts =>
+        {
+            if (contracts != null && contracts.Any())
+            {
+                if (string.IsNullOrEmpty(_manager.Tezos.TokenContract.Address))
+                    initContractPanel.SetActive(true);
+
+                initContractPanel.GetComponent<InitiateContractController>()
+                    .DrawContractToggles(contracts, _manager.Tezos.Wallet.GetActiveAddress());
+            }
+
+            AllowUIAccess(success);
+        });
+        
         //TODO: GetActiveAccount() in the BeaconConnector SHOULD be returning stuff from the paired account.
         //Something in there might be usable to populate the User info I removed if we still want this.
         welcomeText.text = success ? "Welcome!" : "Pairing failed or timed out";
@@ -160,6 +173,17 @@ public class UIManager : MonoBehaviour
         contractAddressText.text = contractAddress;
     }
 
+    public void UpdateContracts()
+    {
+        _manager.GetOriginatedContracts(contracts =>
+        {
+            if (contracts == null || contracts.Count() <= 0) return;
+
+            initContractPanel.GetComponent<InitiateContractController>()
+                .DrawContractToggles(contracts, _manager.Tezos.Wallet.GetActiveAddress());
+        });
+    }
+
     private void DisplayPopup(string message)
     {
         UnityMainThreadDispatcher.Enqueue((msg) =>
@@ -173,6 +197,7 @@ public class UIManager : MonoBehaviour
 
     private void OnAccountConnected(string account)
     {
+        Debug.Log(account);
         if (!string.IsNullOrEmpty(account))
             OnSignIn(true);
     }
@@ -215,6 +240,30 @@ public class UIManager : MonoBehaviour
         {
             SetContract(currentContractAddressText);
         }
+    }
+
+    public void InitContract(string address)
+    {
+        // todo: switch inventory items
+        _manager.ChangeContract(address);
+        UpdateContractAddress();
+    }
+
+    public void ChangeContract()
+    {
+        _manager.GetOriginatedContracts(contracts =>
+        {
+            if (contracts != null && contracts.Any())
+            {
+                if (string.IsNullOrEmpty(_manager.Tezos.TokenContract.Address)) return;
+                
+                initContractPanel.SetActive(true);
+            }
+            else
+            {
+                DisplayPopup("You do not have deployed contracts yet!");
+            }
+        });
     }
 
     private void OnContractCallFailed(string response)

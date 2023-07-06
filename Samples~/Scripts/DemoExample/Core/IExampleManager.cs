@@ -3,6 +3,7 @@ using System;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.Wallet;
 
 public interface IExampleManager
@@ -120,7 +121,18 @@ public interface IExampleManager
     void DeployContract(Action<string> deployedContractAddress);
     
     /// <summary>
+    /// Switch FA2 contract
+    /// </summary>
+    void ChangeContract(string activeContractAddress);
+    
+    /// <summary>
     /// Select and upload file to IPFS.
     /// </summary>
     void UploadToIpfs();
+
+    /// <summary>
+    /// Return originated contracts by account for using callbacks
+    /// </summary>
+    /// <param name="callback">callback that takes the retrieved contracts(IEnumerable)</param>
+    void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback);
 }

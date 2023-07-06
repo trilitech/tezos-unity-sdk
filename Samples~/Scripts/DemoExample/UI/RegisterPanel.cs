@@ -90,7 +90,16 @@ public class RegisterPanel : PanelController
 
     public void DeployContract()
     {
-        _exampleManager.DeployContract(_ => { _uiManager.UpdateContractAddress(); });
+        _exampleManager.DeployContract(_ =>
+        {
+            _uiManager.UpdateContractAddress();
+            _uiManager.UpdateContracts();
+        });
+    }
+    
+    public void ChangeContract()
+    {
+        _uiManager.ChangeContract();
     }
 
     public void UploadToIpfs()

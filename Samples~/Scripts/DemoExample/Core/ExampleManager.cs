@@ -388,6 +388,12 @@ public class ExampleManager : IExampleManager
             .TokenContract
             .Deploy(deployedContractAddress);
     }
+    
+    public void ChangeContract(string activeContractAddress)
+    {
+        PlayerPrefs.SetString("CurrentContract:" + Tezos.Wallet.GetActiveAddress(), activeContractAddress);
+        Tezos.TokenContract.Address = activeContractAddress;
+    }
 
     public void UploadToIpfs()
     {
@@ -467,5 +473,11 @@ public class ExampleManager : IExampleManager
     public WalletMessageReceiver GetWalletMessageReceiver()
     {
         return Tezos.Wallet.MessageReceiver;
+    }
+
+    public void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback)
+    {
+        var routine = Tezos.GetOriginatedContracts(callback);
+        CoroutineRunner.Instance.StartWrappedCoroutine(routine);
     }
 }
