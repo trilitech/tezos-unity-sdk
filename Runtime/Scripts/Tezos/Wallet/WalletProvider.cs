@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace TezosSDK.Tezos.Wallet
 {
-    public class WalletProvider : IWalletProvider
+    public class WalletProvider : IWalletProvider, IDisposable
     {
         public WalletMessageReceiver MessageReceiver { get; private set; }
         private IBeaconConnector _beaconConnector;
@@ -118,6 +119,14 @@ namespace TezosSDK.Tezos.Wallet
                 amount: amount,
                 networkName: TezosConfig.Instance.Network.ToString(),
                 networkRPC: TezosConfig.Instance.RpcBaseUrl);
+        }
+
+        public void Dispose()
+        {
+            if (_beaconConnector is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

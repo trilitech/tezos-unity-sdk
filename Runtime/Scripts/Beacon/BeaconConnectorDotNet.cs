@@ -23,7 +23,7 @@ using BeaconNetwork = global::Beacon.Sdk.Beacon.Permission.Network;
 
 namespace TezosSDK.Beacon
 {
-    public class BeaconConnectorDotNet : IBeaconConnector
+    public class BeaconConnectorDotNet : IBeaconConnector, IDisposable
     {
         private static WalletMessageReceiver _walletMessageReceiver;
         private DappBeaconClient BeaconDappClient { get; set; }
@@ -269,9 +269,14 @@ namespace TezosSDK.Beacon
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            BeaconDappClient.Disconnect();
+        }
     }
 
-// todo: this logger didn't work inside Beacon, improve this.
+    // todo: this logger didn't work inside Beacon, improve this.
     public class MyLoggerProvider : ILoggerProvider
     {
         public class MyLogger : ILogger
