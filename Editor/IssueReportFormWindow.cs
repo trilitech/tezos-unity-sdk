@@ -19,7 +19,7 @@ namespace TezosSDK.Editor.Windows
         private string errorMessage = "";
         private string successMessage = "";
 
-        [MenuItem("Window/Tezos SDK for Unity/Report an Issue")]
+        [MenuItem("Tools/Tezos SDK for Unity/Report an Issue")]
         public static void ShowWindow()
         {
             GetWindow<IssueReportFormWindow>("Issue Report Form");
