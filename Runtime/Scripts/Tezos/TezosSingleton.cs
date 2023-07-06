@@ -13,9 +13,9 @@ namespace TezosSDK.Tezos
     public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezos
     {
         private static Tezos _tezos;
-        public ITezosAPI API => _tezos.API;
-        public IWalletProvider Wallet => _tezos.Wallet;
-        public TokenContract TokenContract => _tezos.TokenContract;
+        public ITezosAPI API => _tezos?.API;
+        public IWalletProvider Wallet => _tezos?.Wallet;
+        public TokenContract TokenContract => _tezos?.TokenContract;
 
         protected override void Awake()
         {

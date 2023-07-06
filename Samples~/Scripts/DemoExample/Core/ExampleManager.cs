@@ -253,7 +253,7 @@ public class ExampleManager : IExampleManager
 
             Tezos
                 .TokenContract
-                .Mint(txHash => { Logger.LogDebug($"Mint completed with Hash {txHash}"); },
+                .Mint(token => { Logger.LogDebug($"Minted token with ID: {token.TokenId}"); },
                     metadata,
                     destination: activeAccount,
                     amount: randomAmount);

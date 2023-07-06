@@ -287,8 +287,8 @@ namespace TezosSDK.Tezos.API
             };
 
             var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&" +
-                      "select=address,tokensCount,lastActivity,lastActivityTime,id&" +
-                      $"{sort}&limit={maxItems}";
+                      "select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time" +
+                      $",id&{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenContract>>(url);
             yield return new CoroutineWrapper<IEnumerable<TokenContract>>(
