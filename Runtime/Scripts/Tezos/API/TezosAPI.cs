@@ -239,8 +239,14 @@ namespace TezosSDK.Tezos.API
         {
             var url = $"operations/{operationHash}/status";
             var requestRoutine = GetJson<bool?>(url);
-            return new CoroutineWrapper<bool?>(requestRoutine, callback,
-                error => { Logger.LogDebug($"Can't parse response from API on URL: {url}\n{error.Message}"); });
+            return new CoroutineWrapper<bool?>(
+                coroutine: requestRoutine,
+                callback: callback,
+                errorHandler: error =>
+                {
+                    Logger.LogDebug($"Can't get operation {operationHash} status, {error.Message}");
+                    callback.Invoke(false);
+                });
         }
 
         public IEnumerator GetLatestBlockLevel(Action<int> callback)
