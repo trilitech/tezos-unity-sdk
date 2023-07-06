@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/102) with standalone IL2CPP build fails
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/103) with closing Beacon database connections before app exit
 
+### Added
+- Missing namespaces
+
+### Changed
+- Issue Report Form menu item path changed (new path: `Window/Tezos SDK for Unity/Report an Issue`)
+
 
 ## [1.5.1] - 2023-06-27
 ### Fixed
