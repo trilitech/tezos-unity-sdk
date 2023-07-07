@@ -1,41 +1,44 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UiManager : MonoBehaviour
+namespace TezosSDK.Samples.NFTApiSample
 {
-    [SerializeField] private DataManager dataManager;
-    [SerializeField] private InputField addressInputField;
-    [SerializeField] private InputField contractInputField;
-    [SerializeField] private InputField tokenIdInputField;
-    [SerializeField] private Text resultText;
-
-    void Start()
+    public class UiManager : MonoBehaviour
     {
-        dataManager.DataReceived += OnDataReceived;
+        [SerializeField] private DataManager dataManager;
+        [SerializeField] private InputField addressInputField;
+        [SerializeField] private InputField contractInputField;
+        [SerializeField] private InputField tokenIdInputField;
+        [SerializeField] private Text resultText;
 
-        addressInputField.onEndEdit.AddListener(delegate { OnEndEditAddress(addressInputField); });
-        contractInputField.onEndEdit.AddListener(delegate { OnEndEditContract(contractInputField); });
-        tokenIdInputField.onEndEdit.AddListener(delegate { OnEndEditTokenId(tokenIdInputField); });
-    }
+        void Start()
+        {
+            dataManager.DataReceived += OnDataReceived;
 
-    void OnDataReceived(string data)
-    {
-        resultText.text = string.Empty;
-        resultText.text = data;
-    }
+            addressInputField.onEndEdit.AddListener(delegate { OnEndEditAddress(addressInputField); });
+            contractInputField.onEndEdit.AddListener(delegate { OnEndEditContract(contractInputField); });
+            tokenIdInputField.onEndEdit.AddListener(delegate { OnEndEditTokenId(tokenIdInputField); });
+        }
 
-    void OnEndEditAddress(InputField input)
-    {
-        dataManager.SetCheckAddress(input.text);
-    }
+        void OnDataReceived(string data)
+        {
+            resultText.text = string.Empty;
+            resultText.text = data;
+        }
 
-    void OnEndEditContract(InputField input)
-    {
-        dataManager.SetCheckContract(input.text);
-    }
+        void OnEndEditAddress(InputField input)
+        {
+            dataManager.SetCheckAddress(input.text);
+        }
 
-    void OnEndEditTokenId(InputField input)
-    {
-        dataManager.SetCheckTokenId(input.text);
+        void OnEndEditContract(InputField input)
+        {
+            dataManager.SetCheckContract(input.text);
+        }
+
+        void OnEndEditTokenId(InputField input)
+        {
+            dataManager.SetCheckTokenId(input.text);
+        }
     }
 }

@@ -3,51 +3,53 @@ using UnityEngine.UI;
 using ZXing;
 using ZXing.QrCode;
 
-
-public class QRCodeView : MonoBehaviour
+namespace TezosSDK.View
 {
-    [SerializeField] private RawImage _rawImage;
-    private Texture2D _texture;
-
-    void Start()
+    public class QRCodeView : MonoBehaviour
     {
-        if (_texture != null) return;
+        [SerializeField] private RawImage _rawImage;
+        private Texture2D _texture;
 
-        _rawImage.texture = _texture = new Texture2D(256, 256);
-        _texture.filterMode = FilterMode.Point;
-    }
-
-    public void SetQrCode(string handshake)
-    {
-        var uri = "tezos://?type=tzip10&data=" + handshake;
-        EncodeTextToQrCode(uri);
-    }
-
-    public void EncodeTextToQrCode(string text)
-    {
-        if (_texture == null)
+        void Start()
         {
+            if (_texture != null) return;
+
             _rawImage.texture = _texture = new Texture2D(256, 256);
             _texture.filterMode = FilterMode.Point;
         }
 
-        var colors = Encode(text, _texture.width, _texture.height);
-        _texture.SetPixels32(colors);
-        _texture.Apply();
-    }
-
-    private Color32[] Encode(string text, int width, int height)
-    {
-        var writer = new BarcodeWriter
+        public void SetQrCode(string handshake)
         {
-            Format = BarcodeFormat.QR_CODE,
-            Options = new QrCodeEncodingOptions()
+            var uri = "tezos://?type=tzip10&data=" + handshake;
+            EncodeTextToQrCode(uri);
+        }
+
+        public void EncodeTextToQrCode(string text)
+        {
+            if (_texture == null)
             {
-                Width = width,
-                Height = height,
-                PureBarcode = true
+                _rawImage.texture = _texture = new Texture2D(256, 256);
+                _texture.filterMode = FilterMode.Point;
             }
-        };
-        return writer.Write(text);
+
+            var colors = Encode(text, _texture.width, _texture.height);
+            _texture.SetPixels32(colors);
+            _texture.Apply();
+        }
+
+        private Color32[] Encode(string text, int width, int height)
+        {
+            var writer = new BarcodeWriter
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new QrCodeEncodingOptions()
+                {
+                    Width = width,
+                    Height = height,
+                    PureBarcode = true
+                }
+            };
+            return writer.Write(text);
+        }
     }
 }

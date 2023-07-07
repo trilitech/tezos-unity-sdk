@@ -2,18 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StatTextView : MonoBehaviour
+namespace TezosSDK.Samples.DemoExample
 {
-    [SerializeField] private TMPro.TextMeshProUGUI statNameText;
-    [SerializeField] private TMPro.TextMeshProUGUI statValueText;
-
-    public void SetStatName(string name)
+    public class StatTextView : MonoBehaviour
     {
-        statNameText.text = name;
-    }
+        [SerializeField] private TMPro.TextMeshProUGUI statNameText;
+        [SerializeField] private TMPro.TextMeshProUGUI statValueText;
 
-    public void SetStatValue(string value)
-    {
-        statValueText.text = value;
+        public void SetStatName(string name)
+        {
+            statNameText.text = name;
+        }
+
+        public void SetStatValue(string value)
+        {
+            statValueText.text = value;
+        }
     }
 }

@@ -1,31 +1,34 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[System.Obsolete]
-[RequireComponent(typeof(Image))]
-public class ItemSlot : MonoBehaviour
+namespace TezosSDK.Samples.DemoExample
 {
-    [SerializeField] private Transform _itemSpace;
-
-    public Transform ItemSpace => _itemSpace;
-
-    public DraggableItemVisual ItemInSlot => _itemInSlot;
-
-    private DraggableItemVisual _itemInSlot;
-
-    /// <summary>
-    /// assigns an item to slot and lets the item know what slot it's set to
-    /// </summary>
-    /// <param name="item">The item to be asigned to this slot</param>
-    public void SetToSlot(DraggableItemVisual item)
+    [System.Obsolete]
+    [RequireComponent(typeof(Image))]
+    public class ItemSlot : MonoBehaviour
     {
-        if (_itemInSlot != item)
+        [SerializeField] private Transform _itemSpace;
+
+        public Transform ItemSpace => _itemSpace;
+
+        public DraggableItemVisual ItemInSlot => _itemInSlot;
+
+        private DraggableItemVisual _itemInSlot;
+
+        /// <summary>
+        /// assigns an item to slot and lets the item know what slot it's set to
+        /// </summary>
+        /// <param name="item">The item to be asigned to this slot</param>
+        public void SetToSlot(DraggableItemVisual item)
         {
-            _itemInSlot = item;
-            _itemInSlot.SetSlot(this);
+            if (_itemInSlot != item)
+            {
+                _itemInSlot = item;
+                _itemInSlot.SetSlot(this);
+            }
+
+
+            item.SetItemPlacement(this);
         }
-
-
-        item.SetItemPlacement(this);
     }
 }

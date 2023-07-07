@@ -1,6 +1,8 @@
-
-public interface IUserModel
+namespace TezosSDK.Samples.DemoExample
 {
-    public string Name { get; }
-    public string Identifier { get; }
+    public interface IUserModel
+    {
+        public string Name { get; }
+        public string Identifier { get; }
+    }
 }

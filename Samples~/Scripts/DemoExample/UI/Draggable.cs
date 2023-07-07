@@ -3,68 +3,71 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Draggable : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
+namespace TezosSDK.Samples.DemoExample
 {
-	[SerializeField] private ItemSnapPoint _currentSlot;
-	[SerializeField] private Image image;
-
-	public IItemModel Item { get; set; }
-	public Action<Draggable> OnBeginDragging;
-	public Action<Draggable> OnEndDragging;
-	public Action<Draggable> OnClick;
-	public ItemSnapPoint CurrentSlot => _currentSlot;
-
-	public Sprite Sprite
+	public class Draggable : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 	{
-		get { return image.sprite; }
-		set { image.sprite = value; }
-	}
+		[SerializeField] private ItemSnapPoint _currentSlot;
+		[SerializeField] private Image image;
 
-	private bool _isDragging = false;
+		public IItemModel Item { get; set; }
+		public Action<Draggable> OnBeginDragging;
+		public Action<Draggable> OnEndDragging;
+		public Action<Draggable> OnClick;
+		public ItemSnapPoint CurrentSlot => _currentSlot;
 
-	private void Start()
-	{
-		if (_currentSlot != null)
-			ResetPosition();
-	}
+		public Sprite Sprite
+		{
+			get { return image.sprite; }
+			set { image.sprite = value; }
+		}
 
-	public void OnPointerClick(PointerEventData eventData)
-	{
-		if(!_isDragging)
-			OnClick?.Invoke(this);
-	}
+		private bool _isDragging = false;
 
-	public void OnBeginDrag(PointerEventData eventData)
-	{
-		_isDragging = true;
-		OnBeginDragging?.Invoke(this);
-	}
+		private void Start()
+		{
+			if (_currentSlot != null)
+				ResetPosition();
+		}
 
-	public void OnEndDrag(PointerEventData eventData)
-	{
-		_isDragging = false;
-		OnEndDragging?.Invoke(this);
-	}
+		public void OnPointerClick(PointerEventData eventData)
+		{
+			if (!_isDragging)
+				OnClick?.Invoke(this);
+		}
 
-	public void OnDrag(PointerEventData eventData)
-	{
-		transform.position = Input.mousePosition;
-	}
+		public void OnBeginDrag(PointerEventData eventData)
+		{
+			_isDragging = true;
+			OnBeginDragging?.Invoke(this);
+		}
 
-	public void SetCurrentSlot(ItemSnapPoint slot)
-	{
-		ItemSnapPoint prevSlot = _currentSlot;
-		_currentSlot = slot;
-		_currentSlot.SetItemInSlot(this);
-		transform.position = _currentSlot.transform.position;
-		if (prevSlot != null)
-			prevSlot.RemoveItemInSlot();
-	}
+		public void OnEndDrag(PointerEventData eventData)
+		{
+			_isDragging = false;
+			OnEndDragging?.Invoke(this);
+		}
 
-	public void ResetPosition()
-	{
-		_currentSlot.SetItemInSlot(this);
-		if (_currentSlot != null)
+		public void OnDrag(PointerEventData eventData)
+		{
+			transform.position = Input.mousePosition;
+		}
+
+		public void SetCurrentSlot(ItemSnapPoint slot)
+		{
+			ItemSnapPoint prevSlot = _currentSlot;
+			_currentSlot = slot;
+			_currentSlot.SetItemInSlot(this);
 			transform.position = _currentSlot.transform.position;
+			if (prevSlot != null)
+				prevSlot.RemoveItemInSlot();
+		}
+
+		public void ResetPosition()
+		{
+			_currentSlot.SetItemInSlot(this);
+			if (_currentSlot != null)
+				transform.position = _currentSlot.transform.position;
+		}
 	}
 }

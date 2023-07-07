@@ -1,5 +1,8 @@
 using UnityEngine;
 
-public class PanelController : MonoBehaviour
+namespace TezosSDK.Samples.DemoExample
 {
+    public class PanelController : MonoBehaviour
+    {
+    }
 }
