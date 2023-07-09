@@ -1,44 +1,46 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using CoroutineRunner = TezosSDK.Helpers.CoroutineRunner;
 
-public class CopyToClipboard : MonoBehaviour, IPointerClickHandler
+namespace TezosSDK.Samples.DemoExample
 {
-    [SerializeField] TMPro.TextMeshProUGUI text;
-    [SerializeField] TMPro.TMP_InputField inputField;
-
-    bool _blockCopy = false;
-
-    private void Start()
+    public class CopyToClipboard : MonoBehaviour, IPointerClickHandler
     {
-        inputField.gameObject.SetActive(false);
-    }
+        [SerializeField] TMPro.TextMeshProUGUI text;
+        [SerializeField] TMPro.TMP_InputField inputField;
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (_blockCopy)
-            return;
-        
+        bool _blockCopy = false;
+
+        private void Start()
+        {
+            inputField.gameObject.SetActive(false);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (_blockCopy)
+                return;
+
 #if UNITY_WEBGL
         inputField.gameObject.SetActive(true);
         inputField.text = text.text;
         text.gameObject.SetActive(false);
 #endif
-        
-        // copy text to the clipboard
-        GUIUtility.systemCopyBuffer = text.text;
-        CoroutineRunner.Instance.StartWrappedCoroutine(OnTextCopied());
-    }
 
-    IEnumerator OnTextCopied()
-    {
-        _blockCopy = true;
-        string origin = text.text;
-        text.text = "Copied to clipboard.";
-        yield return new WaitForSeconds(1.5f);
-        text.text = origin;
-        _blockCopy = false;
+            // copy text to the clipboard
+            GUIUtility.systemCopyBuffer = text.text;
+            CoroutineRunner.Instance.StartWrappedCoroutine(OnTextCopied());
+        }
+
+        IEnumerator OnTextCopied()
+        {
+            _blockCopy = true;
+            string origin = text.text;
+            text.text = "Copied to clipboard.";
+            yield return new WaitForSeconds(1.5f);
+            text.text = origin;
+            _blockCopy = false;
+        }
     }
 }
