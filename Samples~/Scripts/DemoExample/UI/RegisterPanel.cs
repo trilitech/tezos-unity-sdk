@@ -105,10 +105,5 @@ namespace TezosSDK.Samples.DemoExample
         {
             _uiManager.ChangeContract();
         }
-
-        public void UploadToIpfs()
-        {
-            _exampleManager.UploadToIpfs();
-        }
     }
 }

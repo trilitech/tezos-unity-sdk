@@ -129,11 +129,6 @@ namespace TezosSDK.Samples.DemoExample
         void ChangeContract(string activeContractAddress);
 
         /// <summary>
-        /// Select and upload file to IPFS.
-        /// </summary>
-        void UploadToIpfs();
-
-        /// <summary>
         /// Return originated contracts by account for using callbacks
         /// </summary>
         /// <param name="callback">callback that takes the retrieved contracts(IEnumerable)</param>

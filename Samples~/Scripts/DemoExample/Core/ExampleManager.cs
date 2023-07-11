@@ -395,18 +395,6 @@ namespace TezosSDK.Samples.DemoExample
             Tezos.TokenContract.Address = activeContractAddress;
         }
 
-        public void UploadToIpfs()
-        {
-            var uploader = UploaderFactory.GetOnchainUploader();
-
-            CoroutineRunner
-                .Instance
-                .StartWrappedCoroutine(uploader.UploadFile(ipfsResponse =>
-                {
-                    Logger.LogDebug($"Link to uploaded file: {ipfsResponse}");
-                }));
-        }
-
         public void GetCoins()
         {
             const string entryPoint = "login";
