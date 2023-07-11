@@ -5,6 +5,7 @@ using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
+using TezosSDK.Scripts.FileUploaders;
 using TezosSDK.Scripts.IpfsUploader;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models;
@@ -397,11 +398,14 @@ namespace TezosSDK.Samples.DemoExample
 
         public void UploadToIpfs()
         {
-            var uploader = UploaderFactory.GetPinataUploader();
+            var uploader = UploaderFactory.GetOnchainUploader();
 
             CoroutineRunner
                 .Instance
-                .StartWrappedCoroutine(uploader.UploadFile(ipfsResponse => { Logger.LogDebug($"Link to uploaded file: https://ipfs.io/ipfs/{ipfsResponse}"); }));
+                .StartWrappedCoroutine(uploader.UploadFile(ipfsResponse =>
+                {
+                    Logger.LogDebug($"Link to uploaded file: {ipfsResponse}");
+                }));
         }
 
         public void GetCoins()
