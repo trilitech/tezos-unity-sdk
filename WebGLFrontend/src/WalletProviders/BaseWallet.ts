@@ -1,9 +1,10 @@
+import { char2Bytes } from "@taquito/utils";
 import {
+  PartialTezosOriginationOperation,
   PartialTezosTransactionOperation,
   SigningType,
   TezosOperationType,
 } from "@airgap/beacon-types";
-import { char2Bytes } from "@taquito/utils";
 import {
   AbstractWallet,
   AccountInfo,
@@ -78,6 +79,18 @@ class BaseWallet implements AbstractWallet {
           entrypoint: entryPoint,
           value: JSON.parse(parameter),
         },
+      },
+    ];
+    return operations;
+  }
+
+  GetOriginationOperationsList(script: string, delegateAddress?: string) {
+    const operations: PartialTezosOriginationOperation[] = [
+      {
+        kind: TezosOperationType.ORIGINATION,
+        balance: "0",
+        delegate: delegateAddress,
+        script: JSON.parse(script),
       },
     ];
     return operations;

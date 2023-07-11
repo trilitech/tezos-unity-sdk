@@ -2,12 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 
 namespace TezosSDK.Tezos.API
 {
-    public interface ITezosDataAPI
+    public interface ITezosAPI
     {
         /// <summary>
         /// An IEnumerator for reading the account's balance
@@ -95,5 +96,18 @@ namespace TezosSDK.Tezos.API
         // Returns a level of the block closest to the current timestamp.
         public IEnumerator GetLatestBlockLevel(
             Action<int> callback);
+        
+        // Get account's counter.
+        public IEnumerator GetAccountCounter(
+            Action<int> callback,
+            string address);
+
+        // Get list of originated contracts by creator
+        public IEnumerator GetOriginatedContractsForOwner(
+            Action<IEnumerable<TokenContract>> callback,
+            string creator,
+            string codeHash,
+            long maxItems,
+            OriginatedContractsForOwnerOrder orderBy);
     }
 }

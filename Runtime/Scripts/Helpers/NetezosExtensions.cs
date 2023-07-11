@@ -31,7 +31,7 @@ namespace TezosSDK.Helpers
             if (_contracts.ContainsKey(contract)) yield break;
             var rpc = new Rpc(rpcUri);
             var scriptOp = rpc.GetContractCode<JsonElement>(contract);
-            yield return new CoroutineWrapper<JsonElement>(scriptOp, (JsonElement script) =>
+            yield return new CoroutineWrapper<JsonElement>(scriptOp, (script) =>
             {
                 var codeElement = script.GetProperty("code").GetRawText();
                 var code = Micheline.FromJson(codeElement);

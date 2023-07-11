@@ -5,16 +5,18 @@ using System.Linq;
 using System.Text.Json;
 using Dynamic.Json;
 using TezosSDK.Helpers;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos.API
 {
-    public class TezosDataAPI : HttpClient, ITezosDataAPI
+    public class TezosAPI : HttpClient, ITezosAPI
     {
         private Rpc Rpc { get; }
 
-        public TezosDataAPI(IDataProviderConfig config) : base(config)
+        public TezosAPI(IDataProviderConfig config) : base(config)
         {
             Rpc = new Rpc(TezosConfig.Instance.RpcBaseUrl);
         }
@@ -214,8 +216,8 @@ namespace TezosSDK.Tezos.API
                     $"sort.asc=id&offset.cr={byDefault.lastId}",
                 TokensForContractOrder.ByLastTimeAsc byLastTimeAsc =>
                     $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
-                TokensForContractOrder.ByLastTimeDesc ByLastTimeDesc =>
-                    $"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+                TokensForContractOrder.ByLastTimeDesc byLastTimeDesc =>
+                    $"sort.desc=lastLevel&offset.pg={byLastTimeDesc.page}",
                 TokensForContractOrder.ByHoldersCountAsc byHoldersCountAsc =>
                     $"sort.asc=holdersCount&offset.pg={byHoldersCountAsc.page}",
                 TokensForContractOrder.ByHoldersCountDesc byHoldersCountDesc =>
@@ -248,12 +250,54 @@ namespace TezosSDK.Tezos.API
 
         public IEnumerator GetLatestBlockLevel(Action<int> callback)
         {
-            var url = $"blocks/{System.DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}/level";
+            var url = $"blocks/{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}/level";
             var requestRoutine = GetJson<int>(url);
 
             yield return requestRoutine;
 
             callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
+        }
+
+        public IEnumerator GetAccountCounter(Action<int> callback, string address)
+        {
+            var url = $"accounts/{address}/counter";
+            var requestRoutine = GetJson<int>(url);
+            yield return requestRoutine;
+
+            callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
+        }
+
+        public IEnumerator GetOriginatedContractsForOwner(
+            Action<IEnumerable<TokenContract>> callback,
+            string creator,
+            string codeHash,
+            long maxItems,
+            OriginatedContractsForOwnerOrder orderBy)
+        {
+            var sort = orderBy switch
+            {
+                OriginatedContractsForOwnerOrder.Default byDefault =>
+                    $"sort.asc=id&offset.cr={byDefault.lastId}",
+                OriginatedContractsForOwnerOrder.ByLastActivityTimeAsc byLastTimeAsc =>
+                    $"sort.asc=lastActivity&offset.pg={byLastTimeAsc.page}",
+                OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc byLastTimeDesc =>
+                    $"sort.desc=lastActivity&offset.pg={byLastTimeDesc.page}",
+                _ => string.Empty
+            };
+
+            var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&" +
+                      "select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time" +
+                      $",id&{sort}&limit={maxItems}";
+
+            var requestRoutine = GetJson<IEnumerable<TokenContract>>(url);
+            yield return new CoroutineWrapper<IEnumerable<TokenContract>>(
+                requestRoutine,
+                callback: callback,
+                errorHandler: error =>
+                {
+                    callback.Invoke(new List<TokenContract>());
+                    Logger.LogDebug($"Error during GetOriginatedFa2Contracts: {error}");
+                });
         }
     }
 }

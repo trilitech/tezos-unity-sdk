@@ -1,5 +1,6 @@
 const path = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.ts",
@@ -23,4 +24,8 @@ module.exports = {
     path: path.resolve(__dirname, "output"),
   },
   plugins: [new NodePolyfillPlugin()],
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  },
 };

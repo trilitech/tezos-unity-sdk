@@ -11,8 +11,7 @@ namespace TezosSDK.Samples.NFTApiSample
 {
     public class DataManager : MonoBehaviour
     {
-        private ITezosAPI _tezos;
-
+        private ITezos _tezos;
         private string _connectedAddress;
         private string _checkContract;
         private string _checkAddress;
@@ -25,7 +24,10 @@ namespace TezosSDK.Samples.NFTApiSample
         void Start()
         {
             _tezos = TezosSingleton.Instance;
-            _tezos.MessageReceiver.AccountConnected += OnAccountConnected;
+            _tezos
+                .Wallet
+                .MessageReceiver
+                .AccountConnected += OnAccountConnected;
         }
 
         void OnAccountConnected(string result)
@@ -42,7 +44,7 @@ namespace TezosSDK.Samples.NFTApiSample
                 : _checkAddress;
 
             CoroutineRunner.Instance.StartCoroutine(
-                _tezos.GetTokensForOwner((tbs) =>
+                _tezos.API.GetTokensForOwner((tbs) =>
                     {
                         if (tbs == null)
                         {
@@ -90,8 +92,8 @@ namespace TezosSDK.Samples.NFTApiSample
                 Debug.Log("Enter contract address");
                 return;
             }
-
-            CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfContract((flag) =>
+            
+            CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfContract((flag) =>
                 {
                     var message = flag
                         ? $"{walletAddress} is HOLDER of contract {_checkContract}"
@@ -120,8 +122,8 @@ namespace TezosSDK.Samples.NFTApiSample
                 Debug.Log("Enter contract address");
                 return;
             }
-
-            CoroutineRunner.Instance.StartCoroutine(_tezos.IsHolderOfToken((flag) =>
+            
+            CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfToken((flag) =>
                 {
                     var message = flag
                         ? $"{walletAddress} is HOLDER of token"

@@ -1,25 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.Json;
 using Beacon.Sdk.Beacon.Permission;
-using Beacon.Sdk.Beacon.Sign;
-using TezosSDK.Beacon;
 using TezosSDK.DesignPattern.Singleton;
-using TezosSDK.Helpers;
 using TezosSDK.Tezos.API;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
-using TezosSDK.Tezos.API.Models.Tokens;
+using TezosSDK.Tezos.API.Models.Abstract;
 using TezosSDK.Tezos.Wallet;
+using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
+
 
 namespace TezosSDK.Tezos
 {
-    public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezosAPI
+    public class TezosSingleton : SingletonMonoBehaviour<TezosSingleton>, ITezos
     {
         private static Tezos _tezos;
-        public BeaconMessageReceiver MessageReceiver => _tezos.MessageReceiver;
-        public ITezosDataAPI API => _tezos.API;
-        public IWalletProvider Wallet => _tezos.Wallet;
+        public ITezosAPI API => _tezos?.API;
+        public IWalletProvider Wallet => _tezos?.Wallet;
+        public IFA2 TokenContract => _tezos?.TokenContract;
 
         protected override void Awake()
         {
@@ -29,7 +29,7 @@ namespace TezosSDK.Tezos
             TezosConfig.Instance.Network = NetworkType.ghostnet;
             _tezos = new Tezos();
         }
-        
+
         void OnApplicationQuit()
         {
             if (Wallet is IDisposable disposable)
@@ -43,94 +43,17 @@ namespace TezosSDK.Tezos
             return _tezos.GetCurrentWalletBalance(callback);
         }
 
-        public void ConnectWallet(WalletProviderType walletProvider, bool withRedirectToWallet = true)
+        public IEnumerator GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback)
         {
-            _tezos.ConnectWallet(walletProvider, withRedirectToWallet);
-        }
+            var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash")
+                .text;
 
-        public void DisconnectWallet()
-        {
-            _tezos.DisconnectWallet();
-        }
-
-        public string GetActiveWalletAddress()
-        {
-            return _tezos.GetActiveWalletAddress();
-        }
-
-        public void RequestSignPayload(SignPayloadType signingType, string payload)
-        {
-            _tezos.RequestSignPayload(signingType, payload);
-        }
-
-        public bool VerifySignedPayload(SignPayloadType signingType, string payload)
-        {
-            return _tezos.VerifySignedPayload(signingType, payload);
-        }
-
-        public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0)
-        {
-            _tezos.CallContract(contractAddress, entryPoint, input, amount);
-        }
-
-        public IEnumerator ReadBalance(Action<ulong> callback)
-        {
-            return _tezos.ReadBalance(callback);
-        }
-
-        public IEnumerator ReadView(string contractAddress, string entrypoint, string input,
-            Action<JsonElement> callback)
-        {
-            return _tezos.ReadView(contractAddress, entrypoint, input, callback);
-        }
-
-        public IEnumerator GetTokensForOwner(Action<IEnumerable<TokenBalance>> callback, string owner,
-            bool withMetadata, long maxItems, TokensForOwnerOrder orderBy)
-        {
-            return _tezos.GetTokensForOwner(callback, owner, withMetadata, maxItems, orderBy);
-        }
-
-        public IEnumerator GetOwnersForToken(Action<IEnumerable<TokenBalance>> callback, string contractAddress,
-            uint tokenId, long maxItems, OwnersForTokenOrder orderBy)
-        {
-            return _tezos.GetOwnersForToken(callback, contractAddress, tokenId, maxItems, orderBy);
-        }
-
-        public IEnumerator GetOwnersForContract(Action<IEnumerable<TokenBalance>> callback, string contractAddress,
-            long maxItems, OwnersForContractOrder orderBy)
-        {
-            return _tezos.GetOwnersForContract(callback, contractAddress, maxItems, orderBy);
-        }
-
-        public IEnumerator IsHolderOfContract(Action<bool> callback, string wallet, string contractAddress)
-        {
-            return _tezos.IsHolderOfContract(callback, wallet, contractAddress);
-        }
-
-        public IEnumerator IsHolderOfToken(Action<bool> callback, string wallet, string contractAddress, uint tokenId)
-        {
-            return _tezos.IsHolderOfToken(callback, wallet, contractAddress, tokenId);
-        }
-
-        public IEnumerator GetTokenMetadata(Action<JsonElement> callback, string contractAddress, uint tokenId)
-        {
-            return _tezos.GetTokenMetadata(callback, contractAddress, tokenId);
-        }
-
-        public IEnumerator GetContractMetadata(Action<JsonElement> callback, string contractAddress)
-        {
-            return _tezos.GetContractMetadata(callback, contractAddress);
-        }
-
-        public IEnumerator GetTokensForContract(Action<IEnumerable<Token>> callback, string contractAddress,
-            bool withMetadata, long maxItems, TokensForContractOrder orderBy)
-        {
-            return _tezos.GetTokensForContract(callback, contractAddress, withMetadata, maxItems, orderBy);
-        }
-
-        public IEnumerator GetOperationStatus(Action<bool?> callback, string operationHash)
-        {
-            return _tezos.GetOperationStatus(callback, operationHash);
+            return _tezos.API.GetOriginatedContractsForOwner(
+                callback: callback,
+                creator: Wallet.GetActiveAddress(),
+                codeHash: codeHash,
+                maxItems: 1000,
+                orderBy: new OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc(0));
         }
     }
 }

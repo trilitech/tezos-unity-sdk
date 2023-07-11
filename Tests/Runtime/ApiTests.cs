@@ -5,6 +5,7 @@ using NUnit.Framework;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models.Filters;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests.Runtime
@@ -15,14 +16,14 @@ namespace Tests.Runtime
         {
             return new TzKTProviderConfig();
         }
-        
+
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
         // `yield return null;` to skip a frame.
         [UnityTest]
         public IEnumerator GetTokensForOwnerTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
             const int expectedItems = 5;
 
             yield return api.GetTokensForOwner(
@@ -37,7 +38,7 @@ namespace Tests.Runtime
         public IEnumerator GetOwnersForTokenTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
             const int expectedItems = 5;
 
             yield return api.GetOwnersForToken(
@@ -52,7 +53,7 @@ namespace Tests.Runtime
         public IEnumerator GetOwnersForContractTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
             const int expectedItems = 5;
 
             yield return api.GetOwnersForContract(
@@ -66,7 +67,7 @@ namespace Tests.Runtime
         public IEnumerator IsHolderOfContractTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
 
             yield return api.IsHolderOfContract(
                 callback: isHolder => { Assert.AreEqual(true, isHolder); },
@@ -78,7 +79,7 @@ namespace Tests.Runtime
         public IEnumerator IsHolderOfTokenTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
 
             yield return api.IsHolderOfToken(
                 callback: isHolder => { Assert.AreEqual(true, isHolder); },
@@ -91,7 +92,7 @@ namespace Tests.Runtime
         public IEnumerator GetTokenMetadataTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
 
             yield return api.GetTokenMetadata(
                 callback: metadata => { Assert.IsFalse(string.IsNullOrEmpty(metadata.ToString())); },
@@ -103,7 +104,7 @@ namespace Tests.Runtime
         public IEnumerator GetContractMetadataTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
 
             yield return api.GetContractMetadata(
                 callback: metadata => { Assert.IsFalse(string.IsNullOrEmpty(metadata.ToString())); },
@@ -114,7 +115,7 @@ namespace Tests.Runtime
         public IEnumerator GetTokensForContractTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
             const int expectedItems = 5;
 
             yield return api.GetTokensForContract(
@@ -129,7 +130,7 @@ namespace Tests.Runtime
         public IEnumerator GetOperationStatusTest()
         {
             TezosConfig.Instance.Network = NetworkType.ghostnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
             const bool expectedResult = true;
 
             yield return api.GetOperationStatus(status => { Assert.AreEqual(expectedResult, status); },
@@ -140,12 +141,29 @@ namespace Tests.Runtime
         public IEnumerator GetLatestBlockLevelTest()
         {
             TezosConfig.Instance.Network = NetworkType.mainnet;
-            var api = new TezosDataAPI(GetDataProviderConfig());
+            var api = new TezosAPI(GetDataProviderConfig());
 
-            yield return api.GetLatestBlockLevel(latestBlockLevel =>
-            {
-                Assert.IsTrue(latestBlockLevel > 0);
-            });
+            yield return api.GetLatestBlockLevel(latestBlockLevel => { Assert.IsTrue(latestBlockLevel > 0); });
+        }
+        
+        [UnityTest]
+        public IEnumerator GetOriginatedContractsForOwnerTest()
+        {
+            TezosConfig.Instance.Network = NetworkType.ghostnet;
+            var api = new TezosAPI(GetDataProviderConfig());
+
+            var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash")
+                .text;
+
+            yield return api.GetOriginatedContractsForOwner(
+                callback: originatedContracts =>
+                {
+                    Assert.IsTrue(originatedContracts.Any());
+                },
+                creator: "tz1Xqbt2AZcSqRXxBZp6fBnnm1eEm9JxJPRB",
+                codeHash: codeHash,
+                maxItems: 1000,
+                orderBy: new OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc(0));
         }
     }
 }

@@ -26,9 +26,9 @@ namespace TezosSDK.Tezos.Wallet
         {
             // Create or get a WalletMessageReceiver Game object to receive callback messages
             var unityBeacon = GameObject.Find("UnityBeacon");
-            MessageReceiver = unityBeacon != null 
-                    ? unityBeacon.GetComponent<WalletMessageReceiver>() 
-                    : new GameObject("UnityBeacon").AddComponent<WalletMessageReceiver>();
+            MessageReceiver = unityBeacon != null
+                ? unityBeacon.GetComponent<WalletMessageReceiver>()
+                : new GameObject("UnityBeacon").AddComponent<WalletMessageReceiver>();
 
             // Assign the BeaconConnector depending on the platform.
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -119,6 +119,13 @@ namespace TezosSDK.Tezos.Wallet
                 amount: amount,
                 networkName: TezosConfig.Instance.Network.ToString(),
                 networkRPC: TezosConfig.Instance.RpcBaseUrl);
+        }
+
+        public void OriginateContract(
+            string script,
+            string delegateAddress)
+        {
+            _beaconConnector.RequestContractOrigination(script, delegateAddress);
         }
 
         public void Dispose()

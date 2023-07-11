@@ -2,12 +2,16 @@ using System.Collections.Generic;
 using System;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
+using TezosSDK.Tezos;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.Wallet;
 
 namespace TezosSDK.Samples.DemoExample
 {
     public interface IExampleManager
     {
+            ITezos Tezos { get; }
+
         public void Init(Action<bool> callback = null);
         public void Unpair();
 
@@ -95,7 +99,7 @@ namespace TezosSDK.Samples.DemoExample
         /// <summary>
         /// Return the Tezos wallet MessageReceiver for using callbacks
         /// </summary>
-        public BeaconMessageReceiver GetMessageReceiver();
+        public WalletMessageReceiver GetWalletMessageReceiver();
 
         /// <summary>
         /// Checks if item is on the marketplace in the blockchain
@@ -113,5 +117,21 @@ namespace TezosSDK.Samples.DemoExample
         void RequestSignPayload(SignPayloadType signingType, string payload);
 
         bool VerifyPayload(SignPayloadType signingType, string payload);
+
+        /// <summary>
+        /// Deploy FA2 contract
+        /// </summary>
+        void DeployContract(Action<string> deployedContractAddress);
+
+        /// <summary>
+        /// Switch FA2 contract
+        /// </summary>
+        void ChangeContract(string activeContractAddress);
+
+        /// <summary>
+        /// Return originated contracts by account for using callbacks
+        /// </summary>
+        /// <param name="callback">callback that takes the retrieved contracts(IEnumerable)</param>
+        void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback);
     }
 }

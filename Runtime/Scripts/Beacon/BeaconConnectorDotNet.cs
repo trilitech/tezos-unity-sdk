@@ -151,6 +151,14 @@ namespace TezosSDK.Beacon
             string networkName = "",
             string networkRPC = "")
         {
+            var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
+            if (activeAccountPermissions == null)
+            {
+                Logger.LogError("No active permissions");
+                return;
+            }
+            var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
+            
             var operationDetails = new List<TezosBaseOperation>();
             var partialTezosTransactionOperation = new PartialTezosTransactionOperation(
                 amount.ToString(),
@@ -164,15 +172,38 @@ namespace TezosSDK.Beacon
 
             operationDetails.Add(partialTezosTransactionOperation);
 
+            var operationRequest = new OperationRequest(
+                type: BeaconMessageType.operation_request,
+                version: Constants.BeaconVersion,
+                id: KeyPairService.CreateGuid(),
+                senderId: BeaconDappClient.SenderId,
+                network: activeAccountPermissions.Network,
+                operationDetails: operationDetails,
+                sourceAddress: pubKey.Address);
+
+            Logger.LogDebug("requesting operation: " + operationRequest);
+            await BeaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
+        }
+
+        public async void RequestContractOrigination(string script, string delegateAddress)
+        {
             var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
             if (activeAccountPermissions == null)
             {
                 Logger.LogError("No active permissions");
                 return;
             }
-
             var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
+            
+            var operationDetails = new List<TezosBaseOperation>();
+            var partialTezosTransactionOperation = new PartialTezosOriginationOperation(
+                Balance: "0",
+                Script: JObject.Parse(script),
+                Delegate: delegateAddress
+            );
 
+            operationDetails.Add(partialTezosTransactionOperation);
+            
             var operationRequest = new OperationRequest(
                 type: BeaconMessageType.operation_request,
                 version: Constants.BeaconVersion,
@@ -236,7 +267,7 @@ namespace TezosSDK.Beacon
                         return;
 
                     UnityMainThreadDispatcher.Enqueue(
-                        _walletMessageReceiver.OnContractCallInjected, //operationResponse.TransactionHash);
+                        _walletMessageReceiver.OnContractCallInjected,
                         new JObject
                         {
                             ["transactionHash"] = operationResponse.TransactionHash,

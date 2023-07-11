@@ -5,22 +5,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [2.0.0] - 2023-07-11
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/102) with standalone IL2CPP build fails
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/103) with closing Beacon database connections before app exit
 
 ### Added
-- Missing namespaces
+- FA2 token contract (deploy, mint and transfer features)
+- Implemented IPFS and on-chain image uploaders for WebGL and Editor platforms
 
 ### Changed
 - Issue Report Form menu item path changed (new path: `Tools/Tezos SDK for Unity/Report an Issue`)
+- ITezosAPI renamed to ITezos, refactored and divided in Wallet and API parts
+- Missing namespaces
 
 
 ## [1.5.1] - 2023-06-27
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/99) with game items transfer not working
 
+### Added
+- Ipfs web uploader
+- Ipfs editor uploader
 
 ## [1.5.0] - 2023-06-22
 ### Fixed
@@ -116,7 +122,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added auto releases with GH actions
 
 
-[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/1.5.1...HEAD
+[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.0
 [1.5.1]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.5.1
 [1.5.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.5.0
 [1.4.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/1.4.0

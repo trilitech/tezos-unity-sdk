@@ -53,5 +53,14 @@ namespace TezosSDK.Tezos.Wallet
             string entryPoint,
             string input,
             ulong amount = 0);
+
+        /// <summary>
+        /// Originate new contract.
+        /// </summary>
+        /// <param name="script">Code of contract</param>
+        /// <param name="delegateAddress">Delegator address</param>
+        void OriginateContract(
+            string script,
+            string delegateAddress = null);
     }
 }
