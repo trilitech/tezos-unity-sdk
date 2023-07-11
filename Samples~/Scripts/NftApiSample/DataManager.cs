@@ -12,7 +12,6 @@ namespace TezosSDK.Samples.NFTApiSample
     public class DataManager : MonoBehaviour
     {
         private ITezos _tezos;
-
         private string _connectedAddress;
         private string _checkContract;
         private string _checkAddress;
@@ -93,7 +92,7 @@ namespace TezosSDK.Samples.NFTApiSample
                 Debug.Log("Enter contract address");
                 return;
             }
-
+            
             CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfContract((flag) =>
                 {
                     var message = flag
@@ -123,7 +122,7 @@ namespace TezosSDK.Samples.NFTApiSample
                 Debug.Log("Enter contract address");
                 return;
             }
-
+            
             CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfToken((flag) =>
                 {
                     var message = flag

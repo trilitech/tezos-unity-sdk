@@ -260,7 +260,6 @@ namespace TezosSDK.Samples.DemoExample
                         amount: randomAmount);
             }
 
-
 #if UNITY_IOS || UNITY_ANDROID
             Application.OpenURL("tezos://");
 #endif

@@ -10,7 +10,8 @@ namespace TezosSDK.Samples.DemoExample
 {
     public interface IExampleManager
     {
-        ITezos Tezos { get; }
+            ITezos Tezos { get; }
+
         public void Init(Action<bool> callback = null);
         public void Unpair();
 
