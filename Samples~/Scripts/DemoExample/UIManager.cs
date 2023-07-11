@@ -35,6 +35,7 @@ namespace TezosSDK.Samples.DemoExample
             _manager = ExampleFactory.Instance.GetExampleManager();
             InitializeCallbacks();
 
+            AllowUIAccess(false);
             inventoryButton.OnTabSelected.AddListener(AccessInventory);
             marketButton.OnTabSelected.AddListener(AccessMarket);
             inventory.onInventoryRefresh.AddListener(AccessInventory);
