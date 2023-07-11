@@ -206,7 +206,7 @@ namespace TezosSDK.Tezos.API.Models
 
                             var lastUsedContract = tokenContracts.Last();
                             Address = lastUsedContract.Address;
-                            PlayerPrefs.SetString("CurrentContract", lastUsedContract.Address);
+                            PlayerPrefs.SetString("CurrentContract:" + creator, lastUsedContract.Address);
                             OnDeployCompleted.Invoke(lastUsedContract.Address);
                         },
                         creator,
