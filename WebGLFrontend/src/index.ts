@@ -1,8 +1,15 @@
-import BeaconWallet from './WalletProviders/Beacon';
-import IpfsUploader from './IpfsUploader/IpfsUploader';
-import KukaiWallet from './WalletProviders/Kukai';
-import { FileUploader, FileUploaderConfig } from './IpfsUploader/Types';
-import { Wallet, WalletType } from './WalletProviders/Types';
+import {
+  BaseFileUploaderType,
+  BaseUploaderConfig,
+  IpfsUploaderConfig,
+  IpfsUploaderType,
+} from "./FileUploaders/Types";
+import { Wallet, WalletType } from "./WalletProviders/Types";
+
+import Base64Uploader from "./FileUploaders/Base64Uploader";
+import IpfsUploader from "./FileUploaders/IpfsUploader";
+import BeaconWallet from "./WalletProviders/Beacon";
+import KukaiWallet from "./WalletProviders/Kukai";
 
 let cachedKukaiWallet: KukaiWallet;
 let cachedBeqaconWallet: BeaconWallet;
@@ -25,16 +32,23 @@ function InitWalletProvider(
   window.WalletProvider.SetNetwork(networkName, rpcUrl);
 }
 
-function InitFileUploader(config: FileUploaderConfig) {
-  if (window.FileUploader) return;
-  const ipfsUploader: FileUploader = new IpfsUploader();
-  ipfsUploader.InitFileUploader(config);
+function InitIpfsUploader(config: IpfsUploaderConfig) {
+  if (window.FileUploader instanceof IpfsUploader) return;
 
-  window.FileUploader = ipfsUploader;
+  const uploader: IpfsUploaderType = new IpfsUploader();
+  uploader.Init(config);
+  window.FileUploader = uploader;
+}
+
+function InitBase64Uploader(config: BaseUploaderConfig) {
+  const uploader = new Base64Uploader();
+  uploader.Init(config);
+  window.FileUploader = uploader;
 }
 
 window.InitWalletProvider = InitWalletProvider;
-window.InitFileUploader = InitFileUploader;
+window.InitIpfsUploader = InitIpfsUploader;
+window.InitBase64Uploader = InitBase64Uploader;
 
 declare global {
   interface Window {
@@ -45,7 +59,8 @@ declare global {
       rpcUrl: string,
       walletType: WalletType
     ): void;
-    InitFileUploader(config: FileUploaderConfig): void;
-    FileUploader: FileUploader | null;
+    InitIpfsUploader(config: IpfsUploaderConfig): void;
+    InitBase64Uploader(config: BaseUploaderConfig): void;
+    FileUploader: BaseFileUploaderType | null;
   }
 }
