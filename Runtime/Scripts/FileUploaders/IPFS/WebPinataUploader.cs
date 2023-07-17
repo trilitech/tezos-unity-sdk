@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace TezosSDK.Scripts.FileUploaders.IPFS
 {
+#if UNITY_WEBGL && !UNITY_EDITOR
     public class WebPinataUploader : BaseUploader, IPinataUploader
     {
         public PinataCredentials PinataCredentials { get; set; }
@@ -76,4 +77,5 @@ namespace TezosSDK.Scripts.FileUploaders.IPFS
         [DllImport("__Internal")]
         private static extern void JsRequestUserFile(string extensions);
     }
+#endif
 }
