@@ -33,7 +33,7 @@ namespace TezosSDK.Samples.NFTApiSample
         void OnAccountConnected(string result)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(result);
-            var account = json.GetProperty("account");
+            var account = json.GetProperty("accountInfo");
             _connectedAddress = account.GetProperty("address").GetString();
         }
 

@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [unreleased]
+### Fixed
+- NftApi sample bug with incorrect key error.
+
+
 ## [2.0.0] - 2023-07-11
 ### Fixed
 - [Bug](https://github.com/trilitech/tezos-unity-sdk/issues/102) with standalone IL2CPP build fails
