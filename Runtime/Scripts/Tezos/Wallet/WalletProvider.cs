@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
@@ -71,18 +72,44 @@ namespace TezosSDK.Tezos.Wallet
             };
         }
 
+        // Below there are some async/wait workarounds and magic numbers, 
+        // we should rewrite the Beacon connector to be coroutine compatible.
+        private IEnumerator OnOpenWallet(bool withRedirectToWallet)
+        {
+            var address = _beaconConnector.GetActiveAccountAddress();
+            if (!string.IsNullOrEmpty(address))
+            {
+                // Active address, let's disconnect it
+                _beaconConnector.DisconnectAccount();
+                yield return new WaitForSeconds(2.5f);
+            }
+            if (string.IsNullOrEmpty(_handshake))
+            {
+                //No handshake, Waiting for handshake...
+                yield return new WaitForSeconds(2.5f);
+            }
+
+#if UNITY_ANDROID || UNITY_IOS
+            if (withRedirectToWallet){
+                _beaconConnector.RequestTezosPermission(
+                    networkName: TezosConfig.Instance.Network.ToString(),
+                    networkRPC: TezosConfig.Instance.RpcBaseUrl);
+                yield return new WaitForSeconds(2.5f);
+                if (!string.IsNullOrEmpty(_handshake)){
+                    Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
+                }
+            }
+#endif
+        }
+
         public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
         {
             _beaconConnector.InitWalletProvider(
                 network: TezosConfig.Instance.Network.ToString(),
                 rpc: TezosConfig.Instance.RpcBaseUrl,
                 walletProviderType: walletProvider);
-
             _beaconConnector.ConnectAccount();
-#if UNITY_ANDROID || UNITY_IOS
-            if (withRedirectToWallet)
-                Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
-#endif
+            CoroutineRunner.Instance.StartWrappedCoroutine(OnOpenWallet(withRedirectToWallet));
         }
 
         public void Disconnect()
