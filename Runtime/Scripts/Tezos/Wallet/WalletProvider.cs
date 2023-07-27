@@ -79,13 +79,13 @@ namespace TezosSDK.Tezos.Wallet
             var address = _beaconConnector.GetActiveAccountAddress();
             if (!string.IsNullOrEmpty(address))
             {
-                Debug.Log($"Active address: {address}");
+                // Active address, let's disconnect it
                 _beaconConnector.DisconnectAccount();
                 yield return new WaitForSeconds(2.5f);
             }
             if (string.IsNullOrEmpty(_handshake))
             {
-                Debug.Log("No handshake, Waiting for handshake...");
+                //No handshake, Waiting for handshake...
                 yield return new WaitForSeconds(2.5f);
             }
 
