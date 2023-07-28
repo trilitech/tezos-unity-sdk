@@ -40,7 +40,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
   }
 
   GetActiveAccountAddress() {
-    return this.kukaiEmbed.user.pkh;
+    return this.kukaiEmbed?.user?.pkh ?? "";
   }
 
   async SendContract(

@@ -52,7 +52,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
   }
 
   GetActiveAccountAddress() {
-    return this.activePermissions.accountInfo.address;
+    return this.activePermissions?.accountInfo.address ?? "";
   }
 
   async SendContract(
