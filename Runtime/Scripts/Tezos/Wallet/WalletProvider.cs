@@ -76,13 +76,6 @@ namespace TezosSDK.Tezos.Wallet
         // we should rewrite the Beacon connector to be coroutine compatible.
         private IEnumerator OnOpenWallet(bool withRedirectToWallet)
         {
-            var address = _beaconConnector.GetActiveAccountAddress();
-            if (!string.IsNullOrEmpty(address))
-            {
-                // Active address, let's disconnect it
-                _beaconConnector.DisconnectAccount();
-                yield return new WaitForSeconds(2.5f);
-            }
             if (string.IsNullOrEmpty(_handshake))
             {
                 //No handshake, Waiting for handshake...
