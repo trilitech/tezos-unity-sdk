@@ -188,7 +188,7 @@ namespace TezosSDK.Samples.DemoExample
             });
         }
 
-        private void DisplayPopup(string message)
+        public void DisplayPopup(string message)
         {
             UnityMainThreadDispatcher.Enqueue((msg) =>
             {
