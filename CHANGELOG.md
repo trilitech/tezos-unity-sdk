@@ -5,11 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.0.3] - 2023-08-01
+### Changed
+- Mint button in inventory rolled back to old behaviour that uses contracts on view
+- Added Mint FA2 Token button on welcome screen
+- Removed upload file feature usage from DemoExample sample
+
 
 ## [2.0.2] - 2023-07-28
 ### Fixed
 - WebGL `GetActiveAccountAddress` function.
-
 
 
 ## [2.0.1] - 2023-07-28
@@ -134,7 +139,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added auto releases with GH actions
 
 
-[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/2.0.2...HEAD
+[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/2.0.3...HEAD
+[2.0.3]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.3
 [2.0.2]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.2
 [2.0.1]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.1
 [2.0.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.0

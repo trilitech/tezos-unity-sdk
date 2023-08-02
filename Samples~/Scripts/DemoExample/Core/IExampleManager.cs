@@ -4,6 +4,7 @@ using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models;
+using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
 
 namespace TezosSDK.Samples.DemoExample
@@ -51,6 +52,11 @@ namespace TezosSDK.Samples.DemoExample
         /// Mints an item
         /// </summary>
         public void MintItem();
+        
+        /// <summary>
+        /// Mints FA2 Token
+        /// </summary>
+        public void MintFA2(Action<TokenBalance> callback);
 
         /// <summary>
         /// Get account balance

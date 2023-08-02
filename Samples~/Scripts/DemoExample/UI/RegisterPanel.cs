@@ -24,7 +24,8 @@ namespace TezosSDK.Samples.DemoExample
             yield return null;
 
             _exampleManager = ExampleFactory.Instance.GetExampleManager();
-            _exampleManager.GetWalletMessageReceiver().HandshakeReceived += (handshake) => _qrCodeView.SetQrCode(handshake);
+            _exampleManager.GetWalletMessageReceiver().HandshakeReceived +=
+                (handshake) => _qrCodeView.SetQrCode(handshake);
 
             SetButtonState(_deepLinkPair, false, false);
             SetButtonState(_socialLoginButton, false, false);
@@ -100,6 +101,15 @@ namespace TezosSDK.Samples.DemoExample
                 _uiManager.UpdateContracts();
             });
         }
+
+        public void MintFA2()
+        {
+            _exampleManager.MintFA2(mintedTokenBalance =>
+            {
+                _uiManager.DisplayPopup($"Minted token with ID: {mintedTokenBalance.TokenId}");
+            });
+        }
+
 
         public void ChangeContract()
         {
