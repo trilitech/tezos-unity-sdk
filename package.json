@@ -1,6 +1,6 @@
 {
   "name": "com.trilitech.tezos-unity-sdk",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "unity": "2021.3",
   "displayName": "Tezos Unity SDK",
   "description": "Unity SDK for Tezos",
