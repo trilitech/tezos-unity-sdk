@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     tags:
-      - '*.*.*'
+      - "*.*.*"
 
 jobs:
   release:
@@ -11,20 +11,41 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout Unity project structure
+        uses: actions/checkout@v2
+        with:
+          repository: fraidev/tezos-unity-sdk-structured
+
       - name: Check out the repo
         uses: actions/checkout@v3
+        with:
+          path: Assets/TezosUnitySdk
 
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.1
         with:
-          type: 'zip'
-          filename: 'tezos-unity-sdk.zip'
-          exclusions: '*.git* *.github*'
+          type: "zip"
+          directory: ./Assets/TezosUnitySdk/
+          filename: "tezos-unity-sdk.zip"
+          exclusions: "*.git* *.github*"
+
+      - name: Create unitypackageFiles
+        run: |
+          echo "Assets/TezosUnitySdk.meta" > unitypackageFiles
+          mv Assets/TezosUnitySdk/Samples~ Assets/TezosUnitySdk/Samples
+          find ./Assets/TezosUnitySdk/ -name \*.meta ! -path "./Assets/TezosUnitySdk/Tests*" ! -path "./Assets/TezosUnitySdk/*.md.meta" >> unitypackageFiles
+
+      - name: Create unitypackage
+        uses: pCYSl5EDgo/create-unitypackage@master
+        with:
+          package-path: 'TezosUnitySdk.unitypackage'
+          include-files: unitypackageFiles
 
       - name: Parse changelog
         id: changelog
         uses: mindsers/changelog-reader-action@v2
         with:
+          path: ./Assets/TezosUnitySdk/CHANGELOG.md
           version: ${{ github.ref_name }}
 
       - name: Release
@@ -36,4 +57,6 @@ jobs:
             ## ${{ steps.changelog.outputs.date }}
             ${{ steps.changelog.outputs.changes }}
           prerelease: ${{ steps.changelog.outputs.status == 'prereleased' }}
-          files: 'tezos-unity-sdk.zip'
+          files: |
+            ./Assets/TezosUnitySdk/tezos-unity-sdk.zip
+            TezosUnitySdk.unitypackage
