@@ -26,6 +26,14 @@ developers with the ability to:
 The Tezos SDK supports Desktop, Android, iOS, and browsers. Beyond allowing game developers to interact with the Tezos
 blockchain, this SDK is a helpful resource for developing any Tezos decentralized application (dApp).
 
+### Install from unitypackage file
+
+You can install TezosUnitySdk via `.unitypackage` file. To load a package from a unitypackage file:
+
+* Go to [Releases](https://github.com/trilitech/tezos-unity-sdk/releases) page and download the latest `TezosUnitySdk.unitypackage`.
+* Open your project in Unity Editor.
+* Double-click the `TezosUnitySdk.unitypackage` file to import it into the current project.
+
 ### Install from a Git URL
 
 You can install the UPM package via directly Git URL. To load a package from a Git URL:
