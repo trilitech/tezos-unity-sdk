@@ -15,24 +15,58 @@ MonoBehaviour:
   Title: Tezos SDK For Unity
   Icon: {fileID: 2800000, guid: 639c542448d029e4099871c47dc40b03, type: 3}
   Sections:
-  - TextHeading: Welcome
-    TextSubheading: Tezos SDK For Unity
-    TextBody: The Tezos SDK for Unity invites developers to discover the future of
-      Web3 gaming. This complete kit empowers game developers to connect to and utilize
-      the Tezos blockchain.
-    LinkName: OpenTezos.com/gaming/unity-sdk/
-    LinkUrl: https://opentezos.com/gaming/unity-sdk/
-    PingObjectName: 
-    PingObjectGuid: 
-    MenuItemName: 
-    MenuItemPath: 
   - TextHeading: Getting Started
     TextSubheading: 
-    TextBody: 'You can import our sample game to get started.'
+    TextBody: 'Follow our documentation below to start exploring the SDK!'
+    LinkName: Getting Started
+    LinkUrl: https://opentezos.com/gaming/unity-sdk/getting-started/
+    PingObjectName: 
+    PingObjectGuid: 
+    MenuItemName:
+    MenuItemPath:
+  - TextHeading: Scenes
+    TextSubheading: 
+    TextBody: 'You can find various scenes under Assets > Scenes'
     LinkName:
     LinkUrl:
     PingObjectName: 
     PingObjectGuid: 
-    MenuItemName: Window/Package Manager
-    MenuItemPath: Window/Package Manager
+    MenuItemName:
+    MenuItemPath:
+  - TextHeading:
+    TextSubheading: 
+    TextBody:
+    LinkName: 'DemoExampleScene: This is our Inventory Sample Game.'
+    LinkUrl: https://opentezos.com/gaming/unity-sdk/inventory-sample-game/
+    PingObjectName: 
+    PingObjectGuid: 
+    MenuItemName:
+    MenuItemPath:
+  - TextHeading:
+    TextSubheading: 
+    TextBody: 
+    LinkName: 'NFTApiSample: You can experiment with our awesome API here.' 
+    LinkUrl: https://opentezos.com/gaming/unity-sdk/api-documentation/
+    PingObjectName: 
+    PingObjectGuid: 
+    MenuItemName:
+    MenuItemPath:
+  - TextHeading: Report an Issue
+    TextSubheading: 
+    TextBody: 'To report an issue, on the upper bar, click Tools > Tezos SDK for Unity > Report an Issue'
+    LinkName:
+    LinkUrl:
+    PingObjectName: 
+    PingObjectGuid: 
+    MenuItemName: Tools/Tezos SDK for Unity/Report an Issue
+    MenuItemPath: Tools/Tezos SDK for Unity/Report an Issue
+  - TextHeading: Join our community
+    TextSubheading: 
+    TextBody: 'Looking to get further support and share your work? Join and reach us out!'
+    LinkName: Tezos Discord
+    LinkUrl: https://discord.com/invite/tezos
+    PingObjectName: 
+    PingObjectGuid: 
+    MenuItemName:
+    MenuItemPath:
   HasLoadedLayout: 0
