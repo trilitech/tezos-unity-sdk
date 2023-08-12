@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.0.5] - 2023-08-12
+### Changed
+- Unity readme
+
+
 ## [2.0.4] - 2023-08-11
 ### Fixed
 - Asset store validator tool warnings for WebGLCopyAndPaste feature
@@ -147,7 +152,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added auto releases with GH actions
 
 
-[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/2.0.4...HEAD
+[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/2.0.5...HEAD
+[2.0.5]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.5
 [2.0.4]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.4
 [2.0.3]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.3
 [2.0.2]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.2
