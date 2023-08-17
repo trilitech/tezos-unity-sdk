@@ -1,10 +1,9 @@
 import BaseWallet from "./BaseWallet";
-import { KukaiEmbed, Template } from "kukai-embed";
+import { KukaiEmbed } from "kukai-embed";
 import { Wallet } from "./Types";
 
 class KukaiWallet extends BaseWallet implements Wallet {
   kukaiEmbed: KukaiEmbed | null;
-  defaultUIConfig: Template = { silent: true };
   networkName: string;
 
   SetNetwork(networkName: string, rpcUrl: string) {
@@ -52,7 +51,6 @@ class KukaiWallet extends BaseWallet implements Wallet {
     try {
       const transactionHash = await this.kukaiEmbed.send(
         this.GetOperationsList(destination, amount, entryPoint, parameter),
-        this.defaultUIConfig
       );
 
       this.CallUnityOnContractCallCompleted({ transactionHash });
@@ -66,7 +64,6 @@ class KukaiWallet extends BaseWallet implements Wallet {
       const transactionHash = await this.kukaiEmbed.send(
         // @ts-ignore
         this.GetOriginationOperationsList(script, delegateAddress),
-        this.defaultUIConfig
       );
 
       this.CallUnityOnContractCallCompleted({ transactionHash });
@@ -82,7 +79,6 @@ class KukaiWallet extends BaseWallet implements Wallet {
     );
     const signature = await this.kukaiEmbed.signExpr(
       hexPayload,
-      this.defaultUIConfig
     );
     this.CallUnityOnPayloadSigned({ signature });
   }
