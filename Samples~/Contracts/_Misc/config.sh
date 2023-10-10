@@ -1,4 +1,4 @@
-alias ligo="docker run --rm -v "$PWD":"$PWD" --platform linux/amd64 -w "$PWD" ligolang/ligo:0.65.0"
+alias ligo="docker run --rm -v "$PWD":"$PWD" --platform linux/amd64 -w "$PWD" ligolang/ligo:1.0.0"
 export OCTEZ_CLIENT_UNSAFE_DISABLE_DISCLAIMER=yes
 # octez-client --endpoint https://rpc.tzkt.io/jakartanet config update
 # octez-client --endpoint https://rpc.ghostnet.teztnets.xyz/ config update

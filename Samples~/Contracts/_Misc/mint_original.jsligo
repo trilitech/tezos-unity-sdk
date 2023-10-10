@@ -10,7 +10,6 @@ type storage = Storage.t;
 type token_metadata = TokenMetadata.t;
 
 export type mint_param = 
-// @layout:comb
 {
    ids : list<token_id>,
    metas : big_map<token_id, map<string, bytes>>

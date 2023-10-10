@@ -1,14 +1,24 @@
-type t = string;
+export type t = string;
 
-const undefined_token = "FA2_TOKEN_UNDEFINED"
-const ins_balance     = "FA2_INSUFFICIENT_BALANCE"
-const no_transfer     = "FA2_TX_DENIED"
-const not_owner       = "FA2_NOT_OWNER"
-const not_operator    = "FA2_NOT_OPERATOR"
-const not_supported   = "FA2_OPERATORS_UNSUPPORTED"
-const rec_hook_fail   = "FA2_RECEIVER_HOOK_FAILED"
-const send_hook_fail  = "FA2_SENDER_HOOK_FAILED"
-const rec_hook_undef  = "FA2_RECEIVER_HOOK_UNDEFINED"
-const send_hook_under = "FA2_SENDER_HOOK_UNDEFINED"
+export const undefined_token: t = "FA2_TOKEN_UNDEFINED"
 
-const only_sender_manage_operators = "The sender can only manage operators for his own token"
+export const ins_balance: t = "FA2_INSUFFICIENT_BALANCE"
+
+export const no_transfer: t = "FA2_TX_DENIED"
+
+export const not_owner: t = "FA2_NOT_OWNER"
+
+export const not_operator: t = "FA2_NOT_OPERATOR"
+
+export const not_supported: t = "FA2_OPERATORS_UNSUPPORTED"
+
+export const rec_hook_fail: t = "FA2_RECEIVER_HOOK_FAILED"
+
+export const send_hook_fail: t = "FA2_SENDER_HOOK_FAILED"
+
+export const rec_hook_undef: t = "FA2_RECEIVER_HOOK_UNDEFINED"
+
+export const send_hook_under: t = "FA2_SENDER_HOOK_UNDEFINED"
+
+export const only_sender_manage_operators: t =
+  "The sender can only manage operators for his own token"
