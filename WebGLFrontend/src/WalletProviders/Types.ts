@@ -1,3 +1,6 @@
+import {DAppClient} from "@airgap/beacon-sdk";
+import {KukaiEmbed} from "kukai-embed";
+
 enum WalletType {
   beacon = "beacon",
   kukai = "kukai",
@@ -5,6 +8,7 @@ enum WalletType {
 
 // this methods called from Unity.
 interface Wallet {
+  client: DAppClient | KukaiEmbed | null;
   ConnectAccount(): void;
   SetNetwork(networkName: string, rpcUrl: string): void;
   GetActiveAccountAddress(): string;

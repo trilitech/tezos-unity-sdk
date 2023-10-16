@@ -34,10 +34,15 @@ namespace TezosSDK.Samples.DemoExample
             // make QR code available for Standalone
             _qrImage.gameObject.SetActive(true);
 #elif (UNITY_IOS || UNITY_ANDROID)
-		SetButtonState(_deepLinkPair, true, true);
+		    SetButtonState(_deepLinkPair, true, true);
 #elif UNITY_WEBGL
-		SetButtonState(_deepLinkPair, true, true);
-		SetButtonState(_socialLoginButton, true, true);
+            ExampleFactory
+                .Instance
+                .GetExampleManager()
+                .OnReady();
+
+		    SetButtonState(_deepLinkPair, true, true);
+		    SetButtonState(_socialLoginButton, true, true);
 #endif
         }
 
