@@ -3,33 +3,34 @@ import { KukaiEmbed } from "kukai-embed";
 import { Wallet } from "./Types";
 
 class KukaiWallet extends BaseWallet implements Wallet {
-  kukaiEmbed: KukaiEmbed | null;
+  client: KukaiEmbed | null;
   networkName: string;
 
   SetNetwork(networkName: string, rpcUrl: string) {
     this.networkName = networkName;
+    localStorage.setItem("networkName", networkName);
   }
 
   async ConnectAccount() {
-    if (!this.kukaiEmbed?.initialized) {
-      this.kukaiEmbed = new KukaiEmbed({
+    if (!this.client?.initialized) {
+      this.client = new KukaiEmbed({
         net: this.networkName,
       });
 
-      await this.kukaiEmbed.init();
+      await this.client.init();
     }
-
-    if (this.kukaiEmbed.user) {
+    
+    if (this.client.user) {
       this.CallUnityOnAccountConnected({
-        address: this.kukaiEmbed.user.pkh,
-        publicKey: this.kukaiEmbed.user.pk,
+        address: this.client.user.pkh,
+        publicKey: this.client.user.pk,
       });
     } else {
       try {
-        await this.kukaiEmbed.login();
+        await this.client.login();
         this.CallUnityOnAccountConnected({
-          address: this.kukaiEmbed.user.pkh,
-          publicKey: this.kukaiEmbed.user.pk,
+          address: this.client.user.pkh,
+          publicKey: this.client.user.pk,
         });
       } catch (error) {
         console.error(`Error during connecting account, ${error.message}`);
@@ -39,7 +40,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
   }
 
   GetActiveAccountAddress() {
-    return this.kukaiEmbed?.user?.pkh ?? "";
+    return this.client?.user?.pkh ?? "";
   }
 
   async SendContract(
@@ -49,7 +50,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
     parameter: string
   ) {
     try {
-      const transactionHash = await this.kukaiEmbed.send(
+      const transactionHash = await this.client.send(
         this.GetOperationsList(destination, amount, entryPoint, parameter),
       );
 
@@ -61,7 +62,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
 
   async OriginateContract(script: string, delegateAddress?: string) {
     try {
-      const transactionHash = await this.kukaiEmbed.send(
+      const transactionHash = await this.client.send(
         // @ts-ignore
         this.GetOriginationOperationsList(script, delegateAddress),
       );
@@ -77,7 +78,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
       this.NumToSigningType(signingType),
       plainTextPayload
     );
-    const signature = await this.kukaiEmbed.signExpr(
+    const signature = await this.client.signExpr(
       hexPayload,
     );
     this.CallUnityOnPayloadSigned({ signature });
@@ -85,7 +86,8 @@ class KukaiWallet extends BaseWallet implements Wallet {
 
   async DisconnectAccount() {
     const connectedAccount = this.GetActiveAccountAddress();
-    await this.kukaiEmbed.logout();
+    await this.client.logout();
+    localStorage.removeItem("networkName");
     this.CallUnityOnAccountDisconnected(connectedAccount);
   }
 }

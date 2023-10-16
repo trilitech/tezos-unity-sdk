@@ -298,6 +298,10 @@ namespace TezosSDK.Beacon
                 }
             }
         }
+        
+        public void OnReady()
+        {
+        }
 
         #endregion
 

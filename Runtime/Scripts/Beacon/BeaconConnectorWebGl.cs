@@ -34,14 +34,22 @@ namespace TezosSDK.Beacon
         
         [DllImport("__Internal")]
         private static extern string JsRequestContractOrigination(string script, string delegateAddress);
+        
+        [DllImport("__Internal")]
+        private static extern string JsUnityReadyEvent();
 
         #endregion
 
         private string _activeAccountAddress;
-
+        
         public void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType)
         {
             JsInitWallet(network, rpc, walletProviderType.ToString());
+        }
+
+        public void OnReady()
+        {
+            JsUnityReadyEvent();
         }
 
         public void ConnectAccount()

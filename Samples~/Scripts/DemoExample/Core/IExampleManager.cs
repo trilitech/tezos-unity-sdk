@@ -11,7 +11,7 @@ namespace TezosSDK.Samples.DemoExample
 {
     public interface IExampleManager
     {
-            ITezos Tezos { get; }
+        ITezos Tezos { get; }
 
         public void Init(Action<bool> callback = null);
         public void Unpair();
@@ -139,5 +139,10 @@ namespace TezosSDK.Samples.DemoExample
         /// </summary>
         /// <param name="callback">callback that takes the retrieved contracts(IEnumerable)</param>
         void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback);
+
+        /// <summary>
+        /// Callback that needed in WebGL to determine that UI is rendered
+        /// </summary>
+        void OnReady();
     }
 }

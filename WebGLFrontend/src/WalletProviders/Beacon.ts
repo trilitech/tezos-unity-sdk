@@ -4,46 +4,52 @@ import { Wallet } from "./Types";
 import {
   Network,
   NetworkType,
-  PartialTezosOriginationOperation,
-  PermissionResponseOutput,
-  TezosOperationType,
 } from "@airgap/beacon-types";
 
 class BeaconWallet extends BaseWallet implements Wallet {
   clientName: string = "Tezos Unity SDK";
-  beaconClient: DAppClient | null;
-  activePermissions: PermissionResponseOutput | null;
+  client: DAppClient | null;
+  activeAddress: string | null;
   networkType: NetworkType;
   rpcUrl: string;
+  address: string;
 
   SetNetwork(networkName: string, rpcUrl: string) {
     this.networkType =
-      NetworkType[networkName.toUpperCase() as keyof typeof NetworkType];
+        NetworkType[networkName.toUpperCase() as keyof typeof NetworkType];
     this.rpcUrl = rpcUrl;
   }
 
   async ConnectAccount() {
-    if (!this.beaconClient) {
-      this.beaconClient = new DAppClient({
+    const network: Network = {
+      type: this.networkType,
+      name: this.clientName,
+      rpcUrl: this.rpcUrl,
+    };
+    
+    if (!this.client) {
+      this.client = new DAppClient({
         name: this.clientName,
-        preferredNetwork: this.networkType,
+        network: network,
       });
     }
 
     try {
-      const network: Network = {
-        type: this.beaconClient.preferredNetwork,
-        name: this.beaconClient.preferredNetwork,
-        rpcUrl: this.rpcUrl,
-      };
-
-      this.activePermissions = await this.beaconClient.requestPermissions({
-        network,
-      });
-
+      const activeAccount = await this.client.getActiveAccount();
+      let publicKey: string;
+      
+      if (!activeAccount || activeAccount.scopes.length === 0) {
+        const permissions = await this.client.requestPermissions();
+        this.activeAddress = permissions.address;
+        publicKey = permissions.publicKey
+      } else {
+        this.activeAddress = activeAccount.address;
+        publicKey = activeAccount.publicKey;
+      }
+      
       this.CallUnityOnAccountConnected({
-        address: this.activePermissions.accountInfo.address,
-        publicKey: this.activePermissions.accountInfo.publicKey,
+        address: this.activeAddress,
+        publicKey: publicKey,
       });
     } catch (error) {
       console.error(`Error during connecting account, ${error.message}`);
@@ -52,7 +58,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
   }
 
   GetActiveAccountAddress() {
-    return this.activePermissions?.accountInfo.address ?? "";
+    return this.activeAddress
   }
 
   async SendContract(
@@ -62,7 +68,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
     parameter: string
   ) {
     try {
-      const operationResult = await this.beaconClient.requestOperation({
+      const operationResult = await this.client.requestOperation({
         operationDetails: this.GetOperationsList(
           destination,
           amount,
@@ -81,7 +87,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
 
   async OriginateContract(script: string, delegateAddress?: string) {
     try {
-      const operationResult = await this.beaconClient.requestOperation({
+      const operationResult = await this.client.requestOperation({
         operationDetails: this.GetOriginationOperationsList(
           script,
           delegateAddress
@@ -99,7 +105,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
   async SignPayload(signingType: number, plainTextPayload: string) {
     const parsedSigningType = this.NumToSigningType(signingType);
 
-    const result = await this.beaconClient.requestSignPayload({
+    const result = await this.client.requestSignPayload({
       signingType: parsedSigningType,
       payload: this.GetHexPayloadString(parsedSigningType, plainTextPayload),
     });
@@ -108,9 +114,10 @@ class BeaconWallet extends BaseWallet implements Wallet {
   }
 
   async DisconnectAccount() {
-    await this.beaconClient.removeAllPeers();
-    this.CallUnityOnAccountDisconnected(this.activePermissions.address);
-    this.activePermissions = null;
+    const activeAccount = await this.client.getActiveAccount();
+    this.activeAddress = "";
+    await this.client.removeAllAccounts();
+    this.CallUnityOnAccountDisconnected(activeAccount.address);
   }
 }
 

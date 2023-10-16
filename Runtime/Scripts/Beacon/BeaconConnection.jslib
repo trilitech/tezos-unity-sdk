@@ -42,4 +42,8 @@ mergeInto(LibraryManager.library, {
         UTF8ToString(delegateAddress)
     );
   },
+  
+  JsUnityReadyEvent: function () {
+    UnityReadyEvent();
+  }
 });

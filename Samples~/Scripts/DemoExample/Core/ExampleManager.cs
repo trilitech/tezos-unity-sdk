@@ -471,5 +471,10 @@ namespace TezosSDK.Samples.DemoExample
             var routine = Tezos.GetOriginatedContracts(callback);
             CoroutineRunner.Instance.StartWrappedCoroutine(routine);
         }
+
+        public void OnReady()
+        {
+            Tezos.Wallet.OnReady();
+        }
     }
 }

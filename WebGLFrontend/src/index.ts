@@ -1,18 +1,14 @@
-import {
-  BaseFileUploaderType,
-  BaseUploaderConfig,
-  IpfsUploaderConfig,
-  IpfsUploaderType,
-} from "./FileUploaders/Types";
-import { Wallet, WalletType } from "./WalletProviders/Types";
+import {BaseFileUploaderType, BaseUploaderConfig, IpfsUploaderConfig, IpfsUploaderType,} from "./FileUploaders/Types";
+import {Wallet, WalletType} from "./WalletProviders/Types";
 
 import Base64Uploader from "./FileUploaders/Base64Uploader";
 import IpfsUploader from "./FileUploaders/IpfsUploader";
 import BeaconWallet from "./WalletProviders/Beacon";
 import KukaiWallet from "./WalletProviders/Kukai";
+import {AccountInfo, DAppClient} from "@airgap/beacon-sdk";
 
-let cachedKukaiWallet: KukaiWallet;
-let cachedBeqaconWallet: BeaconWallet;
+let kukaiWallet: KukaiWallet;
+let beaconWallet: BeaconWallet;
 
 function InitWalletProvider(
   networkName: string,
@@ -20,13 +16,13 @@ function InitWalletProvider(
   walletType: WalletType
 ) {
   if (walletType === WalletType.kukai) {
-    if (!cachedKukaiWallet) cachedKukaiWallet = new KukaiWallet();
-    window.WalletProvider = cachedKukaiWallet;
+    if (!kukaiWallet) kukaiWallet = new KukaiWallet();
+    window.WalletProvider = kukaiWallet;
   }
-
+  
   if (walletType === WalletType.beacon) {
-    if (!cachedBeqaconWallet) cachedBeqaconWallet = new BeaconWallet();
-    window.WalletProvider = cachedBeqaconWallet;
+    if (!beaconWallet) beaconWallet = new BeaconWallet();
+    window.WalletProvider = beaconWallet;
   }
 
   window.WalletProvider.SetNetwork(networkName, rpcUrl);
@@ -49,11 +45,30 @@ function InitBase64Uploader(config: BaseUploaderConfig) {
 window.InitWalletProvider = InitWalletProvider;
 window.InitIpfsUploader = InitIpfsUploader;
 window.InitBase64Uploader = InitBase64Uploader;
+window.UnityReadyEvent = UnityReadyEvent;
+
+async function UnityReadyEvent() {
+  const dAppClient: DAppClient = new DAppClient({ name: "Tezos SDK DApp" });
+  const beaconActiveAccount: AccountInfo = await dAppClient.getActiveAccount();
+
+  if (beaconActiveAccount) {
+    InitWalletProvider(beaconActiveAccount.network.type, beaconActiveAccount.network.rpcUrl, WalletType.beacon);
+    window.WalletProvider.client = dAppClient;
+    window.WalletProvider.ConnectAccount();
+  } else {
+    const networkName = localStorage.getItem("networkName")
+    if (networkName) {
+      InitWalletProvider(networkName, "", WalletType.kukai);
+      window.WalletProvider.ConnectAccount();
+    }
+  }
+}
 
 declare global {
   interface Window {
     unityInstance: any;
     WalletProvider: Wallet | null;
+    UnityReadyEvent(): void;
     InitWalletProvider(
       networkName: string,
       rpcUrl: string,
