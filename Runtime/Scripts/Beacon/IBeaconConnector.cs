@@ -1,6 +1,6 @@
 using Beacon.Sdk.Beacon.Sign;
-using Netezos.Forging.Models;
 using TezosSDK.Tezos.Wallet;
+using UnityEngine;
 
 namespace TezosSDK.Beacon
 {
@@ -40,7 +40,7 @@ namespace TezosSDK.Beacon
 		/// </summary>
 		/// <param name="networkName">The name of the desired network.</param>
 		/// <param name="networkRPC">The RPC to the desired network</param>
-		public void RequestTezosPermission(string networkName = "", string networkRPC = "");
+		public Awaitable RequestTezosPermission(string networkName = "", string networkRPC = "");
 
 		/// <summary>
 		/// Allows requesting a new operation such as sending tezos or initiating a smart contract.

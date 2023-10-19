@@ -103,7 +103,7 @@ namespace TezosSDK.Beacon
             _walletMessageReceiver = messageReceiver;
         }
 
-        public async void RequestTezosPermission(string networkName = "", string networkRPC = "")
+        public async Awaitable RequestTezosPermission(string networkName = "", string networkRPC = "")
         {
             if (!Enum.TryParse(networkName, out NetworkType networkType))
                 networkType = TezosConfig.Instance.Network;

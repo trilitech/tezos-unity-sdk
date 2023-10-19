@@ -54,7 +54,7 @@ namespace TezosSDK.DesignPattern.Singleton
         {
             if (!IsInstantiated())
             {
-                T t = GameObject.FindObjectOfType<T>();
+                T t = FindFirstObjectByType<T>();
                 GameObject go = null;
                 if (t != null)
                 {
