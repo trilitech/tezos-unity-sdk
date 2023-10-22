@@ -22,10 +22,10 @@ namespace TezosSDK.Tezos.Wallet
 
         public WalletProvider()
         {
-            InitBeaconConnector();
+            CoroutineRunner.Instance.StartWrappedCoroutine(InitBeaconConnector());
         }
 
-        private async void InitBeaconConnector()
+        private IEnumerator InitBeaconConnector()
         {
             // Create or get a WalletMessageReceiver Game object to receive callback messages
             var unityBeacon = GameObject.Find("UnityBeacon");
@@ -39,7 +39,7 @@ namespace TezosSDK.Tezos.Wallet
 #else
             _beaconConnector = new BeaconConnectorDotNet();
             (_beaconConnector as BeaconConnectorDotNet)?.SetWalletMessageReceiver(MessageReceiver);
-            await Connect(WalletProviderType.beacon, withRedirectToWallet: false);
+            yield return Connect(WalletProviderType.beacon, withRedirectToWallet: false);
 
             // todo: maybe call RequestTezosPermission from _beaconConnector?
             MessageReceiver.PairingCompleted += _ =>
@@ -49,7 +49,11 @@ namespace TezosSDK.Tezos.Wallet
                     networkRPC: TezosConfig.Instance.RpcBaseUrl);
             };
 #endif
-            MessageReceiver.HandshakeReceived += handshake => { _handshake = handshake; };
+            MessageReceiver.HandshakeReceived += handshake =>
+            {
+                Debug.Log($"Handshake Received: ${handshake}");
+                _handshake = handshake;
+            };
             MessageReceiver.AccountConnected += account =>
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(account);
@@ -79,25 +83,32 @@ namespace TezosSDK.Tezos.Wallet
             _beaconConnector.OnReady();
         }
 
-        public async Awaitable Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
+        public IEnumerator Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
         {
+            Debug.Log("InitWalletProvider");
             _beaconConnector.InitWalletProvider(
                 network: TezosConfig.Instance.Network.ToString(),
                 rpc: TezosConfig.Instance.RpcBaseUrl,
                 walletProviderType: walletProvider);
-            _beaconConnector.ConnectAccount();
+            Debug.Log("ConnectAccount");
+            var connectAccountCoroutine = _beaconConnector.ConnectAccount().ToCoroutine();
+            yield return connectAccountCoroutine;
 
 #if UNITY_ANDROID || UNITY_IOS
             if (withRedirectToWallet){
-                await _beaconConnector.RequestTezosPermission(
+                Debug.Log("RequestTezosPermission");
+                yield return _beaconConnector.RequestTezosPermission(
                     networkName: TezosConfig.Instance.Network.ToString(),
-                    networkRPC: TezosConfig.Instance.RpcBaseUrl);
+                    networkRPC: TezosConfig.Instance.RpcBaseUrl).ToCoroutine();
                 if (string.IsNullOrEmpty(_handshake))
                 {
                     //No handshake, Waiting for handshake...
-                    await Awaitable.WaitForSecondsAsync(2.5f);
+                    Debug.Log("No handshake, Waiting for handshake...");
+                    // yield return new WaitUntil(() => string.IsNullOrEmpty(_handshake));
+                    yield return new WaitForSecondsRealtime(2.5f);
                 }
                 if (!string.IsNullOrEmpty(_handshake)){
+                    Debug.Log("tezos://?type=tzip10&data=" + _handshake);
                     Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
                 }
             }

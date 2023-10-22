@@ -1,4 +1,6 @@
-﻿using Beacon.Sdk.Beacon.Sign;
+﻿using System.Collections;
+using System.Threading.Tasks;
+using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using UnityEngine;
 
@@ -20,7 +22,7 @@ namespace TezosSDK.Tezos.Wallet
         /// Makes a call to connect with a wallet
         /// <param name="withRedirectToWallet">Should we open wallet app on mobiles after connect?</param>
         /// </summary>
-        Awaitable Connect(WalletProviderType walletProvider, bool withRedirectToWallet = true);
+        IEnumerator Connect(WalletProviderType walletProvider, bool withRedirectToWallet = true);
 
         /// <summary>
         /// Unpair with wallet and disconnect

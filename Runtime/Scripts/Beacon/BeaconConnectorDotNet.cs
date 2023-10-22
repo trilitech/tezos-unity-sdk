@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Operation;
@@ -32,7 +33,7 @@ namespace TezosSDK.Beacon
 
         #region IBeaconConnector
 
-        public async void ConnectAccount()
+        public async Task ConnectAccount()
         {
             if (BeaconDappClient != null) return;
 
@@ -102,8 +103,7 @@ namespace TezosSDK.Beacon
         {
             _walletMessageReceiver = messageReceiver;
         }
-
-        public async Awaitable RequestTezosPermission(string networkName = "", string networkRPC = "")
+        public async Task RequestTezosPermission(string networkName = "", string networkRPC = "")
         {
             if (!Enum.TryParse(networkName, out NetworkType networkType))
                 networkType = TezosConfig.Instance.Network;

@@ -11,7 +11,7 @@ namespace TezosSDK.Tezos
 
         public NetworkType Network { get; set; } = NetworkType.ghostnet;
 
-        public string RpcBaseUrl => $"https://rpc.{Network}.teztnets.xyz";
+        public string RpcBaseUrl => $"https://{Network}.tezos.marigold.dev";
         public int DefaultTimeoutSeconds => 45;
     }
 

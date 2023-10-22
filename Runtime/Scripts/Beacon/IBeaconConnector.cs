@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace TezosSDK.Beacon
 		/// Starts the connection between Beacon SDK and a wallet to connect to
 		/// an account
 		/// </summary>
-		void ConnectAccount();
+		Task ConnectAccount();
 
 		/// <summary>
 		/// Checks if there is an active account paired.
@@ -40,7 +41,7 @@ namespace TezosSDK.Beacon
 		/// </summary>
 		/// <param name="networkName">The name of the desired network.</param>
 		/// <param name="networkRPC">The RPC to the desired network</param>
-		public Awaitable RequestTezosPermission(string networkName = "", string networkRPC = "");
+		public Task RequestTezosPermission(string networkName = "", string networkRPC = "");
 
 		/// <summary>
 		/// Allows requesting a new operation such as sending tezos or initiating a smart contract.

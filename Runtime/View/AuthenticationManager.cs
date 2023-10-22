@@ -52,9 +52,9 @@ namespace TezosSDK.View
             _tezos.Wallet.Disconnect();
         }
 
-        public async void ConnectByDeeplink()
+        public void ConnectByDeeplink()
         {
-            await _tezos.Wallet.Connect(WalletProviderType.beacon);
+            _tezos.Wallet.Connect(WalletProviderType.beacon);
         }
 
         void EnableUI(bool isAuthenticated)
