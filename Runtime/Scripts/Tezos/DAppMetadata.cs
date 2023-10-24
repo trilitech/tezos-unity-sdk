@@ -5,16 +5,16 @@
         /// <summary>
         /// SDK consumer DApp name.
         /// </summary>
-        public string AppName { get; set; }
+        public string Name { get; set; }
         
         /// <summary>
         /// SDK consumer App Url address, starts with https://.
         /// </summary>
-        public string AppUrl { get; set; }
+        public string Url { get; set; }
         
         /// <summary>
         /// SDK consumer Icon Url address, starts with https://.
         /// </summary>
-        public string IconUrl { get; set; }
+        public string Icon { get; set; }
     }
 }

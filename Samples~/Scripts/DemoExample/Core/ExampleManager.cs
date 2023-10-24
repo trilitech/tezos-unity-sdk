@@ -39,9 +39,9 @@ namespace TezosSDK.Samples.DemoExample
                 networkType: NetworkType.ghostnet,
                 dAppMetadata: new DAppMetadata
                 {
-                    AppName = "Tezos Demo Example",
-                    AppUrl = "https://github.com/trilitech/tezos-unity-sdk/tree/main/Samples~",
-                    IconUrl =
+                    Name = "Tezos Demo Example",
+                    Url = "https://github.com/trilitech/tezos-unity-sdk/tree/main/Samples~",
+                    Icon =
                         "https://raw.githubusercontent.com/" +
                         "trilitech/tezos-unity-sdk/main/Samples%7E/Art/UI/Icons/skill_icon_04.png"
                 });

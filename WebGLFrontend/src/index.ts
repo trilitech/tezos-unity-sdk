@@ -13,15 +13,18 @@ let beaconWallet: BeaconWallet;
 function InitWalletProvider(
   networkName: string,
   rpcUrl: string,
-  walletType: WalletType
+  walletType: WalletType,
+  appName: string,
+  appUrl: string,
+  iconUrl: string
 ) {
   if (walletType === WalletType.kukai) {
-    if (!kukaiWallet) kukaiWallet = new KukaiWallet();
+    if (!kukaiWallet) kukaiWallet = new KukaiWallet(appName, appUrl, iconUrl);
     window.WalletProvider = kukaiWallet;
   }
   
   if (walletType === WalletType.beacon) {
-    if (!beaconWallet) beaconWallet = new BeaconWallet();
+    if (!beaconWallet) beaconWallet = new BeaconWallet(appName, appUrl, iconUrl);
     window.WalletProvider = beaconWallet;
   }
 
@@ -51,14 +54,25 @@ async function UnityReadyEvent() {
   const dAppClient: DAppClient = new DAppClient({ name: "Tezos SDK DApp" });
   const beaconActiveAccount: AccountInfo = await dAppClient.getActiveAccount();
 
+  const dappName = localStorage.getItem("dappName");
+  const dappUrl = localStorage.getItem("dappUrl");
+  const iconUrl = localStorage.getItem("iconUrl");
+
   if (beaconActiveAccount) {
-    InitWalletProvider(beaconActiveAccount.network.type, beaconActiveAccount.network.rpcUrl, WalletType.beacon);
+    InitWalletProvider(
+        beaconActiveAccount.network.type,
+        beaconActiveAccount.network.rpcUrl,
+        WalletType.beacon,
+        dappName,
+        dappUrl,
+        iconUrl);
+
     window.WalletProvider.client = dAppClient;
     window.WalletProvider.ConnectAccount();
   } else {
     const networkName = localStorage.getItem("networkName")
     if (networkName) {
-      InitWalletProvider(networkName, "", WalletType.kukai);
+      InitWalletProvider(networkName, "", WalletType.kukai, dappName, dappUrl, iconUrl);
       window.WalletProvider.ConnectAccount();
     }
   }
@@ -72,7 +86,10 @@ declare global {
     InitWalletProvider(
       networkName: string,
       rpcUrl: string,
-      walletType: WalletType
+      walletType: WalletType,
+      appName: string,
+      appUrl: string,
+      iconUrl: string
     ): void;
     InitIpfsUploader(config: IpfsUploaderConfig): void;
     InitBase64Uploader(config: BaseUploaderConfig): void;

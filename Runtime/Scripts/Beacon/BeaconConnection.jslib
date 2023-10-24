@@ -1,9 +1,12 @@
 mergeInto(LibraryManager.library, {
-  JsInitWallet: function (network, rpc, walletProvider) {
+  JsInitWallet: function (network, rpc, walletProvider, appName, appUrl, iconUrl) {
     InitWalletProvider(
         UTF8ToString(network),
         UTF8ToString(rpc),
-        UTF8ToString(walletProvider)
+        UTF8ToString(walletProvider),
+        UTF8ToString(appName),
+        UTF8ToString(appUrl),
+        UTF8ToString(iconUrl)
     );
   },
 

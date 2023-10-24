@@ -7,12 +7,15 @@ import {
 } from "@airgap/beacon-types";
 
 class BeaconWallet extends BaseWallet implements Wallet {
-  clientName: string = "Tezos Unity SDK";
   client: DAppClient | null;
   activeAddress: string | null;
   networkType: NetworkType;
   rpcUrl: string;
   address: string;
+  
+  constructor(appName: string, appUrl: string, iconUrl: string) {
+    super(appName, appUrl, iconUrl);
+  }
 
   SetNetwork(networkName: string, rpcUrl: string) {
     this.networkType =
@@ -23,13 +26,14 @@ class BeaconWallet extends BaseWallet implements Wallet {
   async ConnectAccount() {
     const network: Network = {
       type: this.networkType,
-      name: this.clientName,
       rpcUrl: this.rpcUrl,
     };
     
     if (!this.client) {
       this.client = new DAppClient({
-        name: this.clientName,
+        name: this.dappName,
+        appUrl: this.dappUrl,
+        iconUrl: this.iconUrl,
         network: network,
       });
     }

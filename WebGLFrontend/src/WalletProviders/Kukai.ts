@@ -6,6 +6,10 @@ class KukaiWallet extends BaseWallet implements Wallet {
   client: KukaiEmbed | null;
   networkName: string;
 
+  constructor(appName: string, appUrl: string, iconUrl: string) {
+    super(appName, appUrl, iconUrl);
+  }
+
   SetNetwork(networkName: string, rpcUrl: string) {
     this.networkName = networkName;
     localStorage.setItem("networkName", networkName);

@@ -29,9 +29,9 @@ namespace TezosSDK.Tezos
 
             var dAppMetadata = providedDAppMetadata ?? new DAppMetadata
             {
-                AppName = TezosConfig.Instance.DefaultDAppName,
-                AppUrl = TezosConfig.Instance.DefaultAppUrl,
-                IconUrl = TezosConfig.Instance.DefaultIconUrl
+                Name = TezosConfig.Instance.DefaultDAppName,
+                Url = TezosConfig.Instance.DefaultDAppUrl,
+                Icon = TezosConfig.Instance.DefaultIconUrl
             };
 
             Wallet = new WalletProvider(dAppMetadata);

@@ -10,7 +10,7 @@ namespace TezosSDK.Tezos
         public static TezosConfig Instance => _instance ??= new TezosConfig();
         public NetworkType Network { get; set; } = NetworkType.ghostnet;
         public string DefaultDAppName { get; set; } = "Tezos Unity SDK";
-        public string DefaultAppUrl { get; set; } = "https://tezos.com/unity";
+        public string DefaultDAppUrl { get; set; } = "https://tezos.com/unity";
 
         public string DefaultIconUrl { get; set; } =
             "https://unity.com/sites/default/files/2022-09/unity-tab-small.png";

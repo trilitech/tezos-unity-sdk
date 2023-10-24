@@ -16,7 +16,13 @@ namespace TezosSDK.Beacon
         #region Bridge to external functions
 
         [DllImport("__Internal")]
-        private static extern void JsInitWallet(string network, string rpc, string walletProvider);
+        private static extern void JsInitWallet(
+            string network,
+            string rpc,
+            string walletProvider,
+            string appName,
+            string appUrl,
+            string iconUrl);
 
         [DllImport("__Internal")]
         private static extern void JsConnectAccount();
@@ -49,7 +55,13 @@ namespace TezosSDK.Beacon
             WalletProviderType walletProviderType,
             DAppMetadata dAppMetadata)
         {
-            JsInitWallet(network, rpc, walletProviderType.ToString());
+            JsInitWallet(
+                network,
+                rpc,
+                walletProviderType.ToString(),
+                dAppMetadata.Name,
+                dAppMetadata.Url,
+                dAppMetadata.Icon);
         }
 
         public void OnReady()

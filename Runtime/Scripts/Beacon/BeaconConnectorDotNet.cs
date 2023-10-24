@@ -42,9 +42,9 @@ namespace TezosSDK.Beacon
 
             var options = new BeaconOptions
             {
-                AppName = _dAppMetadata.AppName,
-                AppUrl = _dAppMetadata.AppUrl,
-                IconUrl = _dAppMetadata.IconUrl,
+                AppName = _dAppMetadata.Name,
+                AppUrl = _dAppMetadata.Url,
+                IconUrl = _dAppMetadata.Icon,
                 KnownRelayServers = Constants.KnownRelayServers,
                 DatabaseConnectionString = $"Filename={pathToDb};Connection=direct;Upgrade=true"
             };
