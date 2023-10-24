@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.7] - 2023-10-24
 ### Added
-- Configurable Tezos singleton instance
+- Configurable parameters (`networkType`, `rpcUrl`, `dAppMetadata` and `logLevel`) for Tezos singleton instance.  
 
+### Changed
+- Default RPC node to tezos.marigold.dev
 
 ## [2.0.6] - 2023-10-16
 ### Changed

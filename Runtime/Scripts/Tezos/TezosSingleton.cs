@@ -29,12 +29,25 @@ namespace TezosSDK.Tezos
 
         public static ITezos ConfiguredInstance(
             NetworkType networkType,
+            string rpcUrl = null,
             DAppMetadata dAppMetadata = null,
             Logger.LogLevel logLevel = Logger.LogLevel.Debug)
         {
             Logger.CurrentLogLevel = logLevel;
-            TezosConfig.Instance.Network = networkType;
 
+            if (!string.IsNullOrEmpty(rpcUrl))
+            {
+                TezosConfig.Instance.RpcBaseUrl = rpcUrl;
+            }
+            else if (networkType != TezosConfig.Instance.Network)
+            {
+                TezosConfig.Instance.RpcBaseUrl = TezosConfig
+                    .Instance
+                    .RpcBaseUrl
+                    .Replace(TezosConfig.Instance.Network.ToString(), networkType.ToString());
+            }
+
+            TezosConfig.Instance.Network = networkType;
             _tezos ??= new Tezos(dAppMetadata);
             return Instance;
         }

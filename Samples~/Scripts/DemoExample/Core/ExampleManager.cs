@@ -37,9 +37,10 @@ namespace TezosSDK.Samples.DemoExample
         {
             Tezos = TezosSingleton.ConfiguredInstance(
                 networkType: NetworkType.ghostnet,
+                rpcUrl: "https://rpc.tzkt.io/ghostnet",
                 dAppMetadata: new DAppMetadata
                 {
-                    Name = "Tezos Demo Example",
+                    Name = "Tezos Demo Example Game",
                     Url = "https://github.com/trilitech/tezos-unity-sdk/tree/main/Samples~",
                     Icon =
                         "https://raw.githubusercontent.com/" +
