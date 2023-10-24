@@ -1,5 +1,6 @@
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Forging.Models;
+using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 
 namespace TezosSDK.Beacon
@@ -16,7 +17,12 @@ namespace TezosSDK.Beacon
 		/// <param name="network">Name of the network to connect</param>
 		/// <param name="rpc">Uri of an specific RPC.</param>
 		/// <param name="walletProviderType">Type of wallet, e.g. "beacon" or "kukai"</param>
-		void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType);
+		/// <param name="dAppMetadata">Metadata of SDK consumer DApp</param>
+		void InitWalletProvider(
+			string network,
+			string rpc,
+			WalletProviderType walletProviderType,
+			DAppMetadata dAppMetadata);
 		
 		/// <summary>
 		/// Callback that needed in WebGL to determine that UI is rendered

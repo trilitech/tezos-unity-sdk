@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
-using TezosSDK.Scripts.FileUploaders;
-using TezosSDK.Scripts.IpfsUploader;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -36,7 +35,17 @@ namespace TezosSDK.Samples.DemoExample
 
         public void Init(Action<bool> callback = null)
         {
-            Tezos = TezosSingleton.Instance;
+            Tezos = TezosSingleton.ConfiguredInstance(
+                networkType: NetworkType.ghostnet,
+                dAppMetadata: new DAppMetadata
+                {
+                    AppName = "Tezos Demo Example",
+                    AppUrl = "https://github.com/trilitech/tezos-unity-sdk/tree/main/Samples~",
+                    IconUrl =
+                        "https://raw.githubusercontent.com/" +
+                        "trilitech/tezos-unity-sdk/main/Samples%7E/Art/UI/Icons/skill_icon_04.png"
+                });
+
             _networkRPC = TezosConfig.Instance.RpcBaseUrl;
         }
 

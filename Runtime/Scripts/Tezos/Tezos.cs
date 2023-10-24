@@ -22,14 +22,21 @@ namespace TezosSDK.Tezos
         public IWalletProvider Wallet { get; }
         public IFA2 TokenContract { get; set; }
 
-        public Tezos()
+        public Tezos(DAppMetadata providedDAppMetadata = null)
         {
             var dataProviderConfig = new TzKTProviderConfig();
             API = new TezosAPI(dataProviderConfig);
-            Wallet = new WalletProvider();
+
+            var dAppMetadata = providedDAppMetadata ?? new DAppMetadata
+            {
+                AppName = TezosConfig.Instance.DefaultDAppName,
+                AppUrl = TezosConfig.Instance.DefaultAppUrl,
+                IconUrl = TezosConfig.Instance.DefaultIconUrl
+            };
+
+            Wallet = new WalletProvider(dAppMetadata);
 
             MessageReceiver = Wallet.MessageReceiver;
-            
             MessageReceiver.AccountConnected += _ =>
             {
                 TokenContract = PlayerPrefs.HasKey("CurrentContract:" + Wallet.GetActiveAddress())
@@ -37,18 +44,18 @@ namespace TezosSDK.Tezos
                     : new TokenContract();
             };
         }
-        
+
         public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)
         {
             var address = Wallet.GetActiveAddress();
             return API.GetTezosBalance(callback, address);
         }
-        
+
         public IEnumerator GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback)
         {
             var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash")
                 .text;
-            
+
             return API.GetOriginatedContractsForOwner(
                 callback: callback,
                 creator: Wallet.GetActiveAddress(),

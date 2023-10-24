@@ -8,10 +8,14 @@ namespace TezosSDK.Tezos
 
         // Singleton instance
         public static TezosConfig Instance => _instance ??= new TezosConfig();
-
         public NetworkType Network { get; set; } = NetworkType.ghostnet;
+        public string DefaultDAppName { get; set; } = "Tezos Unity SDK";
+        public string DefaultAppUrl { get; set; } = "https://tezos.com/unity";
 
-        public string RpcBaseUrl => $"https://rpc.{Network}.teztnets.xyz";
+        public string DefaultIconUrl { get; set; } =
+            "https://unity.com/sites/default/files/2022-09/unity-tab-small.png";
+
+        public string RpcBaseUrl => $"https://{Network}.tezos.marigold.dev";
         public int DefaultTimeoutSeconds => 45;
     }
 
