@@ -29,9 +29,10 @@ namespace TezosSDK.Beacon
         private DappBeaconClient BeaconDappClient { get; set; }
         private string _network;
         private string _rpc;
+        private DAppMetadata _dAppMetadata;
 
         #region IBeaconConnector
-
+        
         public async void ConnectAccount()
         {
             if (BeaconDappClient != null) return;
@@ -41,9 +42,9 @@ namespace TezosSDK.Beacon
 
             var options = new BeaconOptions
             {
-                AppName = "Tezos Unity SDK",
-                AppUrl = "https://tezos.com/unity",
-                IconUrl = "https://unity.com/sites/default/files/2022-09/unity-tab-small.png",
+                AppName = _dAppMetadata.Name,
+                AppUrl = _dAppMetadata.Url,
+                IconUrl = _dAppMetadata.Icon,
                 KnownRelayServers = Constants.KnownRelayServers,
                 DatabaseConnectionString = $"Filename={pathToDb};Connection=direct;Upgrade=true"
             };
@@ -92,10 +93,15 @@ namespace TezosSDK.Beacon
             UnityMainThreadDispatcher.Enqueue(_walletMessageReceiver.OnAccountDisconnected, string.Empty);
         }
 
-        public void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType)
+        public void InitWalletProvider(
+            string network,
+            string rpc,
+            WalletProviderType walletProviderType,
+            DAppMetadata dAppMetadata)
         {
             _network = network;
             _rpc = rpc;
+            _dAppMetadata = dAppMetadata;
         }
 
         public void SetWalletMessageReceiver(WalletMessageReceiver messageReceiver)

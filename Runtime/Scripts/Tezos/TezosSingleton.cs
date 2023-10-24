@@ -24,10 +24,32 @@ namespace TezosSDK.Tezos
         protected override void Awake()
         {
             base.Awake();
+            _tezos ??= new Tezos();
+        }
 
-            Logger.CurrentLogLevel = Logger.LogLevel.Debug;
-            TezosConfig.Instance.Network = NetworkType.ghostnet;
-            _tezos = new Tezos();
+        public static ITezos ConfiguredInstance(
+            NetworkType networkType,
+            string rpcUrl = null,
+            DAppMetadata dAppMetadata = null,
+            Logger.LogLevel logLevel = Logger.LogLevel.Debug)
+        {
+            Logger.CurrentLogLevel = logLevel;
+
+            if (!string.IsNullOrEmpty(rpcUrl))
+            {
+                TezosConfig.Instance.RpcBaseUrl = rpcUrl;
+            }
+            else if (networkType != TezosConfig.Instance.Network)
+            {
+                TezosConfig.Instance.RpcBaseUrl = TezosConfig
+                    .Instance
+                    .RpcBaseUrl
+                    .Replace(TezosConfig.Instance.Network.ToString(), networkType.ToString());
+            }
+
+            TezosConfig.Instance.Network = networkType;
+            _tezos ??= new Tezos(dAppMetadata);
+            return Instance;
         }
 
         void OnApplicationQuit()

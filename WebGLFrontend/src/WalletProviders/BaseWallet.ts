@@ -13,6 +13,16 @@ import {
 } from "./Types";
 
 class BaseWallet implements AbstractWallet {
+  dappName: string;
+  dappUrl: string;
+  iconUrl: string;
+
+  constructor(appName: string, appUrl: string, iconUrl: string) {
+    this.dappName = appName;
+    this.dappUrl = appUrl;
+    this.iconUrl = iconUrl;
+  }
+  
   CallUnityOnAccountFailedToConnect(error: Error) {
     this.CallUnityMethod("OnAccountFailedToConnect", error);
   }
@@ -31,10 +41,16 @@ class BaseWallet implements AbstractWallet {
 
   CallUnityOnAccountDisconnected(address: string) {
     this.CallUnityMethod("OnAccountDisconnected", address);
+    localStorage.removeItem("dappName");
+    localStorage.removeItem("dappUrl");
+    localStorage.removeItem("iconUrl");
   }
 
   CallUnityOnAccountConnected(accountInfo: AccountInfo) {
     this.CallUnityMethod("OnAccountConnected", { accountInfo });
+    localStorage.setItem("dappName", this.dappName);
+    localStorage.setItem("dappUrl", this.dappUrl);
+    localStorage.setItem("iconUrl", this.iconUrl);
   }
 
   private CallUnityMethod(methodName: string, value: any) {

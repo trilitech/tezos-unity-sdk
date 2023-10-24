@@ -2,6 +2,7 @@
 
 using System.Runtime.InteropServices;
 using Beacon.Sdk.Beacon.Sign;
+using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 
 namespace TezosSDK.Beacon
@@ -13,9 +14,15 @@ namespace TezosSDK.Beacon
     public class BeaconConnectorWebGl : IBeaconConnector
     {
         #region Bridge to external functions
-        
+
         [DllImport("__Internal")]
-        private static extern void JsInitWallet(string network, string rpc, string walletProvider);
+        private static extern void JsInitWallet(
+            string network,
+            string rpc,
+            string walletProvider,
+            string appName,
+            string appUrl,
+            string iconUrl);
 
         [DllImport("__Internal")]
         private static extern void JsConnectAccount();
@@ -31,20 +38,30 @@ namespace TezosSDK.Beacon
 
         [DllImport("__Internal")]
         private static extern string JsGetActiveAccountAddress();
-        
+
         [DllImport("__Internal")]
         private static extern string JsRequestContractOrigination(string script, string delegateAddress);
-        
+
         [DllImport("__Internal")]
         private static extern string JsUnityReadyEvent();
 
         #endregion
 
         private string _activeAccountAddress;
-        
-        public void InitWalletProvider(string network, string rpc, WalletProviderType walletProviderType)
+
+        public void InitWalletProvider(
+            string network,
+            string rpc,
+            WalletProviderType walletProviderType,
+            DAppMetadata dAppMetadata)
         {
-            JsInitWallet(network, rpc, walletProviderType.ToString());
+            JsInitWallet(
+                network,
+                rpc,
+                walletProviderType.ToString(),
+                dAppMetadata.Name,
+                dAppMetadata.Url,
+                dAppMetadata.Icon);
         }
 
         public void OnReady()
@@ -76,12 +93,12 @@ namespace TezosSDK.Beacon
         {
             JsSendContractCall(destination, amount.ToString(), entryPoint, arg);
         }
-        
+
         public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
         {
             JsSignPayload((int)signingType, payload);
         }
-        
+
         public void RequestContractOrigination(string script, string delegateAddress = null)
         {
             JsRequestContractOrigination(script, delegateAddress);
