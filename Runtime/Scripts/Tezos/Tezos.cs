@@ -35,6 +35,7 @@ namespace TezosSDK.Tezos
             };
 
             Wallet = new WalletProvider(dAppMetadata);
+            Wallet.Connect(WalletProviderType.beacon, false);
 
             MessageReceiver = Wallet.MessageReceiver;
             MessageReceiver.AccountConnected += _ =>

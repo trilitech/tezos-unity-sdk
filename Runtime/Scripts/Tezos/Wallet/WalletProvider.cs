@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
+using Beacon.Sdk.Core.Domain.Entities;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using UnityEngine;
@@ -33,22 +34,6 @@ namespace TezosSDK.Tezos.Wallet
                 ? unityBeacon.GetComponent<WalletMessageReceiver>()
                 : new GameObject("UnityBeacon").AddComponent<WalletMessageReceiver>();
 
-            // Assign the BeaconConnector depending on the platform.
-#if !UNITY_EDITOR && UNITY_WEBGL
-            _beaconConnector = new BeaconConnectorWebGl();
-#else
-            _beaconConnector = new BeaconConnectorDotNet();
-            (_beaconConnector as BeaconConnectorDotNet)?.SetWalletMessageReceiver(MessageReceiver);
-            Connect(WalletProviderType.beacon, withRedirectToWallet: false);
-
-            // todo: maybe call RequestTezosPermission from _beaconConnector?
-            MessageReceiver.PairingCompleted += _ =>
-            {
-                _beaconConnector.RequestTezosPermission(
-                    networkName: TezosConfig.Instance.Network.ToString(),
-                    networkRPC: TezosConfig.Instance.RpcBaseUrl);
-            };
-#endif
             MessageReceiver.HandshakeReceived += handshake => { _handshake = handshake; };
             MessageReceiver.AccountConnected += account =>
             {
@@ -72,28 +57,35 @@ namespace TezosSDK.Tezos.Wallet
                 CoroutineRunner.Instance.StartWrappedCoroutine(
                     new CoroutineWrapper<object>(MessageReceiver.TrackTransaction(transactionHash)));
             };
-        }
-
-        // Below there are some async/wait workarounds and magic numbers, 
-        // we should rewrite the Beacon connector to be coroutine compatible.
-        private IEnumerator OnOpenWallet(bool withRedirectToWallet)
-        {
-            if (string.IsNullOrEmpty(_handshake))
+            // Assign the BeaconConnector depending on the platform.
+#if !UNITY_EDITOR && UNITY_WEBGL
+            _beaconConnector = new BeaconConnectorWebGl();
+#else
+            _beaconConnector = new BeaconConnectorDotNet();
+            MessageReceiver.PairingCompleted += _ =>
             {
-                //No handshake, Waiting for handshake...
-                yield return new WaitForSeconds(2.5f);
-            }
-
-#if UNITY_ANDROID || UNITY_IOS
-            if (withRedirectToWallet){
                 _beaconConnector.RequestTezosPermission(
                     networkName: TezosConfig.Instance.Network.ToString(),
                     networkRPC: TezosConfig.Instance.RpcBaseUrl);
-                yield return new WaitForSeconds(2.5f);
-                if (!string.IsNullOrEmpty(_handshake)){
-                    Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
-                }
-            }
+            };
+            (_beaconConnector as BeaconConnectorDotNet)?.SetWalletMessageReceiver(MessageReceiver);
+#endif
+        }
+
+        private IEnumerator OpenWallet(bool withRedirectToWallet)
+        {
+            yield return new WaitUntilForSeconds(() => !string.IsNullOrEmpty(_handshake), 2.5f);
+
+#if UNITY_ANDROID || UNITY_IOS
+            if (!withRedirectToWallet) yield break;
+#if UNITY_IOS
+            // TODO: improve background peer pairing for iOS, then we can remove this workaround
+            _beaconConnector.RequestTezosPermission(
+                networkName: TezosConfig.Instance.Network.ToString(),
+                networkRPC: TezosConfig.Instance.RpcBaseUrl
+                );
+#endif
+            Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
 #endif
         }
 
@@ -102,16 +94,15 @@ namespace TezosSDK.Tezos.Wallet
             _beaconConnector.OnReady();
         }
 
-        public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
+        public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet = true)
         {
             _beaconConnector.InitWalletProvider(
                 network: TezosConfig.Instance.Network.ToString(),
                 rpc: TezosConfig.Instance.RpcBaseUrl,
                 walletProviderType: walletProvider,
                 dAppMetadata: _dAppMetadata);
-
             _beaconConnector.ConnectAccount();
-            CoroutineRunner.Instance.StartWrappedCoroutine(OnOpenWallet(withRedirectToWallet));
+            CoroutineRunner.Instance.StartWrappedCoroutine(OpenWallet(withRedirectToWallet));
         }
 
         public void Disconnect()
