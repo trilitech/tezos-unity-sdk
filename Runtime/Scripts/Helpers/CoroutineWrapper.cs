@@ -93,40 +93,4 @@ namespace TezosSDK.Helpers
             _targetCoroutine.Reset();
         }
     }
-
-    /// <summary>
-    /// Helper class that will allow to run a coroutine
-    /// </summary>
-    public class CoroutineRunner : MonoBehaviour
-    {
-        private static CoroutineRunner _instance;
-
-        public static CoroutineRunner Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = (new GameObject("CoroutineRunner")).AddComponent<CoroutineRunner>();
-
-                return _instance;
-            }
-        }
-
-        public Coroutine StartWrappedCoroutine(IEnumerator coroutine)
-        {
-            return StartCoroutine(new CoroutineWrapper<object>(coroutine, null,
-                (exception) => Debug.LogError($"Exception on Coroutine: {exception.Message}")));
-        }
-
-        [Obsolete("StartCoroutineWrapper is obsolete and will be replaced by StartWrappedCoroutine in future releases")]
-        public Coroutine StartCoroutineWrapper(IEnumerator coroutine)
-        {
-            return StartWrappedCoroutine(coroutine);
-        }
-
-        private void Awake()
-        {
-            DontDestroyOnLoad(gameObject);
-        }
-    }
 }
