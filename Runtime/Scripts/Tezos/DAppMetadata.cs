@@ -1,20 +1,23 @@
-﻿namespace TezosSDK.Tezos
+﻿using System;
+using UnityEngine;
+
+namespace TezosSDK.Tezos
 {
+    [Serializable]
     public class DAppMetadata
     {
-        /// <summary>
-        /// SDK consumer DApp name.
-        /// </summary>
-        public string Name { get; set; }
-        
-        /// <summary>
-        /// SDK consumer App Url address, starts with https://.
-        /// </summary>
-        public string Url { get; set; }
-        
-        /// <summary>
-        /// SDK consumer Icon Url address, starts with https://.
-        /// </summary>
-        public string Icon { get; set; }
+        public string Name { get; private set; }
+        public string Url { get; private set; }
+        public string Icon { get; private set; }
+        public string Description { get; private set; }
+
+        public DAppMetadata(string name, string url, string icon, string description)
+        {
+            Name = name;
+            Url = url;
+            Icon = icon;
+            Description = description;
+        }
     }
+
 }

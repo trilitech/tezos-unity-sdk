@@ -17,8 +17,8 @@ namespace TezosSDK.Tezos
 		[Tooltip("Logs will be printed to the console if the log level is equal or higher than this value.")]
 		[SerializeField] private Logger.LogLevel logLevel = Logger.LogLevel.Debug;
 
-		public DAppMetadata DAppMetadata { get; private set; } // TODO: this should be a property of Tezos class or WalletProvider class
-		
+		public DAppMetadata DAppMetadata { get; private set; }
+
 		public ITezos Tezos { get; private set; }
 		
 		public IWalletProvider Wallet
@@ -34,22 +34,17 @@ namespace TezosSDK.Tezos
 		protected override void Awake()
 		{
 			base.Awake();
-			Init();
+			InitializeTezos();
 		}
 
-		private void Init()
+		private void InitializeTezos()
 		{
 			Logger.CurrentLogLevel = logLevel;
-
-			DAppMetadata = new DAppMetadata
-			{
-				Name = appName,
-				Url = appUrl,
-				Icon = appIcon
-			};
 			
+			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
 			Tezos = new Tezos(DAppMetadata);
 		}
 	}
+	
 
 }

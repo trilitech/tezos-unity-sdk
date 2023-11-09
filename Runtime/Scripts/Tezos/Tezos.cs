@@ -27,13 +27,11 @@ namespace TezosSDK.Tezos
             var dataProviderConfig = new TzKTProviderConfig();
             API = new TezosAPI(dataProviderConfig);
 
-            var dAppMetadata = providedDAppMetadata ?? new DAppMetadata
-            {
-                Name = TezosConfig.Instance.DefaultDAppName,
-                Url = TezosConfig.Instance.DefaultDAppUrl,
-                Icon = TezosConfig.Instance.DefaultIconUrl
-            };
-
+            var dAppMetadata = providedDAppMetadata ?? new DAppMetadata(TezosConfig.Instance.DefaultDAppName,
+                TezosConfig.Instance.DefaultDAppUrl,
+                TezosConfig.Instance.DefaultIconUrl,
+                TezosConfig.Instance.DefaultDAppDesc);
+            
             Wallet = new WalletProvider(dAppMetadata);
 
             MessageReceiver = Wallet.MessageReceiver;
