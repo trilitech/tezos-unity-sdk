@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using TezosSDK.Tezos;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using ZXing;
 using ZXing.QrCode;

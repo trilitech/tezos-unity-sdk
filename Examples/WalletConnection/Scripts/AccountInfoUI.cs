@@ -1,4 +1,3 @@
-using System;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;

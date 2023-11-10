@@ -1,12 +1,7 @@
-using System;
-using Beacon.Sdk.Beacon.Permission;
 using TezosSDK.Beacon;
 using TezosSDK.DesignPattern.Singleton;
-using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos
