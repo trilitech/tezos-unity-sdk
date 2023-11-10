@@ -22,15 +22,10 @@ namespace TezosSDK.Tezos
         public IWalletProvider Wallet { get; }
         public IFA2 TokenContract { get; set; }
 
-        public Tezos(DAppMetadata providedDAppMetadata = null)
+        public Tezos(DAppMetadata dAppMetadata)
         {
             var dataProviderConfig = new TzKTProviderConfig();
             API = new TezosAPI(dataProviderConfig);
-
-            var dAppMetadata = providedDAppMetadata ?? new DAppMetadata(TezosConfig.Instance.DefaultDAppName,
-                TezosConfig.Instance.DefaultDAppUrl,
-                TezosConfig.Instance.DefaultIconUrl,
-                TezosConfig.Instance.DefaultDAppDesc);
             
             Wallet = new WalletProvider(dAppMetadata);
 
