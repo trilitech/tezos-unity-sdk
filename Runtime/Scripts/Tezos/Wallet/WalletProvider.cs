@@ -19,6 +19,8 @@ namespace TezosSDK.Tezos.Wallet
         private string _signature;
         private string _transactionHash;
 
+        public bool IsConnected { get; private set; }
+
         public WalletProvider(DAppMetadata dAppMetadata)
         {
             _dAppMetadata = dAppMetadata;
@@ -112,11 +114,13 @@ namespace TezosSDK.Tezos.Wallet
 
             _beaconConnector.ConnectAccount();
             CoroutineRunner.Instance.StartWrappedCoroutine(OnOpenWallet(withRedirectToWallet));
+            IsConnected = true;
         }
 
         public void Disconnect()
         {
             _beaconConnector.DisconnectAccount();
+            IsConnected = false;
         }
 
         public string GetActiveAddress()
