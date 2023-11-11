@@ -16,10 +16,10 @@ namespace TezosSDK.View
 
         private bool _isMobile;
 
-        private void Start()
+        void Start()
         {
 #if (UNITY_IOS || UNITY_ANDROID)
-		    _isMobile = true;
+		_isMobile = true;
 #else
             _isMobile = false;
 #endif
@@ -29,19 +29,19 @@ namespace TezosSDK.View
             Tezos.Wallet.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
         }
 
-        private void OnHandshakeReceived(string handshake)
+        void OnHandshakeReceived(string handshake)
         {
             EnableUI(isAuthenticated: false);
             qrCodeView.SetQrCode(handshake);
         }
 
-        private void OnAccountConnected(string result)
+        void OnAccountConnected(string result)
         {
             EnableUI(isAuthenticated: true);
             Debug.Log("OnAccountConnected");
         }
 
-        private void OnAccountDisconnected(string result)
+        void OnAccountDisconnected(string result)
         {
             Debug.Log("OnAccountDisconnected");
         }
@@ -49,15 +49,15 @@ namespace TezosSDK.View
         public void DisconnectWallet()
         {
             EnableUI(isAuthenticated: false);
-            Tezos.Wallet.Disconnect();
+            _tezos.Wallet.Disconnect();
         }
 
         public void ConnectByDeeplink()
         {
-            Tezos.Wallet.Connect(WalletProviderType.beacon);
+            _tezos.Wallet.Connect(WalletProviderType.beacon);
         }
 
-        private void EnableUI(bool isAuthenticated)
+        void EnableUI(bool isAuthenticated)
         {
             if (isAuthenticated)
             {
