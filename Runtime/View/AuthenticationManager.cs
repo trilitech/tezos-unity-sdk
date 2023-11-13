@@ -6,7 +6,8 @@ namespace TezosSDK.View
 {
     public class AuthenticationManager : MonoBehaviour
     {
-        private ITezos _tezos;
+        private ITezos Tezos { get; set; }
+
         [SerializeField] private QRCodeView qrCodeView;
         [SerializeField] private GameObject contentPanel;
         [SerializeField] private GameObject deepLinkButton;
@@ -15,33 +16,38 @@ namespace TezosSDK.View
 
         private bool _isMobile;
 
-        void Start()
+        private void Start()
         {
 #if (UNITY_IOS || UNITY_ANDROID)
-		_isMobile = true;
+		    _isMobile = true;
 #else
             _isMobile = false;
 #endif
-            _tezos = TezosSingleton.Instance;
-
-            _tezos.Wallet.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
-            _tezos.Wallet.MessageReceiver.AccountConnected += OnAccountConnected;
-            _tezos.Wallet.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
         }
 
-        void OnHandshakeReceived(string handshake)
+        public void UseTezos(ITezos tezos)
+        {
+            if (Tezos != null) return;
+
+            Tezos = tezos;
+            Tezos.Wallet.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
+            Tezos.Wallet.MessageReceiver.AccountConnected += OnAccountConnected;
+            Tezos.Wallet.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+        }
+
+        private void OnHandshakeReceived(string handshake)
         {
             EnableUI(isAuthenticated: false);
             qrCodeView.SetQrCode(handshake);
         }
 
-        void OnAccountConnected(string result)
+        private void OnAccountConnected(string result)
         {
             EnableUI(isAuthenticated: true);
             Debug.Log("OnAccountConnected");
         }
 
-        void OnAccountDisconnected(string result)
+        private void OnAccountDisconnected(string result)
         {
             Debug.Log("OnAccountDisconnected");
         }
@@ -49,15 +55,15 @@ namespace TezosSDK.View
         public void DisconnectWallet()
         {
             EnableUI(isAuthenticated: false);
-            _tezos.Wallet.Disconnect();
+            Tezos.Wallet.Disconnect();
         }
 
         public void ConnectByDeeplink()
         {
-            _tezos.Wallet.Connect(WalletProviderType.beacon);
+            Tezos.Wallet.Connect(WalletProviderType.beacon);
         }
 
-        void EnableUI(bool isAuthenticated)
+        private void EnableUI(bool isAuthenticated)
         {
             if (isAuthenticated)
             {

@@ -1,25 +1,16 @@
 using TezosSDK.Beacon;
 using TezosSDK.DesignPattern.Singleton;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.View;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos
 {
-	
-	// [Serializable]
-	// public class TezosManagerConfig
-	// {
-	// 	public NetworkType Network = NetworkType.ghostnet;
-	// 	public string DefaultDAppName = "Tezos Unity SDK";
-	// 	public string DefaultDAppUrl = "https://tezos.com/unity";
-	// 	public string DefaultIconUrl = "https://unity.com/sites/default/files/2022-09/unity-tab-small.png";
-	// 	public string RpcBaseUrl = $"https://{NetworkType.ghostnet.ToString()}.tezos.marigold.dev";
-	// 	public int DefaultTimeoutSeconds = 45;
-	// }
-
 	public class TezosManager : SingletonMonoBehaviour<TezosManager>
 	{
+		[SerializeField] private AuthenticationManager authManager;
+		
 		[Header("App Configurations")]
 		[SerializeField] private string appName = "Default App Name";
 		[SerializeField] private string appUrl = "https://tezos.com";
@@ -61,6 +52,7 @@ namespace TezosSDK.Tezos
 			};
 			
 			Tezos = new Tezos(DAppMetadata);
+			authManager.UseTezos(Tezos);
 		}
 	}
 
