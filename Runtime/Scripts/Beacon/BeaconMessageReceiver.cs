@@ -9,12 +9,27 @@ using Logger = TezosSDK.Helpers.Logger;
 namespace TezosSDK.Beacon
 {
     /// <summary>
-    /// Receives external messages
+    /// Handles wallet-related events, providing a way to subscribe to different wallet actions.
     /// </summary>
     public class WalletMessageReceiver : MonoBehaviour
     {
-        private Action<string> _accountConnected;
+        // Events are only added if they are not already in the invocation list.
+        // Each event corresponds to a specific wallet action and returns a string result.
 
+        private Action<string> _accountConnected;
+        private Action<string> _accountConnectionFailed;
+        private Action<string> _accountDisconnected;
+        private Action<string> _contractCallCompleted;
+        private Action<string> _contractCallInjected;
+        private Action<string> _contractCallFailed;
+        private Action<string> _payloadSigned;
+        private Action<string> _handshakeReceived;
+        private Action<string> _pairingCompleted;
+
+        /// <summary>
+        /// Triggered when an account is successfully connected.
+        /// The returned string contains JSON-formatted account information.
+        /// </summary>
         public event Action<string> AccountConnected
         {
             add
@@ -25,8 +40,10 @@ namespace TezosSDK.Beacon
             remove => _accountConnected -= value;
         }
 
-        private Action<string> _accountConnectionFailed;
-
+        /// <summary>
+        /// Triggered when an account connection attempt fails.
+        /// The returned string contains JSON-formatted account information.
+        /// </summary>
         public event Action<string> AccountConnectionFailed
         {
             add
@@ -37,8 +54,10 @@ namespace TezosSDK.Beacon
             remove => _accountConnectionFailed -= value;
         }
 
-        private Action<string> _accountDisconnected;
-
+        /// <summary>
+        /// Triggered when an account is disconnected.
+        /// The returned string is empty. TODO: Add JSON-formatted account information as return string.
+        /// </summary>
         public event Action<string> AccountDisconnected
         {
             add
@@ -49,8 +68,10 @@ namespace TezosSDK.Beacon
             remove => _accountDisconnected -= value;
         }
 
-        private Action<string> _contractCallCompleted;
-
+        /// <summary>
+        /// Triggered when a contract call is completed.
+        /// The returned string is a JSON-formatted object of type ContractCallInjectionResult
+        /// </summary>
         public event Action<string> ContractCallCompleted
         {
             add
@@ -61,8 +82,11 @@ namespace TezosSDK.Beacon
             remove => _contractCallCompleted -= value;
         }
 
-        private Action<string> _contractCallInjected;
 
+        /// <summary>
+        /// Triggered when a contract call is injected into the blockchain.
+        /// The returned string is a JSON-formatted object of type ContractCallInjectionResult
+        /// </summary>
         public event Action<string> ContractCallInjected
         {
             add
@@ -73,8 +97,12 @@ namespace TezosSDK.Beacon
             remove => _contractCallInjected -= value;
         }
 
-        private Action<string> _contractCallFailed;
 
+        /// <summary>
+        /// Triggered when a contract call fails.
+        /// The returned string is a JSON-formatted object of type ContractCallInjectionResult
+        /// TODO: "result is error or empty" - please clarify the error type and format and if empty on success
+        /// </summary>
         public event Action<string> ContractCallFailed
         {
             add
@@ -85,8 +113,10 @@ namespace TezosSDK.Beacon
             remove => _contractCallFailed -= value;
         }
 
-        private Action<string> _payloadSigned;
-
+        /// <summary>
+        /// Triggered when a payload is signed.
+        /// The returned string is a JSON string of the payload signing result.
+        /// </summary>
         public event Action<string> PayloadSigned
         {
             add
@@ -97,8 +127,11 @@ namespace TezosSDK.Beacon
             remove => _payloadSigned -= value;
         }
 
-        private Action<string> _handshakeReceived;
-
+        /// <summary>
+        /// Triggered when a handshake is received.
+        /// The returned string is a serialized summary of the pairing request,
+        /// including app details like name, relay servers, and URLs.
+        /// </summary>
         public event Action<string> HandshakeReceived
         {
             add
@@ -109,8 +142,11 @@ namespace TezosSDK.Beacon
             remove => _handshakeReceived -= value;
         }
 
-        private Action<string> _pairingCompleted;
-
+        /// <summary>
+        /// Invoked when the pairing process with a DApp is successfully completed.
+        /// The returned string is a JSON-formatted object containing key details about the pairing, 
+        /// including the DApp's name, URL, the network type, RPC URL, and the timestamp of the pairing completion.
+        /// </summary>
         public event Action<string> PairingCompleted
         {
             add

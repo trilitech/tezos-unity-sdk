@@ -236,7 +236,16 @@ namespace TezosSDK.Beacon
         {
             if (e.PairingDone)
             {
-                _walletMessageReceiver.OnPairingCompleted("paired");
+                var pairingInfo = new JObject
+                {
+                    ["appName"] = _dAppMetadata.Name,
+                    ["appUrl"] = _dAppMetadata.Url,
+                    ["network"] = _network,
+                    ["rpcUrl"] = _rpc,
+                    ["timestamp"] = DateTime.UtcNow.ToString("o") // ISO 8601 format (YYYY-MM-DDThh:mm:ss.sss)
+                }.ToString();
+
+                _walletMessageReceiver.OnPairingCompleted(pairingInfo);
                 return;
             }
 
