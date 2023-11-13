@@ -146,6 +146,7 @@ namespace TezosSDK.Beacon
         /// Invoked when the pairing process with a DApp is successfully completed.
         /// The returned string is a JSON-formatted object containing key details about the pairing, 
         /// including the DApp's name, URL, the network type, RPC URL, and the timestamp of the pairing completion.
+        /// TODO: If not called from WebGL and if it will stay that way, warn users?
         /// </summary>
         public event Action<string> PairingCompleted
         {
