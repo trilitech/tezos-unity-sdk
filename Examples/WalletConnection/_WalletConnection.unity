@@ -2316,6 +2316,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TezosManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7709730176731183433, guid: 05a6ebf6c729446cc8458943256b9209, type: 3}
+      propertyPath: authManager
+      value: 
+      objectReference: {fileID: 3713326636857166855, guid: 95be21708b9eb431e99da6aa7b6d7c60, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

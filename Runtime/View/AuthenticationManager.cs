@@ -23,13 +23,7 @@ namespace TezosSDK.View
 #else
             _isMobile = false;
 #endif
-        }
-
-        public void UseTezos(ITezos tezos)
-        {
-            if (Tezos != null) return;
-
-            Tezos = tezos;
+            Tezos = TezosManager.Instance.Tezos;
             Tezos.Wallet.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
             Tezos.Wallet.MessageReceiver.AccountConnected += OnAccountConnected;
             Tezos.Wallet.MessageReceiver.AccountDisconnected += OnAccountDisconnected;

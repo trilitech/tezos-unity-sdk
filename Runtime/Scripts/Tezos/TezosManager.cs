@@ -1,7 +1,6 @@
 using TezosSDK.Beacon;
 using TezosSDK.DesignPattern.Singleton;
 using TezosSDK.Tezos.Wallet;
-using TezosSDK.View;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -9,8 +8,6 @@ namespace TezosSDK.Tezos
 {
 	public class TezosManager : SingletonMonoBehaviour<TezosManager>
 	{
-		[SerializeField] private AuthenticationManager authManager;
-		
 		[Header("App Configurations")]
 		[SerializeField] private string appName = "Default App Name";
 		[SerializeField] private string appUrl = "https://tezos.com";
@@ -52,7 +49,6 @@ namespace TezosSDK.Tezos
 			};
 			
 			Tezos = new Tezos(DAppMetadata);
-			authManager.UseTezos(Tezos);
 		}
 	}
 
