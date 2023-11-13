@@ -67,7 +67,7 @@ namespace TezosSDK.Beacon
                     $"We have active peer {activeAccountPermissions.AppMetadata.Name} with permissions {permissionsString}");
 
                 UnityMainThreadDispatcher.Enqueue(
-                    _walletMessageReceiver.OnAccountConnected,
+                    _walletMessageReceiver.TriggerAccountConnected,
                     new JObject
                     {
                         ["accountInfo"] = new JObject
@@ -79,7 +79,7 @@ namespace TezosSDK.Beacon
             }
             else
             {
-                _walletMessageReceiver.OnHandshakeReceived(BeaconDappClient.GetPairingRequestInfo());
+                _walletMessageReceiver.TriggerHandshakeReceived(BeaconDappClient.GetPairingRequestInfo());
             }
         }
 
@@ -89,8 +89,8 @@ namespace TezosSDK.Beacon
         {
             BeaconDappClient.RemoveActiveAccounts();
             var pairingRequestQrData = BeaconDappClient.GetPairingRequestInfo();
-            _walletMessageReceiver.OnHandshakeReceived(pairingRequestQrData);
-            UnityMainThreadDispatcher.Enqueue(_walletMessageReceiver.OnAccountDisconnected, string.Empty);
+            _walletMessageReceiver.TriggerHandshakeReceived(pairingRequestQrData);
+            UnityMainThreadDispatcher.Enqueue(_walletMessageReceiver.TriggerAccountDisconnected, string.Empty);
         }
 
         public void InitWalletProvider(
@@ -245,7 +245,7 @@ namespace TezosSDK.Beacon
                     ["timestamp"] = DateTime.UtcNow.ToString("o") // ISO 8601 format (YYYY-MM-DDThh:mm:ss.sss)
                 }.ToString();
 
-                _walletMessageReceiver.OnPairingCompleted(pairingInfo);
+                _walletMessageReceiver.TriggerPairingCompleted(pairingInfo);
                 return;
             }
 
@@ -263,7 +263,7 @@ namespace TezosSDK.Beacon
                         $"{BeaconDappClient.AppName} received permissions {permissionsString} from {permissionResponse.AppMetadata.Name} with public key {permissionResponse.PublicKey}");
 
                     UnityMainThreadDispatcher.Enqueue(
-                        _walletMessageReceiver.OnAccountConnected, //permissionResponse.PublicKey);
+                        _walletMessageReceiver.TriggerAccountConnected, //permissionResponse.PublicKey);
                         new JObject
                         {
                             ["accountInfo"] = new JObject
@@ -282,7 +282,7 @@ namespace TezosSDK.Beacon
                         return;
 
                     UnityMainThreadDispatcher.Enqueue(
-                        _walletMessageReceiver.OnContractCallInjected,
+                        _walletMessageReceiver.TriggerContractCallInjected,
                         new JObject
                         {
                             ["transactionHash"] = operationResponse.TransactionHash,
@@ -303,7 +303,7 @@ namespace TezosSDK.Beacon
                         .TryReadBySenderIdAsync(signPayloadResponse.SenderId);
                     if (senderPermissions == null) return;
 
-                    _walletMessageReceiver.OnPayloadSigned( //signPayloadResponse.Signature);
+                    _walletMessageReceiver.TriggerPayloadSigned( //signPayloadResponse.Signature);
                         new JObject
                         {
                             ["signature"] = signPayloadResponse.Signature

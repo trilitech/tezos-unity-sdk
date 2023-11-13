@@ -70,7 +70,7 @@ namespace TezosSDK.Beacon
 
         /// <summary>
         /// Triggered when a contract call is completed.
-        /// The returned string is a JSON-formatted object of type ContractCallInjectionResult
+        /// The returned string is a JSON object containing the transaction hash and a success status.
         /// </summary>
         public event Action<string> ContractCallCompleted
         {
@@ -85,7 +85,7 @@ namespace TezosSDK.Beacon
 
         /// <summary>
         /// Triggered when a contract call is injected into the blockchain.
-        /// The returned string is a JSON-formatted object of type ContractCallInjectionResult
+        /// The returned string is a JSON object containing the transaction hash and a success status.
         /// </summary>
         public event Action<string> ContractCallInjected
         {
@@ -158,34 +158,34 @@ namespace TezosSDK.Beacon
         }
 
 
-        public void OnAccountConnected(string address)
+        public void TriggerAccountConnected(string address)
         {
             // result is the json permission response
             Logger.LogDebug("From unity, OnAccountConnected: " + address);
             _accountConnected?.Invoke(address);
         }
 
-        public void OnAccountFailedToConnect(string result)
+        public void TriggerAccountFailedToConnect(string result)
         {
             // result is the json error
             Logger.LogDebug("From unity, OnAccountFailedToConnect: " + result);
             _accountConnectionFailed?.Invoke(result);
         }
 
-        public void OnAccountDisconnected(string result)
+        public void TriggerAccountDisconnected(string result)
         {
             Logger.LogDebug("From unity, OnAccountDisconnect: " + result);
             _accountDisconnected?.Invoke(result);
         }
 
-        public void OnContractCallCompleted(string result)
+        public void TriggerContractCallCompleted(string result)
         {
             // result is the json of transaction response
             Logger.LogDebug("From unity, OnContractCallCompleted: " + result);
             _contractCallCompleted?.Invoke(result);
         }
 
-        public void OnContractCallInjected(string result)
+        public void TriggerContractCallInjected(string result)
         {
             // result is the json of transaction response
             Logger.LogDebug("From unity, OnContractCallInjected: " + result);
@@ -235,28 +235,28 @@ namespace TezosSDK.Beacon
             _contractCallCompleted?.Invoke(JsonUtility.ToJson(result));
         }
 
-        public void OnContractCallFailed(string result)
+        public void TriggerContractCallFailed(string result)
         {
             // result is error or empty
             Logger.LogDebug("From unity, OnContractCallFailed: " + result);
             _contractCallFailed?.Invoke(result);
         }
 
-        public void OnPayloadSigned(string signature)
+        public void TriggerPayloadSigned(string signature)
         {
             // result is the json string of payload signing result
             Logger.LogDebug("From unity, OnPayloadSigned: " + signature);
             _payloadSigned?.Invoke(signature);
         }
 
-        public void OnHandshakeReceived(string handshake)
+        public void TriggerHandshakeReceived(string handshake)
         {
             // result is serialized p2p pairing request
             Logger.LogDebug("From unity, OnHandshakeReceived: " + handshake);
             _handshakeReceived?.Invoke(handshake);
         }
 
-        public void OnPairingCompleted(string message)
+        public void TriggerPairingCompleted(string message)
         {
             Logger.LogDebug("From unity, OnPairingCompleted: " + message);
             _pairingCompleted?.Invoke(message);
