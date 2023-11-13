@@ -28,5 +28,4 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			addressText.text = TezosManager.Instance.Wallet.GetActiveAddress();
 		}
 	}
-
 }

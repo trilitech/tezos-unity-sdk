@@ -178,8 +178,9 @@ namespace TezosSDK.Beacon
             while (!success && Time.time - timestamp < timeout)
             {
                 Logger.LogDebug($"Checking tx status: {transactionHash}");
-                yield return TezosSingleton
+                yield return TezosManager
                     .Instance
+                    .Tezos
                     .API
                     .GetOperationStatus(result =>
                     {
