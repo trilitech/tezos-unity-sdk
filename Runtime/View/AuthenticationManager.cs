@@ -49,12 +49,12 @@ namespace TezosSDK.View
         public void DisconnectWallet()
         {
             EnableUI(isAuthenticated: false);
-            _tezos.Wallet.Disconnect();
+            Tezos.Wallet.Disconnect();
         }
 
         public void ConnectByDeeplink()
         {
-            _tezos.Wallet.Connect(WalletProviderType.beacon);
+            Tezos.Wallet.Connect(WalletProviderType.beacon);
         }
 
         void EnableUI(bool isAuthenticated)
