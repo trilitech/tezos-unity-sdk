@@ -3,11 +3,11 @@ using TezosSDK.Tezos;
 using UnityEditor;
 using UnityEngine;
 
-namespace TezosSDK.Examples
+namespace TezosSDK.Editor
 {
 
 	[CustomEditor(typeof(TezosManager))]
-	public class TezosManagerEditor : Editor
+	public class TezosManagerEditor : UnityEditor.Editor
 	{
 		private Texture2D logo;
 
