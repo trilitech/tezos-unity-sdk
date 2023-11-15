@@ -5,6 +5,7 @@ using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos.Wallet
 {
@@ -68,9 +69,47 @@ namespace TezosSDK.Tezos.Wallet
                 var transactionHash = transaction.TransactionHash;
 
                 CoroutineRunner.Instance.StartWrappedCoroutine(
-                    new CoroutineWrapper<object>(EventManager.TrackTransaction(transactionHash)));
+                    new CoroutineWrapper<object>(TrackTransaction(transactionHash)));
             };
         }
+
+        // TODO: Find a better place for this, used to be in WalletMessageReceiver
+        private IEnumerator TrackTransaction(string transactionHash)
+        {
+            var success = false;
+            const float timeout = 30f; // seconds
+            var timestamp = Time.time;
+
+            // keep making requests until time out or success
+            while (!success && Time.time - timestamp < timeout)
+            {
+                Logger.LogDebug($"Checking tx status: {transactionHash}");
+
+                yield return TezosManager.Instance.Tezos.API.GetOperationStatus(result =>
+                {
+                    if (result != null)
+                    {
+                        success = JsonSerializer.Deserialize<bool>(result);
+                    }
+                }, transactionHash);
+
+                yield return new WaitForSecondsRealtime(3);
+            }
+
+            var operationResult = new OperationResult
+            {
+                TransactionHash = transactionHash
+            };
+
+            var eventData = new UnifiedEvent
+            {
+                EventType = "ContractCallCompleted",
+                Data = JsonUtility.ToJson(operationResult)
+            };
+
+            EventManager.HandleEvent(JsonUtility.ToJson(eventData));
+        }
+
 
         // Below there are some async/wait workarounds and magic numbers, 
         // we should rewrite the Beacon connector to be coroutine compatible.

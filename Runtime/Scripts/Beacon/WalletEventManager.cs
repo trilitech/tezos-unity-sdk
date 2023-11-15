@@ -258,42 +258,7 @@ namespace TezosSDK.Beacon
 			}
 		}
 
-		public IEnumerator TrackTransaction(string transactionHash)
-		{
-			var success = false;
-			const float timeout = 30f; // seconds
-			var timestamp = Time.time;
-
-			// keep making requests until time out or success
-			while (!success && Time.time - timestamp < timeout)
-			{
-				Logger.LogDebug($"Checking tx status: {transactionHash}");
-
-				yield return TezosManager.Instance.Tezos.API.GetOperationStatus(result =>
-				{
-					if (result != null)
-					{
-						success = JsonSerializer.Deserialize<bool>(result);
-					}
-				}, transactionHash);
-
-				yield return new WaitForSecondsRealtime(3);
-			}
-
-			var operationResult = new OperationResult
-			{
-				TransactionHash = transactionHash
-			};
-
-			var eventData = new UnifiedEvent
-			{
-				EventType = "ContractCallCompleted",
-				Data = JsonUtility.ToJson(operationResult)
-			};
-
-			HandleEvent(JsonUtility.ToJson(eventData));
-		}
-
+		
 		private void HandleAccountConnected(string data)
 		{
 			var accountInfo = JsonUtility.FromJson<AccountInfo>(data);
