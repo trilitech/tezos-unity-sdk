@@ -274,7 +274,7 @@ namespace TezosSDK.Beacon
 		{
 			if (e.PairingDone)
 			{
-				var pairingDoneData = new WalletEventManager.PairingDoneData
+				var pairingDoneData = new PairingDoneData
 				{
 					DAppPublicKey = BeaconDappClient.GetActiveAccount()?.PublicKey,
 					Timestamp = DateTime.UtcNow.ToString("o") // ISO 8601 format
@@ -338,7 +338,6 @@ namespace TezosSDK.Beacon
 					var operationResult = new OperationResult
 					{
 						TransactionHash = operationResponse.TransactionHash,
-						IsSuccessful = true
 					};
 
 					var eventData = new UnifiedEvent
