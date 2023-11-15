@@ -1,3 +1,4 @@
+using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using UnityEngine;
 
@@ -19,12 +20,12 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			
 		}
 
-		private void OnAccountDisconnected(string obj)
+		private void OnAccountDisconnected(AccountInfo account_info)
 		{
 			gameObject.SetActive(false);
 		}
 
-		private void OnAccountConnected(string obj)
+		private void OnAccountConnected(AccountInfo account_info)
 		{
 			gameObject.SetActive(true);
 		}

@@ -17,7 +17,7 @@ namespace TezosSDK.Tezos
     /// </summary>
     public class Tezos : ITezos
     {
-        public WalletMessageReceiver MessageReceiver { get; }
+        public WalletEventManager EventManager { get; }
         public ITezosAPI API { get; }
         public IWalletProvider Wallet { get; }
         public IFA2 TokenContract { get; set; }
@@ -29,8 +29,8 @@ namespace TezosSDK.Tezos
             
             Wallet = new WalletProvider(dAppMetadata);
 
-            MessageReceiver = Wallet.MessageReceiver;
-            MessageReceiver.AccountConnected += _ =>
+            EventManager = Wallet.EventManager;
+            EventManager.AccountConnected += _ =>
             {
                 TokenContract = PlayerPrefs.HasKey("CurrentContract:" + Wallet.GetActiveAddress())
                     ? new TokenContract(PlayerPrefs.GetString("CurrentContract:" + Wallet.GetActiveAddress()))

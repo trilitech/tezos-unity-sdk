@@ -5,6 +5,7 @@ using System.Text.Json;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using Newtonsoft.Json.Linq;
+using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -76,7 +77,7 @@ namespace TezosSDK.Tezos.API.Models
                     .ToJson();
 
                 _wallet
-                    .MessageReceiver
+                    .EventManager
                     .ContractCallCompleted += MintCompleted;
 
                 _wallet.CallContract(
@@ -86,7 +87,7 @@ namespace TezosSDK.Tezos.API.Models
             }
         }
 
-        private void MintCompleted(string response)
+        private void MintCompleted(OperationResult operation_result)
         {
             var owner = _wallet.GetActiveAddress();
 
@@ -133,7 +134,7 @@ namespace TezosSDK.Tezos.API.Models
                 }).ToJson();
 
             _wallet
-                .MessageReceiver
+                .EventManager
                 .ContractCallCompleted += TransferCompleted;
 
             _wallet.CallContract(
@@ -142,13 +143,9 @@ namespace TezosSDK.Tezos.API.Models
                 input: param);
         }
 
-        private void TransferCompleted(string response)
+        private void TransferCompleted(OperationResult operation_result)
         {
-            var transactionHash = JsonSerializer
-                .Deserialize<JsonElement>(response)
-                .GetProperty("transactionHash")
-                .ToString();
-
+            var transactionHash = operation_result.TransactionHash;
             _onTransferCompleted.Invoke(transactionHash);
         }
 
@@ -161,13 +158,13 @@ namespace TezosSDK.Tezos.API.Models
             var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
             _wallet
-                .MessageReceiver
+                .EventManager
                 .ContractCallCompleted += DeployCompleted;
 
             _wallet.OriginateContract(scriptWithAdmin);
         }
 
-        private void DeployCompleted(string response)
+        private void DeployCompleted(OperationResult operation_result)
         {
             var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
             var creator = _wallet.GetActiveAddress();

@@ -1,4 +1,5 @@
 using System;
+using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,29 +24,29 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			TezosManager.Instance.MessageReceiver.AccountConnectionFailed += OnAccountConnectionFailed;
 		}
 
-		private void OnAccountDisconnected(string obj)
+		private void OnAccountDisconnected(AccountInfo account_info)
 		{
 			gameObject.SetActive(true);
 		}
 
-		private void OnAccountConnectionFailed(string message)
+		private void OnAccountConnectionFailed(ErrorInfo error_info)
 		{
 			throw new Exception("Account connection failed!");
 		}
 
-		private void OnAccountConnected(string message)
+		private void OnAccountConnected(AccountInfo account_info)
 		{
 			gameObject.SetActive(false);
 		}
 
-		private void SetQrCode(string handshake)
+		private void SetQrCode(HandshakeData handshake_data)
 		{
 			if (encoded)
 			{
 				return;
 			}
 
-			var uri = "tezos://?type=tzip10&data=" + handshake;
+			var uri = "tezos://?type=tzip10&data=" + handshake_data.PairingData;
 			EncodeTextToQrCode(uri);
 		}
 

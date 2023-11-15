@@ -1,3 +1,4 @@
+using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
@@ -16,12 +17,12 @@ namespace TezosSDK.Contract.Scripts
             addressText.text = NotConnectedText;
         }
 
-        private void OnAccountDisconnected(string obj)
+        private void OnAccountDisconnected(AccountInfo account_info)
         {
             addressText.text = NotConnectedText;
         }
 
-        private void OnAccountConnected(string obj)
+        private void OnAccountConnected(AccountInfo account_info)
         {
             addressText.text = TezosManager
                 .Instance

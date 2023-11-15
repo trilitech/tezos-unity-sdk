@@ -26,9 +26,9 @@ namespace TezosSDK.Tezos
 			get => Tezos?.Wallet;
 		}
 
-		public WalletMessageReceiver MessageReceiver
+		public WalletEventManager MessageReceiver
 		{
-			get => Wallet?.MessageReceiver;
+			get => Wallet?.EventManager;
 		}
 
 		protected override void Awake()

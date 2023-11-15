@@ -10,7 +10,7 @@ namespace TezosSDK.Tezos.Wallet
 {
     public class WalletProvider : IWalletProvider, IDisposable
     {
-        public WalletMessageReceiver MessageReceiver { get; private set; }
+        public WalletEventManager EventManager { get; private set; }
         private IBeaconConnector _beaconConnector;
         private DAppMetadata _dAppMetadata;
 
@@ -30,49 +30,45 @@ namespace TezosSDK.Tezos.Wallet
         private void InitBeaconConnector()
         {
             // Create or get a WalletMessageReceiver Game object to receive callback messages
-            var unityBeacon = GameObject.Find("UnityBeacon");
-            MessageReceiver = unityBeacon != null
-                ? unityBeacon.GetComponent<WalletMessageReceiver>()
-                : new GameObject("UnityBeacon").AddComponent<WalletMessageReceiver>();
+            var event_manager = GameObject.Find("WalletEventManager");
+            EventManager = event_manager != null
+                ? event_manager.GetComponent<WalletEventManager>()
+                : new GameObject("WalletEventManager").AddComponent<WalletEventManager>();
 
             // Assign the BeaconConnector depending on the platform.
 #if !UNITY_EDITOR && UNITY_WEBGL
             _beaconConnector = new BeaconConnectorWebGl();
 #else
             _beaconConnector = new BeaconConnectorDotNet();
-            (_beaconConnector as BeaconConnectorDotNet)?.SetWalletMessageReceiver(MessageReceiver);
+            (_beaconConnector as BeaconConnectorDotNet)?.SetWalletMessageReceiver(EventManager);
             Connect(WalletProviderType.beacon, withRedirectToWallet: false);
 
             // todo: maybe call RequestTezosPermission from _beaconConnector?
-            MessageReceiver.PairingCompleted += _ =>
+            EventManager.PairingCompleted += _ =>
             {
                 _beaconConnector.RequestTezosPermission(
                     networkName: TezosConfig.Instance.Network.ToString(),
                     networkRPC: TezosConfig.Instance.RpcBaseUrl);
             };
 #endif
-            MessageReceiver.HandshakeReceived += handshake => { _handshake = handshake; };
-            MessageReceiver.AccountConnected += account =>
+            EventManager.HandshakeReceived += handshake => { _handshake = handshake.PairingData; };
+            
+            EventManager.AccountConnected += account =>
             {
-                var json = JsonSerializer.Deserialize<JsonElement>(account);
-                if (!json.TryGetProperty("accountInfo", out json)) return;
-
-                _pubKey = json.GetProperty("publicKey").GetString();
+                _pubKey = account.PublicKey;
             };
-            MessageReceiver.PayloadSigned += payload =>
+            
+            EventManager.PayloadSigned += payload =>
             {
-                var json = JsonSerializer.Deserialize<JsonElement>(payload);
-                var signature = json.GetProperty("signature").GetString();
-
-                _signature = signature;
+                _signature = payload.Signature;
             };
-            MessageReceiver.ContractCallInjected += transaction =>
+            
+            EventManager.ContractCallInjected += transaction =>
             {
-                var json = JsonSerializer.Deserialize<JsonElement>(transaction);
-                var transactionHash = json.GetProperty("transactionHash").GetString();
+                var transactionHash = transaction.TransactionHash;
 
                 CoroutineRunner.Instance.StartWrappedCoroutine(
-                    new CoroutineWrapper<object>(MessageReceiver.TrackTransaction(transactionHash)));
+                    new CoroutineWrapper<object>(EventManager.TrackTransaction(transactionHash)));
             };
         }
 

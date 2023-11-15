@@ -1,3 +1,4 @@
+using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
@@ -24,24 +25,24 @@ namespace TezosSDK.View
             _isMobile = false;
 #endif
             Tezos = TezosManager.Instance.Tezos;
-            Tezos.Wallet.MessageReceiver.HandshakeReceived += OnHandshakeReceived;
-            Tezos.Wallet.MessageReceiver.AccountConnected += OnAccountConnected;
-            Tezos.Wallet.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+            Tezos.Wallet.EventManager.HandshakeReceived += OnHandshakeReceived;
+            Tezos.Wallet.EventManager.AccountConnected += OnAccountConnected;
+            Tezos.Wallet.EventManager.AccountDisconnected += OnAccountDisconnected;
         }
 
-        void OnHandshakeReceived(string handshake)
+        void OnHandshakeReceived(HandshakeData handshake_data)
         {
             EnableUI(isAuthenticated: false);
-            qrCodeView.SetQrCode(handshake);
+            qrCodeView.SetQrCode(handshake_data.PairingData);
         }
 
-        void OnAccountConnected(string result)
+        void OnAccountConnected(AccountInfo account_info)
         {
             EnableUI(isAuthenticated: true);
             Debug.Log("OnAccountConnected");
         }
 
-        void OnAccountDisconnected(string result)
+        void OnAccountDisconnected(AccountInfo account_info)
         {
             Debug.Log("OnAccountDisconnected");
         }

@@ -8,7 +8,7 @@ namespace TezosSDK.Tezos.Wallet
         /// <summary>
         /// Exposes a MonoBehaviour class that exposes wallet events
         /// </summary>
-        WalletMessageReceiver MessageReceiver { get; }
+        WalletEventManager EventManager { get; }
         
         /// <summary>
         /// Callback that needed in WebGL to determine that UI is rendered
