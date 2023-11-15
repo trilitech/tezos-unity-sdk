@@ -73,17 +73,21 @@ namespace TezosSDK.Beacon
 				Logger.LogInfo(
 					$"We have active peer {activeAccountPermissions.AppMetadata.Name} with permissions {permissionsString}");
 
-				var handshake = new HandshakeData
+				
+				var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
+
+				var accountInfo = new AccountInfo
 				{
-					PairingData = BeaconDappClient.GetPairingRequestInfo()
+					Address = pubKey.Address,
+					PublicKey = activeAccountPermissions.PublicKey
 				};
-        
+
 				var eventData = new UnifiedEvent
 				{
-					EventType = "HandshakeReceived",
-					Data = JsonUtility.ToJson(handshake)
+					EventType = "AccountConnected", // Assuming 'AccountConnected' is the right event type for a permission response
+					Data = JsonUtility.ToJson(accountInfo)
 				};
-        
+
 				UnityMainThreadDispatcher.Enqueue(() => 
 					_eventManager.HandleEvent(JsonUtility.ToJson(eventData))
 				);
@@ -284,6 +288,7 @@ namespace TezosSDK.Beacon
 
 				// Trigger the event through the HandleEvent method on the event manager
 				_eventManager.HandleEvent(JsonUtility.ToJson(pairingDoneEvent));
+				return;
 			}
 
 			var message = e.Request;
