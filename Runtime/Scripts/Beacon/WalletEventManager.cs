@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Linq;
-using System.Text.Json;
-using TezosSDK.Tezos;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -15,16 +12,25 @@ namespace TezosSDK.Beacon
 	/// </summary>
 	public class WalletEventManager : MonoBehaviour
 	{
-		// Define private fields to hold the delegate lists for each event type.
-		private Action<AccountInfo> _accountConnected;
-		private Action<ErrorInfo> _accountConnectionFailed;
-		private Action<AccountInfo> _accountDisconnected;
-		private Action<OperationResult> _contractCallCompleted;
-		private Action<ErrorInfo> _contractCallFailed;
-		private Action<OperationResult> _contractCallInjected;
-		private Action<HandshakeData> _handshakeReceived;
-		private Action<PairingDoneData> _pairingCompleted;
-		private Action<SignResult> _payloadSigned;
+		public const string EventTypeAccountConnected = "AccountConnected";
+		public const string EventTypeAccountConnectionFailed = "AccountConnectionFailed";
+		public const string EventTypeAccountDisconnected = "AccountDisconnected";
+		public const string EventTypeContractCallCompleted = "ContractCallCompleted";
+		public const string EventTypeContractCallFailed = "ContractCallFailed";
+		public const string EventTypeContractCallInjected = "ContractCallInjected";
+		public const string EventTypeHandshakeReceived = "HandshakeReceived";
+		public const string EventTypePairingDone = "PairingDone";
+		public const string EventTypePayloadSigned = "PayloadSigned";
+
+		private Action<AccountInfo> accountConnected;
+		private Action<ErrorInfo> accountConnectionFailed;
+		private Action<AccountInfo> accountDisconnected;
+		private Action<OperationResult> contractCallCompleted;
+		private Action<ErrorInfo> contractCallFailed;
+		private Action<OperationResult> contractCallInjected;
+		private Action<HandshakeData> handshakeReceived;
+		private Action<PairingDoneData> pairingCompleted;
+		private Action<SignResult> payloadSigned;
 
 		/// <summary>
 		///     Occurs when an account connected successfully. Provides the account information.
@@ -37,12 +43,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_accountConnected == null || !_accountConnected.GetInvocationList().Contains(value))
+				if (accountConnected == null || !accountConnected.GetInvocationList().Contains(value))
 				{
-					_accountConnected += value;
+					accountConnected += value;
 				}
 			}
-			remove => _accountConnected -= value;
+			remove => accountConnected -= value;
 		}
 
 		/// <summary>
@@ -56,12 +62,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_accountConnectionFailed == null || !_accountConnectionFailed.GetInvocationList().Contains(value))
+				if (accountConnectionFailed == null || !accountConnectionFailed.GetInvocationList().Contains(value))
 				{
-					_accountConnectionFailed += value;
+					accountConnectionFailed += value;
 				}
 			}
-			remove => _accountConnectionFailed -= value;
+			remove => accountConnectionFailed -= value;
 		}
 
 		/// <summary>
@@ -75,12 +81,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_accountDisconnected == null || !_accountDisconnected.GetInvocationList().Contains(value))
+				if (accountDisconnected == null || !accountDisconnected.GetInvocationList().Contains(value))
 				{
-					_accountDisconnected += value;
+					accountDisconnected += value;
 				}
 			}
-			remove => _accountDisconnected -= value;
+			remove => accountDisconnected -= value;
 		}
 
 		/// <summary>
@@ -95,12 +101,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_contractCallCompleted == null || !_contractCallCompleted.GetInvocationList().Contains(value))
+				if (contractCallCompleted == null || !contractCallCompleted.GetInvocationList().Contains(value))
 				{
-					_contractCallCompleted += value;
+					contractCallCompleted += value;
 				}
 			}
-			remove => _contractCallCompleted -= value;
+			remove => contractCallCompleted -= value;
 		}
 
 		/// <summary>
@@ -114,12 +120,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_contractCallFailed == null || !_contractCallFailed.GetInvocationList().Contains(value))
+				if (contractCallFailed == null || !contractCallFailed.GetInvocationList().Contains(value))
 				{
-					_contractCallFailed += value;
+					contractCallFailed += value;
 				}
 			}
-			remove => _contractCallFailed -= value;
+			remove => contractCallFailed -= value;
 		}
 
 		/// <summary>
@@ -134,12 +140,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_contractCallInjected == null || !_contractCallInjected.GetInvocationList().Contains(value))
+				if (contractCallInjected == null || !contractCallInjected.GetInvocationList().Contains(value))
 				{
-					_contractCallInjected += value;
+					contractCallInjected += value;
 				}
 			}
-			remove => _contractCallInjected -= value;
+			remove => contractCallInjected -= value;
 		}
 
 		/// <summary>
@@ -154,12 +160,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_handshakeReceived == null || !_handshakeReceived.GetInvocationList().Contains(value))
+				if (handshakeReceived == null || !handshakeReceived.GetInvocationList().Contains(value))
 				{
-					_handshakeReceived += value;
+					handshakeReceived += value;
 				}
 			}
-			remove => _handshakeReceived -= value;
+			remove => handshakeReceived -= value;
 		}
 
 		/// <summary>
@@ -176,12 +182,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_pairingCompleted == null || !_pairingCompleted.GetInvocationList().Contains(value))
+				if (pairingCompleted == null || !pairingCompleted.GetInvocationList().Contains(value))
 				{
-					_pairingCompleted += value;
+					pairingCompleted += value;
 				}
 			}
-			remove => _pairingCompleted -= value;
+			remove => pairingCompleted -= value;
 		}
 
 		/// <summary>
@@ -195,22 +201,24 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (_payloadSigned == null || !_payloadSigned.GetInvocationList().Contains(value))
+				if (payloadSigned == null || !payloadSigned.GetInvocationList().Contains(value))
 				{
-					_payloadSigned += value;
+					payloadSigned += value;
 				}
 			}
-			remove => _payloadSigned -= value;
+			remove => payloadSigned -= value;
 		}
 
 		/// <summary>
-		///     Processes the incoming JSON event data and routes it to the corresponding event handler based on the event type.
+		///     Processes the incoming JSON event data and dispatches it to the corresponding event based on the event type.
 		/// </summary>
-		/// <param name="jsonEventData">The JSON string representing the event data, which includes the type and associated data.</param>
+		/// <param name="jsonEventData">
+		///     The JSON string representing the event data, which includes the event type and associated
+		///     data.
+		/// </param>
 		/// <remarks>
-		///     This method is the central point for event processing within the WalletEventManager system. It parses the incoming
-		///     JSON event data to extract the event type and data, then dispatches the event by invoking the appropriate specific
-		///     handler method for each event type.
+		///     The method decodes the JSON event data, identifies the type of event, and invokes the corresponding
+		///     event handler with the proper deserialized event data object.
 		/// </remarks>
 		public void HandleEvent(string jsonEventData)
 		{
@@ -220,32 +228,32 @@ namespace TezosSDK.Beacon
 
 				switch (eventData.EventType)
 				{
-					case "HandshakeReceived":
-						HandleHandshakeReceived(eventData.Data);
+					case EventTypeHandshakeReceived:
+						HandleEvent(eventData.Data, handshakeReceived);
 						break;
-					case "PairingDone":
-						HandlePairingCompleted(eventData.Data);
+					case EventTypePairingDone:
+						HandleEvent(eventData.Data, pairingCompleted);
 						break;
-					case "AccountConnected":
-						HandleAccountConnected(eventData.Data);
+					case EventTypeAccountConnected:
+						HandleEvent(eventData.Data, accountConnected);
 						break;
-					case "AccountDisconnected":
-						HandleAccountDisconnected(eventData.Data);
+					case EventTypeAccountConnectionFailed:
+						HandleEvent(eventData.Data, accountConnectionFailed);
 						break;
-					case "AccountConnectionFailed":
-						HandleAccountConnectionFailed(eventData.Data);
+					case EventTypeAccountDisconnected:
+						HandleEvent(eventData.Data, accountDisconnected);
 						break;
-					case "ContractCallInjected":
-						HandleContractCallInjected(eventData.Data);
+					case EventTypeContractCallInjected:
+						HandleEvent(eventData.Data, contractCallInjected);
 						break;
-					case "ContractCallCompleted":
-						HandleContractCallCompleted(eventData.Data);
+					case EventTypeContractCallCompleted:
+						HandleEvent(eventData.Data, contractCallCompleted);
 						break;
-					case "ContractCallFailed":
-						HandleContractCallFailed(eventData.Data);
+					case EventTypeContractCallFailed:
+						HandleEvent(eventData.Data, contractCallFailed);
 						break;
-					case "PayloadSigned":
-						HandlePayloadSigned(eventData.Data);
+					case EventTypePayloadSigned:
+						HandleEvent(eventData.Data, payloadSigned);
 						break;
 					default:
 						Debug.LogWarning($"Unhandled event type: {eventData.EventType}");
@@ -258,59 +266,75 @@ namespace TezosSDK.Beacon
 			}
 		}
 
-		
 		private void HandleAccountConnected(string data)
 		{
 			var accountInfo = JsonUtility.FromJson<AccountInfo>(data);
-			_accountConnected?.Invoke(accountInfo);
+			accountConnected?.Invoke(accountInfo);
 		}
 
 		private void HandleAccountConnectionFailed(string data)
 		{
 			var errorInfo = JsonUtility.FromJson<ErrorInfo>(data);
-			_accountConnectionFailed?.Invoke(errorInfo);
+			accountConnectionFailed?.Invoke(errorInfo);
 		}
 
 		private void HandleAccountDisconnected(string data)
 		{
 			var accountInfo = JsonUtility.FromJson<AccountInfo>(data);
-			_accountDisconnected?.Invoke(accountInfo);
+			accountDisconnected?.Invoke(accountInfo);
 		}
 
 		private void HandleContractCallCompleted(string data)
 		{
 			var operationResult = JsonUtility.FromJson<OperationResult>(data);
-			_contractCallCompleted?.Invoke(operationResult);
+			contractCallCompleted?.Invoke(operationResult);
 		}
 
 		private void HandleContractCallFailed(string data)
 		{
 			var errorInfo = JsonUtility.FromJson<ErrorInfo>(data);
-			_contractCallFailed?.Invoke(errorInfo);
+			contractCallFailed?.Invoke(errorInfo);
 		}
 
 		private void HandleContractCallInjected(string data)
 		{
 			var operationResult = JsonUtility.FromJson<OperationResult>(data);
-			_contractCallInjected?.Invoke(operationResult);
+			contractCallInjected?.Invoke(operationResult);
+		}
+
+		/// <summary>
+		///     Deserializes the event data and invokes the corresponding event delegate.
+		/// </summary>
+		/// <typeparam name="T">The type of the event data object.</typeparam>
+		/// <param name="data">The JSON string representing the event data to be deserialized.</param>
+		/// <param name="eventAction">The action delegate to invoke with the deserialized event data.</param>
+		/// <remarks>
+		///     This method deserializes the JSON string into an object of type <typeparamref name="T" />
+		///     and then invokes the provided delegate <paramref name="eventAction" /> with the deserialized object.
+		///     It is designed to be called within a switch-case structure that handles each specific event type.
+		/// </remarks>
+		private void HandleEvent<T>(string data, Action<T> eventAction)
+		{
+			var deserializedData = JsonUtility.FromJson<T>(data);
+			eventAction?.Invoke(deserializedData);
 		}
 
 		private void HandleHandshakeReceived(string data)
 		{
 			var handshakeData = JsonUtility.FromJson<HandshakeData>(data);
-			_handshakeReceived?.Invoke(handshakeData); // Invoke the event with the object.
+			handshakeReceived?.Invoke(handshakeData); // Invoke the event with the object.
 		}
 
 		private void HandlePairingCompleted(string data)
 		{
 			var pairingDoneData = JsonUtility.FromJson<PairingDoneData>(data);
-			_pairingCompleted?.Invoke(pairingDoneData);
+			pairingCompleted?.Invoke(pairingDoneData);
 		}
 
 		private void HandlePayloadSigned(string data)
 		{
 			var signResult = JsonUtility.FromJson<SignResult>(data);
-			_payloadSigned?.Invoke(signResult);
+			payloadSigned?.Invoke(signResult);
 		}
 	}
 
