@@ -266,42 +266,6 @@ namespace TezosSDK.Beacon
 			}
 		}
 
-		private void HandleAccountConnected(string data)
-		{
-			var accountInfo = JsonUtility.FromJson<AccountInfo>(data);
-			accountConnected?.Invoke(accountInfo);
-		}
-
-		private void HandleAccountConnectionFailed(string data)
-		{
-			var errorInfo = JsonUtility.FromJson<ErrorInfo>(data);
-			accountConnectionFailed?.Invoke(errorInfo);
-		}
-
-		private void HandleAccountDisconnected(string data)
-		{
-			var accountInfo = JsonUtility.FromJson<AccountInfo>(data);
-			accountDisconnected?.Invoke(accountInfo);
-		}
-
-		private void HandleContractCallCompleted(string data)
-		{
-			var operationResult = JsonUtility.FromJson<OperationResult>(data);
-			contractCallCompleted?.Invoke(operationResult);
-		}
-
-		private void HandleContractCallFailed(string data)
-		{
-			var errorInfo = JsonUtility.FromJson<ErrorInfo>(data);
-			contractCallFailed?.Invoke(errorInfo);
-		}
-
-		private void HandleContractCallInjected(string data)
-		{
-			var operationResult = JsonUtility.FromJson<OperationResult>(data);
-			contractCallInjected?.Invoke(operationResult);
-		}
-
 		/// <summary>
 		///     Deserializes the event data and invokes the corresponding event delegate.
 		/// </summary>
@@ -317,24 +281,6 @@ namespace TezosSDK.Beacon
 		{
 			var deserializedData = JsonUtility.FromJson<T>(data);
 			eventAction?.Invoke(deserializedData);
-		}
-
-		private void HandleHandshakeReceived(string data)
-		{
-			var handshakeData = JsonUtility.FromJson<HandshakeData>(data);
-			handshakeReceived?.Invoke(handshakeData); // Invoke the event with the object.
-		}
-
-		private void HandlePairingCompleted(string data)
-		{
-			var pairingDoneData = JsonUtility.FromJson<PairingDoneData>(data);
-			pairingCompleted?.Invoke(pairingDoneData);
-		}
-
-		private void HandlePayloadSigned(string data)
-		{
-			var signResult = JsonUtility.FromJson<SignResult>(data);
-			payloadSigned?.Invoke(signResult);
 		}
 	}
 
