@@ -132,6 +132,11 @@ namespace TezosSDK.Beacon
 		
 		private void HandleMissingActiveAccount()
 		{
+			TriggerHandshakeEvent();
+		}
+
+		private void TriggerHandshakeEvent()
+		{
 			var handshakeData = new HandshakeData
 			{
 				PairingData = BeaconDappClient.GetPairingRequestInfo()
@@ -192,7 +197,8 @@ namespace TezosSDK.Beacon
 			};
 
 			BeaconDappClient.RemoveActiveAccounts();
-
+			
+			TriggerHandshakeEvent();
 			UnityMainThreadDispatcher.Enqueue(() => eventManager.HandleEvent(JsonUtility.ToJson(disconnectEvent)));
 		}
 
