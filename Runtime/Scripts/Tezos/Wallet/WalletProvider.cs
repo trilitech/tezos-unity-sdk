@@ -101,13 +101,13 @@ namespace TezosSDK.Tezos.Wallet
                 TransactionHash = transactionHash
             };
 
-            var contactCallInjectedEvent = new UnifiedEvent
+            var contractCallCompletedEvent = new UnifiedEvent
             {
-                EventType = WalletEventManager.EventTypeContractCallInjected,
+                EventType = WalletEventManager.EventTypeContractCallCompleted,
                 Data = JsonUtility.ToJson(operationResult)
             };
 
-            EventManager.HandleEvent(JsonUtility.ToJson(contactCallInjectedEvent));
+            EventManager.HandleEvent(JsonUtility.ToJson(contractCallCompletedEvent));
         }
 
 
