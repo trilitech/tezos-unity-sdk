@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
@@ -23,18 +24,16 @@ namespace TezosSDK.Samples.NFTApiSample
 
         void Start()
         {
-            _tezos = TezosSingleton.Instance;
+            _tezos = TezosManager.Instance.Tezos;
             _tezos
                 .Wallet
-                .MessageReceiver
+                .EventManager
                 .AccountConnected += OnAccountConnected;
         }
 
-        void OnAccountConnected(string result)
+        void OnAccountConnected(AccountInfo accountInfo)
         {
-            var json = JsonSerializer.Deserialize<JsonElement>(result);
-            var account = json.GetProperty("accountInfo");
-            _connectedAddress = account.GetProperty("address").GetString();
+            _connectedAddress = accountInfo.Address;
         }
 
         public void GetTokensForOwners()
@@ -92,7 +91,7 @@ namespace TezosSDK.Samples.NFTApiSample
                 Debug.Log("Enter contract address");
                 return;
             }
-            
+
             CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfContract((flag) =>
                 {
                     var message = flag
@@ -122,7 +121,7 @@ namespace TezosSDK.Samples.NFTApiSample
                 Debug.Log("Enter contract address");
                 return;
             }
-            
+
             CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfToken((flag) =>
                 {
                     var message = flag

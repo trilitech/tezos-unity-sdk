@@ -105,7 +105,7 @@ namespace TezosSDK.Samples.DemoExample
         /// <summary>
         /// Return the Tezos wallet MessageReceiver for using callbacks
         /// </summary>
-        public WalletMessageReceiver GetWalletMessageReceiver();
+        public WalletEventManager GetWalletMessageReceiver();
 
         /// <summary>
         /// Checks if item is on the marketplace in the blockchain

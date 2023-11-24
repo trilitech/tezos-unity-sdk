@@ -7,7 +7,7 @@ namespace TezosSDK.Samples.DemoExample
         public static ExampleFactory Instance;
         private IExampleManager _exampleManager = null;
 
-        private void Awake()
+        private void Start()
         {
             if (Instance == null)
                 Instance = this;

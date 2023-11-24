@@ -35,18 +35,7 @@ namespace TezosSDK.Samples.DemoExample
 
         public void Init(Action<bool> callback = null)
         {
-            Tezos = TezosSingleton.ConfiguredInstance(
-                networkType: NetworkType.ghostnet,
-                rpcUrl: "https://rpc.tzkt.io/ghostnet",
-                dAppMetadata: new DAppMetadata
-                {
-                    Name = "Tezos Demo Example Game",
-                    Url = "https://github.com/trilitech/tezos-unity-sdk/tree/main/Samples~",
-                    Icon =
-                        "https://raw.githubusercontent.com/" +
-                        "trilitech/tezos-unity-sdk/main/Samples%7E/Art/UI/Icons/skill_icon_04.png"
-                });
-
+            Tezos = TezosManager.Instance.Tezos;
             _networkRPC = TezosConfig.Instance.RpcBaseUrl;
         }
 
@@ -471,10 +460,7 @@ namespace TezosSDK.Samples.DemoExample
             Tezos.Wallet.Connect(walletProvider);
         }
 
-        public WalletMessageReceiver GetWalletMessageReceiver()
-        {
-            return Tezos.Wallet.MessageReceiver;
-        }
+        public WalletEventManager GetWalletMessageReceiver() => Tezos.Wallet.EventManager;
 
         public void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback)
         {

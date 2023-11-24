@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using UnityEngine;
 
@@ -204,38 +205,27 @@ namespace TezosSDK.Samples.DemoExample
 
         #region Tezos Callbacks
 
-        private void OnAccountConnected(string account)
+        private void OnAccountConnected(AccountInfo accountInfo)
         {
-            Debug.Log(account);
-            if (!string.IsNullOrEmpty(account))
+            if (!string.IsNullOrEmpty(accountInfo.Address))
                 OnSignIn(true);
         }
 
-        private void OnAccountConnectionFailed(string response)
+        private void OnAccountConnectionFailed(ErrorInfo errorInfo)
         {
             DisplayPopup("Wallet connection failed!\n \n" +
-                         "Response: \n" + response);
+                         "Response: \n" + errorInfo.Message);
         }
 
-        private void OnAccountDisconnected(string account)
+        private void OnAccountDisconnected(AccountInfo accountInfo)
         {
             AllowUIAccess(false);
             ResetWalletData();
         }
 
-        [Serializable]
-        private struct Transaction
+        private void OnContractCallCompleted(OperationResult operationResult)
         {
-            public string transactionHash;
-        }
-
-        private void OnContractCallCompleted(string response)
-        {
-            string transactionHash =
-                JsonSerializer.Deserialize<JsonElement>(response).GetProperty("transactionHash").ToString();
-            DisplayPopup("Transaction completed!\n \n" +
-                         "Transaction hash:\n" + transactionHash +
-                         "\n \nResponse:\n" + response);
+            DisplayPopup($"Transaction completed with hash {operationResult.TransactionHash}");
         }
 
         public void UpdateContractAddress()
@@ -275,20 +265,14 @@ namespace TezosSDK.Samples.DemoExample
             });
         }
 
-        private void OnContractCallFailed(string response)
+        private void OnContractCallFailed(ErrorInfo errorInfo)
         {
-            DisplayPopup("Transaction failed!\n \n" +
-                         "Response:\n" + response);
+            DisplayPopup($"Transaction failed, error: {errorInfo.Message}");
         }
 
-        private void OnContractCallInjected(string result)
+        private void OnContractCallInjected(OperationResult operationResult)
         {
-            string successString = JsonSerializer.Deserialize<JsonElement>(result).GetProperty("success").ToString();
-            string transactionHash =
-                JsonSerializer.Deserialize<JsonElement>(result).GetProperty("transactionHash").ToString();
-
-            bool success = successString != null && bool.Parse(successString);
-            if (success)
+            if (!string.IsNullOrEmpty(operationResult.TransactionHash))
             {
                 _manager.FetchMarketItems(PopulateMarket);
                 _manager.FetchInventoryItems(PopulateInventory);
@@ -297,19 +281,12 @@ namespace TezosSDK.Samples.DemoExample
             }
 
             DisplayPopup("Call injected!\n \n" +
-                         "Response:\n" + success +
-                         "\n \nTransaction Hash:\n" + transactionHash);
+                         "\n \nTransaction Hash:\n" + operationResult.TransactionHash);
         }
 
-        private void OnPayloadSigned(string result)
+        private void OnPayloadSigned(SignResult signResult)
         {
-            var signature = JsonSerializer
-                .Deserialize<JsonElement>(result)
-                .GetProperty("signature")
-                .ToString();
-
-            DisplayPopup($"Signed!\n \n" +
-                         $"Signature: {signature}");
+            DisplayPopup($"Successfully signed with signature: {signResult.Signature}");
         }
 
         #endregion
