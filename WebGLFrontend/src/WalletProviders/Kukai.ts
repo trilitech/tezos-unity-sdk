@@ -1,6 +1,6 @@
 import BaseWallet from "./BaseWallet";
+import { AccountInfo, Wallet } from "./Types";
 import { KukaiEmbed } from "kukai-embed";
-import { Wallet } from "./Types";
 
 class KukaiWallet extends BaseWallet implements Wallet {
   client: KukaiEmbed | null;
@@ -23,7 +23,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
 
       await this.client.init();
     }
-    
+
     if (this.client.user) {
       this.CallUnityOnAccountConnected({
         address: this.client.user.pkh,
@@ -55,7 +55,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
   ) {
     try {
       const transactionHash = await this.client.send(
-        this.GetOperationsList(destination, amount, entryPoint, parameter),
+        this.GetOperationsList(destination, amount, entryPoint, parameter)
       );
 
       this.CallUnityOnContractCallCompleted({ transactionHash });
@@ -68,7 +68,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
     try {
       const transactionHash = await this.client.send(
         // @ts-ignore
-        this.GetOriginationOperationsList(script, delegateAddress),
+        this.GetOriginationOperationsList(script, delegateAddress)
       );
 
       this.CallUnityOnContractCallCompleted({ transactionHash });
@@ -82,17 +82,19 @@ class KukaiWallet extends BaseWallet implements Wallet {
       this.NumToSigningType(signingType),
       plainTextPayload
     );
-    const signature = await this.client.signExpr(
-      hexPayload,
-    );
+    const signature = await this.client.signExpr(hexPayload);
     this.CallUnityOnPayloadSigned({ signature });
   }
 
   async DisconnectAccount() {
-    const connectedAccount = this.GetActiveAccountAddress();
+    const accountInfo: AccountInfo = {
+      publicKey: this.client?.user?.pk,
+      address: this.GetActiveAccountAddress(),
+    };
+
     await this.client.logout();
     localStorage.removeItem("networkName");
-    this.CallUnityOnAccountDisconnected(connectedAccount);
+    this.CallUnityOnAccountDisconnected(accountInfo);
   }
 }
 
