@@ -1,3 +1,4 @@
+using TezosSDK.Beacon;
 using UnityEngine;
 using UnityEngine.UI;
 using ZXing;
@@ -18,9 +19,9 @@ namespace TezosSDK.View
             _texture.filterMode = FilterMode.Point;
         }
 
-        public void SetQrCode(string handshake)
+        public void SetQrCode(HandshakeData handshakeData)
         {
-            var uri = "tezos://?type=tzip10&data=" + handshake;
+            var uri = "tezos://?type=tzip10&data=" + handshakeData.PairingData;
             EncodeTextToQrCode(uri);
         }
 

@@ -36,7 +36,6 @@ interface AbstractWallet {
   CallUnityOnAccountConnected(accountInfo: AccountInfo): void;
   CallUnityOnAccountDisconnected(accountInfo: AccountInfo): void;
   CallUnityOnPayloadSigned(result: SignResult): void;
-
   CallUnityOnContractCallCompleted(result: OperationResult): void;
   CallUnityOnAccountFailedToConnect(error: Error): void;
   CallUnityOnContractCallFailed(error: Error): void;

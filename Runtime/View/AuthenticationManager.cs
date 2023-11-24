@@ -30,10 +30,10 @@ namespace TezosSDK.View
             Tezos.Wallet.EventManager.AccountDisconnected += OnAccountDisconnected;
         }
 
-        void OnHandshakeReceived(HandshakeData handshake_data)
+        void OnHandshakeReceived(HandshakeData handshakeData)
         {
             EnableUI(isAuthenticated: false);
-            qrCodeView.SetQrCode(handshake_data.PairingData);
+            qrCodeView.SetQrCode(handshakeData);
         }
 
         void OnAccountConnected(AccountInfo account_info)

@@ -1,11 +1,15 @@
-import {BaseFileUploaderType, BaseUploaderConfig, IpfsUploaderConfig, IpfsUploaderType,} from "./FileUploaders/Types";
-import {Wallet, WalletType} from "./WalletProviders/Types";
-
 import Base64Uploader from "./FileUploaders/Base64Uploader";
-import IpfsUploader from "./FileUploaders/IpfsUploader";
 import BeaconWallet from "./WalletProviders/Beacon";
+import IpfsUploader from "./FileUploaders/IpfsUploader";
 import KukaiWallet from "./WalletProviders/Kukai";
-import {AccountInfo, DAppClient} from "@airgap/beacon-sdk";
+import { AccountInfo, DAppClient } from "@airgap/beacon-sdk";
+import { Wallet, WalletType } from "./WalletProviders/Types";
+import {
+  BaseFileUploaderType,
+  BaseUploaderConfig,
+  IpfsUploaderConfig,
+  IpfsUploaderType,
+} from "./FileUploaders/Types";
 
 let kukaiWallet: KukaiWallet;
 let beaconWallet: BeaconWallet;
@@ -22,9 +26,10 @@ function InitWalletProvider(
     if (!kukaiWallet) kukaiWallet = new KukaiWallet(appName, appUrl, iconUrl);
     window.WalletProvider = kukaiWallet;
   }
-  
+
   if (walletType === WalletType.beacon) {
-    if (!beaconWallet) beaconWallet = new BeaconWallet(appName, appUrl, iconUrl);
+    if (!beaconWallet)
+      beaconWallet = new BeaconWallet(appName, appUrl, iconUrl);
     window.WalletProvider = beaconWallet;
   }
 
@@ -60,19 +65,27 @@ async function UnityReadyEvent() {
 
   if (beaconActiveAccount) {
     InitWalletProvider(
-        beaconActiveAccount.network.type,
-        beaconActiveAccount.network.rpcUrl,
-        WalletType.beacon,
-        dappName,
-        dappUrl,
-        iconUrl);
+      beaconActiveAccount.network.type,
+      beaconActiveAccount.network.rpcUrl,
+      WalletType.beacon,
+      dappName,
+      dappUrl,
+      iconUrl
+    );
 
     window.WalletProvider.client = dAppClient;
     window.WalletProvider.ConnectAccount();
   } else {
-    const networkName = localStorage.getItem("networkName")
+    const networkName = localStorage.getItem("networkName");
     if (networkName) {
-      InitWalletProvider(networkName, "", WalletType.kukai, dappName, dappUrl, iconUrl);
+      InitWalletProvider(
+        networkName,
+        "",
+        WalletType.kukai,
+        dappName,
+        dappUrl,
+        iconUrl
+      );
       window.WalletProvider.ConnectAccount();
     }
   }

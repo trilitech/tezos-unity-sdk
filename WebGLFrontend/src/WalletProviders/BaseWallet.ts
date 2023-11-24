@@ -81,12 +81,33 @@ class BaseWallet implements AbstractWallet {
     localStorage.setItem("iconUrl", this.iconUrl);
   }
 
-  private CallUnityMethod(value: any) {
+  private CallUnityMethod(eventData: UnityEvent) {
+    const resultEventData = {
+      EventType: eventData.eventType,
+      Data: JSON.stringify(this.CapitalizeKeys(eventData.data)),
+    };
+
     window.unityInstance.SendMessage(
-      "UnityBeacon",
+      "WalletEventManager",
       "HandleEvent",
-      typeof value === "string" ? value : JSON.stringify(value)
+      JSON.stringify(resultEventData)
     );
+  }
+
+  private CapitalizeKeys(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((o) => this.CapitalizeKeys(o));
+    } else if (typeof obj === "object" && obj !== null) {
+      return Object.entries(obj).reduce(
+        (r, [k, v]) => ({
+          ...r,
+          [`${k.charAt(0).toUpperCase()}${k.slice(1)}`]: this.CapitalizeKeys(v),
+        }),
+        {}
+      );
+    } else {
+      return obj;
+    }
   }
 
   GetHexPayloadString(
