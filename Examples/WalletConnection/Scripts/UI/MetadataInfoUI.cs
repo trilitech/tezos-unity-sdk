@@ -13,7 +13,7 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 		private void Start()
 		{
 			nameText.text = TezosManager.Instance.DAppMetadata.Name;
-			descriptionText.text = "-";
+			descriptionText.text = TezosManager.Instance.DAppMetadata.Description;
 		}
 	}
 
