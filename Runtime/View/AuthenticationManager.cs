@@ -12,22 +12,32 @@ namespace TezosSDK.View
         [SerializeField] private QRCodeView qrCodeView;
         [SerializeField] private GameObject contentPanel;
         [SerializeField] private GameObject deepLinkButton;
+        [SerializeField] private GameObject socialLoginButton;
         [SerializeField] private GameObject logoutButton;
         [SerializeField] private GameObject qrCodePanel;
 
         private bool _isMobile;
+        private bool _isWebGL;
 
         void Start()
         {
-#if (UNITY_IOS || UNITY_ANDROID)
-		_isMobile = true;
-#else
-            _isMobile = false;
-#endif
             Tezos = TezosManager.Instance.Tezos;
             Tezos.Wallet.EventManager.HandshakeReceived += OnHandshakeReceived;
             Tezos.Wallet.EventManager.AccountConnected += OnAccountConnected;
             Tezos.Wallet.EventManager.AccountDisconnected += OnAccountDisconnected;
+
+#if UNITY_STANDALONE || UNITY_EDITOR
+            _isMobile = false;
+            _isWebGL = false;
+#elif (UNITY_IOS || UNITY_ANDROID)
+		    _isMobile = true;
+            _isWebGL = false;
+#elif UNITY_WEBGL
+		    _isMobile = false;
+            _isWebGL = true;
+            EnableUI(isAuthenticated: false);
+            Tezos.Wallet.OnReady();
+#endif
         }
 
         void OnHandshakeReceived(HandshakeData handshakeData)
@@ -36,13 +46,13 @@ namespace TezosSDK.View
             qrCodeView.SetQrCode(handshakeData);
         }
 
-        void OnAccountConnected(AccountInfo account_info)
+        void OnAccountConnected(AccountInfo accountInfo)
         {
             EnableUI(isAuthenticated: true);
             Debug.Log("OnAccountConnected");
         }
 
-        void OnAccountDisconnected(AccountInfo account_info)
+        void OnAccountDisconnected(AccountInfo accountInfo)
         {
             Debug.Log("OnAccountDisconnected");
         }
@@ -58,11 +68,17 @@ namespace TezosSDK.View
             Tezos.Wallet.Connect(WalletProviderType.beacon);
         }
 
+        public void ConnectWithSocial()
+        {
+            Tezos.Wallet.Connect(WalletProviderType.kukai);
+        }
+
         void EnableUI(bool isAuthenticated)
         {
             if (isAuthenticated)
             {
                 deepLinkButton.SetActive(false);
+                socialLoginButton.SetActive(false);
                 qrCodePanel.SetActive(false);
             }
             else
@@ -70,12 +86,20 @@ namespace TezosSDK.View
                 if (_isMobile)
                 {
                     deepLinkButton.SetActive(true);
+                    socialLoginButton.SetActive(false);
+                    qrCodePanel.SetActive(false);
+                }
+                else if (_isWebGL)
+                {
+                    deepLinkButton.SetActive(true);
+                    socialLoginButton.SetActive(true);
                     qrCodePanel.SetActive(false);
                 }
                 else
                 {
-                    qrCodePanel.SetActive(true);
                     deepLinkButton.SetActive(false);
+                    socialLoginButton.SetActive(false);
+                    qrCodePanel.SetActive(true);
                 }
             }
 
