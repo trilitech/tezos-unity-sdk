@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 3121589126738375250}
   - component: {fileID: 3713326636857166855}
   m_Layer: 5
-  m_Name: Authentication
+  m_Name: TezosAuthenticator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

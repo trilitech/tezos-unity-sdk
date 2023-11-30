@@ -11,22 +11,24 @@ namespace TezosSDK
 {
     public class AccountBalanceUI : MonoBehaviour
     {
-        [FormerlySerializedAs("addressText")] [SerializeField] private TextMeshProUGUI balanceText;
-		
+        [SerializeField] private TextMeshProUGUI balanceText;
+        private readonly string _notConnectedText = "Not connected";
+
         private void Start()
         {
-            balanceText.text = "-";
+            // Subscribe to wallet events
             TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
             TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
         }
 
         private void OnAccountDisconnected(AccountInfo _)
         {
-            balanceText.text = "-";
+            balanceText.text = _notConnectedText;
         }
 
         private void OnAccountConnected(AccountInfo _)
         {
+            // OnBalanceFetched will be called when the balance is fetched
             var routine = TezosManager.Instance.Tezos.GetCurrentWalletBalance(OnBalanceFetched);
             StartCoroutine(routine);
         }
