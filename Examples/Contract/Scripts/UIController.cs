@@ -3,31 +3,31 @@ using UnityEngine;
 
 namespace TezosSDK.Contract.Scripts
 {
-    public class UIController : MonoBehaviour
-    {
-        [SerializeField] private GameObject buttons;
-        [SerializeField] private GameObject tokensCount;
 
-        private void Start()
-        {
-            tokensCount.SetActive(false);
-            buttons.SetActive(false);
-            
-            var messageReceiver = TezosManager
-                .Instance
-                .MessageReceiver;
+	public class UIController : MonoBehaviour
+	{
+		[SerializeField] private GameObject buttons;
+		[SerializeField] private GameObject tokensCount;
 
-            messageReceiver.AccountConnected += _ =>
-            {
-                tokensCount.SetActive(true);
-                buttons.SetActive(true);
-            };
+		private void Start()
+		{
+			tokensCount.SetActive(false);
+			buttons.SetActive(false);
 
-            messageReceiver.AccountDisconnected += _ =>
-            {
-                tokensCount.SetActive(false);
-                buttons.SetActive(false);
-            };
-        }
-    }
+			var messageReceiver = TezosManager.Instance.MessageReceiver;
+
+			messageReceiver.AccountConnected += _ =>
+			{
+				tokensCount.SetActive(true);
+				buttons.SetActive(true);
+			};
+
+			messageReceiver.AccountDisconnected += _ =>
+			{
+				tokensCount.SetActive(false);
+				buttons.SetActive(false);
+			};
+		}
+	}
+
 }

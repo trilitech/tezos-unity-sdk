@@ -17,12 +17,6 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			{
 				gameObject.SetActive(false);
 			}
-			
-		}
-
-		private void OnAccountDisconnected(AccountInfo account_info)
-		{
-			gameObject.SetActive(false);
 		}
 
 		private void OnAccountConnected(AccountInfo account_info)
@@ -30,13 +24,15 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			gameObject.SetActive(true);
 		}
 
+		private void OnAccountDisconnected(AccountInfo account_info)
+		{
+			gameObject.SetActive(false);
+		}
+
 		public void Logout()
 		{
 			TezosManager.Instance.Wallet.Disconnect();
 		}
-		
-		
-		
 	}
 
 }

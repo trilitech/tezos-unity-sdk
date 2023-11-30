@@ -12,9 +12,10 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 	public class QRImageGenerator : MonoBehaviour
 	{
 		[SerializeField] private RawImage qrImage;
-		
-		private Texture2D texture;
+
 		private bool encoded;
+
+		private Texture2D texture;
 
 		private void Start()
 		{
@@ -24,9 +25,9 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			TezosManager.Instance.MessageReceiver.AccountConnectionFailed += OnAccountConnectionFailed;
 		}
 
-		private void OnAccountDisconnected(AccountInfo account_info)
+		private void OnAccountConnected(AccountInfo account_info)
 		{
-			gameObject.SetActive(true);
+			gameObject.SetActive(false);
 		}
 
 		private void OnAccountConnectionFailed(ErrorInfo error_info)
@@ -34,9 +35,9 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			throw new Exception("Account connection failed!");
 		}
 
-		private void OnAccountConnected(AccountInfo account_info)
+		private void OnAccountDisconnected(AccountInfo account_info)
 		{
-			gameObject.SetActive(false);
+			gameObject.SetActive(true);
 		}
 
 		private void SetQrCode(HandshakeData handshake_data)
@@ -48,6 +49,24 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 
 			var uri = "tezos://?type=tzip10&data=" + handshake_data.PairingData;
 			EncodeTextToQrCode(uri);
+		}
+
+		private Color32[] Encode(string text, int width, int height)
+		{
+			var options = new QrCodeEncodingOptions
+			{
+				Width = width,
+				Height = height,
+				PureBarcode = true
+			};
+
+			var writer = new BarcodeWriter
+			{
+				Format = BarcodeFormat.QR_CODE,
+				Options = options
+			};
+
+			return writer.Write(text);
 		}
 
 		private void EncodeTextToQrCode(string text)
@@ -64,24 +83,6 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			texture.Apply();
 
 			encoded = true;
-		}
-
-		private Color32[] Encode(string text, int width, int height)
-		{
-			var options = new QrCodeEncodingOptions
-			{
-				Width = width,
-				Height = height,
-				PureBarcode = true
-			};
-			
-			var writer = new BarcodeWriter
-			{
-				Format = BarcodeFormat.QR_CODE,
-				Options = options
-			};
-			
-			return writer.Write(text);
 		}
 	}
 

@@ -19,14 +19,14 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			}
 		}
 
-		private void OnAccountDisconnected(AccountInfo account_info)
-		{
-			gameObject.SetActive(false);
-		}
-
 		private void OnAccountConnected(AccountInfo account_info)
 		{
 			gameObject.SetActive(true);
+		}
+
+		private void OnAccountDisconnected(AccountInfo account_info)
+		{
+			gameObject.SetActive(false);
 		}
 	}
 

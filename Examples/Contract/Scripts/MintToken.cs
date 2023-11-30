@@ -1,106 +1,92 @@
+using System.Collections.Generic;
 using System.Linq;
+using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TMPro;
 using UnityEngine;
-using Random = System.Random;
 using Logger = TezosSDK.Helpers.Logger;
+using Random = System.Random;
 
 namespace TezosSDK.Contract.Scripts
 {
-    public class MintToken : MonoBehaviour
-    {
-        [SerializeField] private TextMeshProUGUI tokensCountText;
 
-        private void Start()
-        {
-            var activeAddress = TezosManager
-                .Instance
-                .Wallet
-                .GetActiveAddress();
+	public class MintToken : MonoBehaviour
+	{
+		[SerializeField] private TextMeshProUGUI tokensCountText;
 
-            if (string.IsNullOrEmpty(activeAddress))
-            {
-                TezosManager
-                    .Instance
-                    .MessageReceiver
-                    .AccountConnected += _ => GetTokensCount();
-            }
-            else
-            {
-                GetTokensCount();
-            }
-        }
+		private void Start()
+		{
+			var activeAddress = TezosManager.Instance.Wallet.GetActiveAddress();
 
-        public void HandleMint()
-        {
-            var rnd = new Random();
-            var randomInt = rnd.Next(1, int.MaxValue);
-            var randomAmount = rnd.Next(1, 1024);
+			// if there is no active address, subscribe to account connection events
+			if (string.IsNullOrEmpty(activeAddress))
+			{
+				TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
+			}
+			else // otherwise, get the tokens count
+			{
+				GetTokensCount();
+			}
+		}
 
-            var destinationAddress = TezosManager
-                .Instance
-                .Wallet
-                .GetActiveAddress();
+		private void OnAccountConnected(AccountInfo _)
+		{
+			GetTokensCount();
+		}
 
-            const string imageAddress = "ipfs://QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK";
+		public void HandleMint()
+		{
+			var tokenMetadata = CreateRandomTokenMetadata();
+			var destinationAddress = TezosManager.Instance.Wallet.GetActiveAddress();
+			var randomAmount = new Random().Next(1, 1024);
 
-            var tokenMetadata = new TokenMetadata
-            {
-                Name = $"testName_{randomInt}",
-                Description = $"testDescription_{randomInt}",
-                Symbol = $"TST_{randomInt}",
-                Decimals = "0",
-                DisplayUri = imageAddress,
-                ArtifactUri = imageAddress,
-                ThumbnailUri = imageAddress
-            };
+			TezosManager.Instance.Tezos.TokenContract.Mint(OnTokenMinted, tokenMetadata, destinationAddress, randomAmount);
+		}
 
-            TezosManager
-                .Instance
-                .Tezos
-                .TokenContract
-                .Mint(
-                    completedCallback: OnTokenMinted,
-                    tokenMetadata: tokenMetadata,
-                    destination: destinationAddress,
-                    amount: randomAmount);
-        }
+		private TokenMetadata CreateRandomTokenMetadata()
+		{
+			var randomInt = new Random().Next(1, int.MaxValue);
+			const string imageAddress = "ipfs://QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK";
 
-        private void OnTokenMinted(TokenBalance tokenBalance)
-        {
-            Logger.LogDebug($"Successfully minted token with Token ID {tokenBalance.TokenId}");
-            GetTokensCount();
-        }
+			return new TokenMetadata
+			{
+				Name = $"testName_{randomInt}",
+				Description = $"testDescription_{randomInt}",
+				Symbol = $"TST_{randomInt}",
+				Decimals = "0",
+				DisplayUri = imageAddress,
+				ArtifactUri = imageAddress,
+				ThumbnailUri = imageAddress
+			};
+		}
 
-        private void GetTokensCount()
-        {
-            var contractAddress = TezosManager
-                .Instance
-                .Tezos
-                .TokenContract
-                .Address;
+		private void GetTokensCount()
+		{
+			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
 
-            if (string.IsNullOrEmpty(contractAddress)) return;
+			if (string.IsNullOrEmpty(contractAddress))
+			{
+				return;
+			}
 
-            var getOwnerTokensCoroutine = TezosManager
-                .Instance
-                .Tezos
-                .API
-                .GetTokensForContract(
-                    callback: tokens =>
-                    {
-                        tokensCountText.text = tokens
-                            .Count()
-                            .ToString();
-                    },
-                    contractAddress: contractAddress,
-                    withMetadata: false,
-                    maxItems: 10_000,
-                    orderBy: new TokensForContractOrder.Default(0));
+			var routine = TezosManager.Instance.Tezos.API.GetTokensForContract(OnTokensFetched, contractAddress, false,
+				10_000, new TokensForContractOrder.Default(0));
 
-            StartCoroutine(getOwnerTokensCoroutine);
-        }
-    }
+			StartCoroutine(routine);
+		}
+
+		private void OnTokenMinted(TokenBalance tokenBalance)
+		{
+			Logger.LogDebug($"Successfully minted token with Token ID {tokenBalance.TokenId}");
+			GetTokensCount();
+		}
+
+		private void OnTokensFetched(IEnumerable<Token> tokens)
+		{
+			tokensCountText.text = tokens.Count().ToString();
+		}
+	}
+
 }
