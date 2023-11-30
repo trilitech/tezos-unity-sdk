@@ -34,9 +34,9 @@ class BaseWallet implements AbstractWallet {
     this.CallUnityMethod(eventData);
   }
 
-  CallUnityOnContractCallCompleted(result: OperationResult) {
+  CallUnityOnContractCallInjected(result: OperationResult) {
     const eventData: UnityEvent = {
-      eventType: EventType.contractCallCompleted,
+      eventType: EventType.contractCallInjected,
       data: result,
     };
     this.CallUnityMethod(eventData);

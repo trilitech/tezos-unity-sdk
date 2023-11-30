@@ -53,17 +53,11 @@ namespace TezosSDK.Tezos.Wallet
             };
 #endif
             EventManager.HandshakeReceived += handshake => { _handshake = handshake.PairingData; };
-            
-            EventManager.AccountConnected += account =>
-            {
-                _pubKey = account.PublicKey;
-            };
-            
-            EventManager.PayloadSigned += payload =>
-            {
-                _signature = payload.Signature;
-            };
-            
+
+            EventManager.AccountConnected += account => { _pubKey = account.PublicKey; };
+
+            EventManager.PayloadSigned += payload => { _signature = payload.Signature; };
+
             EventManager.ContractCallInjected += transaction =>
             {
                 var transactionHash = transaction.TransactionHash;
@@ -85,13 +79,17 @@ namespace TezosSDK.Tezos.Wallet
             {
                 Logger.LogDebug($"Checking tx status: {transactionHash}");
 
-                yield return TezosManager.Instance.Tezos.API.GetOperationStatus(result =>
-                {
-                    if (result != null)
+                yield return TezosManager
+                    .Instance
+                    .Tezos
+                    .API
+                    .GetOperationStatus(result =>
                     {
-                        success = JsonSerializer.Deserialize<bool>(result);
-                    }
-                }, transactionHash);
+                        if (result != null)
+                        {
+                            success = JsonSerializer.Deserialize<bool>(result);
+                        }
+                    }, transactionHash);
 
                 yield return new WaitForSecondsRealtime(3);
             }

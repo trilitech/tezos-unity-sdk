@@ -58,7 +58,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
         this.GetOperationsList(destination, amount, entryPoint, parameter)
       );
 
-      this.CallUnityOnContractCallCompleted({ transactionHash });
+      this.CallUnityOnContractCallInjected({ transactionHash });
     } catch (error) {
       this.CallUnityOnContractCallFailed(error);
     }
@@ -71,7 +71,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
         this.GetOriginationOperationsList(script, delegateAddress)
       );
 
-      this.CallUnityOnContractCallCompleted({ transactionHash });
+      this.CallUnityOnContractCallInjected({ transactionHash });
     } catch (error) {
       this.CallUnityOnContractCallFailed(error);
     }

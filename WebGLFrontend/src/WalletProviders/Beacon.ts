@@ -78,7 +78,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
         ),
       });
 
-      this.CallUnityOnContractCallCompleted({
+      this.CallUnityOnContractCallInjected({
         transactionHash: operationResult.transactionHash,
       });
     } catch (error) {
@@ -95,7 +95,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
         ),
       });
 
-      this.CallUnityOnContractCallCompleted({
+      this.CallUnityOnContractCallInjected({
         transactionHash: operationResult.transactionHash,
       });
     } catch (error) {
