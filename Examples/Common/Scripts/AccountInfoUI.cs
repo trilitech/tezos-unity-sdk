@@ -2,33 +2,51 @@ using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TezosSDK.Examples.WalletConnection.Scripts
 {
 
 	public class AccountInfoUI : MonoBehaviour
 	{
-		[SerializeField] private TextMeshProUGUI addressText;
-		
-		private readonly string notConnectedText = "Not connected";
+		[SerializeField] private TMP_InputField addressText;
+
+		private readonly string _notConnectedText = "Not connected";
 
 		private void Start()
 		{
-			addressText.text = notConnectedText;
+			addressText.text = _notConnectedText;
+
+			// Subscribe to events
 			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
 			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
 		}
 
-		private void OnAccountDisconnected(AccountInfo account_info)
+		private void OnAccountConnected(AccountInfo accountInfo)
 		{
-			addressText.text = notConnectedText;
+			// We can get the address from the wallet
+			addressText.text = TezosManager.Instance.Wallet.GetActiveAddress();
+			// Or from the event data
+			addressText.text = accountInfo.Address;
+
+			UpdateLayout(); // Update layout to fit the new text
 		}
 
-		private void OnAccountConnected(AccountInfo account_info)
+		private void OnAccountDisconnected(AccountInfo accountInfo)
 		{
-			addressText.text = TezosManager.Instance.Wallet.GetActiveAddress();
-			// OR
-			addressText.text = account_info.Address;
+			addressText.text = _notConnectedText;
+			UpdateLayout();
+		}
+
+		private void UpdateLayout()
+		{
+			var layoutGroup = GetComponent<HorizontalLayoutGroup>();
+
+			if (layoutGroup != null)
+			{
+				LayoutRebuilder.MarkLayoutForRebuild(layoutGroup.GetComponent<RectTransform>());
+			}
 		}
 	}
+
 }
