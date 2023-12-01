@@ -23,7 +23,7 @@ namespace TezosSDK.Tezos
         /// <summary>
         /// Currently used FA2 Contract.
         /// </summary>
-        IFA2 TokenContract { get; }
+        IFA2 TokenContract { get; set; }
 
         /// <summary>
         /// Current wallet tz balance.

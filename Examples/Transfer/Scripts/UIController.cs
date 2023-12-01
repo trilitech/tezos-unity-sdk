@@ -1,5 +1,6 @@
 using System.Linq;
 using TezosSDK.Beacon;
+using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
 using TMPro;
@@ -7,46 +8,88 @@ using UnityEngine;
 
 namespace TezosSDK.Transfer.Scripts
 {
+    public class UIController : MonoBehaviour
+    {
+        [SerializeField] private GameObject transferControls;
+        [SerializeField] private TextMeshProUGUI tokenIdsText;
+        [SerializeField] private ContractInfoUI contractInfoUI;
 
-	public class UIController : MonoBehaviour
-	{
-		[SerializeField] private GameObject transferControls;
-		[SerializeField] private TextMeshProUGUI tokenIdsText;
+        private void Start()
+        {
+            // Subscribe to account connection events
+            TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
+            TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
 
-		private void Start()
-		{
-			// Subscribe to account connection events
-			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnexted;
-			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
-			
-			transferControls.SetActive(false);
-		}
-		
-		private void OnAccountDisconnected(AccountInfo _)
-		{
-			transferControls.SetActive(false);
-		}
+            transferControls.SetActive(false);
+        }
 
-		private void OnAccountConnexted(AccountInfo _)
-		{
-			transferControls.SetActive(true);
+        private void OnAccountDisconnected(AccountInfo _)
+        {
+            transferControls.SetActive(false);
+        }
 
-			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
+        private void OnAccountConnected(AccountInfo _)
+        {
+            transferControls.SetActive(true);
 
-			if (string.IsNullOrEmpty(contractAddress))
-			{
-				return;
-			}
+            var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
 
-			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(tokens =>
-			{
-				var idsResult = tokens.Aggregate(string.Empty, (resultString, token) => $"{resultString}{token.TokenId}, ");
+            if (!string.IsNullOrEmpty(contractAddress))
+            {
+                GetContractTokenIds(contractAddress);
+                return;
+            }
 
-				tokenIdsText.text = idsResult[..^2];
-			}, contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
+            var getOriginatedContractsRoutine = TezosManager
+                .Instance
+                .Tezos
+                .GetOriginatedContracts(contracts =>
+                {
+                    var tokenContracts = contracts.ToList();
+                    if (!tokenContracts.Any())
+                    {
+                        var activeAddress = TezosManager
+                            .Instance
+                            .Tezos
+                            .Wallet
+                            .GetActiveAddress();
 
-			StartCoroutine(tokensForContractCoroutine);
-		}
-	}
+                        tokenIdsText.text = $"{activeAddress} didn't deployed any contract yet.";
+                        return;
+                    }
 
+                    var initializedContract = tokenContracts.First();
+                    TezosManager
+                        .Instance
+                        .Tezos
+                        .TokenContract = initializedContract;
+
+                    contractInfoUI.SetAddress(initializedContract.Address);
+                    GetContractTokenIds(initializedContract.Address);
+                });
+
+            StartCoroutine(getOriginatedContractsRoutine);
+        }
+
+        private void GetContractTokenIds(string contractAddress)
+        {
+            var tokensForContractCoroutine = TezosManager
+                .Instance
+                .Tezos
+                .API
+                .GetTokensForContract(
+                    callback: tokens =>
+                    {
+                        var idsResult = tokens
+                            .Aggregate(string.Empty, (resultString, token) => $"{resultString}{token.TokenId}, ");
+                        tokenIdsText.text = idsResult[..^2];
+                    },
+                    contractAddress: contractAddress,
+                    withMetadata: false,
+                    maxItems: 10_000,
+                    orderBy: new TokensForContractOrder.Default(0));
+
+            StartCoroutine(tokensForContractCoroutine);
+        }
+    }
 }

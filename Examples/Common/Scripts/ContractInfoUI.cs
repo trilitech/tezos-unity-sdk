@@ -8,64 +8,67 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace TezosSDK.Contract.Scripts
+namespace TezosSDK.Common.Scripts
 {
+    public class ContractInfoUI : MonoBehaviour
+    {
+        #region Serialized Fields
 
-	public class ContractInfoUI : MonoBehaviour
-	{
-		#region Serialized Fields
+        [SerializeField] private TMP_InputField addressText;
 
-		[SerializeField] private TMP_InputField addressText;
+        #endregion
 
-		#endregion
+        #region Constants and Fields
 
-		#region Constants and Fields
+        private readonly string _notConnectedText = "Not connected";
 
-		private readonly string _notConnectedText = "Not connected";
+        #endregion
 
-		#endregion
+        #region Unity Methods
 
-		#region Unity Methods
+        private void Start()
+        {
+            // Subscribe to wallet events
+            TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
+            TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+        }
 
-		private void Start()
-		{
-			// Subscribe to wallet events
-			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
-			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
-		}
+        #endregion
 
-		#endregion
+        #region Event Handlers
 
-		#region Event Handlers
+        private void OnAccountConnected(AccountInfo accountInfo)
+        {
+            var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
+            addressText.text = string.IsNullOrEmpty(contractAddress) ? "Not deployed" : contractAddress;
+            UpdateLayout(); // Update layout to fit the new text
+        }
 
-		private void OnAccountConnected(AccountInfo accountInfo)
-		{
-			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
-			addressText.text = string.IsNullOrEmpty(contractAddress) ? "Not deployed" : contractAddress;
-			UpdateLayout(); // Update layout to fit the new text
-		}
+        private void OnAccountDisconnected(AccountInfo accountInfo)
+        {
+            addressText.text = _notConnectedText;
+            UpdateLayout(); // Update layout to fit the new text
+        }
 
-		private void OnAccountDisconnected(AccountInfo accountInfo)
-		{
-			addressText.text = _notConnectedText;
-			UpdateLayout(); // Update layout to fit the new text
-		}
+        #endregion
 
-		#endregion
+        #region UI Methods
 
-		#region Private Methods
+        private void UpdateLayout()
+        {
+            var layoutGroup = GetComponent<HorizontalLayoutGroup>();
 
-		private void UpdateLayout()
-		{
-			var layoutGroup = GetComponent<HorizontalLayoutGroup>();
+            if (layoutGroup != null)
+            {
+                LayoutRebuilder.MarkLayoutForRebuild(layoutGroup.GetComponent<RectTransform>());
+            }
+        }
 
-			if (layoutGroup != null)
-			{
-				LayoutRebuilder.MarkLayoutForRebuild(layoutGroup.GetComponent<RectTransform>());
-			}
-		}
+        public void SetAddress(string address)
+        {
+            addressText.text = address;
+        }
 
-		#endregion
-	}
-
+        #endregion
+    }
 }
