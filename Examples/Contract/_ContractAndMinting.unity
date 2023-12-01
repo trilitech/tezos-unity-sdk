@@ -2215,6 +2215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tokensCountText: {fileID: 504392349}
+  contractInfoUI: {fileID: 1591891773}
 --- !u!1001 &1548664465
 PrefabInstance:
   m_ObjectHideFlags: 0

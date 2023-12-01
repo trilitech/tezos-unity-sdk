@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Beacon;
+using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -15,6 +17,7 @@ namespace TezosSDK.Contract.Scripts
 	public class MintToken : MonoBehaviour
 	{
 		[SerializeField] private TextMeshProUGUI tokensCountText;
+		[SerializeField] private ContractInfoUI contractInfoUI;
 
 		private void Start()
 		{
@@ -64,17 +67,54 @@ namespace TezosSDK.Contract.Scripts
 
 		private void GetTokensCount()
 		{
-			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
+			StartCoroutine(string.IsNullOrEmpty(TezosManager.Instance.Tezos.TokenContract.Address)
+				? GetOriginatedContractsRoutine()
+				: GetTokensForContractRoutine());
+		}
 
-			if (string.IsNullOrEmpty(contractAddress))
-			{
-				return;
-			}
+		private IEnumerator GetTokensForContractRoutine()
+		{
+			return TezosManager
+				.Instance
+				.Tezos
+				.API
+				.GetTokensForContract(
+					OnTokensFetched,
+					TezosManager.Instance.Tezos.TokenContract.Address,
+					false,
+					10_000,
+					new TokensForContractOrder.Default(0));
+		}
 
-			var routine = TezosManager.Instance.Tezos.API.GetTokensForContract(OnTokensFetched, contractAddress, false,
-				10_000, new TokensForContractOrder.Default(0));
+		private IEnumerator GetOriginatedContractsRoutine()
+		{
+			return TezosManager
+				.Instance
+				.Tezos
+				.GetOriginatedContracts(contracts =>
+				{
+					var tokenContracts = contracts.ToList();
+					if (!tokenContracts.Any())
+					{
+						var activeAddress = TezosManager
+							.Instance
+							.Tezos
+							.Wallet
+							.GetActiveAddress();
 
-			StartCoroutine(routine);
+						tokensCountText.text = $"{activeAddress} didn't deployed any contract yet.";
+						return;
+					}
+
+					var initializedContract = tokenContracts.First();
+					TezosManager
+						.Instance
+						.Tezos
+						.TokenContract = initializedContract;
+					contractInfoUI.SetAddress(initializedContract.Address);
+
+					StartCoroutine(GetTokensForContractRoutine());
+				});
 		}
 
 		private void OnTokenMinted(TokenBalance tokenBalance)
