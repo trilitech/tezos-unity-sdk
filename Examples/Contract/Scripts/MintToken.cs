@@ -102,7 +102,7 @@ namespace TezosSDK.Contract.Scripts
 							.Wallet
 							.GetActiveAddress();
 
-						tokensCountText.text = $"{activeAddress} didn't deployed any contract yet.";
+						tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
 						return;
 					}
 
@@ -111,6 +111,7 @@ namespace TezosSDK.Contract.Scripts
 						.Instance
 						.Tezos
 						.TokenContract = initializedContract;
+					
 					contractInfoUI.SetAddress(initializedContract.Address);
 
 					StartCoroutine(GetTokensForContractRoutine());
