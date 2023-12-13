@@ -1,30 +1,16 @@
-#region
-
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-#endregion
-
 namespace TezosSDK.Common.Scripts
 {
     public class ContractInfoUI : MonoBehaviour
     {
-        #region Serialized Fields
-
         [SerializeField] private TMP_InputField addressText;
 
-        #endregion
-
-        #region Constants and Fields
-
         private readonly string _notConnectedText = "Not connected";
-
-        #endregion
-
-        #region Unity Methods
 
         private void Start()
         {
@@ -32,10 +18,6 @@ namespace TezosSDK.Common.Scripts
             TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
             TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
         }
-
-        #endregion
-
-        #region Event Handlers
 
         private void OnAccountConnected(AccountInfo accountInfo)
         {
@@ -49,10 +31,6 @@ namespace TezosSDK.Common.Scripts
             addressText.text = _notConnectedText;
             UpdateLayout(); // Update layout to fit the new text
         }
-
-        #endregion
-
-        #region UI Methods
 
         private void UpdateLayout()
         {
@@ -68,7 +46,5 @@ namespace TezosSDK.Common.Scripts
         {
             addressText.text = address;
         }
-
-        #endregion
     }
 }

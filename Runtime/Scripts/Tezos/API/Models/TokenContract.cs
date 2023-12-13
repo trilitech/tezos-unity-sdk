@@ -30,6 +30,7 @@ namespace TezosSDK.Tezos.API.Models
 
         public TokenContract(string address)
         {
+            Debug.Log("TokenContract created with address: " + address);
             _wallet = TezosManager.Instance.Wallet;
             _tezosAPI = TezosManager.Instance.Tezos.API;
             Address = address;
@@ -37,6 +38,7 @@ namespace TezosSDK.Tezos.API.Models
 
         public TokenContract()
         {
+            Debug.Log("TokenContract created without address");
             _wallet = TezosManager.Instance.Wallet;
             _tezosAPI = TezosManager.Instance.Tezos.API;
         }
