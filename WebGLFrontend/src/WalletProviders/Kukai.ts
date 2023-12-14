@@ -5,6 +5,7 @@ import { KukaiEmbed } from "kukai-embed";
 class KukaiWallet extends BaseWallet implements Wallet {
   client: KukaiEmbed | null;
   networkName: string;
+  initInProgress: boolean;
 
   constructor(appName: string, appUrl: string, iconUrl: string) {
     super(appName, appUrl, iconUrl);
@@ -17,11 +18,14 @@ class KukaiWallet extends BaseWallet implements Wallet {
 
   async ConnectAccount() {
     if (!this.client?.initialized) {
+      if (this.initInProgress) return;
       this.client = new KukaiEmbed({
         net: this.networkName,
       });
-
+      
+      this.initInProgress = true;
       await this.client.init();
+      this.initInProgress = false;
     }
 
     if (this.client.user) {

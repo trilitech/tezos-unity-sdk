@@ -11,6 +11,7 @@ namespace TezosSDK.Tezos
         public NetworkType Network { get; set; } = NetworkType.ghostnet;
         public string RpcBaseUrl { get; set; } = $"https://{NetworkType.ghostnet.ToString()}.tezos.marigold.dev";
         public int DefaultTimeoutSeconds => 45;
+        public string pinataApiKey;
     }
 
     public interface IDataProviderConfig
