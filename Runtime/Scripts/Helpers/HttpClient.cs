@@ -27,21 +27,27 @@ namespace TezosSDK.Helpers
             RequestTimeout = config.TimeoutSeconds;
         }
 
-        protected IEnumerator GetJson(string path)
-        {
-            var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
-            request.SendWebRequest();
-            yield return new WaitUntil(() => request.isDone);
-            yield return DJson.Parse(request.downloadHandler.text, JsonOptions.DefaultOptions);
-            request.Dispose();
-        }
-
         protected IEnumerator GetJson<T>(string path)
         {
             var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
-            request.SendWebRequest();
-            yield return new WaitUntil(() => request.isDone);
-            yield return JsonSerializer.Deserialize<T>(request.downloadHandler.text, JsonOptions.DefaultOptions);
+            yield return request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Logger.LogError($"GetJson request failed with error: {request.error}");
+                request.Dispose();
+                yield break;
+            }
+
+            if (typeof(T) == typeof(string))
+            {
+                yield return DJson.Parse(request.downloadHandler.text, JsonOptions.DefaultOptions);
+            }
+            else
+            {
+                yield return JsonSerializer.Deserialize<T>(request.downloadHandler.text, JsonOptions.DefaultOptions);
+            }
+
             request.Dispose();
         }
 
