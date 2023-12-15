@@ -14,12 +14,11 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 	public class AccountInfoUI : MonoBehaviour
 	{
 		[SerializeField] private TMP_InputField addressText;
-
-		private readonly string _notConnectedText = "Not connected";
+		private const string NOT_CONNECTED_TEXT = "Not connected";
 
 		private void Start()
 		{
-			addressText.text = _notConnectedText;
+			addressText.text = NOT_CONNECTED_TEXT;
 
 			// Subscribe to events
 			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
@@ -38,7 +37,7 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 
 		private void OnAccountDisconnected(AccountInfo accountInfo)
 		{
-			addressText.text = _notConnectedText;
+			addressText.text = NOT_CONNECTED_TEXT;
 			UpdateLayout();
 		}
 

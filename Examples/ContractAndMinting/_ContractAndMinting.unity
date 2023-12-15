@@ -2544,7 +2544,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a88565b3f7deba244b4c7acdb4d7d114, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contractAddressText: {fileID: 807869515}
   tokensCountText: {fileID: 504392349}
   contractInfoUI: {fileID: 1591891773}
 --- !u!114 &1831117434
@@ -2592,7 +2591,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1831117433}
-        m_TargetAssemblyTypeName: DeployContractUI, com.trilitech.tezos-unity-sdk.examples
+        m_TargetAssemblyTypeName: TezosSDK.Contract.Scripts.DeployContract, com.trilitech.tezos-unity-sdk.examples
         m_MethodName: HandleDeploy
         m_Mode: 1
         m_Arguments:

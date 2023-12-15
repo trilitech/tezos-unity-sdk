@@ -177,25 +177,29 @@ namespace TezosSDK.Tezos.API.Models
             var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
             var creator = _wallet.GetActiveAddress();
 
-            void Callback(IEnumerable<TokenContract> contracts)
+            CoroutineRunner.Instance.StartWrappedCoroutine(
+                _tezosAPI.GetOriginatedContractsForOwner(OnGetContracts,
+                    creator,
+                    codeHash,
+                    maxItems: 1000,
+                    orderBy: new OriginatedContractsForOwnerOrder.Default(0)));
+
+            return;
+
+            void OnGetContracts(IEnumerable<TokenContract> contracts)
             {
                 var tokenContracts = contracts.ToList();
 
                 if (!tokenContracts.Any())
+                {
                     return;
+                }
 
                 var lastUsedContract = tokenContracts.Last();
                 Address = lastUsedContract.Address;
                 PlayerPrefs.SetString("CurrentContract:" + creator, lastUsedContract.Address);
                 _onDeployCompleted.Invoke(lastUsedContract.Address);
             }
-
-            CoroutineRunner.Instance.StartWrappedCoroutine(
-                _tezosAPI.GetOriginatedContractsForOwner(Callback,
-                    creator,
-                    codeHash,
-                    maxItems: 1000,
-                    orderBy: new OriginatedContractsForOwnerOrder.Default(0)));
         }
 
         private ContractScript GetContractScript()

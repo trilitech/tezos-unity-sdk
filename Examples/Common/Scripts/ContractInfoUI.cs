@@ -14,7 +14,7 @@ namespace TezosSDK.Common.Scripts
 	public class ContractInfoUI : MonoBehaviour
 	{
 		[SerializeField] private TMP_InputField addressText;
-		private readonly string _notConnectedText = "Not connected";
+		private const string NOT_CONNECTED_TEXT = "Not connected";
 
 		private void Start()
 		{
@@ -27,22 +27,22 @@ namespace TezosSDK.Common.Scripts
 		{
 			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
 			addressText.text = string.IsNullOrEmpty(contractAddress) ? "Not deployed" : contractAddress;
-			UpdateLayout(); // Update layout to fit the new text
+			UpdateLayout();
 		}
 
 		private void OnAccountDisconnected(AccountInfo accountInfo)
 		{
-			addressText.text = _notConnectedText;
-			UpdateLayout(); // Update layout to fit the new text
+			addressText.text = NOT_CONNECTED_TEXT;
+			UpdateLayout();
 		}
 
 		public void SetAddress(string address)
 		{
 			addressText.text = address;
-			UpdateLayout(); // Update layout to fit the new text
+			UpdateLayout();
 		}
 
-		private void UpdateLayout()
+		private void UpdateLayout() // Update layout to fit the new text
 		{
 			var layoutGroup = GetComponent<HorizontalLayoutGroup>();
 

@@ -71,27 +71,30 @@ namespace TezosSDK.Tezos.Wallet
         private IEnumerator TrackTransaction(string transactionHash)
         {
             var success = false;
-            const float timeout = 30f; // seconds
+            const float _timeout = 30f; // seconds
             var timestamp = Time.time;
 
             // keep making requests until time out or success
-            while (!success && Time.time - timestamp < timeout)
+            while (!success && Time.time - timestamp < _timeout)
             {
-                Logger.LogDebug($"Checking tx status: {transactionHash}");
+                Logger.LogDebug($"Checking transaction status: {transactionHash}");
 
                 yield return TezosManager
                     .Instance
                     .Tezos
                     .API
-                    .GetOperationStatus(result =>
-                    {
-                        if (result != null)
-                        {
-                            success = JsonSerializer.Deserialize<bool>(result);
-                        }
-                    }, transactionHash);
+                    .GetOperationStatus(OnStatusResponse, transactionHash);
 
                 yield return new WaitForSecondsRealtime(3);
+                continue;
+
+                void OnStatusResponse(bool? result) // local callback function
+                {
+                    if (result != null)
+                    {
+                        success = JsonSerializer.Deserialize<bool>(result);
+                    }
+                }
             }
 
             var operationResult = new OperationResult

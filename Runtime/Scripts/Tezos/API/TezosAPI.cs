@@ -238,6 +238,7 @@ namespace TezosSDK.Tezos.API
         {
             var url = $"operations/{operationHash}/status";
             var requestRoutine = GetJson<bool?>(url);
+            
             return new CoroutineWrapper<bool?>(
                 coroutine: requestRoutine,
                 callback: callback,

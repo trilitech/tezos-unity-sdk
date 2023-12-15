@@ -12,12 +12,13 @@ namespace TezosSDK.Contract.Scripts
 
 	public class DeployContract : MonoBehaviour
 	{
-		[SerializeField] private TMP_InputField contractAddressText;
 		[SerializeField] private TextMeshProUGUI tokensCountText;
 		[SerializeField] private ContractInfoUI contractInfoUI;
 
 		public void HandleDeploy()
 		{
+			// Deploy the contract
+			// The contract will be deployed to the active address
 			TezosManager.Instance.Tezos.TokenContract.Deploy(OnContractDeployed);
 		}
 

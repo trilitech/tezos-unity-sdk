@@ -54,20 +54,23 @@ namespace TezosSDK.Contract.Scripts
 				randomAmount);
 		}
 
-		private void Callback(IEnumerable<TokenContract> contracts)
+		private void GetContractsCallback(IEnumerable<TokenContract> contracts)
 		{
-			var tokenContracts = contracts.ToList();
+			var allTokenContracts = contracts.ToList();
 
-			if (!tokenContracts.Any())
+			if (!allTokenContracts.Any())
 			{
+				Logger.LogDebug("No contracts found");
 				var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
 				tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
 				return;
 			}
 
-			var initializedContract = tokenContracts.First();
-			TezosManager.Instance.Tezos.TokenContract = initializedContract;
-			contractInfoUI.SetAddress(initializedContract.Address);
+			var contract = allTokenContracts.First();
+			Logger.LogDebug($"Found {allTokenContracts.Count} contracts. Using {contract.Address}");
+			TezosManager.Instance.Tezos.TokenContract = contract; // set the TokenContract on the Tezos instance
+			
+			contractInfoUI.SetAddress(contract.Address);
 			StartCoroutine(GetTokensForContractRoutine());
 		}
 
@@ -88,20 +91,23 @@ namespace TezosSDK.Contract.Scripts
 			};
 		}
 
-		private IEnumerator GetOriginatedContractsRoutine()
+		private IEnumerator GetContractsRoutine()
 		{
-			return TezosManager.Instance.Tezos.GetOriginatedContracts(Callback);
+			return TezosManager.Instance.Tezos.GetOriginatedContracts(GetContractsCallback);
 		}
 
 		private void GetTokensCount()
 		{
 			StartCoroutine(string.IsNullOrEmpty(TezosManager.Instance.Tezos.TokenContract.Address)
-				? GetOriginatedContractsRoutine()
+				// if we don't have a contract address, get the originated (deployed) contracts
+				? GetContractsRoutine()
+				// otherwise, get the tokens for the deployed contract
 				: GetTokensForContractRoutine());
 		}
 
 		private IEnumerator GetTokensForContractRoutine()
 		{
+			Logger.LogDebug($"Getting tokens for contract {TezosManager.Instance.Tezos.TokenContract.Address}");
 			return TezosManager.Instance.Tezos.API.GetTokensForContract(OnTokensFetched,
 				TezosManager.Instance.Tezos.TokenContract.Address, false, 10_000,
 				new TokensForContractOrder.Default(0));
