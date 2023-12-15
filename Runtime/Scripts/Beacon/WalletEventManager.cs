@@ -34,7 +34,7 @@ namespace TezosSDK.Beacon
 		private Action<SignResult> payloadSigned;
 
 		/// <summary>
-		///     Occurs when an account connected successfully. Provides the account information.
+		///     Runs when an account connects successfully. Provides the account information.
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="AccountInfo" /> object containing the address and public key of the connected account.
@@ -53,7 +53,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when the connection to an account failed. Provides error information.
+		///     Runs when a connection to an account fails. Provides error information.
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed connection attempt.
@@ -72,7 +72,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when an account disconnected successfully. Provides the account information.
+		///     Runs when an account disconnects successfully. Provides the account information.
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="AccountInfo" /> object containing the address and public key of the disconnected account.
@@ -91,7 +91,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when a contract call completed successfully. Provides the result of the call.
+		///     Runs when a call to a smart contract is confirmed on the blockchain. Provides the result of the call.
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="OperationResult" /> object with the transaction hash and success status.
@@ -111,7 +111,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when a contract call fails. Provides error details.
+		///     Runs when a call to a smart contract fails. Provides error details.
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed contract call.
@@ -130,7 +130,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when a contract call is injected into the blockchain. Provides the result of the injection.
+		///     Runs when a call to a smart contract is sent to Tezos but before it has been included in a block and confirmed. Provides the hash of the transaction.
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="OperationResult" /> object containing the transaction hash and success status after the
@@ -150,7 +150,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when handshake data is received. Provides the handshake details.
+		///     Runs when a handshake with a user's wallet application is received. Provides the handshake details.
 		/// </summary>
 		/// <remarks>
 		///     Provides a <see cref="HandshakeData" /> object with the pairing information required for user completion.
@@ -170,7 +170,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when the pairing process with a DApp is completed successfully. Provides details of the pairing completion.
+		///     Runs when the user's wallet is connected but before the user has approved the connection in the wallet app. Provides details of the pairing completion.
 		/// </summary>
 		/// <remarks>
 		///     Provides a <see cref="PairingDoneData" /> object with details about the pairing, such as the DApp's public key and
@@ -192,7 +192,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Occurs when a payload has been signed. Provides the sign result.
+		///     Runs when the user signs a payload. Provides the sign result.
 		/// </summary>
 		/// <remarks>
 		///     Provides a <see cref="SignResult" /> object containing the signature value.

@@ -189,7 +189,7 @@ namespace TezosSDK.Tezos.API
             Action<JsonElement> callback,
             string contractAddress)
         {
-            var url = $"contracts/{contractAddress}?legacy=false";
+            var url = $"accounts/{contractAddress}?legacy=false";
             var requestRoutine = GetJson(url);
             yield return requestRoutine;
 
@@ -199,7 +199,7 @@ namespace TezosSDK.Tezos.API
                 var result = JsonSerializer
                     .Deserialize<JsonElement>(dJsonObject.ToString(), JsonOptions.DefaultOptions);
 
-                callback?.Invoke(result.GetProperty("metadata"));
+                callback?.Invoke(result.TryGetProperty("metadata", out var metadata) ? metadata : new JsonElement());
             }
         }
 

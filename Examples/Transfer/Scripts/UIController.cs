@@ -54,7 +54,7 @@ namespace TezosSDK.Transfer.Scripts
                             .Wallet
                             .GetActiveAddress();
 
-                        tokenIdsText.text = $"{activeAddress} didn't deployed any contract yet.";
+                        tokenIdsText.text = $"{activeAddress} didn't deploy any contract yet.";
                         return;
                     }
 
