@@ -8,6 +8,7 @@ using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Abstract;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos
 {
@@ -17,7 +18,6 @@ namespace TezosSDK.Tezos
     /// </summary>
     public class Tezos : ITezos
     {
-        public WalletEventManager EventManager { get; }
         public ITezosAPI API { get; }
         public IWalletProvider Wallet { get; }
         public IFA2 TokenContract { get; set; }
@@ -28,14 +28,25 @@ namespace TezosSDK.Tezos
             API = new TezosAPI(dataProviderConfig);
             
             Wallet = new WalletProvider(dAppMetadata);
+            Wallet.EventManager.AccountConnected += OnAccountConnected;
+        }
 
-            EventManager = Wallet.EventManager;
-            EventManager.AccountConnected += _ =>
+        private void OnAccountConnected(AccountInfo accountInfo)
+        {
+            var hasKey = PlayerPrefs.HasKey("CurrentContract:" + accountInfo.Address);
+
+            var address = hasKey ? PlayerPrefs.GetString("CurrentContract:" + accountInfo.Address) : string.Empty;
+
+            if (hasKey)
             {
-                TokenContract = PlayerPrefs.HasKey("CurrentContract:" + Wallet.GetActiveAddress())
-                    ? new TokenContract(PlayerPrefs.GetString("CurrentContract:" + Wallet.GetActiveAddress()))
-                    : new TokenContract();
-            };
+                Logger.LogDebug("Found contract address in player prefs: " + address);
+            }
+
+            TokenContract = !string.IsNullOrEmpty(address)
+                // if there is a contract address in the player prefs, use it
+                ? new TokenContract(address)
+                // otherwise, create a new contract
+                : new TokenContract();
         }
 
         public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)

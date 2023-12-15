@@ -96,7 +96,7 @@ namespace TezosSDK.Beacon
 					(res, scope) => res + $"{scope}, ") ?? string.Empty;
 
 				Logger.LogInfo(
-					$"We have active peer {activeAccountPermissions.AppMetadata.Name} with permissions {permissionsString}");
+					$"We have active peer with {activeAccountPermissions.AppMetadata.Name} with permissions {permissionsString}");
 
 				var accountConnectedEvent = CreateAccountConnectedEvent(activeAccountPermissions);
 

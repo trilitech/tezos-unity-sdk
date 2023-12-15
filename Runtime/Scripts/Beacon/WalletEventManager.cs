@@ -178,7 +178,6 @@ namespace TezosSDK.Beacon
 		///     Triggered when the pairing between the Tezos wallet and a DApp is completed. Reveals public key and a timestamp
 		///     indicating when the pairing was finalized.
 		/// </remarks>
-		/// TODO: If not called from WebGL and if it will stay that way, warn users? Or remove completely? Is this needed?
 		public event Action<PairingDoneData> PairingCompleted
 		{
 			add

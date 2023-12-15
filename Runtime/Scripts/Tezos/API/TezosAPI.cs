@@ -131,7 +131,7 @@ namespace TezosSDK.Tezos.API
             string contractAddress)
         {
             var requestRoutine =
-                GetJson($"tokens/balances?account={wallet}&token.contract={contractAddress}&balance.ne=0&select=id");
+                GetJson<string>($"tokens/balances?account={wallet}&token.contract={contractAddress}&balance.ne=0&select=id");
 
             yield return requestRoutine;
 
@@ -151,7 +151,7 @@ namespace TezosSDK.Tezos.API
             uint tokenId)
         {
             var requestRoutine =
-                GetJson(
+                GetJson<string>(
                     $"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id");
 
             yield return requestRoutine;
@@ -172,7 +172,7 @@ namespace TezosSDK.Tezos.API
             uint tokenId)
         {
             var url = $"tokens?contract={contractAddress}&tokenId={tokenId}&select=metadata";
-            var requestRoutine = GetJson(url);
+            var requestRoutine = GetJson<string>(url);
             yield return requestRoutine;
 
             if (requestRoutine.Current is DJsonArray { Length: 1 } dJsonArray)
@@ -190,7 +190,7 @@ namespace TezosSDK.Tezos.API
             string contractAddress)
         {
             var url = $"accounts/{contractAddress}?legacy=false";
-            var requestRoutine = GetJson(url);
+            var requestRoutine = GetJson<string>(url);
             yield return requestRoutine;
 
             if (requestRoutine.Current is DJsonObject dJsonObject)
