@@ -64,10 +64,10 @@ namespace TezosSDK.Tezos.API.Models
             void TokensReceived(IEnumerable<Token> tokens)
             {
                 var tokenId = tokens?.Count() ?? 0;
-                const string entrypoint = "mint";
+                const string _entrypoint = "mint";
 
                 var mintParameters = GetContractScript().BuildParameter(
-                        entrypoint: entrypoint,
+                        entrypoint: _entrypoint,
                         value: new
                         {
                             address = destination,
@@ -83,24 +83,31 @@ namespace TezosSDK.Tezos.API.Models
 
                 _wallet.CallContract(
                     contractAddress: Address,
-                    entryPoint: entrypoint,
+                    entryPoint: _entrypoint,
                     input: mintParameters);
             }
+            
+            
         }
 
-        private void MintCompleted(OperationResult operation_result)
+        private void MintCompleted(OperationResult operationResult)
         {
             var owner = _wallet.GetActiveAddress();
 
             var getOwnerTokensCoroutine = _tezosAPI
                 .GetTokensForOwner(
-                    callback: tokens => { _onMintCompleted.Invoke(tokens.Last()); },
+                    callback: GetTokensCallback,
                     owner,
                     withMetadata: true,
                     maxItems: 10_000,
                     orderBy: new TokensForOwnerOrder.Default(0));
 
             CoroutineRunner.Instance.StartWrappedCoroutine(getOwnerTokensCoroutine);
+        }
+
+        private void GetTokensCallback(IEnumerable<TokenBalance> tokens)
+        {
+            _onMintCompleted.Invoke(tokens.Last());
         }
 
         public void Transfer(
@@ -113,10 +120,10 @@ namespace TezosSDK.Tezos.API.Models
 
             var activeAddress = _wallet.GetActiveAddress();
 
-            const string entryPoint = "transfer";
+            const string _entry_point = "transfer";
 
             var param = GetContractScript().BuildParameter(
-                entrypoint: entryPoint,
+                entrypoint: _entry_point,
                 value: new List<object>
                 {
                     new
@@ -140,13 +147,13 @@ namespace TezosSDK.Tezos.API.Models
 
             _wallet.CallContract(
                 contractAddress: Address,
-                entryPoint: entryPoint,
+                entryPoint: _entry_point,
                 input: param);
         }
 
-        private void TransferCompleted(OperationResult operation_result)
+        private void TransferCompleted(OperationResult operationResult)
         {
-            var transactionHash = operation_result.TransactionHash;
+            var transactionHash = operationResult.TransactionHash;
             _onTransferCompleted.Invoke(transactionHash);
         }
 
@@ -165,22 +172,26 @@ namespace TezosSDK.Tezos.API.Models
             _wallet.OriginateContract(scriptWithAdmin);
         }
 
-        private void DeployCompleted(OperationResult operation_result)
+        private void DeployCompleted(OperationResult operationResult)
         {
             var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
             var creator = _wallet.GetActiveAddress();
 
-            CoroutineRunner.Instance.StartWrappedCoroutine(
-                _tezosAPI.GetOriginatedContractsForOwner(contracts =>
-                    {
-                        var tokenContracts = contracts.ToList();
-                        if (!tokenContracts.Any()) return;
+            void Callback(IEnumerable<TokenContract> contracts)
+            {
+                var tokenContracts = contracts.ToList();
 
-                        var lastUsedContract = tokenContracts.Last();
-                        Address = lastUsedContract.Address;
-                        PlayerPrefs.SetString("CurrentContract:" + creator, lastUsedContract.Address);
-                        _onDeployCompleted.Invoke(lastUsedContract.Address);
-                    },
+                if (!tokenContracts.Any())
+                    return;
+
+                var lastUsedContract = tokenContracts.Last();
+                Address = lastUsedContract.Address;
+                PlayerPrefs.SetString("CurrentContract:" + creator, lastUsedContract.Address);
+                _onDeployCompleted.Invoke(lastUsedContract.Address);
+            }
+
+            CoroutineRunner.Instance.StartWrappedCoroutine(
+                _tezosAPI.GetOriginatedContractsForOwner(Callback,
                     creator,
                     codeHash,
                     maxItems: 1000,

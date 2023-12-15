@@ -1,5 +1,9 @@
+#region
+
 using TezosSDK.Tezos;
 using UnityEngine;
+
+#endregion
 
 namespace TezosSDK.Contract.Scripts
 {

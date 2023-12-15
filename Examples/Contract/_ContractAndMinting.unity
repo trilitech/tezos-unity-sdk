@@ -123,6 +123,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &64767736
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 64767738}
+  - component: {fileID: 64767737}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &64767737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64767736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bab300dd77e7344ec8bf86cf1000c7bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &64767738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64767736}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 256.25903, y: 222.36032, z: -0.84094906}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &198723255
 GameObject:
   m_ObjectHideFlags: 0
@@ -2275,7 +2319,7 @@ GameObject:
   - component: {fileID: 1579681120}
   - component: {fileID: 1579681119}
   m_Layer: 5
-  m_Name: AccountAddress
+  m_Name: AccountInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2368,7 +2412,7 @@ GameObject:
   - component: {fileID: 1591891774}
   - component: {fileID: 1591891773}
   m_Layer: 5
-  m_Name: ContractAddress
+  m_Name: ContractInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2502,6 +2546,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   contractAddressText: {fileID: 807869515}
   tokensCountText: {fileID: 504392349}
+  contractInfoUI: {fileID: 1591891773}
 --- !u!114 &1831117434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3093,3 +3138,4 @@ SceneRoots:
   - {fileID: 641921256}
   - {fileID: 1170019371}
   - {fileID: 1548664465}
+  - {fileID: 64767738}

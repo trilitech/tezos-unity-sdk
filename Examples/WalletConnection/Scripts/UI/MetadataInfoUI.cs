@@ -1,6 +1,10 @@
+#region
+
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace TezosSDK.Examples.WalletConnection.Scripts
 {

@@ -1,7 +1,11 @@
+#region
+
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
+
+#endregion
 
 namespace TezosSDK.Transfer.Scripts
 {
@@ -14,15 +18,8 @@ namespace TezosSDK.Transfer.Scripts
 
 		public void HandleTransfer()
 		{
-			TezosManager
-				.Instance
-				.Tezos
-				.TokenContract
-				.Transfer(
-					completedCallback: TransferCompleted,
-					destination: address.text,
-					tokenId: int.Parse(id.text),
-					amount: int.Parse(amount.text));
+			TezosManager.Instance.Tezos.TokenContract.Transfer(TransferCompleted, address.text, int.Parse(id.text),
+				int.Parse(amount.text));
 		}
 
 		private void TransferCompleted(string txHash)

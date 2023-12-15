@@ -1,3 +1,5 @@
+#region
+
 using System.Linq;
 using TezosSDK.Beacon;
 using TezosSDK.Common.Scripts;
@@ -6,90 +8,77 @@ using TezosSDK.Tezos.API.Models.Filters;
 using TMPro;
 using UnityEngine;
 
+#endregion
+
 namespace TezosSDK.Transfer.Scripts
 {
-    public class UIController : MonoBehaviour
-    {
-        [SerializeField] private GameObject transferControls;
-        [SerializeField] private TextMeshProUGUI tokenIdsText;
-        [SerializeField] private ContractInfoUI contractInfoUI;
 
-        private void Start()
-        {
-            // Subscribe to account connection events
-            TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
-            TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+	public class UIController : MonoBehaviour
+	{
+		[SerializeField] private GameObject transferControls;
+		[SerializeField] private TextMeshProUGUI tokenIdsText;
+		[SerializeField] private ContractInfoUI contractInfoUI;
 
-            transferControls.SetActive(false);
-        }
+		private void Start()
+		{
+			// Subscribe to account connection events
+			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
+			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
 
-        private void OnAccountDisconnected(AccountInfo _)
-        {
-            transferControls.SetActive(false);
-        }
+			transferControls.SetActive(false);
+		}
 
-        private void OnAccountConnected(AccountInfo _)
-        {
-            transferControls.SetActive(true);
+		private void OnAccountConnected(AccountInfo _)
+		{
+			transferControls.SetActive(true);
 
-            var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
+			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
 
-            if (!string.IsNullOrEmpty(contractAddress))
-            {
-                GetContractTokenIds(contractAddress);
-                return;
-            }
+			if (!string.IsNullOrEmpty(contractAddress))
+			{
+				GetContractTokenIds(contractAddress);
+				return;
+			}
 
-            var getOriginatedContractsRoutine = TezosManager
-                .Instance
-                .Tezos
-                .GetOriginatedContracts(contracts =>
-                {
-                    var tokenContracts = contracts.ToList();
-                    if (!tokenContracts.Any())
-                    {
-                        var activeAddress = TezosManager
-                            .Instance
-                            .Tezos
-                            .Wallet
-                            .GetActiveAddress();
+			var getOriginatedContractsRoutine = TezosManager.Instance.Tezos.GetOriginatedContracts(contracts =>
+			{
+				var tokenContracts = contracts.ToList();
 
-                        tokenIdsText.text = $"{activeAddress} didn't deploy any contract yet.";
-                        return;
-                    }
+				if (!tokenContracts.Any())
+				{
+					var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
 
-                    var initializedContract = tokenContracts.First();
-                    TezosManager
-                        .Instance
-                        .Tezos
-                        .TokenContract = initializedContract;
+					tokenIdsText.text = $"{activeAddress} didn't deploy any contract yet.";
+					return;
+				}
 
-                    contractInfoUI.SetAddress(initializedContract.Address);
-                    GetContractTokenIds(initializedContract.Address);
-                });
+				var initializedContract = tokenContracts.First();
+				TezosManager.Instance.Tezos.TokenContract = initializedContract;
 
-            StartCoroutine(getOriginatedContractsRoutine);
-        }
+				contractInfoUI.SetAddress(initializedContract.Address);
+				GetContractTokenIds(initializedContract.Address);
+			});
 
-        private void GetContractTokenIds(string contractAddress)
-        {
-            var tokensForContractCoroutine = TezosManager
-                .Instance
-                .Tezos
-                .API
-                .GetTokensForContract(
-                    callback: tokens =>
-                    {
-                        var idsResult = tokens
-                            .Aggregate(string.Empty, (resultString, token) => $"{resultString}{token.TokenId}, ");
-                        tokenIdsText.text = idsResult[..^2];
-                    },
-                    contractAddress: contractAddress,
-                    withMetadata: false,
-                    maxItems: 10_000,
-                    orderBy: new TokensForContractOrder.Default(0));
+			StartCoroutine(getOriginatedContractsRoutine);
+		}
 
-            StartCoroutine(tokensForContractCoroutine);
-        }
-    }
+		private void OnAccountDisconnected(AccountInfo _)
+		{
+			transferControls.SetActive(false);
+		}
+
+		private void GetContractTokenIds(string contractAddress)
+		{
+			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(tokens =>
+			{
+				var idsResult = tokens.Aggregate(string.Empty,
+					(resultString, token) => $"{resultString}{token.TokenId}, ");
+
+				tokenIdsText.text = idsResult[..^2];
+			}, contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
+
+			StartCoroutine(tokensForContractCoroutine);
+		}
+	}
+
 }

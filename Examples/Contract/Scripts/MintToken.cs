@@ -1,15 +1,20 @@
+#region
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Beacon;
 using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
+using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TMPro;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 using Random = System.Random;
+
+#endregion
 
 namespace TezosSDK.Contract.Scripts
 {
@@ -45,13 +50,31 @@ namespace TezosSDK.Contract.Scripts
 			var destinationAddress = TezosManager.Instance.Wallet.GetActiveAddress();
 			var randomAmount = new Random().Next(1, 1024);
 
-			TezosManager.Instance.Tezos.TokenContract.Mint(OnTokenMinted, tokenMetadata, destinationAddress, randomAmount);
+			TezosManager.Instance.Tezos.TokenContract.Mint(OnTokenMinted, tokenMetadata, destinationAddress,
+				randomAmount);
+		}
+
+		private void Callback(IEnumerable<TokenContract> contracts)
+		{
+			var tokenContracts = contracts.ToList();
+
+			if (!tokenContracts.Any())
+			{
+				var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
+				tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
+				return;
+			}
+
+			var initializedContract = tokenContracts.First();
+			TezosManager.Instance.Tezos.TokenContract = initializedContract;
+			contractInfoUI.SetAddress(initializedContract.Address);
+			StartCoroutine(GetTokensForContractRoutine());
 		}
 
 		private TokenMetadata CreateRandomTokenMetadata()
 		{
 			var randomInt = new Random().Next(1, int.MaxValue);
-			const string imageAddress = "ipfs://QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK";
+			const string _image_address = "ipfs://QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK";
 
 			return new TokenMetadata
 			{
@@ -59,10 +82,15 @@ namespace TezosSDK.Contract.Scripts
 				Description = $"testDescription_{randomInt}",
 				Symbol = $"TST_{randomInt}",
 				Decimals = "0",
-				DisplayUri = imageAddress,
-				ArtifactUri = imageAddress,
-				ThumbnailUri = imageAddress
+				DisplayUri = _image_address,
+				ArtifactUri = _image_address,
+				ThumbnailUri = _image_address
 			};
+		}
+
+		private IEnumerator GetOriginatedContractsRoutine()
+		{
+			return TezosManager.Instance.Tezos.GetOriginatedContracts(Callback);
 		}
 
 		private void GetTokensCount()
@@ -74,48 +102,9 @@ namespace TezosSDK.Contract.Scripts
 
 		private IEnumerator GetTokensForContractRoutine()
 		{
-			return TezosManager
-				.Instance
-				.Tezos
-				.API
-				.GetTokensForContract(
-					OnTokensFetched,
-					TezosManager.Instance.Tezos.TokenContract.Address,
-					false,
-					10_000,
-					new TokensForContractOrder.Default(0));
-		}
-
-		private IEnumerator GetOriginatedContractsRoutine()
-		{
-			return TezosManager
-				.Instance
-				.Tezos
-				.GetOriginatedContracts(contracts =>
-				{
-					var tokenContracts = contracts.ToList();
-					if (!tokenContracts.Any())
-					{
-						var activeAddress = TezosManager
-							.Instance
-							.Tezos
-							.Wallet
-							.GetActiveAddress();
-
-						tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
-						return;
-					}
-
-					var initializedContract = tokenContracts.First();
-					TezosManager
-						.Instance
-						.Tezos
-						.TokenContract = initializedContract;
-					
-					contractInfoUI.SetAddress(initializedContract.Address);
-
-					StartCoroutine(GetTokensForContractRoutine());
-				});
+			return TezosManager.Instance.Tezos.API.GetTokensForContract(OnTokensFetched,
+				TezosManager.Instance.Tezos.TokenContract.Address, false, 10_000,
+				new TokensForContractOrder.Default(0));
 		}
 
 		private void OnTokenMinted(TokenBalance tokenBalance)

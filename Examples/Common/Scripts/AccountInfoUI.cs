@@ -13,19 +13,9 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 
 	public class AccountInfoUI : MonoBehaviour
 	{
-		#region Serialized Fields
-
 		[SerializeField] private TMP_InputField addressText;
 
-		#endregion
-
-		#region Constants and Fields
-
 		private readonly string _notConnectedText = "Not connected";
-
-		#endregion
-
-		#region Unity Methods
 
 		private void Start()
 		{
@@ -35,10 +25,6 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
 			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
 		}
-
-		#endregion
-
-		#region Event Handlers
 
 		private void OnAccountConnected(AccountInfo accountInfo)
 		{
@@ -56,10 +42,6 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			UpdateLayout();
 		}
 
-		#endregion
-
-		#region Private Methods
-
 		private void UpdateLayout()
 		{
 			var layoutGroup = GetComponent<HorizontalLayoutGroup>();
@@ -69,8 +51,6 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 				LayoutRebuilder.MarkLayoutForRebuild(layoutGroup.GetComponent<RectTransform>());
 			}
 		}
-
-		#endregion
 	}
 
 }

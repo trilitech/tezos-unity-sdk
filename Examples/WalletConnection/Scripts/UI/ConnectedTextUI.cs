@@ -1,6 +1,10 @@
+#region
+
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using UnityEngine;
+
+#endregion
 
 namespace TezosSDK.Examples.WalletConnection.Scripts
 {
@@ -19,12 +23,12 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			}
 		}
 
-		private void OnAccountConnected(AccountInfo account_info)
+		private void OnAccountConnected(AccountInfo accountInfo)
 		{
 			gameObject.SetActive(true);
 		}
 
-		private void OnAccountDisconnected(AccountInfo account_info)
+		private void OnAccountDisconnected(AccountInfo accountInfo)
 		{
 			gameObject.SetActive(false);
 		}

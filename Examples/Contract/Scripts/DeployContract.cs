@@ -1,6 +1,11 @@
+#region
+
+using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace TezosSDK.Contract.Scripts
 {
@@ -9,6 +14,7 @@ namespace TezosSDK.Contract.Scripts
 	{
 		[SerializeField] private TMP_InputField contractAddressText;
 		[SerializeField] private TextMeshProUGUI tokensCountText;
+		[SerializeField] private ContractInfoUI contractInfoUI;
 
 		public void HandleDeploy()
 		{
@@ -17,7 +23,7 @@ namespace TezosSDK.Contract.Scripts
 
 		private void OnContractDeployed(string contractAddress)
 		{
-			contractAddressText.text = contractAddress;
+			contractInfoUI.SetAddress(contractAddress);
 			tokensCountText.text = "0";
 		}
 	}

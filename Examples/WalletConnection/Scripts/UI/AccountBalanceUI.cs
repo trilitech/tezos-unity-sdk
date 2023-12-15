@@ -1,7 +1,11 @@
+#region
+
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace TezosSDK
 {
