@@ -1,13 +1,14 @@
 using TezosSDK.Beacon;
-using TezosSDK.DesignPattern.Singleton;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos
 {
-	public class TezosManager : SingletonMonoBehaviour<TezosManager>
+	public class TezosManager : MonoBehaviour
 	{
+		public static TezosManager Instance;
+		
 		[Header("App Configurations")]
 		[SerializeField] private string appName = "Default App Name";
 		[SerializeField] private string appUrl = "https://tezos.com";
@@ -16,7 +17,8 @@ namespace TezosSDK.Tezos
 		
 		[Tooltip("Logs will be printed to the console if the log level is equal or higher than this value.")]
 		[SerializeField] private Logger.LogLevel logLevel = Logger.LogLevel.Debug;
-
+		
+		
 		public DAppMetadata DAppMetadata { get; private set; }
 
 		public ITezos Tezos { get; private set; }
@@ -31,10 +33,17 @@ namespace TezosSDK.Tezos
 			get => Wallet?.EventManager;
 		}
 
-		protected override void Awake()
+		protected void Awake()
 		{
-			base.Awake();
+			if (Instance != null)
+			{
+				Destroy(gameObject);
+				return;
+			}
+            
+			Instance = this;
 			InitializeTezos();
+			DontDestroyOnLoad(gameObject);
 		}
 
 		private void InitializeTezos()
@@ -46,5 +55,4 @@ namespace TezosSDK.Tezos
 		}
 	}
 	
-
 }

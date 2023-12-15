@@ -147,7 +147,7 @@ namespace TezosSDK.Beacon
 				EventType = WalletEventManager.EventTypeHandshakeReceived,
 				Data = JsonUtility.ToJson(handshakeData)
 			};
-
+			
 			UnityMainThreadDispatcher.Enqueue(() => eventManager.HandleEvent(JsonUtility.ToJson(handshakeEvent)));
 		}
 

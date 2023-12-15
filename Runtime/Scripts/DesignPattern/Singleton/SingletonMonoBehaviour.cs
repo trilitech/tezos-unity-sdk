@@ -13,7 +13,7 @@ namespace TezosSDK.DesignPattern.Singleton
         /// <summary>
         /// Do not call this from another scope within OnDestroy(). Instead use IsInstantiated()
         /// </summary>
-        private static T _Instance; //Harmless 'suggestion' appears here in some code-editors. Known issue.
+        private static T _instance; //Harmless 'suggestion' appears here in some code-editors. Known issue.
         public static T Instance
         {
             //NOTE: Its recommended to wrap any calls to this getter with a IsInstanced() to prevent undesired instantiation. Optional.
@@ -23,9 +23,9 @@ namespace TezosSDK.DesignPattern.Singleton
                 {
                     Instantiate();
                 }
-                return _Instance;
+                return _instance;
             }
-            set { _Instance = value; }
+            set { _instance = value; }
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace TezosSDK.DesignPattern.Singleton
         /// <returns><c>true</c> if is instantiated; otherwise, <c>false</c>.</returns>
         public static bool IsInstantiated()
         {
-            return _Instance != null;
+            return _instance != null;
         }
 
         public delegate void OnInstantiateCompletedDelegate(T instance);
@@ -52,39 +52,38 @@ namespace TezosSDK.DesignPattern.Singleton
         /// </summary>
         public static T Instantiate()
         {
-            if (!IsInstantiated())
+            if (IsInstantiated()) return _instance;
+
+            var t = GameObject.FindObjectOfType<T>();
+            GameObject go = null;
+            if (t != null)
             {
-                T t = GameObject.FindObjectOfType<T>();
-                GameObject go = null;
-                if (t != null)
-                {
-                    go = t.gameObject;
-                }
-
-                if (go == null)
-                {
-                    go = new GameObject();
-                    _Instance = go.AddComponent<T>();
-                }
-                else
-                {
-                    _Instance = go.GetComponent<T>();
-                }
-
-                go.name = _Instance.GetType().Name;
-
-                //KLUGE: Must unparent/reparent before DontDestroyOnLoad to avoid error
-                Transform parent = go.transform.parent;
-                go.transform.SetParent(null);
-                DontDestroyOnLoad(go);
-                go.transform.SetParent(parent);
-
-                if (OnInstantiateCompleted != null)
-                {
-                    OnInstantiateCompleted(_Instance);
-                }
+                go = t.gameObject;
             }
-            return _Instance;
+
+            if (go == null)
+            {
+                go = new GameObject();
+                _instance = go.AddComponent<T>();
+            }
+            else
+            {
+                _instance = go.GetComponent<T>();
+            }
+
+            go.name = _instance.GetType().Name;
+
+            //KLUGE: Must unparent/reparent before DontDestroyOnLoad to avoid error
+            var parent = go.transform.parent;
+            go.transform.SetParent(null);
+            DontDestroyOnLoad(go);
+            go.transform.SetParent(parent);
+
+            if (OnInstantiateCompleted != null)
+            {
+                OnInstantiateCompleted(_instance);
+            }
+            return _instance;
         }
 
         protected virtual void Awake()
@@ -97,18 +96,17 @@ namespace TezosSDK.DesignPattern.Singleton
         /// </summary>
         public static void Destroy()
         {
-            if (IsInstantiated())
+            if (!IsInstantiated()) return;
+            
+            if (OnDestroying != null)
             {
-                if (OnDestroying != null)
-                {
-                    OnDestroying(_Instance);
-                }
-
-                // NOTE: Use 'DestroyImmediate'. At runtime its less important, but occasionally editor classes will call Destroy();
-                DestroyImmediate(_Instance.gameObject);
-
-                _Instance = null;
+                OnDestroying(_instance);
             }
+
+            // NOTE: Use 'DestroyImmediate'. At runtime its less important, but occasionally editor classes will call Destroy();
+            DestroyImmediate(_instance.gameObject);
+
+            _instance = null;
         }
 
         protected virtual void OnDestroy() { }

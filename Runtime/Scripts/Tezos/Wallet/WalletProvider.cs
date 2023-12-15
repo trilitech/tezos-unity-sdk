@@ -30,12 +30,9 @@ namespace TezosSDK.Tezos.Wallet
 
         private void InitBeaconConnector()
         {
-            // Create or get a WalletMessageReceiver Game object to receive callback messages
-            var event_manager = GameObject.Find("WalletEventManager");
-            EventManager = event_manager != null
-                ? event_manager.GetComponent<WalletEventManager>()
-                : new GameObject("WalletEventManager").AddComponent<WalletEventManager>();
-
+            // Get a WalletEventManager instance to receive callback messages
+            EventManager = WalletEventManager.Instance;
+            
             // Assign the BeaconConnector depending on the platform.
 #if !UNITY_EDITOR && UNITY_WEBGL
             _beaconConnector = new BeaconConnectorWebGl();
