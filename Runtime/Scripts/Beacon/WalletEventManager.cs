@@ -170,6 +170,7 @@ namespace TezosSDK.Beacon
 
 		/// <summary>
 		///     Runs when the user's wallet is connected but before the user has approved the connection in the wallet app. Provides details of the pairing completion.
+		///     Note: This event is not supported in WebGL builds.
 		/// </summary>
 		/// <remarks>
 		///     Provides a <see cref="PairingDoneData" /> object with details about the pairing, such as the DApp's public key and
@@ -182,6 +183,10 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
+				#if UNITY_WEBGL
+					Logger.LogWarning("PairingCompleted event is not supported in WebGL builds.");
+				#endif
+				
 				if (pairingCompleted == null || !pairingCompleted.GetInvocationList().Contains(value))
 				{
 					pairingCompleted += value;
