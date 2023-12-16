@@ -53,15 +53,15 @@ namespace TezosSDK.Beacon
             string network,
             string rpc,
             WalletProviderType walletProviderType,
-            DAppMetadata dAppMetadata)
+            DAppMetadata metadata)
         {
             JsInitWallet(
                 network,
                 rpc,
                 walletProviderType.ToString(),
-                dAppMetadata.Name,
-                dAppMetadata.Url,
-                dAppMetadata.Icon);
+                metadata.Name,
+                metadata.Url,
+                metadata.Icon);
         }
 
         public void OnReady()

@@ -58,6 +58,8 @@ namespace TezosSDK.Tezos.API.Models
                     orderBy: new TokensForContractOrder.Default(0));
 
             CoroutineRunner.Instance.StartWrappedCoroutine(getContractTokens);
+            
+            return;
 
             void TokensReceived(IEnumerable<Token> tokens)
             {
@@ -84,8 +86,6 @@ namespace TezosSDK.Tezos.API.Models
                     entryPoint: _entrypoint,
                     input: mintParameters);
             }
-            
-            
         }
 
         private void MintCompleted(OperationResult operationResult)
