@@ -1,108 +1,113 @@
 #if UNITY_WEBGL
 
+#region
+
 using System.Runtime.InteropServices;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 
+#endregion
+
 namespace TezosSDK.Beacon
 {
+
     /// <summary>
-    /// WebGL implementation of the BeaconConnector.
-    /// Binds the functions implemented inside the file BeaconConnection.jslib
+    ///     WebGL implementation of the BeaconConnector.
+    ///     Binds the functions implemented inside the file BeaconConnection.jslib
     /// </summary>
     public class BeaconConnectorWebGl : IBeaconConnector
-    {
-        #region Bridge to external functions
+	{
+		private string _activeAccountAddress;
 
-        [DllImport("__Internal")]
-        private static extern void JsInitWallet(
-            string network,
-            string rpc,
-            string walletProvider,
-            string appName,
-            string appUrl,
-            string iconUrl);
+		public void InitWalletProvider(
+			string network,
+			string rpc,
+			WalletProviderType walletProviderType,
+			DAppMetadata metadata)
+		{
+			JsInitWallet(network, rpc, walletProviderType.ToString(), metadata.Name, metadata.Url, metadata.Icon);
+		}
 
-        [DllImport("__Internal")]
-        private static extern void JsConnectAccount();
+		public void OnReady()
+		{
+			JsUnityReadyEvent();
+		}
 
-        [DllImport("__Internal")]
-        private static extern void JsDisconnectAccount();
+		public void ConnectAccount()
+		{
+			JsConnectAccount();
+		}
 
-        [DllImport("__Internal")]
-        private static extern void JsSendContractCall(string destination, string amount, string entryPoint, string arg);
+		public void DisconnectAccount()
+		{
+			JsDisconnectAccount();
+		}
 
-        [DllImport("__Internal")]
-        private static extern void JsSignPayload(int signingType, string payload);
+		public string GetActiveAccountAddress()
+		{
+			return JsGetActiveAccountAddress();
+		}
 
-        [DllImport("__Internal")]
-        private static extern string JsGetActiveAccountAddress();
+		public void RequestTezosPermission(string networkName = "", string networkRPC = "")
+		{
+		}
 
-        [DllImport("__Internal")]
-        private static extern string JsRequestContractOrigination(string script, string delegateAddress);
+		public void RequestTezosOperation(
+			string destination,
+			string entryPoint = "default",
+			string input = null,
+			ulong amount = 0,
+			string networkName = "",
+			string networkRPC = "")
+		{
+			JsSendContractCall(destination, amount.ToString(), entryPoint, input);
+		}
 
-        [DllImport("__Internal")]
-        private static extern string JsUnityReadyEvent();
+		public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
+		{
+			JsSignPayload((int)signingType, payload);
+		}
 
-        #endregion
+		public void RequestContractOrigination(string script, string delegateAddress = null)
+		{
+			JsRequestContractOrigination(script, delegateAddress);
+		}
 
-        private string _activeAccountAddress;
+		#region Bridge to external functions
 
-        public void InitWalletProvider(
-            string network,
-            string rpc,
-            WalletProviderType walletProviderType,
-            DAppMetadata metadata)
-        {
-            JsInitWallet(
-                network,
-                rpc,
-                walletProviderType.ToString(),
-                metadata.Name,
-                metadata.Url,
-                metadata.Icon);
-        }
+		[DllImport("__Internal")]
+		private static extern void JsInitWallet(
+			string network,
+			string rpc,
+			string walletProvider,
+			string appName,
+			string appUrl,
+			string iconUrl);
 
-        public void OnReady()
-        {
-            JsUnityReadyEvent();
-        }
+		[DllImport("__Internal")]
+		private static extern void JsConnectAccount();
 
-        public void ConnectAccount()
-        {
-            JsConnectAccount();
-        }
+		[DllImport("__Internal")]
+		private static extern void JsDisconnectAccount();
 
-        public void DisconnectAccount()
-        {
-            JsDisconnectAccount();
-        }
+		[DllImport("__Internal")]
+		private static extern void JsSendContractCall(string destination, string amount, string entryPoint, string arg);
 
-        public string GetActiveAccountAddress()
-        {
-            return JsGetActiveAccountAddress();
-        }
+		[DllImport("__Internal")]
+		private static extern void JsSignPayload(int signingType, string payload);
 
-        public void RequestTezosPermission(string networkName = "", string networkRPC = "")
-        {
-        }
+		[DllImport("__Internal")]
+		private static extern string JsGetActiveAccountAddress();
 
-        public void RequestTezosOperation(string destination, string entryPoint = "default", string arg = null,
-            ulong amount = 0, string networkName = "", string networkRPC = "")
-        {
-            JsSendContractCall(destination, amount.ToString(), entryPoint, arg);
-        }
+		[DllImport("__Internal")]
+		private static extern string JsRequestContractOrigination(string script, string delegateAddress);
 
-        public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
-        {
-            JsSignPayload((int)signingType, payload);
-        }
+		[DllImport("__Internal")]
+		private static extern string JsUnityReadyEvent();
 
-        public void RequestContractOrigination(string script, string delegateAddress = null)
-        {
-            JsRequestContractOrigination(script, delegateAddress);
-        }
-    }
+		#endregion
+	}
+
 }
 #endif

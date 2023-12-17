@@ -30,6 +30,121 @@ using Logger = TezosSDK.Helpers.Logger;
 namespace TezosSDK.Beacon
 {
 
+	public class OperationRequestHandler
+	{
+		private readonly WalletProviderInfo _walletProviderInfo;
+
+		public OperationRequestHandler(WalletProviderInfo walletProviderInfo)
+		{
+			_walletProviderInfo = walletProviderInfo;
+		}
+
+		public async Task RequestTezosPermission(
+			string networkName,
+			string networkRPC,
+			DappBeaconClient beaconDappClient)
+		{
+			if (!Enum.TryParse(networkName, out NetworkType networkType))
+			{
+				networkType = TezosConfig.Instance.Network;
+			}
+
+			var network = new BeaconNetwork
+			{
+				Type = networkType,
+				Name = _walletProviderInfo.Network,
+				RpcUrl = _walletProviderInfo.Rpc
+			};
+
+			var permissionScopes = new List<PermissionScope>
+			{
+				PermissionScope.operation_request,
+				PermissionScope.sign
+			};
+
+			var permissionRequest = new PermissionRequest(BeaconMessageType.permission_request, Constants.BeaconVersion,
+				KeyPairService.CreateGuid(), beaconDappClient.SenderId, beaconDappClient.Metadata, network,
+				permissionScopes);
+
+			var activePeer = beaconDappClient.GetActivePeer();
+
+			if (activePeer != null)
+			{
+				await beaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
+				Logger.LogInfo("Permission request sent");
+			}
+			else
+			{
+				Logger.LogError("No active peer found");
+			}
+		}
+
+		public Task RequestTezosOperation(
+			string destination,
+			string entryPoint,
+			string input,
+			ulong amount,
+			string networkName,
+			string networkRPC,
+			DappBeaconClient beaconDappClient)
+		{
+			var activeAccountPermissions = beaconDappClient.GetActiveAccount();
+
+			if (activeAccountPermissions == null)
+			{
+				Logger.LogError("No active permissions");
+				return Task.CompletedTask;
+			}
+
+			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
+
+			var operationDetails = new List<TezosBaseOperation>();
+
+			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount.ToString(), destination,
+				new JObject
+				{
+					["entrypoint"] = entryPoint,
+					["value"] = JToken.Parse(input)
+				});
+
+			operationDetails.Add(partialTezosTransactionOperation);
+
+			var operationRequest = new OperationRequest(BeaconMessageType.operation_request, Constants.BeaconVersion,
+				KeyPairService.CreateGuid(), beaconDappClient.SenderId, activeAccountPermissions.Network,
+				operationDetails, pubKey.Address);
+
+			Logger.LogDebug("requesting operation: " + operationRequest);
+			return beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
+		}
+
+		public Task RequestContractOrigination(string script, string delegateAddress, DappBeaconClient beaconDappClient)
+		{
+			var activeAccountPermissions = beaconDappClient.GetActiveAccount();
+
+			if (activeAccountPermissions == null)
+			{
+				Logger.LogError("No active permissions");
+				return Task.CompletedTask;
+			}
+
+			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
+
+			var operationDetails = new List<TezosBaseOperation>();
+
+			var partialTezosTransactionOperation = new PartialTezosOriginationOperation("0",
+				JObject.Parse(script), delegateAddress);
+
+			operationDetails.Add(partialTezosTransactionOperation);
+
+			var operationRequest = new OperationRequest(BeaconMessageType.operation_request, Constants.BeaconVersion,
+				KeyPairService.CreateGuid(), beaconDappClient.SenderId, activeAccountPermissions.Network,
+				operationDetails, pubKey.Address);
+
+			Logger.LogDebug("requesting operation: " + operationRequest);
+			return beaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
+		}
+	}
+
 	public class EventDispatcher
 	{
 		private readonly WalletEventManager _eventManager;
@@ -159,7 +274,6 @@ namespace TezosSDK.Beacon
 	public class BeaconClientManager : IDisposable
 	{
 		private readonly EventDispatcher _eventDispatcher;
-		private DappBeaconClient _beaconDappClient;
 		private WalletProviderInfo _walletProviderInfo;
 
 		public BeaconClientManager(EventDispatcher eventDispatcher, WalletProviderInfo walletProviderInfo)
@@ -168,24 +282,21 @@ namespace TezosSDK.Beacon
 			_walletProviderInfo = walletProviderInfo;
 		}
 
-		public DappBeaconClient BeaconDappClient
-		{
-			get => _beaconDappClient;
-		}
+		public DappBeaconClient BeaconDappClient { get; private set; }
 
 		public void Dispose()
 		{
-			_beaconDappClient?.Disconnect();
+			BeaconDappClient?.Disconnect();
 		}
 
 		public void ConnectAccount()
 		{
-			if (_beaconDappClient != null)
+			if (BeaconDappClient != null)
 			{
 				return;
 			}
 
-			_beaconDappClient = CreateAndInitializeBeaconClient();
+			BeaconDappClient = CreateAndInitializeBeaconClient();
 			ConnectAndHandleAccount();
 		}
 
@@ -199,10 +310,10 @@ namespace TezosSDK.Beacon
 		{
 			try
 			{
-				await _beaconDappClient.InitAsync();
-				Logger.LogInfo($"Dapp initialized: {_beaconDappClient.LoggedIn}");
-				_beaconDappClient.Connect();
-				Logger.LogInfo($"Dapp connected: {_beaconDappClient.Connected}");
+				await BeaconDappClient.InitAsync();
+				Logger.LogInfo($"Dapp initialized: {BeaconDappClient.LoggedIn}");
+				BeaconDappClient.Connect();
+				Logger.LogInfo($"Dapp connected: {BeaconDappClient.Connected}");
 			}
 			catch (Exception e)
 			{
@@ -212,7 +323,7 @@ namespace TezosSDK.Beacon
 
 		private void HandleActiveAccount()
 		{
-			var activeAccountPermissions = _beaconDappClient.GetActiveAccount();
+			var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
 
 			if (activeAccountPermissions != null)
 			{
@@ -222,11 +333,11 @@ namespace TezosSDK.Beacon
 				Logger.LogInfo($"We have active peer with \"{activeAccountPermissions.AppMetadata.Name}\"");
 				Logger.LogInfo($"Permissions: {permissionsString}");
 
-				_eventDispatcher.DispatchAccountConnectedEvent(_beaconDappClient);
+				_eventDispatcher.DispatchAccountConnectedEvent(BeaconDappClient);
 			}
 			else
 			{
-				_eventDispatcher.DispatchHandshakeEvent(_beaconDappClient);
+				_eventDispatcher.DispatchHandshakeEvent(BeaconDappClient);
 			}
 		}
 
@@ -245,7 +356,7 @@ namespace TezosSDK.Beacon
 		{
 			if (e.PairingDone)
 			{
-				_eventDispatcher.DispathPairingDoneEvent(_beaconDappClient);
+				_eventDispatcher.DispathPairingDoneEvent(BeaconDappClient);
 				return;
 			}
 
@@ -264,9 +375,9 @@ namespace TezosSDK.Beacon
 						(res, scope) => res + $"{scope}, ");
 
 					Logger.LogDebug(
-						$"{_beaconDappClient.AppName} received permissions {permissionsString} from {permissionResponse.AppMetadata.Name} with public key {permissionResponse.PublicKey}");
+						$"{BeaconDappClient.AppName} received permissions {permissionsString} from {permissionResponse.AppMetadata.Name} with public key {permissionResponse.PublicKey}");
 
-					_eventDispatcher.DispatchAccountConnectedEvent(_beaconDappClient);
+					_eventDispatcher.DispatchAccountConnectedEvent(BeaconDappClient);
 
 					break;
 				}
@@ -293,7 +404,7 @@ namespace TezosSDK.Beacon
 					}
 
 					var senderPermissions =
-						await _beaconDappClient.PermissionInfoRepository.TryReadBySenderIdAsync(signPayloadResponse
+						await BeaconDappClient.PermissionInfoRepository.TryReadBySenderIdAsync(signPayloadResponse
 							.SenderId);
 
 					if (senderPermissions == null)
@@ -305,14 +416,6 @@ namespace TezosSDK.Beacon
 					break;
 				}
 			}
-		}
-
-		private void InitializeBeaconClient(BeaconOptions options)
-		{
-			_beaconDappClient =
-				BeaconClientFactory.Create<IDappBeaconClient>(options, new MyLoggerProvider()) as DappBeaconClient;
-
-			_beaconDappClient.OnBeaconMessageReceived += OnBeaconDappClientMessageReceived;
 		}
 
 		private BeaconOptions CreateBeaconOptions()
@@ -340,7 +443,7 @@ namespace TezosSDK.Beacon
 
 		public void DisconnectAccount()
 		{
-			var activeAccount = _beaconDappClient.GetActiveAccount();
+			var activeAccount = BeaconDappClient.GetActiveAccount();
 
 			if (activeAccount == null)
 			{
@@ -348,13 +451,13 @@ namespace TezosSDK.Beacon
 				return;
 			}
 
-			_beaconDappClient.RemoveActiveAccounts();
-			_eventDispatcher.DispatchAccountDisconnectedEvent(_beaconDappClient);
+			BeaconDappClient.RemoveActiveAccounts();
+			_eventDispatcher.DispatchAccountDisconnectedEvent(BeaconDappClient);
 		}
 
 		public string GetActiveAccountAddress()
 		{
-			return _beaconDappClient?.GetActiveAccount()?.Address ?? string.Empty;
+			return BeaconDappClient?.GetActiveAccount()?.Address ?? string.Empty;
 		}
 
 		public void InitWalletProvider(
@@ -385,7 +488,7 @@ namespace TezosSDK.Beacon
 	{
 		private readonly BeaconClientManager _beaconClientManager;
 		private readonly EventDispatcher _eventDispatcher;
-		private readonly WalletProviderInfo _walletProviderInfo;
+		private readonly OperationRequestHandler _operationRequestHandler;
 
 		public BeaconConnectorDotNet(
 			WalletEventManager eventManager,
@@ -394,7 +497,7 @@ namespace TezosSDK.Beacon
 			WalletProviderType walletProviderType,
 			DAppMetadata dAppMetadata)
 		{
-			_walletProviderInfo = new WalletProviderInfo
+			var walletProviderInfo = new WalletProviderInfo
 			{
 				Network = network,
 				Rpc = rpc,
@@ -403,7 +506,8 @@ namespace TezosSDK.Beacon
 			};
 
 			_eventDispatcher = new EventDispatcher(eventManager);
-			_beaconClientManager = new BeaconClientManager(_eventDispatcher, _walletProviderInfo);
+			_beaconClientManager = new BeaconClientManager(_eventDispatcher, walletProviderInfo);
+			_operationRequestHandler = new OperationRequestHandler(walletProviderInfo);
 		}
 
 		private DappBeaconClient BeaconDappClient
@@ -428,108 +532,29 @@ namespace TezosSDK.Beacon
 
 		public async void RequestTezosPermission(string networkName = "", string networkRPC = "")
 		{
-			if (!Enum.TryParse(networkName, out NetworkType networkType))
-			{
-				networkType = TezosConfig.Instance.Network;
-			}
-
-			var network = new BeaconNetwork
-			{
-				Type = networkType,
-				Name = _walletProviderInfo.Network,
-				RpcUrl = _walletProviderInfo.Rpc
-			};
-
-			var permissionScopes = new List<PermissionScope>
-			{
-				PermissionScope.operation_request,
-				PermissionScope.sign
-			};
-
-			var permissionRequest = new PermissionRequest(BeaconMessageType.permission_request, Constants.BeaconVersion,
-				KeyPairService.CreateGuid(), BeaconDappClient.SenderId, BeaconDappClient.Metadata, network,
-				permissionScopes);
-
-			var activePeer = BeaconDappClient.GetActivePeer();
-
-			if (activePeer != null)
-			{
-				await BeaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
-				Logger.LogInfo("Permission request sent");
-			}
-			else
-			{
-				Logger.LogError("No active peer found");
-			}
+			await _operationRequestHandler.RequestTezosPermission(networkName, networkRPC, BeaconDappClient);
 		}
 
 		public async void RequestTezosOperation(
 			string destination,
 			string entryPoint = "default",
-			string arg = null,
+			string input = null,
 			ulong amount = 0,
 			string networkName = "",
 			string networkRPC = "")
 		{
-			var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
-
-			if (activeAccountPermissions == null)
-			{
-				Logger.LogError("No active permissions");
-				return;
-			}
-
-			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
-
-			var operationDetails = new List<TezosBaseOperation>();
-
-			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount.ToString(), destination,
-				new JObject
-				{
-					["entrypoint"] = entryPoint,
-					["value"] = JToken.Parse(arg)
-				});
-
-			operationDetails.Add(partialTezosTransactionOperation);
-
-			var operationRequest = new OperationRequest(BeaconMessageType.operation_request, Constants.BeaconVersion,
-				KeyPairService.CreateGuid(), BeaconDappClient.SenderId, activeAccountPermissions.Network,
-				operationDetails, pubKey.Address);
-
-			Logger.LogDebug("requesting operation: " + operationRequest);
-			await BeaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
+			await _operationRequestHandler.RequestTezosOperation(destination, entryPoint, input, amount, networkName,
+				networkRPC, BeaconDappClient);
 		}
 
 		public async void RequestContractOrigination(string script, string delegateAddress)
 		{
-			var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
-
-			if (activeAccountPermissions == null)
-			{
-				Logger.LogError("No active permissions");
-				return;
-			}
-
-			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
-
-			var operationDetails = new List<TezosBaseOperation>();
-
-			var partialTezosTransactionOperation = new PartialTezosOriginationOperation("0",
-				JObject.Parse(script), delegateAddress);
-
-			operationDetails.Add(partialTezosTransactionOperation);
-
-			var operationRequest = new OperationRequest(BeaconMessageType.operation_request, Constants.BeaconVersion,
-				KeyPairService.CreateGuid(), BeaconDappClient.SenderId, activeAccountPermissions.Network,
-				operationDetails, pubKey.Address);
-
-			Logger.LogDebug("requesting operation: " + operationRequest);
-			await BeaconDappClient.SendResponseAsync(activeAccountPermissions.SenderId, operationRequest);
+			await _operationRequestHandler.RequestContractOrigination(script, delegateAddress, BeaconDappClient);
 		}
 
-		public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
+		public async void RequestTezosSignPayload(SignPayloadType signingType, string payload)
 		{
-			BeaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signingType, payload), signingType);
+			await BeaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signingType, payload), signingType);
 		}
 
 		public void InitWalletProvider(

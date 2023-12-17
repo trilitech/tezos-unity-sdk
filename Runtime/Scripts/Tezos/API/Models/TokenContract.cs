@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using Netezos.Contracts;
 using Netezos.Encoding;
+using Newtonsoft.Json.Linq;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
@@ -11,7 +12,6 @@ using TezosSDK.Tezos.API.Models.Tokens;
 using UnityEngine;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.Wallet;
-using Unity.Plastic.Newtonsoft.Json.Linq;
 
 namespace TezosSDK.Tezos.API.Models
 {
