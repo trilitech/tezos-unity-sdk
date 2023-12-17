@@ -34,7 +34,7 @@ namespace TezosSDK.Helpers
 
             if (request.result != UnityWebRequest.Result.Success)
             {
-                Logger.LogError($"GetJson request failed with error: {request.error}");
+                Logger.LogError($"GetJson request failed with error: {request.error} - on url: {request.url}");
                 request.Dispose();
                 yield break;
             }

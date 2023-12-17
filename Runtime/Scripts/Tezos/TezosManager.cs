@@ -8,27 +8,44 @@ namespace TezosSDK.Tezos
 {
 	public class TezosManager : SingletonMonoBehaviour<TezosManager>
 	{
-		[Header("App Configurations")]
+		[Header("App Configuration")]
 		[SerializeField] private string appName = "Default App Name";
 		[SerializeField] private string appUrl = "https://tezos.com";
 		[SerializeField] private string appIcon = "https://tezos.com/favicon.ico";
 		[SerializeField] private string appDescription = "App Description";
 		
+		[Space(20)]
+		[Header("SDK Configuration")]
+		
 		[Tooltip("Logs will be printed to the console if the log level is equal or higher than this value.")]
 		[SerializeField] private Logger.LogLevel logLevel = Logger.LogLevel.Debug;
+		
 		[Tooltip("Create API key in Pinata service https://app.pinata.cloud/developers/api-keys and paste JWT value " +
 		         "here to be able to upload images to IPFS.")]
 		[SerializeField] private string pinataApiKey;
+		
+		[Tooltip("Should we open wallet app on mobiles after connect?")]
+		[SerializeField] private bool redirectToWallet = true;
+		
 
 		public DAppMetadata DAppMetadata { get; private set; }
 
 		public ITezos Tezos { get; private set; }
 
-		public IWalletProvider Wallet => Tezos?.Wallet;
+		public IWalletProvider Wallet
+		{
+			get => Tezos?.Wallet;
+		}
 
-		public WalletEventManager MessageReceiver => Wallet?.EventManager;
+		public WalletEventManager MessageReceiver
+		{
+			get => Wallet?.EventManager;
+		}
 
-		public static string PinataApiKey => TezosConfig.Instance.pinataApiKey;
+		public static string PinataApiKey
+		{
+			get => TezosConfig.Instance.pinataApiKey;
+		}
 
 		protected override void Awake()
 		{
@@ -42,7 +59,7 @@ namespace TezosSDK.Tezos
 			TezosConfig.Instance.pinataApiKey = pinataApiKey;
 			
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
-			Tezos = new Tezos(DAppMetadata);
+			Tezos = new Tezos(DAppMetadata, redirectToWallet);
 		}
 	}
 }
