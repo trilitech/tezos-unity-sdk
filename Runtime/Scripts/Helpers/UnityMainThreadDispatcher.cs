@@ -15,6 +15,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TezosSDK.DesignPattern.Singleton;
 using UnityEngine;
 
 namespace TezosSDK.Helpers
@@ -24,17 +25,17 @@ namespace TezosSDK.Helpers
     /// A thread-safe class which holds a queue with actions to execute on the next Update() method. It can be used to make calls to the main thread for
     /// things such as UI Manipulation in Unity. It was developed for use in combination with the Firebase Unity plugin, which uses separate threads for event handling
     /// </summary>
-    public class UnityMainThreadDispatcher : MonoBehaviour
+    public class UnityMainThreadDispatcher : SingletonMonoBehaviour<UnityMainThreadDispatcher>
     {
-        private static readonly Queue<Action> _executionQueue = new();
+        private static readonly Queue<Action> ExecutionQueue = new();
 
         public void Update()
         {
-            lock (_executionQueue)
+            lock (ExecutionQueue)
             {
-                while (_executionQueue.Count > 0)
+                while (ExecutionQueue.Count > 0)
                 {
-                    _executionQueue.Dequeue().Invoke();
+                    ExecutionQueue.Dequeue().Invoke();
                 }
             }
         }
@@ -45,10 +46,10 @@ namespace TezosSDK.Helpers
         /// <param name="action">IEnumerator function that will be executed from the main thread.</param>
         public void Enqueue(IEnumerator action)
         {
-            lock (_executionQueue)
+            lock (ExecutionQueue)
             {
                 var coroutine = new CoroutineWrapper<object>(action, null, (exception) => Debug.LogError($"Exception on MainThread Queue: {exception.Message}"));
-                _executionQueue.Enqueue(() => { 
+                ExecutionQueue.Enqueue(() => { 
                     StartCoroutine(coroutine); 
                 });
             }
@@ -60,7 +61,7 @@ namespace TezosSDK.Helpers
         /// <param name="action">function that will be executed from the main thread.</param>
         public static void Enqueue(Action action)
         {
-            Instance().Enqueue(ActionWrapper(action));
+            Instance.Enqueue(ActionWrapper(action));
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace TezosSDK.Helpers
         /// <param name="parameter">function parameter.</param>
         public static void Enqueue<T>(Action<T> action, T parameter)
         {
-            Instance().Enqueue(ActionWrapper(action, parameter));
+            Instance.Enqueue(ActionWrapper(action, parameter));
         }
 
         /// <summary>
@@ -110,39 +111,6 @@ namespace TezosSDK.Helpers
         {
             yield return null;
             function.Invoke(parameter);
-        }
-
-        private static UnityMainThreadDispatcher _instance;
-
-        private static bool Exists()
-        {
-            return _instance != null;
-        }
-
-        public static UnityMainThreadDispatcher Instance()
-        {
-            if (!Exists())
-            {
-                throw new Exception(
-                    "UnityMainThreadDispatcher could not find the UnityMainThreadDispatcher object. Please ensure you have added the MainThreadExecutor Prefab to your scene.");
-            }
-
-            return _instance;
-        }
-
-
-        void Awake()
-        {
-            if (_instance == null)
-            {
-                _instance = this;
-                DontDestroyOnLoad(this.gameObject);
-            }
-        }
-
-        void OnDestroy()
-        {
-            _instance = null;
         }
     }
 }

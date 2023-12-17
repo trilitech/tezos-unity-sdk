@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using TezosSDK.DesignPattern.Singleton;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -10,7 +11,7 @@ namespace TezosSDK.Beacon
 	///     Manages event propagation within a Unity environment for wallet-related actions specific to the Tezos blockchain.
 	///     Handles incoming JSON event data and triggers corresponding C# events to handle these wallet actions.
 	/// </summary>
-	public class WalletEventManager : MonoBehaviour
+	public class WalletEventManager : SingletonMonoBehaviour<WalletEventManager>
 	{
 		public const string EventTypeAccountConnected = "AccountConnected";
 		public const string EventTypeAccountConnectionFailed = "AccountConnectionFailed";

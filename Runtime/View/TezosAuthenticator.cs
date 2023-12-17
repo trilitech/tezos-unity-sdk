@@ -19,7 +19,7 @@ namespace TezosSDK.View
         // Platform flags to determine the current running platform
         private bool _isMobile;
         private bool _isWebGL;
-        
+
         private void Start()
         {
             InitializeTezos();
@@ -113,6 +113,15 @@ namespace TezosSDK.View
             {
                 contentPanel.SetActive(isAuthenticated);
             }
+        }
+
+        private void OnDisable()
+        {
+            if (Tezos == null) return;
+            
+            Tezos.Wallet.EventManager.HandshakeReceived -= OnHandshakeReceived;
+            Tezos.Wallet.EventManager.AccountConnected -= OnAccountConnected;
+            Tezos.Wallet.EventManager.AccountDisconnected -= OnAccountDisconnected;
         }
     }
     

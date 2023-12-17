@@ -1,14 +1,15 @@
 using TezosSDK.Beacon;
-using TezosSDK.DesignPattern.Singleton;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos
 {
-	public class TezosManager : SingletonMonoBehaviour<TezosManager>
+	public class TezosManager : MonoBehaviour
 	{
-		[Header("App Configuration")]
+		public static TezosManager Instance;
+		
+		[Header("App Configurations")]
 		[SerializeField] private string appName = "Default App Name";
 		[SerializeField] private string appUrl = "https://tezos.com";
 		[SerializeField] private string appIcon = "https://tezos.com/favicon.ico";
@@ -47,10 +48,17 @@ namespace TezosSDK.Tezos
 			get => TezosConfig.Instance.pinataApiKey;
 		}
 
-		protected override void Awake()
+		protected void Awake()
 		{
-			base.Awake();
+			if (Instance != null)
+			{
+				Destroy(gameObject);
+				return;
+			}
+            
+			Instance = this;
 			InitializeTezos();
+			DontDestroyOnLoad(gameObject);
 		}
 
 		private void InitializeTezos()
