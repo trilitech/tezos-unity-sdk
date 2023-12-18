@@ -275,6 +275,9 @@ namespace TezosSDK.Tezos.API
             long maxItems,
             OriginatedContractsForOwnerOrder orderBy)
         {
+            
+            Logger.LogDebug($"GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}, maxItems={maxItems}, orderBy={orderBy} callback={callback}");
+            
             var sort = orderBy switch
             {
                 OriginatedContractsForOwnerOrder.Default byDefault =>
@@ -291,6 +294,7 @@ namespace TezosSDK.Tezos.API
                       $",id&{sort}&limit={maxItems}";
 
             var requestRoutine = GetJson<IEnumerable<TokenContract>>(url);
+            
             yield return new CoroutineWrapper<IEnumerable<TokenContract>>(
                 requestRoutine,
                 callback: callback,

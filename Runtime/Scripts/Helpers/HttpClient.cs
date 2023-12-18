@@ -66,6 +66,7 @@ namespace TezosSDK.Helpers
         private UnityWebRequest GetUnityWebRequest(string method, string path)
         {
             var request = new UnityWebRequest($"{BaseAddress}{path}", method);
+            Logger.LogDebug($"Sending {method} request to {request.url}");
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader(HttpHeaders.Accept.Key, HttpHeaders.Accept.Value);
             request.SetRequestHeader(HttpHeaders.UserAgent.Key, HttpHeaders.UserAgent.Value);

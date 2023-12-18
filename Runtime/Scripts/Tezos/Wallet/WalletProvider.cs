@@ -60,6 +60,12 @@ namespace TezosSDK.Tezos.Wallet
 
 		public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
 		{
+			_beaconConnector.InitWalletProvider(
+				network: TezosConfig.Instance.Network.ToString(),
+				rpc: TezosConfig.Instance.RpcBaseUrl,
+				walletProviderType: walletProvider,
+				metadata: _dAppMetadata);
+			
 			_beaconConnector.ConnectAccount();
 			IsConnected = true;
 		}

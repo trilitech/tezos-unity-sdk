@@ -27,7 +27,7 @@ namespace TezosSDK.Tezos
             var dataProviderConfig = new TzKTProviderConfig();
             API = new TezosAPI(dataProviderConfig);
             
-            Wallet = new WalletProvider(dAppMetadata, withRedirectToWallet: redirectToWallet);
+            Wallet = new WalletProvider(dAppMetadata, redirectToWallet);
             Wallet.EventManager.AccountConnected += OnAccountConnected;
         }
 
@@ -39,7 +39,7 @@ namespace TezosSDK.Tezos
 
             if (hasKey)
             {
-                Logger.LogDebug("Found contract address in player prefs: " + address);
+                Logger.LogInfo("Found deployed contract address in player prefs: " + address);
             }
 
             TokenContract = !string.IsNullOrEmpty(address)
