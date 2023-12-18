@@ -12,11 +12,11 @@ using TezosSDK.Tezos.Wallet;
 namespace TezosSDK.Beacon
 {
 
-    /// <summary>
-    ///     WebGL implementation of the BeaconConnector.
-    ///     Binds the functions implemented inside the file BeaconConnection.jslib
-    /// </summary>
-    public class BeaconConnectorWebGl : IBeaconConnector
+	/// <summary>
+	///     WebGL implementation of the BeaconConnector.
+	///     Binds the functions implemented inside the file BeaconConnection.jslib
+	/// </summary>
+	public class BeaconConnectorWebGl : IBeaconConnector
 	{
 		private string _activeAccountAddress;
 

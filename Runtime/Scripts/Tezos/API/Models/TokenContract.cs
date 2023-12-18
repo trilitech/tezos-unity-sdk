@@ -1,216 +1,177 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using Newtonsoft.Json.Linq;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models.Abstract;
-using TezosSDK.Tezos.API.Models.Tokens;
-using UnityEngine;
 using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
+using UnityEngine;
+
+#endregion
 
 namespace TezosSDK.Tezos.API.Models
 {
-    public class TokenContract : IFA2
-    {
-        public string Address { get; set; }
-        public int TokensCount { get; set; }
-        public DateTime LastActivityTime { get; set; }
 
-        private Action<TokenBalance> _onMintCompleted;
-        private Action<string> _onTransferCompleted;
-        private Action<string> _onDeployCompleted;
+	public class TokenContract : IFA2
+	{
+		private readonly ITezosAPI _tezosAPI;
+		private readonly IWalletProvider _wallet;
 
-        private readonly IWalletProvider _wallet;
-        private readonly ITezosAPI _tezosAPI;
+		private Action<string> _onDeployCompleted;
+		private Action<TokenBalance> _onMintCompleted;
+		private Action<string> _onTransferCompleted;
 
-        public TokenContract(string address)
-        {
-            _wallet = TezosManager.Instance.Wallet;
-            _tezosAPI = TezosManager.Instance.Tezos.API;
-            Address = address;
-        }
+		public TokenContract(string address)
+		{
+			_wallet = TezosManager.Instance.Wallet;
+			_tezosAPI = TezosManager.Instance.Tezos.API;
+			Address = address;
+		}
 
-        public TokenContract()
-        {
-            _wallet = TezosManager.Instance.Wallet;
-            _tezosAPI = TezosManager.Instance.Tezos.API;
-        }
+		public TokenContract()
+		{
+			_wallet = TezosManager.Instance.Wallet;
+			_tezosAPI = TezosManager.Instance.Tezos.API;
+		}
 
-        public void Mint(
-            Action<TokenBalance> completedCallback,
-            TokenMetadata tokenMetadata,
-            string destination,
-            int amount)
-        {
-            _onMintCompleted = completedCallback;
+		public string Address { get; set; }
+		public int TokensCount { get; set; }
+		public DateTime LastActivityTime { get; set; }
 
-            var getContractTokens = _tezosAPI
-                .GetTokensForContract(
-                    callback: TokensReceived,
-                    contractAddress: Address,
-                    withMetadata: false,
-                    maxItems: 10_000,
-                    orderBy: new TokensForContractOrder.Default(0));
+		public void Mint(
+			Action<TokenBalance> completedCallback,
+			TokenMetadata tokenMetadata,
+			string destination,
+			int amount)
+		{
+			_onMintCompleted = completedCallback;
 
-            CoroutineRunner.Instance.StartWrappedCoroutine(getContractTokens);
-            
-            return;
+			var getContractTokens = _tezosAPI.GetTokensForContract(TokensReceived, Address, false, 10_000,
+				new TokensForContractOrder.Default(0));
 
-            void TokensReceived(IEnumerable<Token> tokens)
-            {
-                var tokenId = tokens?.Count() ?? 0;
-                const string _entrypoint = "mint";
+			CoroutineRunner.Instance.StartWrappedCoroutine(getContractTokens);
 
-                var mintParameters = GetContractScript().BuildParameter(
-                        entrypoint: _entrypoint,
-                        value: new
-                        {
-                            address = destination,
-                            amount = amount.ToString(),
-                            metadata = tokenMetadata.GetMetadataDict(),
-                            token_id = tokenId.ToString()
-                        })
-                    .ToJson();
+			return;
 
-                _wallet
-                    .EventManager
-                    .ContractCallCompleted += MintCompleted;
+			void TokensReceived(IEnumerable<Token> tokens)
+			{
+				var tokenId = tokens?.Count() ?? 0;
+				const string _entrypoint = "mint";
 
-                _wallet.CallContract(
-                    contractAddress: Address,
-                    entryPoint: _entrypoint,
-                    input: mintParameters);
-            }
-        }
+				var mintParameters = GetContractScript().BuildParameter(_entrypoint, new
+				{
+					address = destination,
+					amount = amount.ToString(),
+					metadata = tokenMetadata.GetMetadataDict(),
+					token_id = tokenId.ToString()
+				}).ToJson();
 
-        private void MintCompleted(OperationResult operationResult)
-        {
-            var owner = _wallet.GetActiveAddress();
+				_wallet.EventManager.ContractCallCompleted += MintCompleted;
+				_wallet.CallContract(Address, _entrypoint, mintParameters);
+			}
+		}
 
-            var getOwnerTokensCoroutine = _tezosAPI
-                .GetTokensForOwner(
-                    callback: GetTokensCallback,
-                    owner,
-                    withMetadata: true,
-                    maxItems: 10_000,
-                    orderBy: new TokensForOwnerOrder.Default(0));
+		public void Transfer(Action<string> completedCallback, string destination, int tokenId, int amount)
+		{
+			_onTransferCompleted = completedCallback;
+			var activeAddress = _wallet.GetActiveAddress();
+			const string _entry_point = "transfer";
 
-            CoroutineRunner.Instance.StartWrappedCoroutine(getOwnerTokensCoroutine);
-        }
+			var param = GetContractScript().BuildParameter(_entry_point, new List<object>
+			{
+				new
+				{
+					from_ = activeAddress,
+					txs = new List<object>
+					{
+						new
+						{
+							to_ = destination,
+							token_id = tokenId,
+							amount
+						}
+					}
+				}
+			}).ToJson();
 
-        private void GetTokensCallback(IEnumerable<TokenBalance> tokens)
-        {
-            _onMintCompleted.Invoke(tokens.Last());
-        }
+			_wallet.EventManager.ContractCallCompleted += TransferCompleted;
+			_wallet.CallContract(Address, _entry_point, param);
+		}
 
-        public void Transfer(
-            Action<string> completedCallback,
-            string destination,
-            int tokenId,
-            int amount)
-        {
-            _onTransferCompleted = completedCallback;
+		public void Deploy(Action<string> completedCallback)
+		{
+			_onDeployCompleted = completedCallback;
 
-            var activeAddress = _wallet.GetActiveAddress();
+			var stringScript = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
+			var address = _wallet.GetActiveAddress();
+			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
-            const string _entry_point = "transfer";
+			_wallet.EventManager.ContractCallCompleted += DeployCompleted;
 
-            var param = GetContractScript().BuildParameter(
-                entrypoint: _entry_point,
-                value: new List<object>
-                {
-                    new
-                    {
-                        from_ = activeAddress,
-                        txs = new List<object>
-                        {
-                            new
-                            {
-                                to_ = destination,
-                                token_id = tokenId,
-                                amount
-                            }
-                        }
-                    }
-                }).ToJson();
+			_wallet.OriginateContract(scriptWithAdmin);
+		}
 
-            _wallet
-                .EventManager
-                .ContractCallCompleted += TransferCompleted;
+		private void MintCompleted(OperationResult operationResult)
+		{
+			var owner = _wallet.GetActiveAddress();
 
-            _wallet.CallContract(
-                contractAddress: Address,
-                entryPoint: _entry_point,
-                input: param);
-        }
+			var getOwnerTokensCoroutine = _tezosAPI.GetTokensForOwner(GetTokensCallback, owner, true, 10_000,
+				new TokensForOwnerOrder.Default(0));
 
-        private void TransferCompleted(OperationResult operationResult)
-        {
-            var transactionHash = operationResult.TransactionHash;
-            _onTransferCompleted.Invoke(transactionHash);
-        }
+			CoroutineRunner.Instance.StartWrappedCoroutine(getOwnerTokensCoroutine);
+		}
 
-        public void Deploy(Action<string> completedCallback)
-        {
-            _onDeployCompleted = completedCallback;
+		private void GetTokensCallback(IEnumerable<TokenBalance> tokens)
+		{
+			_onMintCompleted.Invoke(tokens.Last());
+		}
 
-            var stringScript = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
-            var address = _wallet.GetActiveAddress();
-            var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
+		private void TransferCompleted(OperationResult operationResult)
+		{
+			var transactionHash = operationResult.TransactionHash;
+			_onTransferCompleted.Invoke(transactionHash);
+		}
 
-            _wallet
-                .EventManager
-                .ContractCallCompleted += DeployCompleted;
+		private void DeployCompleted(OperationResult operationResult)
+		{
+			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
+			var creator = _wallet.GetActiveAddress();
 
-            _wallet.OriginateContract(scriptWithAdmin);
-        }
+			CoroutineRunner.Instance.StartWrappedCoroutine(_tezosAPI.GetOriginatedContractsForOwner(OnGetContracts,
+				creator, codeHash, 1000, new OriginatedContractsForOwnerOrder.Default(0)));
 
-        private void DeployCompleted(OperationResult operationResult)
-        {
-            var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
-            var creator = _wallet.GetActiveAddress();
+			return;
 
-            CoroutineRunner.Instance.StartWrappedCoroutine(
-                _tezosAPI.GetOriginatedContractsForOwner(OnGetContracts,
-                    creator,
-                    codeHash,
-                    maxItems: 1000,
-                    orderBy: new OriginatedContractsForOwnerOrder.Default(0)));
+			void OnGetContracts(IEnumerable<TokenContract> contracts)
+			{
+				var tokenContracts = contracts.ToList();
 
-            return;
+				if (!tokenContracts.Any())
+				{
+					return;
+				}
 
-            void OnGetContracts(IEnumerable<TokenContract> contracts)
-            {
-                var tokenContracts = contracts.ToList();
+				var lastUsedContract = tokenContracts.Last();
+				Address = lastUsedContract.Address;
+				PlayerPrefs.SetString("CurrentContract:" + creator, lastUsedContract.Address);
+				_onDeployCompleted.Invoke(lastUsedContract.Address);
+			}
+		}
 
-                if (!tokenContracts.Any())
-                {
-                    return;
-                }
+		private ContractScript GetContractScript()
+		{
+			var script = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
+			var code = JObject.Parse(script).SelectToken("code");
 
-                var lastUsedContract = tokenContracts.Last();
-                Address = lastUsedContract.Address;
-                PlayerPrefs.SetString("CurrentContract:" + creator, lastUsedContract.Address);
-                _onDeployCompleted.Invoke(lastUsedContract.Address);
-            }
-        }
+			return new ContractScript(Micheline.FromJson(code.ToString()));
+		}
+	}
 
-        private ContractScript GetContractScript()
-        {
-            var script = Resources
-                .Load<TextAsset>("Contracts/FA2TokenContract")
-                .text;
-
-            var code = JObject
-                .Parse(script)
-                .SelectToken("code");
-
-            return new ContractScript(Micheline.FromJson(code.ToString()));
-        }
-    }
 }

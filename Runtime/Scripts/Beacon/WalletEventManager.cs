@@ -1,8 +1,12 @@
+#region
+
 using System;
 using System.Linq;
 using TezosSDK.DesignPattern.Singleton;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
+
+#endregion
 
 namespace TezosSDK.Beacon
 {
@@ -130,7 +134,8 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Runs when a call to a smart contract is sent to Tezos but before it has been included in a block and confirmed. Provides the hash of the transaction.
+		///     Runs when a call to a smart contract is sent to Tezos but before it has been included in a block and confirmed.
+		///     Provides the hash of the transaction.
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="OperationResult" /> object containing the transaction hash and success status after the
@@ -170,7 +175,8 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Runs when the user's wallet is connected but before the user has approved the connection in the wallet app. Provides details of the pairing completion.
+		///     Runs when the user's wallet is connected but before the user has approved the connection in the wallet app.
+		///     Provides details of the pairing completion.
 		///     Note: This event is not supported in WebGL builds.
 		/// </summary>
 		/// <remarks>
@@ -183,10 +189,10 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				#if UNITY_WEBGL
-					Logger.LogWarning("PairingCompleted event is not supported in WebGL builds.");
-				#endif
-				
+#if UNITY_WEBGL
+				Logger.LogWarning("PairingCompleted event is not supported in WebGL builds.");
+#endif
+
 				if (pairingCompleted == null || !pairingCompleted.GetInvocationList().Contains(value))
 				{
 					pairingCompleted += value;
