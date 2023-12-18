@@ -25,7 +25,7 @@ namespace TezosSDK.Tezos
 		         "here to be able to upload images to IPFS.")]
 		[SerializeField] private string pinataApiKey;
 		
-		[Tooltip("Should we open wallet app on mobiles after connect?")]
+		[Tooltip("Should we open the wallet app on mobiles after connect?")]
 		[SerializeField] private bool redirectToWallet = true;
 		
 

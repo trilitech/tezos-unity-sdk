@@ -311,7 +311,7 @@ namespace TezosSDK.Beacon
 			try
 			{
 				await BeaconDappClient.InitAsync();
-				Logger.LogInfo($"Dapp initialized: {BeaconDappClient.LoggedIn}");
+				Logger.LogDebug($"Dapp initialized: {BeaconDappClient.LoggedIn}");
 				BeaconDappClient.Connect();
 				Logger.LogInfo($"Dapp connected: {BeaconDappClient.Connected}");
 			}
@@ -327,8 +327,7 @@ namespace TezosSDK.Beacon
 
 			if (activeAccountPermissions != null)
 			{
-				var permissionsString = activeAccountPermissions.Scopes.Aggregate(string.Empty,
-					(res, scope) => res + $"{scope}, ") ?? string.Empty;
+				var permissionsString = string.Join(", ", activeAccountPermissions.Scopes);
 
 				Logger.LogInfo($"We have active peer with \"{activeAccountPermissions.AppMetadata.Name}\"");
 				Logger.LogInfo($"Permissions: {permissionsString}");

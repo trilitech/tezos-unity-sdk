@@ -891,6 +891,10 @@ PrefabInstance:
       value: Contract and Minting Sample Scene
       objectReference: {fileID: 0}
     - target: {fileID: 7709730176731183433, guid: 05a6ebf6c729446cc8458943256b9209, type: 3}
+      propertyPath: logLevel
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7709730176731183433, guid: 05a6ebf6c729446cc8458943256b9209, type: 3}
       propertyPath: authManager
       value: 
       objectReference: {fileID: 0}
@@ -2452,7 +2456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tokensCountText: {fileID: 504392349}
-  contractInfoUI: {fileID: 1591891773}
+  contractInfoUI: {fileID: 0}
 --- !u!114 &1831117434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3038,8 +3042,8 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 641921256}
   - {fileID: 1296785125}
   - {fileID: 1370975389}
   - {fileID: 198723258}
   - {fileID: 1170019371}
+  - {fileID: 641921256}
