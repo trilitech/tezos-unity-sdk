@@ -573,31 +573,6 @@ namespace TezosSDK.Beacon
 		{
 			BeaconDappClient.Disconnect();
 		}
-
-		private void HandleActiveAccount()
-		{
-			var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
-
-			if (activeAccountPermissions != null)
-			{
-				var permissionsString = activeAccountPermissions.Scopes.Aggregate(string.Empty,
-					(res, scope) => res + $"{scope}, ") ?? string.Empty;
-
-				Logger.LogInfo(
-					$"We have active peer with {activeAccountPermissions.AppMetadata.Name} with permissions {permissionsString}");
-
-				_eventDispatcher.DispatchAccountConnectedEvent(BeaconDappClient);
-			}
-			else
-			{
-				HandleMissingActiveAccount();
-			}
-		}
-
-		private void HandleMissingActiveAccount()
-		{
-			_eventDispatcher.DispatchHandshakeEvent(BeaconDappClient);
-		}
 	}
 
 	// todo: this logger didn't work inside Beacon, improve this.

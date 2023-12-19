@@ -1,10 +1,12 @@
 #region
 
+using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Beacon;
 using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.API.Models.Tokens;
 using TMPro;
 using UnityEngine;
 
@@ -69,15 +71,16 @@ namespace TezosSDK.Transfer.Scripts
 
 		private void GetContractTokenIds(string contractAddress)
 		{
-			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(tokens =>
-			{
-				var idsResult = tokens.Aggregate(string.Empty,
-					(resultString, token) => $"{resultString}{token.TokenId}, ");
-
-				tokenIdsText.text = idsResult[..^2];
-			}, contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
-
+			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(Callback, contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
 			StartCoroutine(tokensForContractCoroutine);
+			return;
+
+			void Callback(IEnumerable<Token> tokens)
+			{
+				// Join the token IDs with ", " as the separator
+				var idsResult = string.Join(", ", tokens.Select(token => token.TokenId));
+				tokenIdsText.text = idsResult;
+			}
 		}
 	}
 
