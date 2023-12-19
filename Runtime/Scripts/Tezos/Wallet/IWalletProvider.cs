@@ -16,6 +16,11 @@ namespace TezosSDK.Tezos.Wallet
         void OnReady();
 
         /// <summary>
+        /// Initializes the WalletProvider
+        /// </summary>
+	void InitWalletProvider(WalletProviderType walletProvider);
+
+        /// <summary>
         /// Makes a call to connect with a wallet
         /// <param name="withRedirectToWallet">Should we open wallet app on mobiles after connect?</param>
         /// </summary>

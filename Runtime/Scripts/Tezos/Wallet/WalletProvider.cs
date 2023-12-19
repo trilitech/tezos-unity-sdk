@@ -19,6 +19,8 @@ namespace TezosSDK.Tezos.Wallet
         private string _signature;
         private string _transactionHash;
 
+        private bool _isWalletProviderInitialized = false;
+
         public WalletProvider(DAppMetadata dAppMetadata)
         {
             _dAppMetadata = dAppMetadata;
@@ -102,13 +104,26 @@ namespace TezosSDK.Tezos.Wallet
             _beaconConnector.OnReady();
         }
 
-        public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
+        public void InitWalletProvider(WalletProviderType walletProvider)
         {
+            if (_isWalletProviderInitialized)
+            {
+                return;
+            }
+
             _beaconConnector.InitWalletProvider(
                 network: TezosConfig.Instance.Network.ToString(),
                 rpc: TezosConfig.Instance.RpcBaseUrl,
                 walletProviderType: walletProvider,
                 dAppMetadata: _dAppMetadata);
+        }
+        
+        public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet)
+        {
+            if (!_isWalletProviderInitialized)
+            {
+                InitWalletProvider(walletProvider);
+            }
 
             _beaconConnector.ConnectAccount();
             CoroutineRunner.Instance.StartWrappedCoroutine(OnOpenWallet(withRedirectToWallet));
