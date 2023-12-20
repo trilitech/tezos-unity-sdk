@@ -18,15 +18,15 @@ namespace TezosSDK.Contract.Scripts
 			tokensCount.SetActive(false);
 			buttons.SetActive(false);
 
-			var messageReceiver = TezosManager.Instance.MessageReceiver;
+			var messageReceiver = TezosManager.Instance.EventManager;
 
-			messageReceiver.AccountConnected += _ =>
+			messageReceiver.WalletConnected += _ =>
 			{
 				tokensCount.SetActive(true);
 				buttons.SetActive(true);
 			};
 
-			messageReceiver.AccountDisconnected += _ =>
+			messageReceiver.WalletDisconnected += _ =>
 			{
 				tokensCount.SetActive(false);
 				buttons.SetActive(false);

@@ -24,13 +24,13 @@ namespace TezosSDK.Transfer.Scripts
 		private void Start()
 		{
 			// Subscribe to account connection events
-			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
-			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
+			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
 
 			transferControls.SetActive(false);
 		}
 
-		private void OnAccountConnected(AccountInfo _)
+		private void OnWalletConnected(WalletInfo _)
 		{
 			transferControls.SetActive(true);
 
@@ -64,7 +64,7 @@ namespace TezosSDK.Transfer.Scripts
 			StartCoroutine(getOriginatedContractsRoutine);
 		}
 
-		private void OnAccountDisconnected(AccountInfo _)
+		private void OnWalletDisconnected(WalletInfo _)
 		{
 			transferControls.SetActive(false);
 		}

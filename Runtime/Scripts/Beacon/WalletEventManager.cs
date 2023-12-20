@@ -27,9 +27,9 @@ namespace TezosSDK.Beacon
 		public const string EventTypePairingDone = "PairingDone";
 		public const string EventTypePayloadSigned = "PayloadSigned";
 
-		private Action<AccountInfo> accountConnected;
+		private Action<WalletInfo> accountConnected;
 		private Action<ErrorInfo> accountConnectionFailed;
-		private Action<AccountInfo> accountDisconnected;
+		private Action<WalletInfo> accountDisconnected;
 		private Action<OperationResult> contractCallCompleted;
 		private Action<ErrorInfo> contractCallFailed;
 		private Action<OperationResult> contractCallInjected;
@@ -41,10 +41,10 @@ namespace TezosSDK.Beacon
 		///     Runs when an account connects successfully. Provides the account information.
 		/// </summary>
 		/// <remarks>
-		///     Provides an <see cref="AccountInfo" /> object containing the address and public key of the connected account.
+		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the connected account.
 		///     It is triggered in response to a successful connection action from the wallet.
 		/// </remarks>
-		public event Action<AccountInfo> AccountConnected
+		public event Action<WalletInfo> WalletConnected
 		{
 			add
 			{
@@ -79,10 +79,10 @@ namespace TezosSDK.Beacon
 		///     Runs when an account disconnects successfully. Provides the account information.
 		/// </summary>
 		/// <remarks>
-		///     Provides an <see cref="AccountInfo" /> object containing the address and public key of the disconnected account.
+		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the disconnected account.
 		///     It is triggered in response to a successful disconnection action from the wallet.
 		/// </remarks>
-		public event Action<AccountInfo> AccountDisconnected
+		public event Action<WalletInfo> WalletDisconnected
 		{
 			add
 			{
@@ -329,7 +329,7 @@ namespace TezosSDK.Beacon
 	///     Contains information about a Tezos account, including the address and public key.
 	/// </summary>
 	[Serializable]
-	public class AccountInfo
+	public class WalletInfo
 	{
 		/// <summary>
 		///     The Tezos wallet address.

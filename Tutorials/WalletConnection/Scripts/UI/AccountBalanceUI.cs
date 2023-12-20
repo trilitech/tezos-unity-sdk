@@ -19,18 +19,18 @@ namespace TezosSDK
 		private void Start()
 		{
 			// Subscribe to wallet events
-			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
-			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
+			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
-		private void OnAccountConnected(AccountInfo _)
+		private void OnWalletConnected(WalletInfo _)
 		{
 			// OnBalanceFetched will be called when the balance is fetched
 			var routine = TezosManager.Instance.Tezos.GetCurrentWalletBalance(OnBalanceFetched);
 			StartCoroutine(routine);
 		}
 
-		private void OnAccountDisconnected(AccountInfo _)
+		private void OnWalletDisconnected(WalletInfo _)
 		{
 			balanceText.text = _notConnectedText;
 		}

@@ -26,22 +26,12 @@ namespace TezosSDK.Contract.Scripts
 
 		private void Start()
 		{
-			var activeAddress = TezosManager.Instance.Wallet.GetActiveAddress();
-
-			// if there is no active address, subscribe to account connection events
-			if (string.IsNullOrEmpty(activeAddress))
-			{
-				TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
-			}
-			else // otherwise, get the tokens count
-			{
-				GetTokensCount();
-			}
+			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
 		}
 
-		private void OnAccountConnected(AccountInfo _)
+		private void OnWalletConnected(WalletInfo _)
 		{
-			GetTokensCount();
+			//GetTokensCount();
 		}
 
 		public void HandleMint()
@@ -77,6 +67,8 @@ namespace TezosSDK.Contract.Scripts
 		private TokenMetadata CreateRandomTokenMetadata()
 		{
 			var randomInt = new Random().Next(1, int.MaxValue);
+			
+			// to preview: https://ipfs.io/ipfs/QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK
 			const string _image_address = "ipfs://QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK";
 
 			return new TokenMetadata

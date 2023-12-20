@@ -13,8 +13,8 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 	{
 		private void Start()
 		{
-			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
-			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
+			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
 
 			// Hide the button if there is no active account
 			if (string.IsNullOrEmpty(TezosManager.Instance.Wallet.GetActiveAddress()))
@@ -23,12 +23,12 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			}
 		}
 
-		private void OnAccountConnected(AccountInfo accountInfo)
+		private void OnWalletConnected(WalletInfo walletInfo)
 		{
 			gameObject.SetActive(true);
 		}
 
-		private void OnAccountDisconnected(AccountInfo accountInfo)
+		private void OnWalletDisconnected(WalletInfo walletInfo)
 		{
 			gameObject.SetActive(false);
 		}

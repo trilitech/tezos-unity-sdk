@@ -116,7 +116,7 @@ namespace TezosSDK.Tezos.Wallet
 			EventManager.PairingCompleted += OnPairingCompleted;
 #endif
 			EventManager.HandshakeReceived += OnHandshakeReceived;
-			EventManager.AccountConnected += OnAccountConnected;
+			EventManager.WalletConnected += OnWalletConnected;
 			EventManager.PayloadSigned += OnPayloadSigned;
 			EventManager.ContractCallInjected += OnContractCallInjected;
 		}
@@ -140,9 +140,9 @@ namespace TezosSDK.Tezos.Wallet
 			_signature = payload.Signature;
 		}
 
-		private void OnAccountConnected(AccountInfo account)
+		private void OnWalletConnected(WalletInfo wallet)
 		{
-			_pubKey = account.PublicKey;
+			_pubKey = wallet.PublicKey;
 		}
 
 		private void OnHandshakeReceived(HandshakeData handshake)

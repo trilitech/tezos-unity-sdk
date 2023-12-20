@@ -28,14 +28,14 @@ namespace TezosSDK.Tezos
             API = new TezosAPI(dataProviderConfig);
             
             Wallet = new WalletProvider(dAppMetadata, redirectToWallet);
-            Wallet.EventManager.AccountConnected += OnAccountConnected;
+            Wallet.EventManager.WalletConnected += OnWalletConnected;
         }
 
-        private void OnAccountConnected(AccountInfo accountInfo)
+        private void OnWalletConnected(WalletInfo walletInfo)
         {
-            var hasKey = PlayerPrefs.HasKey("CurrentContract:" + accountInfo.Address);
+            var hasKey = PlayerPrefs.HasKey("CurrentContract:" + walletInfo.Address);
 
-            var address = hasKey ? PlayerPrefs.GetString("CurrentContract:" + accountInfo.Address) : string.Empty;
+            var address = hasKey ? PlayerPrefs.GetString("CurrentContract:" + walletInfo.Address) : string.Empty;
 
             if (hasKey)
             {

@@ -38,7 +38,7 @@ namespace TezosSDK.Tezos
 			get => Tezos?.Wallet;
 		}
 
-		public WalletEventManager MessageReceiver
+		public WalletEventManager EventManager
 		{
 			get => Wallet?.EventManager;
 		}

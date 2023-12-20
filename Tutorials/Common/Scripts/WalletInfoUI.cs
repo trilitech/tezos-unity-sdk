@@ -11,7 +11,7 @@ using UnityEngine.UI;
 namespace TezosSDK.Examples.WalletConnection.Scripts
 {
 
-	public class AccountInfoUI : MonoBehaviour
+	public class WalletInfoUI : MonoBehaviour
 	{
 		[SerializeField] private TMP_InputField addressText;
 		private const string NOT_CONNECTED_TEXT = "Not connected";
@@ -21,21 +21,21 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			addressText.text = NOT_CONNECTED_TEXT;
 
 			// Subscribe to events
-			TezosManager.Instance.MessageReceiver.AccountConnected += OnAccountConnected;
-			TezosManager.Instance.MessageReceiver.AccountDisconnected += OnAccountDisconnected;
+			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
+			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
-		private void OnAccountConnected(AccountInfo accountInfo)
+		private void OnWalletConnected(WalletInfo walletInfo)
 		{
 			// We can get the address from the wallet
 			addressText.text = TezosManager.Instance.Wallet.GetActiveAddress();
 			// Or from the event data
-			addressText.text = accountInfo.Address;
+			addressText.text = walletInfo.Address;
 
 			UpdateLayout(); // Update layout to fit the new text
 		}
 
-		private void OnAccountDisconnected(AccountInfo accountInfo)
+		private void OnWalletDisconnected(WalletInfo walletInfo)
 		{
 			addressText.text = NOT_CONNECTED_TEXT;
 			UpdateLayout();
@@ -43,7 +43,7 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 
 		private void UpdateLayout()
 		{
-			var layoutGroup = GetComponent<HorizontalLayoutGroup>();
+			var layoutGroup = GetComponent<VerticalLayoutGroup>();
 
 			if (layoutGroup != null)
 			{

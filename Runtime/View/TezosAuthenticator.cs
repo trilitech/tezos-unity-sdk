@@ -4,6 +4,8 @@ using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 #endregion
 
@@ -18,6 +20,8 @@ namespace TezosSDK.View
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
 		[SerializeField] private GameObject qrCodePanel;
+		[FormerlySerializedAs("image")] [SerializeField] private Image darkBG;
+		
 
 		// Platform flags to determine the current running platform
 		private bool _isMobile;
@@ -39,16 +43,16 @@ namespace TezosSDK.View
 			}
 
 			Tezos.Wallet.EventManager.HandshakeReceived -= OnHandshakeReceived;
-			Tezos.Wallet.EventManager.AccountConnected -= OnAccountConnected;
-			Tezos.Wallet.EventManager.AccountDisconnected -= OnAccountDisconnected;
+			Tezos.Wallet.EventManager.WalletConnected -= OnWalletConnected;
+			Tezos.Wallet.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 
-		private void OnAccountConnected(AccountInfo accountInfo)
+		private void OnWalletConnected(WalletInfo walletInfo)
 		{
 			ToggleUIElements(true);
 		}
 
-		private void OnAccountDisconnected(AccountInfo accountInfo)
+		private void OnWalletDisconnected(WalletInfo walletInfo)
 		{
 		}
 
@@ -98,8 +102,8 @@ namespace TezosSDK.View
 		{
 			// Subscribe to wallet events for handling user authentication.
 			Tezos.Wallet.EventManager.HandshakeReceived += OnHandshakeReceived;
-			Tezos.Wallet.EventManager.AccountConnected += OnAccountConnected;
-			Tezos.Wallet.EventManager.AccountDisconnected += OnAccountDisconnected;
+			Tezos.Wallet.EventManager.WalletConnected += OnWalletConnected;
+			Tezos.Wallet.EventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
         /// <summary>
@@ -113,6 +117,7 @@ namespace TezosSDK.View
 				deepLinkButton.SetActive(false);
 				socialLoginButton.SetActive(false);
 				qrCodePanel.SetActive(false);
+				darkBG.gameObject.SetActive(false);
 			}
 			else
 			{

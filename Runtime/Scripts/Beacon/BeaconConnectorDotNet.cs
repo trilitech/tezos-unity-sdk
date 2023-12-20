@@ -154,15 +154,15 @@ namespace TezosSDK.Beacon
 			_eventManager = eventManager;
 		}
 
-		public void DispatchAccountDisconnectedEvent(DappBeaconClient beaconDappClient)
+		public void DispatchWalletDisconnectedEvent(PermissionInfo activeWallet)
 		{
-			var accountDisconnectedEvent = CreateAccountDisconnectedEvent(beaconDappClient.GetActiveAccount());
-			DispatchEvent(accountDisconnectedEvent);
+			var walletDisconnectedEvent = CreateWalletDisconnectedEvent(activeWallet);
+			DispatchEvent(walletDisconnectedEvent);
 		}
 
-		private UnifiedEvent CreateAccountDisconnectedEvent(PermissionInfo getActiveAccount)
+		private UnifiedEvent CreateWalletDisconnectedEvent(PermissionInfo activeWallet)
 		{
-			var accountInfo = CreateAccountInfo(getActiveAccount);
+			var accountInfo = CreateWalletInfo(activeWallet);
 
 			return new UnifiedEvent
 			{
@@ -185,7 +185,7 @@ namespace TezosSDK.Beacon
 
 		private UnifiedEvent CreateAccountConnectedEvent(PermissionInfo activeAccountPermissions)
 		{
-			var accountInfo = CreateAccountInfo(activeAccountPermissions);
+			var accountInfo = CreateWalletInfo(activeAccountPermissions);
 
 			return new UnifiedEvent
 			{
@@ -194,11 +194,11 @@ namespace TezosSDK.Beacon
 			};
 		}
 
-		private AccountInfo CreateAccountInfo(PermissionInfo activeAccountPermissions)
+		private WalletInfo CreateWalletInfo(PermissionInfo activeAccountPermissions)
 		{
 			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
 
-			return new AccountInfo
+			return new WalletInfo
 			{
 				Address = pubKey.Address,
 				PublicKey = activeAccountPermissions.PublicKey
@@ -440,18 +440,18 @@ namespace TezosSDK.Beacon
 			return Path.Combine(Application.persistentDataPath, "beacon.db");
 		}
 
-		public void DisconnectAccount()
+		public void DisconnectWallet()
 		{
-			var activeAccount = BeaconDappClient.GetActiveAccount();
+			var activeWallet = BeaconDappClient.GetActiveAccount();
 
-			if (activeAccount == null)
+			if (activeWallet == null)
 			{
-				Logger.LogError("No active account");
+				Logger.LogError("No active wallet");
 				return;
 			}
 
 			BeaconDappClient.RemoveActiveAccounts();
-			_eventDispatcher.DispatchAccountDisconnectedEvent(BeaconDappClient);
+			_eventDispatcher.DispatchWalletDisconnectedEvent(activeWallet);
 		}
 
 		public string GetActiveAccountAddress()
@@ -526,7 +526,7 @@ namespace TezosSDK.Beacon
 
 		public void DisconnectAccount()
 		{
-			_beaconClientManager.DisconnectAccount();
+			_beaconClientManager.DisconnectWallet();
 		}
 
 		public async void RequestTezosPermission(string networkName = "", string networkRPC = "")
