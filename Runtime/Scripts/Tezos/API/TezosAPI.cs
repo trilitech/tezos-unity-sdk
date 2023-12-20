@@ -204,6 +204,8 @@ namespace TezosSDK.Tezos.API
 			long maxItems,
 			TokensForContractOrder orderBy)
 		{
+			Logger.LogDebug($"Getting tokens for contract: {contractAddress}");
+			
 			var sort = orderBy switch
 			{
 				TokensForContractOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",

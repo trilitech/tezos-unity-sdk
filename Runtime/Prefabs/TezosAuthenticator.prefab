@@ -470,7 +470,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   qrCodeView: {fileID: 2221511952106025717}
-  contentPanel: {fileID: 0}
   deepLinkButton: {fileID: 2221511952733773064}
   socialLoginButton: {fileID: 2221511952751916822}
   logoutButton: {fileID: 2221511952828651889}
@@ -494,7 +493,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2221511952716474937
 RectTransform:
   m_ObjectHideFlags: 0
@@ -599,7 +598,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2221511952733773067
 RectTransform:
   m_ObjectHideFlags: 0
@@ -732,7 +731,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2221511952751916817
 RectTransform:
   m_ObjectHideFlags: 0
@@ -865,7 +864,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2221511952828651888
 RectTransform:
   m_ObjectHideFlags: 0

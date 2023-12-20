@@ -15,12 +15,11 @@ namespace TezosSDK.View
 	public class TezosAuthenticator : MonoBehaviour
 	{
 		[SerializeField] private QRCodeView qrCodeView;
-		[SerializeField] private GameObject contentPanel;
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
 		[SerializeField] private GameObject qrCodePanel;
-		[FormerlySerializedAs("image")] [SerializeField] private Image darkBG;
+		[SerializeField] private Image darkBG;
 		
 
 		// Platform flags to determine the current running platform
@@ -33,6 +32,7 @@ namespace TezosSDK.View
 		{
 			InitializeTezos();
 			SetPlatformFlags();
+			ToggleUIElements(false);
 		}
 
 		private void OnDisable()
@@ -129,14 +129,11 @@ namespace TezosSDK.View
 
 				// Activate qrCodePanel only on standalone and not authenticated
 				qrCodePanel.SetActive(!_isMobile && !_isWebGL);
+				
+				darkBG.gameObject.SetActive(true);
 			}
 
 			logoutButton.SetActive(isAuthenticated);
-
-			if (contentPanel != null)
-			{
-				contentPanel.SetActive(isAuthenticated);
-			}
 		}
 	}
 

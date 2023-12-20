@@ -31,7 +31,7 @@ namespace TezosSDK.Contract.Scripts
 
 		private void OnWalletConnected(WalletInfo _)
 		{
-			//GetTokensCount();
+			GetTokensCount();
 		}
 
 		public void HandleMint()
@@ -44,7 +44,7 @@ namespace TezosSDK.Contract.Scripts
 				randomAmount);
 		}
 
-		private void GetContractsCallback(IEnumerable<TokenContract> contracts)
+		private void OnContractsFetched(IEnumerable<TokenContract> contracts)
 		{
 			var allTokenContracts = contracts.ToList();
 
@@ -85,7 +85,8 @@ namespace TezosSDK.Contract.Scripts
 
 		private IEnumerator GetContractsRoutine()
 		{
-			return TezosManager.Instance.Tezos.GetOriginatedContracts(GetContractsCallback);
+			Logger.LogDebug("No contract address found. Checking originated contracts...");
+			return TezosManager.Instance.Tezos.GetOriginatedContracts(OnContractsFetched);
 		}
 
 		private void GetTokensCount()
@@ -99,7 +100,6 @@ namespace TezosSDK.Contract.Scripts
 
 		private IEnumerator GetTokensForContractRoutine()
 		{
-			Logger.LogDebug($"Getting tokens for contract {TezosManager.Instance.Tezos.TokenContract.Address}");
 			return TezosManager.Instance.Tezos.API.GetTokensForContract(OnTokensFetched,
 				TezosManager.Instance.Tezos.TokenContract.Address, false, 10_000,
 				new TokensForContractOrder.Default(0));
@@ -113,7 +113,10 @@ namespace TezosSDK.Contract.Scripts
 
 		private void OnTokensFetched(IEnumerable<Token> tokens)
 		{
-			tokensCountText.text = tokens.Count().ToString();
+			var tokenList = tokens.ToList();
+			
+			Logger.LogDebug($"Found {tokenList.Count} tokens");
+			tokensCountText.text = tokenList.Count.ToString();
 		}
 	}
 

@@ -13,6 +13,7 @@ using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 #endregion
 
@@ -52,7 +53,9 @@ namespace TezosSDK.Tezos.API.Models
 			int amount)
 		{
 			_onMintCompleted = completedCallback;
-
+			
+			Logger.LogDebug($"Minting {amount} tokens to {destination} with metadata {tokenMetadata}");
+			
 			var getContractTokens = _tezosAPI.GetTokensForContract(TokensReceived, Address, false, 10_000,
 				new TokensForContractOrder.Default(0));
 
