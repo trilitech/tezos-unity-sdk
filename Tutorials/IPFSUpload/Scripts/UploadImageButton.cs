@@ -11,16 +11,8 @@ using Logger = TezosSDK.Helpers.Logger;
 namespace TezosSDK.IPFSUpload.Scripts
 {
 
-	public class UIController : MonoBehaviour
+	public class UploadImageButton : MonoBehaviour
 	{
-		[SerializeField] private Button uploadButton;
-
-		private void Start()
-		{
-			var authorized = !string.IsNullOrEmpty(TezosManager.Instance.Wallet.GetActiveAddress());
-			uploadButton.gameObject.SetActive(authorized);
-		}
-
 		public void HandleUploadClick()
 		{
 			if (string.IsNullOrEmpty(TezosManager.PinataApiKey))
