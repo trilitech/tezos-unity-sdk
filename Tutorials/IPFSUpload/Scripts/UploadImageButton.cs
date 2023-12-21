@@ -3,7 +3,6 @@
 using TezosSDK.Scripts.FileUploaders;
 using TezosSDK.Tezos;
 using UnityEngine;
-using UnityEngine.UI;
 using Logger = TezosSDK.Helpers.Logger;
 
 #endregion

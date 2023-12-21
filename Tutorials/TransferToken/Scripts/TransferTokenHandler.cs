@@ -9,7 +9,6 @@ using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 #endregion
 
@@ -61,7 +60,9 @@ namespace TezosSDK.Transfer.Scripts
 
 		private void GetContractTokenIds(string contractAddress)
 		{
-			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(Callback, contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
+			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(Callback,
+				contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
+
 			StartCoroutine(tokensForContractCoroutine);
 			return;
 

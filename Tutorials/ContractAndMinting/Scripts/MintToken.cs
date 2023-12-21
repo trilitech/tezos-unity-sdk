@@ -44,30 +44,10 @@ namespace TezosSDK.Contract.Scripts
 				randomAmount);
 		}
 
-		private void OnContractsFetched(IEnumerable<TokenContract> contracts)
-		{
-			var allTokenContracts = contracts.ToList();
-
-			if (!allTokenContracts.Any())
-			{
-				Logger.LogDebug("No contracts found");
-				var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
-				tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
-				return;
-			}
-
-			var contract = allTokenContracts.First();
-			Logger.LogDebug($"Found {allTokenContracts.Count} contracts. Using {contract.Address}");
-			TezosManager.Instance.Tezos.TokenContract = contract; // set the TokenContract on the Tezos instance
-			
-			contractInfoUI.SetAddress(contract.Address);
-			StartCoroutine(GetTokensForContractRoutine());
-		}
-
 		private TokenMetadata CreateRandomTokenMetadata()
 		{
 			var randomInt = new Random().Next(1, int.MaxValue);
-			
+
 			// to preview: https://ipfs.io/ipfs/QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK
 			const string _image_address = "ipfs://QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK";
 
@@ -105,6 +85,26 @@ namespace TezosSDK.Contract.Scripts
 				new TokensForContractOrder.Default(0));
 		}
 
+		private void OnContractsFetched(IEnumerable<TokenContract> contracts)
+		{
+			var allTokenContracts = contracts.ToList();
+
+			if (!allTokenContracts.Any())
+			{
+				Logger.LogDebug("No contracts found");
+				var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
+				tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
+				return;
+			}
+
+			var contract = allTokenContracts.First();
+			Logger.LogDebug($"Found {allTokenContracts.Count} contracts. Using {contract.Address}");
+			TezosManager.Instance.Tezos.TokenContract = contract; // set the TokenContract on the Tezos instance
+
+			contractInfoUI.SetAddress(contract.Address);
+			StartCoroutine(GetTokensForContractRoutine());
+		}
+
 		private void OnTokenMinted(TokenBalance tokenBalance)
 		{
 			Logger.LogDebug($"Successfully minted token with Token ID {tokenBalance.TokenId}");
@@ -114,7 +114,7 @@ namespace TezosSDK.Contract.Scripts
 		private void OnTokensFetched(IEnumerable<Token> tokens)
 		{
 			var tokenList = tokens.ToList();
-			
+
 			Logger.LogDebug($"Found {tokenList.Count} tokens");
 			tokensCountText.text = tokenList.Count.ToString();
 		}

@@ -4,7 +4,6 @@ using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 #endregion
 
@@ -37,7 +36,6 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 		{
 			addressText.text = NOT_CONNECTED_TEXT;
 		}
-
 	}
 
 }
