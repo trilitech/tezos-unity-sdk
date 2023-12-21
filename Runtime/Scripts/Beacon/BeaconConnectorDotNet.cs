@@ -446,7 +446,7 @@ namespace TezosSDK.Beacon
 
 			if (activeWallet == null)
 			{
-				Logger.LogError("No active wallet");
+				Logger.LogWarning("No active wallet");
 				return;
 			}
 

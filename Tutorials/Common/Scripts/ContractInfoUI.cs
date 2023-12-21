@@ -1,5 +1,6 @@
 #region
 
+using System;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
@@ -50,6 +51,12 @@ namespace TezosSDK.Common.Scripts
 			{
 				LayoutRebuilder.MarkLayoutForRebuild(layoutGroup.GetComponent<RectTransform>());
 			}
+		}
+
+		private void OnDestroy()
+		{
+			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
+			TezosManager.Instance.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 	}
 

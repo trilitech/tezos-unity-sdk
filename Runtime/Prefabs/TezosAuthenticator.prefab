@@ -353,7 +353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b34a11c0bbb4c9e9c3c933d831d3e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rawImage: {fileID: 2221511952106025720}
+  rawImage: {fileID: 2221511952106025720}
 --- !u!1 &2221511952331529762
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,7 +473,6 @@ MonoBehaviour:
   deepLinkButton: {fileID: 2221511952733773064}
   socialLoginButton: {fileID: 2221511952751916822}
   logoutButton: {fileID: 2221511952828651889}
-  qrCodePanel: {fileID: 2221511952106025721}
   darkBG: {fileID: 6675340471920486954}
 --- !u!1 &2221511952716474942
 GameObject:

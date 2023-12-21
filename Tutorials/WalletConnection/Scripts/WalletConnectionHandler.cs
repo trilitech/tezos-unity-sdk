@@ -1,5 +1,6 @@
 #region
 
+using System;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
@@ -24,6 +25,12 @@ namespace TezosSDK.Examples
 			// Subscribe to wallet events
 			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
 			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
+		}
+
+		private void OnDestroy()
+		{
+			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
+			TezosManager.Instance.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 
 		private void OnWalletConnected(WalletInfo _)

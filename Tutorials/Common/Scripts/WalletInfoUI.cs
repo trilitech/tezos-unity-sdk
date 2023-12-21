@@ -1,5 +1,6 @@
 #region
 
+using System;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
@@ -35,6 +36,12 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 		private void OnWalletDisconnected(WalletInfo walletInfo)
 		{
 			addressText.text = NOT_CONNECTED_TEXT;
+		}
+
+		private void OnDestroy()
+		{
+			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
+			TezosManager.Instance.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 	}
 

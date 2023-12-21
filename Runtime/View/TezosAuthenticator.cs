@@ -1,5 +1,6 @@
 #region
 
+using System;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
@@ -18,7 +19,6 @@ namespace TezosSDK.View
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
-		[SerializeField] private GameObject qrCodePanel;
 		[SerializeField] private Image darkBG;
 		
 
@@ -28,11 +28,20 @@ namespace TezosSDK.View
 
 		private ITezos Tezos { get; set; }
 
+		private void Awake()
+		{
+			ToggleUIElements(false);
+		}
+
 		private void Start()
 		{
 			InitializeTezos();
 			SetPlatformFlags();
-			ToggleUIElements(false);
+			
+			if (TezosManager.Instance.Tezos.Wallet.IsConnected)
+			{
+				ToggleUIElements(true);
+			}
 		}
 
 		private void OnDisable()
@@ -116,7 +125,7 @@ namespace TezosSDK.View
 			{
 				deepLinkButton.SetActive(false);
 				socialLoginButton.SetActive(false);
-				qrCodePanel.SetActive(false);
+				qrCodeView.gameObject.SetActive(false);
 				darkBG.gameObject.SetActive(false);
 			}
 			else
@@ -128,7 +137,7 @@ namespace TezosSDK.View
 				socialLoginButton.SetActive(_isWebGL);
 
 				// Activate qrCodePanel only on standalone and not authenticated
-				qrCodePanel.SetActive(!_isMobile && !_isWebGL);
+				qrCodeView.gameObject.SetActive(!_isMobile && !_isWebGL);
 				
 				darkBG.gameObject.SetActive(true);
 			}

@@ -18,7 +18,6 @@ namespace TezosSDK.Tezos.Wallet
 	{
 		private readonly DAppMetadata _dAppMetadata;
 		private IBeaconConnector _beaconConnector;
-		private string _handshake;
 		private string _pubKey;
 		private string _signature;
 		private string _transactionHash;
@@ -42,6 +41,7 @@ namespace TezosSDK.Tezos.Wallet
 		}
 
 		public bool IsConnected { get; private set; }
+		public HandshakeData HandshakeData { get; private set; }
 
 		public void Dispose()
 		{
@@ -147,7 +147,7 @@ namespace TezosSDK.Tezos.Wallet
 
 		private void OnHandshakeReceived(HandshakeData handshake)
 		{
-			_handshake = handshake.PairingData;
+			HandshakeData = handshake;
 
 #if UNITY_ANDROID || UNITY_IOS
 			if (_withRedirectToWallet)
@@ -160,7 +160,7 @@ namespace TezosSDK.Tezos.Wallet
 #if UNITY_ANDROID || UNITY_IOS
 		private void OpenWallet()
 		{
-			Application.OpenURL($"tezos://?type=tzip10&data={_handshake}");
+			Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
 		}
 #endif
 

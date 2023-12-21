@@ -14,6 +14,11 @@ namespace TezosSDK
 
 		public void ChangeToScene()
 		{
+			if (TezosManager.Instance)
+			{
+				TezosManager.Instance.Wallet.Disconnect();
+			}
+			
 			SceneManager.LoadScene(sceneNameToLoad);
 		}
 	}

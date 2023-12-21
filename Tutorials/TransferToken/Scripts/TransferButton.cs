@@ -10,7 +10,7 @@ using Logger = TezosSDK.Helpers.Logger;
 namespace TezosSDK.Transfer.Scripts
 {
 
-	public class Transfer : MonoBehaviour
+	public class TransferButton : MonoBehaviour
 	{
 		[SerializeField] private TMP_InputField id;
 		[SerializeField] private TMP_InputField address;

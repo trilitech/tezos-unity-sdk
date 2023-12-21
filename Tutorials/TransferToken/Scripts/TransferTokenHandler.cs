@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Beacon;
@@ -24,6 +25,11 @@ namespace TezosSDK.Transfer.Scripts
 		{
 			// Subscribe to account connection events
 			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
+		}
+
+		private void OnDestroy()
+		{
+			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
 		}
 
 		private void OnWalletConnected(WalletInfo _)
