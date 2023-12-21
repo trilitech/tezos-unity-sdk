@@ -31,25 +31,13 @@ namespace TezosSDK.Examples.WalletConnection.Scripts
 			addressText.text = TezosManager.Instance.Wallet.GetActiveAddress();
 			// Or from the event data
 			addressText.text = walletInfo.Address;
-
-			UpdateLayout(); // Update layout to fit the new text
 		}
 
 		private void OnWalletDisconnected(WalletInfo walletInfo)
 		{
 			addressText.text = NOT_CONNECTED_TEXT;
-			UpdateLayout();
 		}
 
-		private void UpdateLayout()
-		{
-			var layoutGroup = GetComponent<VerticalLayoutGroup>();
-
-			if (layoutGroup != null)
-			{
-				LayoutRebuilder.MarkLayoutForRebuild(layoutGroup.GetComponent<RectTransform>());
-			}
-		}
 	}
 
 }

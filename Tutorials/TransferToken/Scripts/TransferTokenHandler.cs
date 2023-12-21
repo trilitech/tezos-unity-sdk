@@ -9,31 +9,26 @@ using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #endregion
 
 namespace TezosSDK.Transfer.Scripts
 {
 
-	public class UIController : MonoBehaviour
+	public class TransferTokenHandler : MonoBehaviour
 	{
-		[SerializeField] private GameObject transferControls;
-		[SerializeField] private TextMeshProUGUI tokenIdsText;
+		[SerializeField] private TMP_InputField availableTokensTMP;
 		[SerializeField] private ContractInfoUI contractInfoUI;
 
 		private void Start()
 		{
 			// Subscribe to account connection events
 			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
-
-			transferControls.SetActive(false);
 		}
 
 		private void OnWalletConnected(WalletInfo _)
 		{
-			transferControls.SetActive(true);
-
 			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
 
 			if (!string.IsNullOrEmpty(contractAddress))
@@ -50,7 +45,7 @@ namespace TezosSDK.Transfer.Scripts
 				{
 					var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
 
-					tokenIdsText.text = $"{activeAddress} didn't deploy any contract yet.";
+					availableTokensTMP.text = $"{activeAddress} didn't deploy any contract yet.";
 					return;
 				}
 
@@ -64,11 +59,6 @@ namespace TezosSDK.Transfer.Scripts
 			StartCoroutine(getOriginatedContractsRoutine);
 		}
 
-		private void OnWalletDisconnected(WalletInfo _)
-		{
-			transferControls.SetActive(false);
-		}
-
 		private void GetContractTokenIds(string contractAddress)
 		{
 			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(Callback, contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
@@ -79,7 +69,7 @@ namespace TezosSDK.Transfer.Scripts
 			{
 				// Join the token IDs with ", " as the separator
 				var idsResult = string.Join(", ", tokens.Select(token => token.TokenId));
-				tokenIdsText.text = idsResult;
+				availableTokensTMP.text = idsResult;
 			}
 		}
 	}

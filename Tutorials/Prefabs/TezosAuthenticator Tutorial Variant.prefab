@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2221511952331529762, guid: 95be21708b9eb431e99da6aa7b6d7c60, type: 3}
       propertyPath: m_Name
-      value: TezosAuthenticator Variant
+      value: TezosAuthenticator Tutorial Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2221511952331529762, guid: 95be21708b9eb431e99da6aa7b6d7c60, type: 3}
       propertyPath: m_IsActive
@@ -90,15 +90,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2221511952828651888, guid: 95be21708b9eb431e99da6aa7b6d7c60, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.7
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2221511952828651888, guid: 95be21708b9eb431e99da6aa7b6d7c60, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.7
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2221511952828651888, guid: 95be21708b9eb431e99da6aa7b6d7c60, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.7
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2221511952828651888, guid: 95be21708b9eb431e99da6aa7b6d7c60, type: 3}
       propertyPath: m_AnchoredPosition.x

@@ -12,7 +12,7 @@ namespace TezosSDK.Contract.Scripts
 
 	public class DeployContract : MonoBehaviour
 	{
-		[SerializeField] private TextMeshProUGUI tokensCountText;
+		[SerializeField] private TMP_InputField tokensCountText;
 		[SerializeField] private ContractInfoUI contractInfoUI;
 
 		public void HandleDeploy()

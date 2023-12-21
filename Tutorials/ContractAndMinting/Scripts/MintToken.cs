@@ -21,7 +21,7 @@ namespace TezosSDK.Contract.Scripts
 
 	public class MintToken : MonoBehaviour
 	{
-		[SerializeField] private TextMeshProUGUI tokensCountText;
+		[SerializeField] private TMP_InputField tokensCountText;
 		[SerializeField] private ContractInfoUI contractInfoUI;
 
 		private void Start()
