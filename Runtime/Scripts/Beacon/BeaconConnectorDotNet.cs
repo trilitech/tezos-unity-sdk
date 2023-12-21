@@ -332,6 +332,7 @@ namespace TezosSDK.Beacon
 				Logger.LogInfo($"We have active peer with \"{activeAccountPermissions.AppMetadata.Name}\"");
 				Logger.LogInfo($"Permissions: {permissionsString}");
 
+				_eventDispatcher.DispatchHandshakeEvent(BeaconDappClient);
 				_eventDispatcher.DispatchAccountConnectedEvent(BeaconDappClient);
 			}
 			else

@@ -56,6 +56,15 @@ namespace TezosSDK.View
 			Tezos.Wallet.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 
+		private void OnEnable()
+		{
+			if (TezosManager.Instance != null && !TezosManager.Instance.Wallet.IsConnected &&
+			    TezosManager.Instance.Wallet.HandshakeData != null)
+			{
+				qrCodeView.SetQrCode(TezosManager.Instance.Wallet.HandshakeData);
+			}
+		}
+
 		private void OnWalletConnected(WalletInfo walletInfo)
 		{
 			ToggleUIElements(true);

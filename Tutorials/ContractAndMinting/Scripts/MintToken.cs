@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,11 @@ namespace TezosSDK.Contract.Scripts
 		private void Start()
 		{
 			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
+		}
+
+		private void OnDestroy()
+		{
+			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
 		}
 
 		private void OnWalletConnected(WalletInfo _)

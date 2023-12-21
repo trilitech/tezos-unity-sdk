@@ -30,14 +30,6 @@ namespace TezosSDK.View
 			_texture.filterMode = FilterMode.Point;
 		}
 
-		private void OnEnable()
-		{
-			if (TezosManager.Instance.Tezos != null && TezosManager.Instance.Tezos.Wallet.HandshakeData != null)
-			{
-				SetQrCode(TezosManager.Instance.Tezos.Wallet.HandshakeData);
-			}
-		}
-
 		public void SetQrCode(HandshakeData handshakeData)
 		{
 			if (encoded)
