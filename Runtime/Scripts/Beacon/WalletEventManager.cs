@@ -1,12 +1,10 @@
-#region
-
 using System;
 using System.Linq;
 using TezosSDK.DesignPattern.Singleton;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
-#endregion
+// ReSharper disable InconsistentNaming
 
 namespace TezosSDK.Beacon
 {
@@ -26,16 +24,7 @@ namespace TezosSDK.Beacon
 		public const string EventTypeHandshakeReceived = "HandshakeReceived";
 		public const string EventTypePairingDone = "PairingDone";
 		public const string EventTypePayloadSigned = "PayloadSigned";
-
-		private Action<WalletInfo> accountConnected;
-		private Action<ErrorInfo> accountConnectionFailed;
-		private Action<WalletInfo> accountDisconnected;
-		private Action<OperationResult> contractCallCompleted;
-		private Action<ErrorInfo> contractCallFailed;
-		private Action<OperationResult> contractCallInjected;
-		private Action<HandshakeData> handshakeReceived;
-		private Action<PairingDoneData> pairingCompleted;
-		private Action<SignResult> payloadSigned;
+		public const string EventTypeSDKInitialized = "SDKInitialized";
 
 		/// <summary>
 		///     Runs when a connection to an account fails. Provides error information.
@@ -183,6 +172,24 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
+		///     Runs when the SDK is initialized successfully.
+		/// </summary>
+		/// <remarks>
+		///     This event is triggered after the SDK has completed its initialization process.
+		/// </remarks>
+		public event Action SDKInitialized
+		{
+			add
+			{
+				if (sdkInitialized == null || !sdkInitialized.GetInvocationList().Contains(value))
+				{
+					sdkInitialized += value;
+				}
+			}
+			remove => sdkInitialized -= value;
+		}
+
+		/// <summary>
 		///     Runs when an account connects successfully. Provides the account information.
 		/// </summary>
 		/// <remarks>
@@ -218,6 +225,28 @@ namespace TezosSDK.Beacon
 				}
 			}
 			remove => accountDisconnected -= value;
+		}
+
+		private event Action<WalletInfo> accountConnected;
+		private event Action<ErrorInfo> accountConnectionFailed;
+		private event Action<WalletInfo> accountDisconnected;
+		private event Action<OperationResult> contractCallCompleted;
+		private event Action<ErrorInfo> contractCallFailed;
+		private event Action<OperationResult> contractCallInjected;
+		private event Action<HandshakeData> handshakeReceived;
+		private event Action<PairingDoneData> pairingCompleted;
+		private event Action<SignResult> payloadSigned;
+		private event Action sdkInitialized;
+
+		public void DispatchSDKInitializedEvent()
+		{
+			var sdkInitializedEvent = new UnifiedEvent
+			{
+				EventType = EventTypeSDKInitialized,
+				Data = "{}" // No additional data required for the event.
+			};
+
+			HandleEvent(JsonUtility.ToJson(sdkInitializedEvent));
 		}
 
 		/// <summary>
@@ -265,6 +294,9 @@ namespace TezosSDK.Beacon
 						break;
 					case EventTypePayloadSigned:
 						HandleEvent(eventData.Data, payloadSigned);
+						break;
+					case EventTypeSDKInitialized:
+						sdkInitialized?.Invoke();
 						break;
 					default:
 						Debug.LogWarning($"Unhandled event type: {eventData.EventType}");
@@ -386,15 +418,14 @@ namespace TezosSDK.Beacon
 	public class UnifiedEvent
 	{
 		/// <summary>
-		///     Specifies the type of event.
-		/// </summary>
-		public string EventType;
-
-		/// <summary>
 		///     Contains the data associated with the event in a JSON string format,
 		///     which is further parsed in specific event handlers.
 		/// </summary>
 		public string Data;
+		/// <summary>
+		///     Specifies the type of event.
+		/// </summary>
+		public string EventType;
 	}
 
 }

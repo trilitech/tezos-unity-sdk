@@ -13,6 +13,7 @@ enum EventType {
   contractCallInjected = "ContractCallInjected",
   contractCallFailed = "ContractCallFailed",
   payloadSigned = "PayloadSigned",
+  sdkInitialized = "SDKInitialized",
 }
 
 // this methods called from Unity.

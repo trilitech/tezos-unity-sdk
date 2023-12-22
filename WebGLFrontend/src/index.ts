@@ -4,6 +4,8 @@ import IpfsUploader from "./FileUploaders/IpfsUploader";
 import KukaiWallet from "./WalletProviders/Kukai";
 import { AccountInfo, DAppClient } from "@airgap/beacon-sdk";
 import { Wallet, WalletType } from "./WalletProviders/Types";
+import BaseWallet from "./WalletProviders/BaseWallet";
+
 import {
   BaseFileUploaderType,
   BaseUploaderConfig,
@@ -88,6 +90,10 @@ async function UnityReadyEvent() {
       );
       window.WalletProvider.ConnectAccount();
     }
+  }
+
+  if (window.WalletProvider instanceof BaseWallet) {
+    window.WalletProvider.CallUnityOnSDKInitialized();
   }
 }
 

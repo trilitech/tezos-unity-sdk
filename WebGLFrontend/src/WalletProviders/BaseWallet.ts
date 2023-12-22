@@ -26,6 +26,14 @@ class BaseWallet implements AbstractWallet {
     this.iconUrl = iconUrl;
   }
 
+  CallUnityOnSDKInitialized() {
+    const eventData: UnityEvent = {
+      eventType: EventType.sdkInitialized,
+      data: {}, // No additional data is needed for this event.
+    };
+    this.CallUnityMethod(eventData);
+  }
+  
   CallUnityOnAccountFailedToConnect(error: ErrorInfo) {
     const eventData: UnityEvent = {
       eventType: EventType.accountConnectionFailed,

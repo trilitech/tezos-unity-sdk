@@ -1,6 +1,7 @@
 using TezosSDK.Beacon;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos
@@ -28,6 +29,7 @@ namespace TezosSDK.Tezos
 		[Tooltip("Should we open the wallet app on mobiles after connect?")]
 		[SerializeField] private bool redirectToWallet = true;
 		
+		public bool IsInitialized { get; private set; }
 
 		public DAppMetadata DAppMetadata { get; private set; }
 
@@ -68,6 +70,9 @@ namespace TezosSDK.Tezos
 			
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
 			Tezos = new Tezos(DAppMetadata, redirectToWallet);
+			
+			IsInitialized = true;
+			EventManager.DispatchSDKInitializedEvent();
 		}
 	}
 }
