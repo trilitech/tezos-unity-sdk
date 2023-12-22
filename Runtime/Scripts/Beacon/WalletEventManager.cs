@@ -38,25 +38,6 @@ namespace TezosSDK.Beacon
 		private Action<SignResult> payloadSigned;
 
 		/// <summary>
-		///     Runs when an account connects successfully. Provides the account information.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the connected account.
-		///     It is triggered in response to a successful connection action from the wallet.
-		/// </remarks>
-		public event Action<WalletInfo> WalletConnected
-		{
-			add
-			{
-				if (accountConnected == null || !accountConnected.GetInvocationList().Contains(value))
-				{
-					accountConnected += value;
-				}
-			}
-			remove => accountConnected -= value;
-		}
-
-		/// <summary>
 		///     Runs when a connection to an account fails. Provides error information.
 		/// </summary>
 		/// <remarks>
@@ -73,25 +54,6 @@ namespace TezosSDK.Beacon
 				}
 			}
 			remove => accountConnectionFailed -= value;
-		}
-
-		/// <summary>
-		///     Runs when an account disconnects successfully. Provides the account information.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the disconnected account.
-		///     It is triggered in response to a successful disconnection action from the wallet.
-		/// </remarks>
-		public event Action<WalletInfo> WalletDisconnected
-		{
-			add
-			{
-				if (accountDisconnected == null || !accountDisconnected.GetInvocationList().Contains(value))
-				{
-					accountDisconnected += value;
-				}
-			}
-			remove => accountDisconnected -= value;
 		}
 
 		/// <summary>
@@ -218,6 +180,44 @@ namespace TezosSDK.Beacon
 				}
 			}
 			remove => payloadSigned -= value;
+		}
+
+		/// <summary>
+		///     Runs when an account connects successfully. Provides the account information.
+		/// </summary>
+		/// <remarks>
+		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the connected account.
+		///     It is triggered in response to a successful connection action from the wallet.
+		/// </remarks>
+		public event Action<WalletInfo> WalletConnected
+		{
+			add
+			{
+				if (accountConnected == null || !accountConnected.GetInvocationList().Contains(value))
+				{
+					accountConnected += value;
+				}
+			}
+			remove => accountConnected -= value;
+		}
+
+		/// <summary>
+		///     Runs when an account disconnects successfully. Provides the account information.
+		/// </summary>
+		/// <remarks>
+		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the disconnected account.
+		///     It is triggered in response to a successful disconnection action from the wallet.
+		/// </remarks>
+		public event Action<WalletInfo> WalletDisconnected
+		{
+			add
+			{
+				if (accountDisconnected == null || !accountDisconnected.GetInvocationList().Contains(value))
+				{
+					accountDisconnected += value;
+				}
+			}
+			remove => accountDisconnected -= value;
 		}
 
 		/// <summary>
