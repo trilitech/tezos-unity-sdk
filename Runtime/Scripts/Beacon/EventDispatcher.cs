@@ -40,6 +40,10 @@ namespace TezosSDK.Beacon
 			};
 		}
 
+		/// <summary>
+		/// Dispatches an event to the Unity main thread.
+		/// </summary>
+		/// <param name="eventData"></param>
 		private void DispatchEvent(UnifiedEvent eventData)
 		{
 			var json = JsonUtility.ToJson(eventData);

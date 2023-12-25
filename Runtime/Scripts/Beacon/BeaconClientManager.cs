@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
@@ -121,11 +120,12 @@ namespace TezosSDK.Beacon
 						return;
 					}
 
-					var permissionsString = permissionResponse.Scopes.Aggregate(string.Empty,
-						(res, scope) => res + $"{scope}, ");
+					var permissionsString = string.Join(", ", permissionResponse.Scopes);
 
 					Logger.LogDebug(
-						$"{BeaconDappClient.AppName} received permissions {permissionsString} from {permissionResponse.AppMetadata.Name} with public key {permissionResponse.PublicKey}");
+						$"\"{BeaconDappClient.AppName}\" received permissions: \"{permissionsString}\", " +
+						$"from: \"{permissionResponse.AppMetadata.Name}\", " +
+						$"with public key: \"{permissionResponse.PublicKey}\"");
 
 					_eventDispatcher.DispatchAccountConnectedEvent(BeaconDappClient);
 
