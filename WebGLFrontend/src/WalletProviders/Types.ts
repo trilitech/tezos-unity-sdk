@@ -59,9 +59,16 @@ interface ErrorInfo {
   message: string;
 }
 
+interface SDKIntializedEvent {}
+
 interface UnityEvent {
   eventType: EventType;
-  data: AccountInfo | SignResult | ErrorInfo | OperationResult;
+  data:
+    | AccountInfo
+    | SignResult
+    | ErrorInfo
+    | OperationResult
+    | SDKIntializedEvent;
 }
 
 export {

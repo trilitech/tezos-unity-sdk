@@ -28,12 +28,12 @@ namespace TezosSDK.Samples.NFTApiSample
             _tezos
                 .Wallet
                 .EventManager
-                .AccountConnected += OnAccountConnected;
+                .WalletConnected += OnAccountConnected;
         }
 
-        void OnAccountConnected(AccountInfo accountInfo)
+        void OnAccountConnected(WalletInfo walletInfo)
         {
-            _connectedAddress = accountInfo.Address;
+            _connectedAddress = walletInfo.Address;
         }
 
         public void GetTokensForOwners()

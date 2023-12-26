@@ -45,9 +45,9 @@ namespace TezosSDK.Samples.DemoExample
 
         private void InitializeCallbacks()
         {
-            _manager.GetWalletMessageReceiver().AccountConnected += OnAccountConnected;
+            _manager.GetWalletMessageReceiver().WalletConnected += OnWalletConnected;
             _manager.GetWalletMessageReceiver().AccountConnectionFailed += OnAccountConnectionFailed;
-            _manager.GetWalletMessageReceiver().AccountDisconnected += OnAccountDisconnected;
+            _manager.GetWalletMessageReceiver().WalletDisconnected += OnWalletDisconnected;
             _manager.GetWalletMessageReceiver().ContractCallCompleted += OnContractCallCompleted;
             _manager.GetWalletMessageReceiver().ContractCallFailed += OnContractCallFailed;
             _manager.GetWalletMessageReceiver().ContractCallInjected += OnContractCallInjected;
@@ -205,9 +205,9 @@ namespace TezosSDK.Samples.DemoExample
 
         #region Tezos Callbacks
 
-        private void OnAccountConnected(AccountInfo accountInfo)
+        private void OnWalletConnected(WalletInfo walletInfo)
         {
-            if (!string.IsNullOrEmpty(accountInfo.Address))
+            if (!string.IsNullOrEmpty(walletInfo.Address))
                 OnSignIn(true);
         }
 
@@ -217,7 +217,7 @@ namespace TezosSDK.Samples.DemoExample
                          "Response: \n" + errorInfo.Message);
         }
 
-        private void OnAccountDisconnected(AccountInfo accountInfo)
+        private void OnWalletDisconnected(WalletInfo walletInfo)
         {
             AllowUIAccess(false);
             ResetWalletData();
