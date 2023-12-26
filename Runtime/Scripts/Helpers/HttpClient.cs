@@ -38,6 +38,14 @@ namespace TezosSDK.Helpers
                 request.Dispose();
                 yield break;
             }
+            
+            // Check if the downloaded text is not null or empty.
+            if (string.IsNullOrWhiteSpace(request.downloadHandler.text))
+            {
+                Logger.LogError("No data or empty JSON received.");
+                request.Dispose();
+                yield break;
+            }
 
             if (typeof(T) == typeof(string))
             {
