@@ -36,7 +36,7 @@ namespace TezosSDK.Tezos.API.Models.Tokens
         /// <summary>
         /// Token metadata.
         /// </summary>
-        public JsonElement TokenMetadata { get; set; }
+        public TokenMetadata TokenMetadata { get; set; }
 
         /// <summary>
         /// Timestamp of the block where the token balance was last changed.
