@@ -30,7 +30,6 @@ namespace TezosSDK.Beacon
 
 		public async Task RequestTezosPermission(
 			string networkName,
-			string networkRPC,
 			DappBeaconClient beaconDappClient)
 		{
 			if (!Enum.TryParse(networkName, out NetworkType networkType))
@@ -51,8 +50,13 @@ namespace TezosSDK.Beacon
 				PermissionScope.sign
 			};
 
-			var permissionRequest = new PermissionRequest(BeaconMessageType.permission_request, Constants.BeaconVersion,
-				KeyPairService.CreateGuid(), beaconDappClient.SenderId, beaconDappClient.Metadata, network,
+			var permissionRequest = new PermissionRequest(
+				BeaconMessageType.permission_request,
+				Constants.BeaconVersion,
+				KeyPairService.CreateGuid(),
+				beaconDappClient.SenderId,
+				beaconDappClient.Metadata,
+				network,
 				permissionScopes);
 
 			var activePeer = beaconDappClient.GetActivePeer();
@@ -73,8 +77,6 @@ namespace TezosSDK.Beacon
 			string entryPoint,
 			string input,
 			ulong amount,
-			string networkName,
-			string networkRPC,
 			DappBeaconClient beaconDappClient)
 		{
 			var activeAccountPermissions = beaconDappClient.GetActiveAccount();

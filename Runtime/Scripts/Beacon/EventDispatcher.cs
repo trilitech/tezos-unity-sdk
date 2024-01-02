@@ -31,13 +31,9 @@ namespace TezosSDK.Beacon
 
 		private UnifiedEvent CreateWalletDisconnectedEvent(PermissionInfo activeWallet)
 		{
-			var accountInfo = CreateWalletInfo(activeWallet);
+			WalletInfo walletInfo = CreateWalletInfo(activeWallet);
 
-			return new UnifiedEvent
-			{
-				EventType = WalletEventManager.EventTypeAccountDisconnected,
-				Data = JsonUtility.ToJson(accountInfo)
-			};
+			return new UnifiedEvent(WalletEventManager.EventTypeAccountDisconnected, JsonUtility.ToJson(walletInfo));
 		}
 
 		/// <summary>
@@ -46,39 +42,34 @@ namespace TezosSDK.Beacon
 		/// <param name="eventData"></param>
 		private void DispatchEvent(UnifiedEvent eventData)
 		{
-			var json = JsonUtility.ToJson(eventData);
-			UnityMainThreadDispatcher.Enqueue(() => _eventManager.HandleEvent(json));
+			UnityMainThreadDispatcher.Enqueue(() => _eventManager.HandleEvent(eventData));
 		}
 
 		public void DispatchAccountConnectedEvent(DappBeaconClient beaconDappClient)
 		{
-			var accountConnectedEvent = CreateAccountConnectedEvent(beaconDappClient.GetActiveAccount());
+			var accountConnectedEvent = CreateWalletConnectedEvent(beaconDappClient.GetActiveAccount());
 			DispatchEvent(accountConnectedEvent);
 		}
 
-		private UnifiedEvent CreateAccountConnectedEvent(PermissionInfo activeAccountPermissions)
+		private UnifiedEvent CreateWalletConnectedEvent(PermissionInfo activeAccountPermissions)
 		{
-			var accountInfo = CreateWalletInfo(activeAccountPermissions);
+			var walletInfo = CreateWalletInfo(activeAccountPermissions);
 
-			return new UnifiedEvent
-			{
-				EventType = WalletEventManager.EventTypeAccountConnected,
-				Data = JsonUtility.ToJson(accountInfo)
-			};
+			return new UnifiedEvent(WalletEventManager.EventTypeWalletConnected, JsonUtility.ToJson(walletInfo));
 		}
 
-		private WalletInfo CreateWalletInfo(PermissionInfo activeAccountPermissions)
+		private WalletInfo CreateWalletInfo(PermissionInfo activeWalletPermissions)
 		{
-			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
+			var pubKey = PubKey.FromBase58(activeWalletPermissions.PublicKey);
 
 			return new WalletInfo
 			{
 				Address = pubKey.Address,
-				PublicKey = activeAccountPermissions.PublicKey
+				PublicKey = activeWalletPermissions.PublicKey
 			};
 		}
 
-		public void DispathPairingDoneEvent(DappBeaconClient beaconDappClient)
+		public void DispatchPairingDoneEvent(DappBeaconClient beaconDappClient)
 		{
 			var pairingDoneData = new PairingDoneData
 			{
@@ -86,11 +77,7 @@ namespace TezosSDK.Beacon
 				Timestamp = DateTime.UtcNow.ToString("o")
 			};
 
-			var pairingDoneEvent = new UnifiedEvent
-			{
-				EventType = WalletEventManager.EventTypePairingDone,
-				Data = JsonUtility.ToJson(pairingDoneData)
-			};
+			var pairingDoneEvent = new UnifiedEvent(WalletEventManager.EventTypePairingDone, JsonUtility.ToJson(pairingDoneData));
 
 			DispatchEvent(pairingDoneEvent);
 		}
@@ -102,11 +89,7 @@ namespace TezosSDK.Beacon
 				TransactionHash = operationResponse.TransactionHash
 			};
 
-			var contractEvent = new UnifiedEvent
-			{
-				EventType = WalletEventManager.EventTypeContractCallInjected,
-				Data = JsonUtility.ToJson(operationResult)
-			};
+			var contractEvent = new UnifiedEvent(WalletEventManager.EventTypeContractCallInjected, JsonUtility.ToJson(operationResult));
 
 			DispatchEvent(contractEvent);
 		}
@@ -118,28 +101,19 @@ namespace TezosSDK.Beacon
 				Signature = signPayloadResponse.Signature
 			};
 
-			var signedEvent = new UnifiedEvent
-			{
-				EventType = WalletEventManager.EventTypePayloadSigned,
-				Data = JsonUtility.ToJson(signResult)
-			};
+			var signedEvent = new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonUtility.ToJson(signResult));
 
 			DispatchEvent(signedEvent);
 		}
 
-		public void DispatchHandshakeEvent(DappBeaconClient beaconDappClient)
+		public void DispatchHandshakeEvent(string pairingData)
 		{
 			var handshakeData = new HandshakeData
 			{
-				PairingData = beaconDappClient.GetPairingRequestInfo()
+				PairingData = pairingData
 			};
 
-			var handshakeEvent = new UnifiedEvent
-			{
-				EventType = WalletEventManager.EventTypeHandshakeReceived,
-				Data = JsonUtility.ToJson(handshakeData)
-			};
-
+			var handshakeEvent = new UnifiedEvent(WalletEventManager.EventTypeHandshakeReceived, JsonUtility.ToJson(handshakeData));
 			DispatchEvent(handshakeEvent);
 		}
 	}

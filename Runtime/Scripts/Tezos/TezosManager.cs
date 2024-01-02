@@ -26,11 +26,6 @@ namespace TezosSDK.Tezos
 		         "here to be able to upload images to IPFS.")]
 		[SerializeField] private string pinataApiKey;
 		
-		[Tooltip("Should we open the wallet app on mobiles after connect?")]
-		[SerializeField] private bool redirectToWallet = true;
-		
-		public bool IsInitialized { get; private set; }
-
 		public DAppMetadata DAppMetadata { get; private set; }
 
 		public ITezos Tezos { get; private set; }
@@ -42,7 +37,7 @@ namespace TezosSDK.Tezos
 
 		public WalletEventManager EventManager
 		{
-			get => Wallet?.EventManager;
+			get => _eventManager;
 		}
 
 		public static string PinataApiKey
@@ -59,20 +54,37 @@ namespace TezosSDK.Tezos
 			}
             
 			Instance = this;
+			CreateEventManager();
 			InitializeTezos();
 			DontDestroyOnLoad(gameObject);
 		}
 
+		private WalletEventManager _eventManager;
+		
 		private void InitializeTezos()
 		{
 			Logger.CurrentLogLevel = logLevel;
 			TezosConfig.Instance.pinataApiKey = pinataApiKey;
-			
+
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
-			Tezos = new Tezos(DAppMetadata, redirectToWallet);
+
+			var beaconConnector = BeaconConnectorFactory.CreateConnector(Application.platform, _eventManager, DAppMetadata);
 			
-			IsInitialized = true;
+			Tezos = new Tezos(_eventManager, beaconConnector);
+			
 			EventManager.DispatchSDKInitializedEvent();
+		}
+
+		private void CreateEventManager()
+		{
+			// Create or get a WalletMessageReceiver Game object to receive callback messages
+			var eventManager = GameObject.Find("WalletEventManager");
+
+			_eventManager = eventManager != null
+				? eventManager.GetComponent<WalletEventManager>()
+				: new GameObject("WalletEventManager").AddComponent<WalletEventManager>();
+			
+			DontDestroyOnLoad(_eventManager);
 		}
 	}
 }

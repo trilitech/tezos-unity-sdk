@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Dynamic.Json;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models;
@@ -249,7 +250,6 @@ namespace TezosSDK.Tezos.API
 
 			return new CoroutineWrapper<bool?>(requestRoutine, callback, error =>
 			{
-				Logger.LogDebug($"Can't get operation {operationHash} status, {error.Message}");
 				callback.Invoke(false);
 			});
 		}

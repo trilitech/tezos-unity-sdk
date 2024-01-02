@@ -12,7 +12,6 @@ namespace TezosSDK.Beacon
 	{
 		public string Network { get; set; }
 		public string Rpc { get; set; }
-		public WalletProviderType WalletProviderType { get; set; }
 		public DAppMetadata Metadata { get; set; }
 	}
 

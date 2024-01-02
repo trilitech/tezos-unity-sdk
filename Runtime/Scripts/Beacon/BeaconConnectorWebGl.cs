@@ -1,4 +1,3 @@
-#if UNITY_WEBGL
 
 #region
 
@@ -49,7 +48,7 @@ namespace TezosSDK.Beacon
 			return JsGetActiveAccountAddress();
 		}
 
-		public void RequestTezosPermission(string networkName = "", string networkRPC = "")
+		public void RequestTezosPermission(string networkName = "")
 		{
 		}
 
@@ -57,9 +56,7 @@ namespace TezosSDK.Beacon
 			string destination,
 			string entryPoint = "default",
 			string input = null,
-			ulong amount = 0,
-			string networkName = "",
-			string networkRPC = "")
+			ulong amount = 0)
 		{
 			JsSendContractCall(destination, amount.ToString(), entryPoint, input);
 		}
@@ -110,4 +107,3 @@ namespace TezosSDK.Beacon
 	}
 
 }
-#endif

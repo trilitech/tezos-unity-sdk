@@ -37,9 +37,9 @@ namespace TezosSDK.View
 				return;
 			}
 			
-			encoded = true;
 			var uri = "tezos://?type=tzip10&data=" + handshakeData.PairingData;
 			EncodeTextToQrCode(uri);
+			encoded = true;
 		}
 
 		private Color32[] Encode(string text, int width, int height)

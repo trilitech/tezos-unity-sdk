@@ -49,8 +49,7 @@ namespace TezosSDK.Beacon
 		///     Allows waiting for permissions to be granted for pairing.
 		/// </summary>
 		/// <param name="networkName">The name of the desired network.</param>
-		/// <param name="networkRPC">The RPC to the desired network</param>
-		public void RequestTezosPermission(string networkName = "", string networkRPC = "");
+		public void RequestTezosPermission(string networkName = "");
 
 		/// <summary>
 		///     Allows requesting a new operation such as sending tezos or initiating a smart contract.
@@ -59,15 +58,11 @@ namespace TezosSDK.Beacon
 		/// <param name="entryPoint">The entry point if one needs to be specified</param>
 		/// <param name="arg">The arguments if any are needed</param>
 		/// <param name="amount">Ammount to be sent, if Tez, it's calculated in MuTez</param>
-		/// <param name="networkName">The name of the desired network.</param>
-		/// <param name="networkRPC">The RPC to the desired network</param>
 		public void RequestTezosOperation(
 			string destination,
 			string entryPoint = "default",
 			string arg = null,
-			ulong amount = 0,
-			string networkName = "",
-			string networkRPC = "");
+			ulong amount = 0);
 
 		/// <summary>
 		///     Originate new contract

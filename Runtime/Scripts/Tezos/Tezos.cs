@@ -22,12 +22,12 @@ namespace TezosSDK.Tezos
         public IWalletProvider Wallet { get; }
         public IFA2 TokenContract { get; set; }
 
-        public Tezos(DAppMetadata dAppMetadata, bool redirectToWallet)
+        public Tezos(WalletEventManager eventManager, IBeaconConnector beaconConnector)
         {
             var dataProviderConfig = new TzKTProviderConfig();
             API = new TezosAPI(dataProviderConfig);
             
-            Wallet = new WalletProvider(dAppMetadata, redirectToWallet);
+            Wallet = new WalletProvider(eventManager, beaconConnector);
             Wallet.EventManager.WalletConnected += OnWalletConnected;
         }
 

@@ -15,7 +15,6 @@ namespace TezosSDK.Beacon
 	/// </summary>
 	public class WalletEventManager : SingletonMonoBehaviour<WalletEventManager>
 	{
-		public const string EventTypeAccountConnected = "AccountConnected";
 		public const string EventTypeAccountConnectionFailed = "AccountConnectionFailed";
 		public const string EventTypeAccountDisconnected = "AccountDisconnected";
 		public const string EventTypeContractCallCompleted = "ContractCallCompleted";
@@ -25,6 +24,7 @@ namespace TezosSDK.Beacon
 		public const string EventTypePairingDone = "PairingDone";
 		public const string EventTypePayloadSigned = "PayloadSigned";
 		public const string EventTypeSDKInitialized = "SDKInitialized";
+		public const string EventTypeWalletConnected = "AccountConnected";
 
 		/// <summary>
 		///     Runs when a connection to an account fails. Provides error information.
@@ -200,12 +200,12 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (accountConnected == null || !accountConnected.GetInvocationList().Contains(value))
+				if (walletConnected == null || !walletConnected.GetInvocationList().Contains(value))
 				{
-					accountConnected += value;
+					walletConnected += value;
 				}
 			}
-			remove => accountConnected -= value;
+			remove => walletConnected -= value;
 		}
 
 		/// <summary>
@@ -227,7 +227,6 @@ namespace TezosSDK.Beacon
 			remove => accountDisconnected -= value;
 		}
 
-		private event Action<WalletInfo> accountConnected;
 		private event Action<ErrorInfo> accountConnectionFailed;
 		private event Action<WalletInfo> accountDisconnected;
 		private event Action<OperationResult> contractCallCompleted;
@@ -238,15 +237,27 @@ namespace TezosSDK.Beacon
 		private event Action<SignResult> payloadSigned;
 		private event Action sdkInitialized;
 
+		private event Action<WalletInfo> walletConnected;
+
 		public void DispatchSDKInitializedEvent()
 		{
-			var sdkInitializedEvent = new UnifiedEvent
-			{
-				EventType = EventTypeSDKInitialized,
-				Data = "{}" // No additional data required for the event.
-			};
+			var sdkInitializedEvent = new UnifiedEvent(EventTypeSDKInitialized);
 
-			HandleEvent(JsonUtility.ToJson(sdkInitializedEvent));
+			HandleEvent(sdkInitializedEvent);
+		}
+
+		/// <summary>
+		///     Processes the incoming event data and dispatches it to the corresponding event
+		///     based on the <see cref="UnifiedEvent.EventType" />.
+		/// </summary>
+		/// <param name="unifiedEvent">
+		///     The <see cref="UnifiedEvent" /> to be handled, which contains
+		///     the event type and data (if any).
+		/// </param>
+		public void HandleEvent(UnifiedEvent unifiedEvent)
+		{
+			var jsonEventData = JsonUtility.ToJson(unifiedEvent);
+			HandleEvent(jsonEventData);
 		}
 
 		/// <summary>
@@ -260,46 +271,49 @@ namespace TezosSDK.Beacon
 		///     The method decodes the JSON event data, identifies the type of event, and invokes the corresponding
 		///     event handler with the proper deserialized event data object.
 		/// </remarks>
-		public void HandleEvent(string jsonEventData)
+		/// <remarks>
+		///     JSON strings are used to enable communication between the Unity environment and WebGL builds.
+		/// </remarks>
+		private void HandleEvent(string jsonEventData)
 		{
 			try
 			{
 				var eventData = JsonUtility.FromJson<UnifiedEvent>(jsonEventData);
 
-				switch (eventData.EventType)
+				switch (eventData.GetEventType())
 				{
 					case EventTypeHandshakeReceived:
-						HandleEvent(eventData.Data, handshakeReceived);
+						HandleEvent(eventData.GetData(), handshakeReceived);
 						break;
 					case EventTypePairingDone:
-						HandleEvent(eventData.Data, pairingCompleted);
+						HandleEvent(eventData.GetData(), pairingCompleted);
 						break;
-					case EventTypeAccountConnected:
-						HandleEvent(eventData.Data, accountConnected);
+					case EventTypeWalletConnected:
+						HandleEvent(eventData.GetData(), walletConnected);
 						break;
 					case EventTypeAccountConnectionFailed:
-						HandleEvent(eventData.Data, accountConnectionFailed);
+						HandleEvent(eventData.GetData(), accountConnectionFailed);
 						break;
 					case EventTypeAccountDisconnected:
-						HandleEvent(eventData.Data, accountDisconnected);
+						HandleEvent(eventData.GetData(), accountDisconnected);
 						break;
 					case EventTypeContractCallInjected:
-						HandleEvent(eventData.Data, contractCallInjected);
+						HandleEvent(eventData.GetData(), contractCallInjected);
 						break;
 					case EventTypeContractCallCompleted:
-						HandleEvent(eventData.Data, contractCallCompleted);
+						HandleEvent(eventData.GetData(), contractCallCompleted);
 						break;
 					case EventTypeContractCallFailed:
-						HandleEvent(eventData.Data, contractCallFailed);
+						HandleEvent(eventData.GetData(), contractCallFailed);
 						break;
 					case EventTypePayloadSigned:
-						HandleEvent(eventData.Data, payloadSigned);
+						HandleEvent(eventData.GetData(), payloadSigned);
 						break;
 					case EventTypeSDKInitialized:
 						sdkInitialized?.Invoke();
 						break;
 					default:
-						Debug.LogWarning($"Unhandled event type: {eventData.EventType}");
+						Debug.LogWarning($"Unhandled event type: {eventData.GetEventType()}");
 						break;
 				}
 			}
@@ -320,9 +334,9 @@ namespace TezosSDK.Beacon
 		///     and then invokes the provided delegate <paramref name="eventAction" /> with the deserialized object.
 		///     It is designed to be called within a switch-case structure that handles each specific event type.
 		/// </remarks>
-		private void HandleEvent<T>(string data, Action<T> eventAction)
+		private void HandleEvent<T>(object data, Action<T> eventAction)
 		{
-			var deserializedData = JsonUtility.FromJson<T>(data);
+			var deserializedData = JsonUtility.FromJson<T>(data.ToString());
 			eventAction?.Invoke(deserializedData);
 		}
 	}
@@ -417,15 +431,44 @@ namespace TezosSDK.Beacon
 	[Serializable]
 	public class UnifiedEvent
 	{
+		[SerializeField] private string EventType;
+		[SerializeField] private string Data;
+
 		/// <summary>
+		///     Initializes a new instance of the <see cref="UnifiedEvent" /> class.
+		/// </summary>
+		/// <param name="eventType">
+		///     Specifies the type of event.
+		///     The event type is used to determine which event handler to invoke.
+		///     For a list of event types, see <see cref="WalletEventManager" />.
+		///     <example>
+		///     </example>
+		/// </param>
+		/// <param name="data">
 		///     Contains the data associated with the event in a JSON string format,
 		///     which is further parsed in specific event handlers.
-		/// </summary>
-		public string Data;
-		/// <summary>
-		///     Specifies the type of event.
-		/// </summary>
-		public string EventType;
+		/// </param>
+		/// <example>
+		///     The data for a <see cref="WalletEventManager.EventTypeWalletConnected" /> event
+		///     is a <see cref="WalletInfo" /> object serialized into a JSON string.
+		/// </example>
+		public UnifiedEvent(string eventType, string data = null)
+		{
+			data ??= "{}";
+
+			EventType = eventType;
+			Data = data;
+		}
+
+		public string GetData()
+		{
+			return Data;
+		}
+
+		public string GetEventType()
+		{
+			return EventType;
+		}
 	}
 
 }
