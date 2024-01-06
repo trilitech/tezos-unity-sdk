@@ -8,12 +8,19 @@ using Beacon.Sdk.Core.Domain.Entities;
 using Netezos.Keys;
 using TezosSDK.Helpers;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 #endregion
 
 namespace TezosSDK.Beacon
 {
 
+	/// <summary>
+	///     A helper class to dispatch events to the Unity main thread.
+	///		This is necessary because the Beacon SDK is running on
+	///     a background thread, and when we receive events from it, we need to dispatch them or deal with them on the main
+	///     thread.
+	/// </summary>
 	public class EventDispatcher
 	{
 		private readonly WalletEventManager _eventManager;
@@ -23,30 +30,29 @@ namespace TezosSDK.Beacon
 			_eventManager = eventManager;
 		}
 
-		public void DispatchWalletDisconnectedEvent(PermissionInfo activeWallet)
+		public void DispatchWalletDisconnectedEvent(WalletInfo activeWallet)
 		{
-			var walletDisconnectedEvent = CreateWalletDisconnectedEvent(activeWallet);
+			Logger.Log($"Dispatching WalletDisconnectedEvent for {activeWallet?.PublicKey}");
+
+			var walletDisconnectedEvent = new UnifiedEvent(WalletEventManager.EventTypeWalletDisconnected,
+				JsonUtility.ToJson(activeWallet));
+
 			DispatchEvent(walletDisconnectedEvent);
 		}
 
-		private UnifiedEvent CreateWalletDisconnectedEvent(PermissionInfo activeWallet)
-		{
-			WalletInfo walletInfo = CreateWalletInfo(activeWallet);
-
-			return new UnifiedEvent(WalletEventManager.EventTypeAccountDisconnected, JsonUtility.ToJson(walletInfo));
-		}
-
 		/// <summary>
-		/// Dispatches an event to the Unity main thread.
+		///     Dispatches an event to the Unity main thread.
 		/// </summary>
 		/// <param name="eventData"></param>
 		private void DispatchEvent(UnifiedEvent eventData)
 		{
+			Logger.Log("Dispatching event");
 			UnityMainThreadDispatcher.Enqueue(() => _eventManager.HandleEvent(eventData));
 		}
 
-		public void DispatchAccountConnectedEvent(DappBeaconClient beaconDappClient)
+		public void DispatchWalletConnectedEvent(DappBeaconClient beaconDappClient)
 		{
+			Logger.Log("Dispatching WalletConnectedEvent");
 			var accountConnectedEvent = CreateWalletConnectedEvent(beaconDappClient.GetActiveAccount());
 			DispatchEvent(accountConnectedEvent);
 		}
@@ -71,13 +77,16 @@ namespace TezosSDK.Beacon
 
 		public void DispatchPairingDoneEvent(DappBeaconClient beaconDappClient)
 		{
+			Logger.Log("Dispatching PairingDoneEvent");
+
 			var pairingDoneData = new PairingDoneData
 			{
 				DAppPublicKey = beaconDappClient.GetActiveAccount()?.PublicKey,
 				Timestamp = DateTime.UtcNow.ToString("o")
 			};
 
-			var pairingDoneEvent = new UnifiedEvent(WalletEventManager.EventTypePairingDone, JsonUtility.ToJson(pairingDoneData));
+			var pairingDoneEvent = new UnifiedEvent(WalletEventManager.EventTypePairingDone,
+				JsonUtility.ToJson(pairingDoneData));
 
 			DispatchEvent(pairingDoneEvent);
 		}
@@ -89,7 +98,8 @@ namespace TezosSDK.Beacon
 				TransactionHash = operationResponse.TransactionHash
 			};
 
-			var contractEvent = new UnifiedEvent(WalletEventManager.EventTypeContractCallInjected, JsonUtility.ToJson(operationResult));
+			var contractEvent = new UnifiedEvent(WalletEventManager.EventTypeContractCallInjected,
+				JsonUtility.ToJson(operationResult));
 
 			DispatchEvent(contractEvent);
 		}
@@ -101,19 +111,24 @@ namespace TezosSDK.Beacon
 				Signature = signPayloadResponse.Signature
 			};
 
-			var signedEvent = new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonUtility.ToJson(signResult));
+			var signedEvent =
+				new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonUtility.ToJson(signResult));
 
 			DispatchEvent(signedEvent);
 		}
 
 		public void DispatchHandshakeEvent(string pairingData)
 		{
+			Logger.Log("Dispatching HandshakeEvent");
+
 			var handshakeData = new HandshakeData
 			{
 				PairingData = pairingData
 			};
 
-			var handshakeEvent = new UnifiedEvent(WalletEventManager.EventTypeHandshakeReceived, JsonUtility.ToJson(handshakeData));
+			var handshakeEvent = new UnifiedEvent(WalletEventManager.EventTypeHandshakeReceived,
+				JsonUtility.ToJson(handshakeData));
+
 			DispatchEvent(handshakeEvent);
 		}
 	}

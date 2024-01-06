@@ -3,73 +3,63 @@ using TezosSDK.Beacon;
 
 namespace TezosSDK.Tezos.Wallet
 {
-    public interface IWalletProvider
-    {
+
+	public interface IWalletProvider
+	{
         /// <summary>
-        /// Exposes a MonoBehaviour class that exposes wallet events
+        ///     Exposes a MonoBehaviour class that exposes wallet events
         /// </summary>
         WalletEventManager EventManager { get; }
 
-        bool IsConnected { get; }
-        
-        HandshakeData HandshakeData { get; }
+		bool IsConnected { get; }
+
+		HandshakeData HandshakeData { get; }
 
         /// <summary>
-        /// Callback that needed in WebGL to determine that UI is rendered
+        ///     Makes a call to connect with a wallet
         /// </summary>
-        void OnReady();
+        void Connect(WalletProviderType walletProvider);
 
         /// <summary>
-        /// Makes a call to connect with a wallet
-        /// <param name="withRedirectToWallet">Should we open wallet app on mobiles after connect?</param>
-        /// </summary>
-        void Connect(WalletProviderType walletProvider, bool withRedirectToWallet = true);
-
-        /// <summary>
-        /// Unpair with wallet and disconnect
+        ///     Unpair with wallet and disconnect
         /// </summary>
         void Disconnect();
 
         /// <summary>
-        /// Returns the address of the current active wallet
+        ///     Returns the address of the current active wallet
         /// </summary>
         /// <returns></returns>
         string GetActiveAddress();
 
         /// <summary>
-        /// Sends a request to the sign a payload string
+        ///     Sends a request to the sign a payload string
         /// </summary>
         /// <param name="signingType">type of payload: raw, operation or micheline</param>
         /// <param name="payload">payload string that is going to be signed</param>
         void RequestSignPayload(SignPayloadType signingType, string payload);
 
         /// <summary>
-        /// Verify a signed payload to check if it is valid
+        ///     Verify a signed payload to check if it is valid
         /// </summary>
         /// <param name="signingType">type of payload: raw, operation or micheline</param>
         /// <param name="payload">payload string that is going to be signed</param>
         bool VerifySignedPayload(SignPayloadType signingType, string payload);
 
         /// <summary>
-        /// Performs an operation in the contract
+        ///     Performs an operation in the contract
         /// </summary>
         /// <param name="contractAddress">destination address of the smart contract</param>
         /// <param name="entryPoint">entry point used in the smart contract</param>
         /// <param name="input">parameters called on the entry point</param>
         /// <param name="amount">amount of Tez sent into the contract</param>
-        void CallContract(
-            string contractAddress,
-            string entryPoint,
-            string input,
-            ulong amount = 0);
+        void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0);
 
         /// <summary>
-        /// Originate new contract.
+        ///     Originate new contract.
         /// </summary>
         /// <param name="script">Code of contract</param>
         /// <param name="delegateAddress">Delegator address</param>
-        void OriginateContract(
-            string script,
-            string delegateAddress = null);
-    }
+        void OriginateContract(string script, string delegateAddress = null);
+	}
+
 }

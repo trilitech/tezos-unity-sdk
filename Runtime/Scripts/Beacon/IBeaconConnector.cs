@@ -37,19 +37,18 @@ namespace TezosSDK.Beacon
 		///     Starts the connection between Beacon SDK and a wallet to connect to
 		///     an account
 		/// </summary>
-		void ConnectAccount();
+		void ConnectWallet();
 
 		/// <summary>
 		///     Checks if there is an active account paired.
 		/// </summary>
 		/// <returns>Returns only the account address as a string.</returns>
-		public string GetActiveAccountAddress();
+		public string GetActiveWalletAddress();
 
 		/// <summary>
 		///     Allows waiting for permissions to be granted for pairing.
 		/// </summary>
-		/// <param name="networkName">The name of the desired network.</param>
-		public void RequestTezosPermission(string networkName = "");
+		public void RequestTezosPermission();
 
 		/// <summary>
 		///     Allows requesting a new operation such as sending tezos or initiating a smart contract.
@@ -81,7 +80,7 @@ namespace TezosSDK.Beacon
 		/// <summary>
 		///     Removes the connection to the current active account.
 		/// </summary>
-		void DisconnectAccount();
+		void DisconnectWallet();
 	}
 
 }

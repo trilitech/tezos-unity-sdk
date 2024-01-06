@@ -10,7 +10,7 @@ using UnityEngine;
 namespace TezosSDK
 {
 
-	public class AccountBalanceUI : MonoBehaviour
+	public class WalletBalanceUI : MonoBehaviour
 	{
 		[SerializeField] private TextMeshProUGUI balanceText;
 

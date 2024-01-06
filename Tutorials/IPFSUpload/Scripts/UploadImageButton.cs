@@ -14,13 +14,13 @@ namespace TezosSDK.IPFSUpload.Scripts
 	{
 		public void HandleUploadClick()
 		{
-			if (string.IsNullOrEmpty(TezosManager.PinataApiKey))
+			if (string.IsNullOrEmpty(TezosManager.Instance.Config.PinataApiKey))
 			{
 				Logger.LogError("Can not proceed without Pinata API key.");
 				return;
 			}
 
-			var uploader = UploaderFactory.GetPinataUploader(TezosManager.PinataApiKey);
+			var uploader = UploaderFactory.GetPinataUploader(TezosManager.Instance.Config.PinataApiKey);
 
 			var uploadCoroutine = uploader.UploadFile(ipfsUrl =>
 			{

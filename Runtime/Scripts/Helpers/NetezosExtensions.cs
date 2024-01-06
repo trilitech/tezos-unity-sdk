@@ -7,6 +7,7 @@ using Beacon.Sdk.Beacon.Sign;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using Netezos.Keys;
+using TezosSDK.Tezos;
 using TezosSDK.Tezos.API;
 
 namespace TezosSDK.Helpers
@@ -29,7 +30,7 @@ namespace TezosSDK.Helpers
         private static IEnumerator FetchContractCode(string rpcUri, string contract)
         {
             if (_contracts.ContainsKey(contract)) yield break;
-            var rpc = new Rpc(rpcUri);
+            var rpc = new Rpc(TezosManager.Instance.Config);
             var scriptOp = rpc.GetContractCode<JsonElement>(contract);
             yield return new CoroutineWrapper<JsonElement>(scriptOp, (script) =>
             {

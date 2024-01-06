@@ -331,7 +331,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5977092460330271763, guid: f8b57b9bad7d046ab86713b0d785a4c6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -15.000122
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 5977092460330271763, guid: f8b57b9bad7d046ab86713b0d785a4c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -621,6 +621,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4142934398137355793, guid: 88403be39bf2846f3a3d1ff42ec2ceb5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 158
+      objectReference: {fileID: 0}
     - target: {fileID: 4142934399787911491, guid: 88403be39bf2846f3a3d1ff42ec2ceb5, type: 3}
       propertyPath: m_Name
       value: TezosAuthenticator
@@ -973,7 +977,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4903882491096610426, guid: 1f2b41cbbfea5425799913991573c5b0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 96
+      value: 237
       objectReference: {fileID: 0}
     - target: {fileID: 4903882491096610426, guid: 1f2b41cbbfea5425799913991573c5b0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

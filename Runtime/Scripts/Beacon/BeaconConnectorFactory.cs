@@ -1,6 +1,5 @@
 using System;
 using TezosSDK.Tezos;
-using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 
 namespace TezosSDK.Beacon
@@ -8,7 +7,11 @@ namespace TezosSDK.Beacon
 
 	public static class BeaconConnectorFactory
 	{
-		public static IBeaconConnector CreateConnector(RuntimePlatform platform, WalletEventManager eventManager, DAppMetadata dAppMetadata)
+		public static IBeaconConnector CreateConnector(
+			RuntimePlatform platform,
+			TezosConfigSO config,
+			WalletEventManager eventManager,
+			DAppMetadata dAppMetadata)
 		{
 			switch (platform)
 			{
@@ -21,8 +24,8 @@ namespace TezosSDK.Beacon
 				case RuntimePlatform.LinuxPlayer:
 				case RuntimePlatform.OSXPlayer:
 				case RuntimePlatform.OSXEditor:
-					return new BeaconConnectorDotNet(eventManager, TezosConfig.Instance.Network.ToString(),
-						TezosConfig.Instance.RpcBaseUrl, dAppMetadata);
+					return new BeaconConnectorDotNet(eventManager, config.Network,
+						config.Rpc, dAppMetadata);
 				default:
 					throw new ArgumentException("Unsupported platform");
 			}

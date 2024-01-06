@@ -49,3 +49,5 @@ MonoBehaviour:
   appIcon: https://tezos.com/favicon.ico
   appDescription: Tezos Starter Sample
   logLevel: 4
+  pinataApiKey: 
+  config: {fileID: 11400000, guid: 9b177380eac964750bfb2ad37a50c9cc, type: 2}

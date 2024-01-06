@@ -1,4 +1,5 @@
 using TezosSDK.Beacon;
+using TezosSDK.DesignPattern.Singleton;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -18,14 +19,11 @@ namespace TezosSDK.Tezos
 		
 		[Space(20)]
 		[Header("SDK Configuration")]
+		[SerializeField] private TezosConfigSO config;
 		
 		[Tooltip("Logs will be printed to the console if the log level is equal or higher than this value.")]
 		[SerializeField] private Logger.LogLevel logLevel = Logger.LogLevel.Debug;
-		
-		[Tooltip("Create API key in Pinata service https://app.pinata.cloud/developers/api-keys and paste JWT value " +
-		         "here to be able to upload images to IPFS.")]
-		[SerializeField] private string pinataApiKey;
-		
+
 		public DAppMetadata DAppMetadata { get; private set; }
 
 		public ITezos Tezos { get; private set; }
@@ -40,9 +38,11 @@ namespace TezosSDK.Tezos
 			get => _eventManager;
 		}
 
-		public static string PinataApiKey
+		public IBeaconConnector BeaconConnector { get; private set; }
+
+		public TezosConfigSO Config
 		{
-			get => TezosConfig.Instance.pinataApiKey;
+			get => config;
 		}
 
 		protected void Awake()
@@ -60,18 +60,20 @@ namespace TezosSDK.Tezos
 		}
 
 		private WalletEventManager _eventManager;
-		
+
 		private void InitializeTezos()
 		{
 			Logger.CurrentLogLevel = logLevel;
-			TezosConfig.Instance.pinataApiKey = pinataApiKey;
 
+			Logger.LogDebug("Tezos SDK initializing...");
+			
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
 
-			var beaconConnector = BeaconConnectorFactory.CreateConnector(Application.platform, _eventManager, DAppMetadata);
+			BeaconConnector = BeaconConnectorFactory.CreateConnector(Application.platform, config, _eventManager, DAppMetadata);
 			
-			Tezos = new Tezos(_eventManager, beaconConnector);
-			
+			Tezos = new Tezos(config, _eventManager, BeaconConnector);
+
+			Logger.LogDebug("Tezos SDK initialized");
 			EventManager.DispatchSDKInitializedEvent();
 		}
 

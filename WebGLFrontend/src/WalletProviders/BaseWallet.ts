@@ -21,6 +21,7 @@ class BaseWallet implements AbstractWallet {
   iconUrl: string;
 
   constructor(appName: string, appUrl: string, iconUrl: string) {
+    console.log("BaseWallet constructor", appName, appUrl, iconUrl);
     this.dappName = appName;
     this.dappUrl = appUrl;
     this.iconUrl = iconUrl;

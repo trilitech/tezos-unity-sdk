@@ -15,8 +15,8 @@ namespace TezosSDK.Beacon
 	/// </summary>
 	public class WalletEventManager : SingletonMonoBehaviour<WalletEventManager>
 	{
-		public const string EventTypeAccountConnectionFailed = "AccountConnectionFailed";
-		public const string EventTypeAccountDisconnected = "AccountDisconnected";
+		public const string EventTypeWalletConnectionFailed = "AccountConnectionFailed";
+		public const string EventTypeWalletDisconnected = "AccountDisconnected";
 		public const string EventTypeContractCallCompleted = "ContractCallCompleted";
 		public const string EventTypeContractCallFailed = "ContractCallFailed";
 		public const string EventTypeContractCallInjected = "ContractCallInjected";
@@ -25,25 +25,6 @@ namespace TezosSDK.Beacon
 		public const string EventTypePayloadSigned = "PayloadSigned";
 		public const string EventTypeSDKInitialized = "SDKInitialized";
 		public const string EventTypeWalletConnected = "AccountConnected";
-
-		/// <summary>
-		///     Runs when a connection to an account fails. Provides error information.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed connection attempt.
-		///     It is triggered when a connection attempt to an account encounters an error.
-		/// </remarks>
-		public event Action<ErrorInfo> AccountConnectionFailed
-		{
-			add
-			{
-				if (accountConnectionFailed == null || !accountConnectionFailed.GetInvocationList().Contains(value))
-				{
-					accountConnectionFailed += value;
-				}
-			}
-			remove => accountConnectionFailed -= value;
-		}
 
 		/// <summary>
 		///     Runs when a call to a smart contract is confirmed on the blockchain. Provides the result of the call.
@@ -209,6 +190,25 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
+		///     Runs when a connection to an account fails. Provides error information.
+		/// </summary>
+		/// <remarks>
+		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed connection attempt.
+		///     It is triggered when a connection attempt to an account encounters an error.
+		/// </remarks>
+		public event Action<ErrorInfo> WalletConnectionFailed
+		{
+			add
+			{
+				if (walletConnectionFailed == null || !walletConnectionFailed.GetInvocationList().Contains(value))
+				{
+					walletConnectionFailed += value;
+				}
+			}
+			remove => walletConnectionFailed -= value;
+		}
+
+		/// <summary>
 		///     Runs when an account disconnects successfully. Provides the account information.
 		/// </summary>
 		/// <remarks>
@@ -219,16 +219,15 @@ namespace TezosSDK.Beacon
 		{
 			add
 			{
-				if (accountDisconnected == null || !accountDisconnected.GetInvocationList().Contains(value))
+				if (walletDisconnected == null || !walletDisconnected.GetInvocationList().Contains(value))
 				{
-					accountDisconnected += value;
+					walletDisconnected += value;
 				}
 			}
-			remove => accountDisconnected -= value;
+			remove => walletDisconnected -= value;
 		}
 
-		private event Action<ErrorInfo> accountConnectionFailed;
-		private event Action<WalletInfo> accountDisconnected;
+		private event Action<ErrorInfo> walletConnectionFailed;
 		private event Action<OperationResult> contractCallCompleted;
 		private event Action<ErrorInfo> contractCallFailed;
 		private event Action<OperationResult> contractCallInjected;
@@ -236,8 +235,8 @@ namespace TezosSDK.Beacon
 		private event Action<PairingDoneData> pairingCompleted;
 		private event Action<SignResult> payloadSigned;
 		private event Action sdkInitialized;
-
 		private event Action<WalletInfo> walletConnected;
+		private event Action<WalletInfo> walletDisconnected;
 
 		public void DispatchSDKInitializedEvent()
 		{
@@ -291,11 +290,11 @@ namespace TezosSDK.Beacon
 					case EventTypeWalletConnected:
 						HandleEvent(eventData.GetData(), walletConnected);
 						break;
-					case EventTypeAccountConnectionFailed:
-						HandleEvent(eventData.GetData(), accountConnectionFailed);
+					case EventTypeWalletConnectionFailed:
+						HandleEvent(eventData.GetData(), walletConnectionFailed);
 						break;
-					case EventTypeAccountDisconnected:
-						HandleEvent(eventData.GetData(), accountDisconnected);
+					case EventTypeWalletDisconnected:
+						HandleEvent(eventData.GetData(), walletDisconnected);
 						break;
 					case EventTypeContractCallInjected:
 						HandleEvent(eventData.GetData(), contractCallInjected);

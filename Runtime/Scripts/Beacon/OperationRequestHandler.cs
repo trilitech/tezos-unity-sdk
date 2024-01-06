@@ -21,27 +21,21 @@ namespace TezosSDK.Beacon
 
 	public class OperationRequestHandler
 	{
-		private readonly WalletProviderInfo _walletProviderInfo;
-
-		public OperationRequestHandler(WalletProviderInfo walletProviderInfo)
+		public async Task RequestTezosPermission(DappBeaconClient beaconDappClient)
 		{
-			_walletProviderInfo = walletProviderInfo;
-		}
+			var activePeer = beaconDappClient.GetActivePeer();
 
-		public async Task RequestTezosPermission(
-			string networkName,
-			DappBeaconClient beaconDappClient)
-		{
-			if (!Enum.TryParse(networkName, out NetworkType networkType))
+			if (activePeer == null)
 			{
-				networkType = TezosConfig.Instance.Network;
+				Logger.LogError("No active peer found");
+				return;
 			}
 
 			var network = new Network
 			{
-				Type = networkType,
-				Name = _walletProviderInfo.Network,
-				RpcUrl = _walletProviderInfo.Rpc
+				Type = TezosManager.Instance.Config.Network,
+				Name = TezosManager.Instance.Config.ToString(),
+				RpcUrl = TezosManager.Instance.Config.Rpc
 			};
 
 			var permissionScopes = new List<PermissionScope>
@@ -50,26 +44,12 @@ namespace TezosSDK.Beacon
 				PermissionScope.sign
 			};
 
-			var permissionRequest = new PermissionRequest(
-				BeaconMessageType.permission_request,
-				Constants.BeaconVersion,
-				KeyPairService.CreateGuid(),
-				beaconDappClient.SenderId,
-				beaconDappClient.Metadata,
-				network,
+			var permissionRequest = new PermissionRequest(BeaconMessageType.permission_request, Constants.BeaconVersion,
+				KeyPairService.CreateGuid(), beaconDappClient.SenderId, beaconDappClient.Metadata, network,
 				permissionScopes);
 
-			var activePeer = beaconDappClient.GetActivePeer();
-
-			if (activePeer != null)
-			{
-				await beaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
-				Logger.LogInfo("Permission request sent");
-			}
-			else
-			{
-				Logger.LogError("No active peer found");
-			}
+			await beaconDappClient.SendResponseAsync(activePeer.SenderId, permissionRequest);
+			Logger.LogInfo("Permission request sent");
 		}
 
 		public Task RequestTezosOperation(

@@ -1,7 +1,7 @@
-
 #region
 
 using System.Runtime.InteropServices;
+using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
@@ -17,7 +17,7 @@ namespace TezosSDK.Beacon
 	/// </summary>
 	public class BeaconConnectorWebGl : IBeaconConnector
 	{
-		private string _activeAccountAddress;
+		private string _activeWalletAddress;
 
 		public void InitWalletProvider(
 			string network,
@@ -25,7 +25,8 @@ namespace TezosSDK.Beacon
 			WalletProviderType walletProviderType,
 			DAppMetadata metadata)
 		{
-			JsInitWallet(network, rpc, walletProviderType.ToString(), metadata.Name, metadata.Url, metadata.Icon);
+			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc, walletProviderType.ToString(),
+				TezosManager.Instance.DAppMetadata.Name, TezosManager.Instance.DAppMetadata.Url, TezosManager.Instance.DAppMetadata.Icon);
 		}
 
 		public void OnReady()
@@ -33,22 +34,22 @@ namespace TezosSDK.Beacon
 			JsUnityReadyEvent();
 		}
 
-		public void ConnectAccount()
+		public void ConnectWallet()
 		{
 			JsConnectAccount();
 		}
 
-		public void DisconnectAccount()
+		public void DisconnectWallet()
 		{
 			JsDisconnectAccount();
 		}
 
-		public string GetActiveAccountAddress()
+		public string GetActiveWalletAddress()
 		{
 			return JsGetActiveAccountAddress();
 		}
 
-		public void RequestTezosPermission(string networkName = "")
+		public void RequestTezosPermission()
 		{
 		}
 
@@ -70,6 +71,8 @@ namespace TezosSDK.Beacon
 		{
 			JsRequestContractOrigination(script, delegateAddress);
 		}
+
+#if UNITY_WEBGL
 
 		#region Bridge to external functions
 
@@ -104,6 +107,47 @@ namespace TezosSDK.Beacon
 		private static extern string JsUnityReadyEvent();
 
 		#endregion
+
+#else
+
+		#region Stub functions
+
+		private void JsRequestContractOrigination(string script, string delegateAddress)
+		{
+		}
+
+		private void JsInitWallet(string network, string rpc, string toString, string metadataName, string metadataUrl, string metadataIcon)
+		{
+		}
+
+		private void JsUnityReadyEvent()
+		{
+		}
+
+		private void JsConnectAccount()
+		{
+		}
+
+		private void JsDisconnectAccount()
+		{
+		}
+
+		private void JsSendContractCall(string destination, string toString, string entryPoint, string input)
+		{
+		}
+
+		private string JsGetActiveAccountAddress()
+		{
+			return "";
+		}
+
+		private void JsSignPayload(int signingType, string payload)
+		{
+		}
+
+		#endregion
+
+#endif
 	}
 
 }

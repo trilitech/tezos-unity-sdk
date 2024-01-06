@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Dynamic.Json;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos.API.Models;
@@ -20,9 +19,9 @@ namespace TezosSDK.Tezos.API
 
 	public class TezosAPI : HttpClient, ITezosAPI
 	{
-		public TezosAPI(IDataProviderConfig config) : base(config)
+		public TezosAPI(TezosConfigSO config) : base(config)
 		{
-			Rpc = new Rpc(TezosConfig.Instance.RpcBaseUrl);
+			Rpc = new Rpc(config);
 		}
 
 		private Rpc Rpc { get; }
@@ -193,8 +192,6 @@ namespace TezosSDK.Tezos.API
 				callback?.Invoke(null);
 			}
 		}
-		
-		
 
 		public IEnumerator GetContractMetadata(Action<JsonElement> callback, string contractAddress)
 		{
@@ -220,7 +217,7 @@ namespace TezosSDK.Tezos.API
 			TokensForContractOrder orderBy)
 		{
 			Logger.LogDebug($"Getting tokens for contract: {contractAddress}");
-			
+
 			var sort = orderBy switch
 			{
 				TokensForContractOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
@@ -248,10 +245,7 @@ namespace TezosSDK.Tezos.API
 			var url = $"operations/{operationHash}/status";
 			var requestRoutine = GetJson<bool?>(url);
 
-			return new CoroutineWrapper<bool?>(requestRoutine, callback, error =>
-			{
-				callback.Invoke(false);
-			});
+			return new CoroutineWrapper<bool?>(requestRoutine, callback, error => { callback.Invoke(false); });
 		}
 
 		public IEnumerator GetLatestBlockLevel(Action<int> callback)

@@ -914,7 +914,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4142934398137355793, guid: 88403be39bf2846f3a3d1ff42ec2ceb5, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 24
+      value: 113
       objectReference: {fileID: 0}
     - target: {fileID: 4142934399787911491, guid: 88403be39bf2846f3a3d1ff42ec2ceb5, type: 3}
       propertyPath: m_Name
@@ -1819,50 +1819,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993746647}
   m_CullTransparentMesh: 1
---- !u!1 &2059848051
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2059848053}
-  - component: {fileID: 2059848052}
-  m_Layer: 0
-  m_Name: test,
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2059848052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2059848051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bab300dd77e7344ec8bf86cf1000c7bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &2059848053
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2059848051}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 140.94037, y: 416.92197, z: -0.29195338}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2096369275
 GameObject:
   m_ObjectHideFlags: 0
@@ -2231,7 +2187,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4903882491096610426, guid: 1f2b41cbbfea5425799913991573c5b0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 38
+      value: 174
       objectReference: {fileID: 0}
     - target: {fileID: 4903882491096610426, guid: 1f2b41cbbfea5425799913991573c5b0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2265,4 +2221,3 @@ SceneRoots:
   - {fileID: 485983066}
   - {fileID: 2100795521}
   - {fileID: 1162443710}
-  - {fileID: 2059848053}

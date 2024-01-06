@@ -1,8 +1,6 @@
 ﻿#region
 
 using System;
-using System.Collections;
-using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
@@ -29,13 +27,13 @@ namespace TezosSDK.Tezos.Wallet
 			EventManager.WalletDisconnected += OnWalletDisconnected;
 			EventManager.PayloadSigned += OnPayloadSigned;
 			EventManager.ContractCallInjected += OnContractCallInjected;
-			EventManager.PairingCompleted += OnPairingCompleted;
 			_beaconConnector = beaconConnector;
 		}
 
 		private void OnWalletDisconnected(WalletInfo obj)
 		{
 			IsConnected = false;
+			HandshakeData = null;
 		}
 
 		public bool IsConnected { get; private set; }
@@ -53,28 +51,26 @@ namespace TezosSDK.Tezos.Wallet
 
 		public void OnReady()
 		{
+			Logger.LogDebug("WalletProvider.OnReady");
 			_beaconConnector.OnReady();
 		}
 
-		public void Connect(WalletProviderType walletProvider, bool withRedirectToWallet = false)
+		public void Connect(WalletProviderType walletProvider)
 		{
-			// _beaconConnector.InitWalletProvider(
-			// 	network: TezosConfig.Instance.Network.ToString(),
-			// 	rpc: TezosConfig.Instance.RpcBaseUrl,
-			// 	walletProviderType: walletProvider,
-			// 	metadata: _dAppMetadata);
-			
-			_beaconConnector.ConnectAccount();
+#if UNITY_WEBGL
+			_beaconConnector.InitWalletProvider("", "", walletProvider, null);
+#endif
+			_beaconConnector.ConnectWallet();
 		}
 
 		public void Disconnect()
 		{
-			_beaconConnector.DisconnectAccount();
+			_beaconConnector.DisconnectWallet();
 		}
 
 		public string GetActiveAddress()
 		{
-			return _beaconConnector.GetActiveAccountAddress();
+			return _beaconConnector.GetActiveWalletAddress();
 		}
 
 		public void RequestSignPayload(SignPayloadType signingType, string payload)
@@ -95,11 +91,6 @@ namespace TezosSDK.Tezos.Wallet
 		public void OriginateContract(string script, string delegateAddress)
 		{
 			_beaconConnector.RequestContractOrigination(script, delegateAddress);
-		}
-
-		private void OnPairingCompleted(PairingDoneData _)
-		{
-			_beaconConnector.RequestTezosPermission(TezosConfig.Instance.Network.ToString());
 		}
 
 		private void OnContractCallInjected(OperationResult transaction)
@@ -157,56 +148,24 @@ namespace TezosSDK.Tezos.Wallet
 
 		private void OnHandshakeReceived(HandshakeData handshake)
 		{
-			HandshakeData = handshake;
-		}
-		
-		public void RequestTezosPermission()
-		{
-			_beaconConnector.RequestTezosPermission(TezosConfig.Instance.Network.ToString());
-		}
-
-#if UNITY_ANDROID || UNITY_IOS
-		public void OpenWallet()
-		{
-			Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
-		}
-#endif
-
-		// TODO: Find a better place for this, used to be in WalletMessageReceiver
-		private IEnumerator TrackTransaction(string transactionHash)
-		{
-			var success = false;
-			const float _timeout = 30f; // seconds
-			var timestamp = Time.time;
-
-			// keep making requests until time out or success
-			while (!success && Time.time - timestamp < _timeout)
+			if (HandshakeData != null)
 			{
-				Logger.LogDebug($"Checking transaction status: {transactionHash}");
-
-				yield return TezosManager.Instance.Tezos.API.GetOperationStatus(OnStatusResponse, transactionHash);
-
-				yield return new WaitForSecondsRealtime(3);
-				continue;
-
-				void OnStatusResponse(bool? result) // local callback function
-				{
-					if (result != null)
-					{
-						success = JsonSerializer.Deserialize<bool>(result);
-					}
-				}
+				return;
 			}
 
-			var operationResult = new OperationResult
-			{
-				TransactionHash = transactionHash
-			};
+			Logger.LogDebug("WalletProvider.OnHandshakeReceived");
 
-			var contractCallCompletedEvent = new UnifiedEvent(WalletEventManager.EventTypeContractCallCompleted,
-				JsonUtility.ToJson(operationResult));
+			HandshakeData = handshake;
 
-			EventManager.HandleEvent(contractCallCompletedEvent);
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+			PairWithWallet();
+#endif
+		}
+
+		private void PairWithWallet()
+		{
+			Logger.LogDebug("WalletProvider.PairWithWallet");
+			Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
 		}
 	}
 

@@ -9,7 +9,7 @@ namespace TezosSDK.Tezos.API
     {
         private const string CHAIN_ID = "NetXdQprcVkpaWU";
 
-        public Rpc(string baseAddress) : base(baseAddress)
+        public Rpc(TezosConfigSO config) : base(config)
         {
         }
 

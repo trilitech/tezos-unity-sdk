@@ -11,6 +11,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
   address: string;
 
   constructor(appName: string, appUrl: string, iconUrl: string) {
+    console.log("BeaconWallet constructor", appName, appUrl, iconUrl);
     super(appName, appUrl, iconUrl);
   }
 

@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
 using Beacon.Sdk.BeaconClients;
 using TezosSDK.Helpers;
@@ -16,67 +17,43 @@ namespace TezosSDK.Beacon
 	{
 		private readonly BeaconClientManager _beaconClientManager;
 		private readonly OperationRequestHandler _operationRequestHandler;
-		private readonly EventDispatcher _eventDispatcher;
-		private readonly WalletProviderInfo _walletProviderInfo;
 
 		public BeaconConnectorDotNet(
 			WalletEventManager eventManager,
-			string network,
+			NetworkType network,
 			string rpc,
 			DAppMetadata dAppMetadata)
 		{
+			_beaconClientManager = new BeaconClientManager(eventManager);
+			_operationRequestHandler = new OperationRequestHandler();
 
-			_walletProviderInfo = new WalletProviderInfo
-			{
-				Network = network,
-				Rpc = rpc,
-				Metadata = dAppMetadata
-			};
-
-			_eventDispatcher = new EventDispatcher(eventManager);
-			_beaconClientManager = new BeaconClientManager(_eventDispatcher);
-			_operationRequestHandler = new OperationRequestHandler(_walletProviderInfo);
-			
-			_beaconClientManager.SetWalletProviderInfo(_walletProviderInfo);
 			_beaconClientManager.Create();
-			_beaconClientManager.InitAsync();
-			
-			eventManager.HandshakeReceived += OnHandshakeReceived;
 		}
 
-		private void OnHandshakeReceived(HandshakeData obj)
-		{
-			_beaconClientManager.ConnectDappClient();
-		}
-
-		public BeaconConnectorDotNet(WalletEventManager eventManager)
-		{
-			_eventDispatcher = new EventDispatcher(eventManager);
-		}
-
-		private DappBeaconClient BeaconDappClient
+		public DappBeaconClient BeaconDappClient
 		{
 			get => _beaconClientManager.BeaconDappClient;
 		}
 
-		public void ConnectAccount()
+		public void ConnectWallet()
 		{
-			_beaconClientManager.ConnectDappClient();
+			_beaconClientManager.InitAsyncAndConnect();
 		}
 
-		public string GetActiveAccountAddress()
+		public string GetActiveWalletAddress()
 		{
-			return _beaconClientManager.GetActiveAccountAddress();
+			return _beaconClientManager.GetActiveWalletAddress();
 		}
 
-		public void DisconnectAccount()
+		public void DisconnectWallet()
 		{
 			_beaconClientManager.DisconnectWallet();
 		}
 
-		public async void RequestTezosPermission(string networkName = "")
+		public async void RequestTezosPermission()
 		{
-			await _operationRequestHandler.RequestTezosPermission(networkName, BeaconDappClient);
+			Logger.LogInfo("RequestTezosPermission");
+			await _operationRequestHandler.RequestTezosPermission(BeaconDappClient);
 		}
 
 		public async void RequestTezosOperation(
@@ -85,7 +62,8 @@ namespace TezosSDK.Beacon
 			string input = null,
 			ulong amount = 0)
 		{
-			await _operationRequestHandler.RequestTezosOperation(destination, entryPoint, input, amount, BeaconDappClient);
+			await _operationRequestHandler.RequestTezosOperation(destination, entryPoint, input, amount,
+				BeaconDappClient);
 		}
 
 		public async void RequestContractOrigination(string script, string delegateAddress)
@@ -104,6 +82,7 @@ namespace TezosSDK.Beacon
 			WalletProviderType walletProviderType,
 			DAppMetadata metadata)
 		{
+			// TODO: fix or remove
 			// _beaconClientManager.SetWalletProviderInfo(network, rpc, walletProviderType, metadata);
 		}
 
@@ -116,5 +95,5 @@ namespace TezosSDK.Beacon
 			BeaconDappClient.Disconnect();
 		}
 	}
-	
+
 }

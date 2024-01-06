@@ -14,17 +14,10 @@ namespace TezosSDK.Helpers
         private string BaseAddress { get; }
         private int RequestTimeout { get; }
 
-        protected HttpClient(string baseAddress)
+        protected HttpClient(TezosConfigSO config)
         {
-            BaseAddress = baseAddress.EndsWith("/") ? baseAddress : $"{baseAddress}/";
-            RequestTimeout = TezosConfig.Instance.DefaultTimeoutSeconds;
-        }
-        
-        protected HttpClient(IDataProviderConfig config)
-        {
-            var configBaseAddress = config.BaseUrl;
-            BaseAddress = configBaseAddress.EndsWith("/") ? configBaseAddress : $"{configBaseAddress}/";
-            RequestTimeout = config.TimeoutSeconds;
+            BaseAddress = config.Rpc.EndsWith("/") ? config.Rpc : $"{config.Rpc}/";
+            RequestTimeout = config.RequestTimeoutSeconds;
         }
 
         protected IEnumerator GetJson<T>(string path)
