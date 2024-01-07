@@ -43,7 +43,7 @@ namespace TezosSDK.Contract.Scripts
 		public void HandleMint()
 		{
 			var tokenMetadata = CreateRandomTokenMetadata();
-			var destinationAddress = TezosManager.Instance.Wallet.GetActiveAddress();
+			var destinationAddress = TezosManager.Instance.Wallet.GetWalletAddress();
 			var randomAmount = new Random().Next(1, 1024);
 
 			TezosManager.Instance.Tezos.TokenContract.Mint(OnTokenMinted, tokenMetadata, destinationAddress,
@@ -98,7 +98,7 @@ namespace TezosSDK.Contract.Scripts
 			if (!allTokenContracts.Any())
 			{
 				Logger.LogDebug("No contracts found");
-				var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
+				var activeAddress = TezosManager.Instance.Tezos.Wallet.GetWalletAddress();
 				tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
 				return;
 			}

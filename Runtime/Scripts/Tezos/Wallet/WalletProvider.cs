@@ -19,7 +19,7 @@ namespace TezosSDK.Tezos.Wallet
 		private string _signature;
 		private string _transactionHash;
 
-		public WalletProvider(WalletEventManager eventManager, IBeaconConnector beaconConnector)
+		public WalletProvider(IWalletEventManager eventManager, IBeaconConnector beaconConnector)
 		{
 			EventManager = eventManager;
 			EventManager.HandshakeReceived += OnHandshakeReceived;
@@ -47,20 +47,11 @@ namespace TezosSDK.Tezos.Wallet
 			}
 		}
 
-		public WalletEventManager EventManager { get; }
-
-		public void OnReady()
-		{
-			Logger.LogDebug("WalletProvider.OnReady");
-			_beaconConnector.OnReady();
-		}
+		public IWalletEventManager EventManager { get; }
 
 		public void Connect(WalletProviderType walletProvider)
 		{
-#if UNITY_WEBGL
-			_beaconConnector.InitWalletProvider("", "", walletProvider, null);
-#endif
-			_beaconConnector.ConnectWallet();
+			_beaconConnector.ConnectWallet(walletProvider);
 		}
 
 		public void Disconnect()
@@ -68,14 +59,14 @@ namespace TezosSDK.Tezos.Wallet
 			_beaconConnector.DisconnectWallet();
 		}
 
-		public string GetActiveAddress()
+		public string GetWalletAddress()
 		{
-			return _beaconConnector.GetActiveWalletAddress();
+			return _beaconConnector.GetWalletAddress();
 		}
 
 		public void RequestSignPayload(SignPayloadType signingType, string payload)
 		{
-			_beaconConnector.RequestTezosSignPayload(signingType, payload);
+			_beaconConnector.RequestSignPayload(signingType, payload);
 		}
 
 		public bool VerifySignedPayload(SignPayloadType signingType, string payload)
@@ -85,7 +76,7 @@ namespace TezosSDK.Tezos.Wallet
 
 		public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0)
 		{
-			_beaconConnector.RequestTezosOperation(contractAddress, entryPoint, input, amount);
+			_beaconConnector.RequestOperation(contractAddress, entryPoint, input, amount);
 		}
 
 		public void OriginateContract(string script, string delegateAddress)

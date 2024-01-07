@@ -48,7 +48,7 @@ namespace TezosSDK.Transfer.Scripts
 
 				if (!tokenContracts.Any())
 				{
-					var activeAddress = TezosManager.Instance.Tezos.Wallet.GetActiveAddress();
+					var activeAddress = TezosManager.Instance.Tezos.Wallet.GetWalletAddress();
 
 					availableTokensTMP.text = $"{activeAddress} didn't deploy any contract yet.";
 					return;

@@ -280,7 +280,7 @@ namespace TezosSDK.Beacon
 				return;
 			}
 
-			TezosManager.Instance.BeaconConnector.RequestTezosPermission();
+			TezosManager.Instance.BeaconConnector.RequestWalletConnection();
 			_eventDispatcher.DispatchPairingDoneEvent(BeaconDappClient);
 		}
 

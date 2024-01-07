@@ -33,7 +33,7 @@ namespace TezosSDK.Tezos
 
 		public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)
 		{
-			var address = Wallet.GetActiveAddress();
+			var address = Wallet.GetWalletAddress();
 			return API.GetTezosBalance(callback, address);
 		}
 
@@ -41,7 +41,7 @@ namespace TezosSDK.Tezos
 		{
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 
-			return API.GetOriginatedContractsForOwner(callback, Wallet.GetActiveAddress(), codeHash, 1000,
+			return API.GetOriginatedContractsForOwner(callback, Wallet.GetWalletAddress(), codeHash, 1000,
 				new OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc(0));
 		}
 

@@ -84,7 +84,7 @@ namespace TezosSDK.Tezos.API.Models
 		public void Transfer(Action<string> completedCallback, string destination, int tokenId, int amount)
 		{
 			_onTransferCompleted = completedCallback;
-			var activeAddress = _wallet.GetActiveAddress();
+			var activeAddress = _wallet.GetWalletAddress();
 			const string _entry_point = "transfer";
 
 			var param = GetContractScript().BuildParameter(_entry_point, new List<object>
@@ -113,7 +113,7 @@ namespace TezosSDK.Tezos.API.Models
 			_onDeployCompleted = completedCallback;
 
 			var stringScript = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
-			var address = _wallet.GetActiveAddress();
+			var address = _wallet.GetWalletAddress();
 			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
 			_wallet.EventManager.ContractCallCompleted += DeployCompleted;
@@ -123,7 +123,7 @@ namespace TezosSDK.Tezos.API.Models
 
 		private void MintCompleted(OperationResult operationResult)
 		{
-			var owner = _wallet.GetActiveAddress();
+			var owner = _wallet.GetWalletAddress();
 
 			var getOwnerTokensCoroutine = _tezosAPI.GetTokensForOwner(GetTokensCallback, owner, true, 10_000,
 				new TokensForOwnerOrder.Default(0));
@@ -145,7 +145,7 @@ namespace TezosSDK.Tezos.API.Models
 		private void DeployCompleted(OperationResult operationResult)
 		{
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
-			var creator = _wallet.GetActiveAddress();
+			var creator = _wallet.GetWalletAddress();
 
 			CoroutineRunner.Instance.StartWrappedCoroutine(_tezosAPI.GetOriginatedContractsForOwner(OnGetContracts,
 				creator, codeHash, 1000, new OriginatedContractsForOwnerOrder.Default(0)));

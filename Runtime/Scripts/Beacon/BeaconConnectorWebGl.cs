@@ -3,6 +3,7 @@
 using System.Runtime.InteropServices;
 using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
+using TezosSDK.Helpers;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 
@@ -13,29 +14,21 @@ namespace TezosSDK.Beacon
 
 	/// <summary>
 	///     WebGL implementation of the BeaconConnector.
-	///     Binds the functions implemented inside the file BeaconConnection.jslib
 	/// </summary>
 	public class BeaconConnectorWebGl : IBeaconConnector
 	{
 		private string _activeWalletAddress;
 
-		public void InitWalletProvider(
-			string network,
-			string rpc,
-			WalletProviderType walletProviderType,
-			DAppMetadata metadata)
+		public void ConnectWallet(WalletProviderType? walletProviderType)
 		{
+			if (walletProviderType == null)
+			{
+				Logger.LogError("WalletProviderType is null");
+				return;
+			}
+			
 			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc, walletProviderType.ToString(),
 				TezosManager.Instance.DAppMetadata.Name, TezosManager.Instance.DAppMetadata.Url, TezosManager.Instance.DAppMetadata.Icon);
-		}
-
-		public void OnReady()
-		{
-			JsUnityReadyEvent();
-		}
-
-		public void ConnectWallet()
-		{
 			JsConnectAccount();
 		}
 
@@ -44,16 +37,16 @@ namespace TezosSDK.Beacon
 			JsDisconnectAccount();
 		}
 
-		public string GetActiveWalletAddress()
+		public string GetWalletAddress()
 		{
 			return JsGetActiveAccountAddress();
 		}
 
-		public void RequestTezosPermission()
+		public void RequestWalletConnection()
 		{
 		}
 
-		public void RequestTezosOperation(
+		public void RequestOperation(
 			string destination,
 			string entryPoint = "default",
 			string input = null,
@@ -62,7 +55,7 @@ namespace TezosSDK.Beacon
 			JsSendContractCall(destination, amount.ToString(), entryPoint, input);
 		}
 
-		public void RequestTezosSignPayload(SignPayloadType signingType, string payload)
+		public void RequestSignPayload(SignPayloadType signingType, string payload)
 		{
 			JsSignPayload((int)signingType, payload);
 		}

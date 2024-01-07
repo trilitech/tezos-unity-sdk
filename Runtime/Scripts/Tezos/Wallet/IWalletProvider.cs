@@ -9,7 +9,7 @@ namespace TezosSDK.Tezos.Wallet
         /// <summary>
         ///     Exposes a MonoBehaviour class that exposes wallet events
         /// </summary>
-        WalletEventManager EventManager { get; }
+        IWalletEventManager EventManager { get; }
 
 		bool IsConnected { get; }
 
@@ -29,7 +29,7 @@ namespace TezosSDK.Tezos.Wallet
         ///     Returns the address of the current active wallet
         /// </summary>
         /// <returns></returns>
-        string GetActiveAddress();
+        string GetWalletAddress();
 
         /// <summary>
         ///     Sends a request to the sign a payload string

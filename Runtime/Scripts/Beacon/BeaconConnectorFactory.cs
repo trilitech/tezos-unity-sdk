@@ -24,8 +24,7 @@ namespace TezosSDK.Beacon
 				case RuntimePlatform.LinuxPlayer:
 				case RuntimePlatform.OSXPlayer:
 				case RuntimePlatform.OSXEditor:
-					return new BeaconConnectorDotNet(eventManager, config.Network,
-						config.Rpc, dAppMetadata);
+					return new BeaconConnectorDotNet(eventManager);
 				default:
 					throw new ArgumentException("Unsupported platform");
 			}
