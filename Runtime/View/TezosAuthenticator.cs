@@ -14,7 +14,7 @@ namespace TezosSDK.View
 
 	public class TezosAuthenticator : MonoBehaviour
 	{
-		[SerializeField] private QRCodeView qrCodeView;
+		[SerializeField] private QrCodeView qrCodeView;
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
@@ -41,7 +41,7 @@ namespace TezosSDK.View
 			{
 				Logger.LogDebug("TezosAuthenticator.Start: Wallet is not connected");
 				ToggleUIElements(false);
-				
+
 				// Call Connect() only when on standalone
 				if (!_isWebGL && !_isMobile)
 				{

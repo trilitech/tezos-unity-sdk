@@ -1,6 +1,5 @@
 #region
 
-using System;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;

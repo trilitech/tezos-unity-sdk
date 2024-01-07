@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 using Beacon.Sdk.Beacon;
+using Beacon.Sdk.Beacon.Operation;
 using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Core.Domain.Entities;
 
 namespace TezosSDK.Helpers
 {
+
 	public static class BeaconExtensions
 	{
 		public static string Print(this PermissionInfo info)
@@ -28,13 +31,25 @@ namespace TezosSDK.Helpers
 		{
 			return $"Name: {peer.Name}, " + $"Version: {peer.Version}, " + $"RelayServer: {peer.RelayServer}";
 		}
-		
+
 		public static string Print(this PermissionResponse response)
 		{
 			var permissionsString = string.Join(", ", response.Scopes);
-			return $"Received permissions: \"{permissionsString}\", " +
-			       $"from: \"{response.AppMetadata.Name}\", " +
+
+			return $"Received permissions: \"{permissionsString}\", " + $"from: \"{response.AppMetadata.Name}\", " +
 			       $"with public key: \"{response.PublicKey}\"";
+		}
+
+		public static string Print(this OperationRequest request)
+		{
+			return $"{nameof(OperationRequest)} {{ " + $"Network = {request.Network}, " +
+			       $"OperationDetails = {request.OperationDetails.Print()}, " +
+			       $"SourceAddress = {request.SourceAddress} }}";
+		}
+
+		private static string Print(this List<TezosBaseOperation> operations)
+		{
+			return operations.Aggregate("", (current, operation) => current + (operation.Kind + "\n"));
 		}
 	}
 

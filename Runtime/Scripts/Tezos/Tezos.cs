@@ -13,13 +13,13 @@ using Logger = TezosSDK.Helpers.Logger;
 namespace TezosSDK.Tezos
 {
 
-    /// <summary>
-    ///     Tezos API and Wallet features
-    ///     Exposes the main functions of the Tezos in Unity
-    /// </summary>
-    public class Tezos : ITezos
+	/// <summary>
+	///     Tezos API and Wallet features
+	///     Exposes the main functions of the Tezos in Unity
+	/// </summary>
+	public class Tezos : ITezos
 	{
-		public Tezos(TezosConfigSO config, WalletEventManager eventManager, IBeaconConnector beaconConnector)
+		public Tezos(TezosConfigSO config, IWalletEventManager eventManager, IBeaconConnector beaconConnector)
 		{
 			API = new TezosAPI(config);
 

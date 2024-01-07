@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c1ac3fcdbc344e5b0626e4c44285e35, type: 3}
-  m_Name: DefaultTezosSDKConfig
+  m_Script: {fileID: 11500000, guid: 302ae0521ba8483487d9f920d803356a, type: 3}
+  m_Name: DefaultTezosDataProviderConfig
   m_EditorClassIdentifier: 
   network: 1
-  rpcUrlFormat: https://{network}.tezos.marigold.dev
+  baseUrlFormat: https://api.{network}.tzkt.io/v1/
   requestTimeoutSeconds: 45
-  pinataApiKey: 
-  dataProviderConfig: {fileID: 11400000, guid: 8db273370a9fc4fbf9bf668dde7d9b72, type: 2}
+  documentationUrl: https://api.tzkt.io/

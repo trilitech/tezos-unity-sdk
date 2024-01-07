@@ -17,7 +17,7 @@ namespace TezosSDK.Beacon
 
 	/// <summary>
 	///     A helper class to dispatch events to the Unity main thread.
-	///		This is necessary because the Beacon SDK is running on
+	///     This is necessary because the Beacon SDK is running on
 	///     a background thread, and when we receive events from it, we need to dispatch them or deal with them on the main
 	///     thread.
 	/// </summary>
@@ -75,9 +75,9 @@ namespace TezosSDK.Beacon
 			};
 		}
 
-		public void DispatchPairingDoneEvent(DappBeaconClient beaconDappClient)
+		public void DispatchPairingCompletedEvent(DappBeaconClient beaconDappClient)
 		{
-			Logger.Log("Dispatching PairingDoneEvent");
+			Logger.Log("Dispatching PairingCompletedEvent");
 
 			var pairingDoneData = new PairingDoneData
 			{

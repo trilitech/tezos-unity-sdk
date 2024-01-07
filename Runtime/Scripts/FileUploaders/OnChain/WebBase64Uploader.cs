@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
-using Logger = TezosSDK.Helpers.Logger;
 using UnityEngine;
 
 namespace TezosSDK.Scripts.FileUploaders.OnChain
 {
-#if UNITY_WEBGL && !UNITY_EDITOR
+
+#if UNITY_WEBGL
     public class WebBase64Uploader : BaseUploader, IBaseUploader
     {
         public void FileRequestCallback(string path)
@@ -23,21 +23,17 @@ namespace TezosSDK.Scripts.FileUploaders.OnChain
 
     public static class WebBase64UploaderHelper
     {
-        private static Action<string> _responseCallback;
+        private static Action<string> responseCallback;
 
         public static IBaseUploader GetUploader()
         {
-            const string callbackObjectName = nameof(WebBase64Uploader);
-            const string callbackMethodName = nameof(WebBase64Uploader.FileRequestCallback);
+            const string _callback_object_name = nameof(WebBase64Uploader);
+            const string _callback_method_name = nameof(WebBase64Uploader.FileRequestCallback);
 
             var webUploaderGameObject = GameObject.Find(nameof(WebBase64Uploader));
-            var uploader = webUploaderGameObject != null
-                ? webUploaderGameObject.GetComponent<WebBase64Uploader>()
-                : new GameObject(nameof(WebBase64Uploader)).AddComponent<WebBase64Uploader>();
+            var uploader = webUploaderGameObject != null ? webUploaderGameObject.GetComponent<WebBase64Uploader>() : new GameObject(nameof(WebBase64Uploader)).AddComponent<WebBase64Uploader>();
 
-            JsInitBase64Uploader(
-                callbackObjectName,
-                callbackMethodName);
+            JsInitBase64Uploader(_callback_object_name, _callback_method_name);
 
             return uploader;
         }
@@ -45,27 +41,26 @@ namespace TezosSDK.Scripts.FileUploaders.OnChain
         public static void RequestFile(Action<string> callback, string extensions)
         {
             JsRequestUserFile(extensions);
-            _responseCallback = callback;
+            responseCallback = callback;
         }
 
         public static void SetResult(string response)
         {
-            _responseCallback.Invoke(response);
+            responseCallback.Invoke(response);
             Dispose();
         }
 
         private static void Dispose()
         {
-            _responseCallback = null;
+            responseCallback = null;
         }
 
         [DllImport("__Internal")]
-        private static extern void JsInitBase64Uploader(
-            string objectName,
-            string methodName);
+        private static extern void JsInitBase64Uploader(string objectName, string methodName);
 
         [DllImport("__Internal")]
         private static extern void JsRequestUserFile(string extensions);
     }
 #endif
+
 }

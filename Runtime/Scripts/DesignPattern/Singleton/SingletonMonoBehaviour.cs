@@ -11,18 +11,19 @@ namespace TezosSDK.DesignPattern.Singleton
 	{
 	}
 
-    /// <summary>
-    ///     Easily allow a Singleton to be added to hierarchy at runtime with full MonoBehavior access and predictable
-    ///     lifecycle.
-    /// </summary>
-    public abstract class SingletonMonoBehaviour<T> : SingletonMonoBehaviour where T : MonoBehaviour
+	/// <summary>
+	///     Easily allow a Singleton to be added to hierarchy at runtime with full MonoBehavior access and predictable
+	///     lifecycle.
+	/// </summary>
+	public abstract class SingletonMonoBehaviour<T> : SingletonMonoBehaviour where T : MonoBehaviour
 	{
 		public static OnDestroyingDelegate OnDestroying;
 		public static OnInstantiateCompletedDelegate OnInstantiateCompleted;
-        /// <summary>
-        ///     Do not call this from another scope within OnDestroy(). Instead use IsInstantiated()
-        /// </summary>
-        private static T _instance; //Harmless 'suggestion' appears here in some code-editors. Known issue.
+
+		/// <summary>
+		///     Do not call this from another scope within OnDestroy(). Instead use IsInstantiated()
+		/// </summary>
+		private static T instance; //Harmless 'suggestion' appears here in some code-editors. Known issue.
 
 		public delegate void OnDestroyingDelegate(T instance);
 
@@ -38,9 +39,9 @@ namespace TezosSDK.DesignPattern.Singleton
 					Instantiate();
 				}
 
-				return _instance;
+				return instance;
 			}
-			set => _instance = value;
+			set => instance = value;
 		}
 
 		protected virtual void Awake()
@@ -52,35 +53,42 @@ namespace TezosSDK.DesignPattern.Singleton
 		{
 		}
 
-        /// <summary>
-        ///     Destroys all memory/references associated with the instance
-        /// </summary>
-        public static void Destroy()
+		/// <summary>
+		///     Destroys all memory/references associated with the instance
+		/// </summary>
+		public static void Destroy()
 		{
 			if (!IsInstantiated())
 			{
 				return;
 			}
 
-			if (OnDestroying != null)
-			{
-				OnDestroying(_instance);
-			}
+			OnDestroying?.Invoke(instance);
 
 			// NOTE: Use 'DestroyImmediate'. At runtime its less important, but occasionally editor classes will call Destroy();
-			DestroyImmediate(_instance.gameObject);
+			DestroyImmediate(instance.gameObject);
 
-			_instance = null;
+			instance = null;
 		}
 
-        /// <summary>
-        ///     Instantiate this instance.
-        ///     1. Attempts to find an existing GameObject that matches (There will be 0 or 1 at any time)
-        ///     2. Creates GameObject with name of subclass
-        ///     3. Persists by default (optional)
-        ///     4. Predictable life-cycle.
-        /// </summary>
-        private static void Instantiate()
+		/// <summary>
+		///     NOTE: Calling this will NEVER instantiate a new instance. That is useful and safe to call in any destructors /
+		///     OnDestroy()
+		/// </summary>
+		/// <returns><c>true</c> if is instantiated; otherwise, <c>false</c>.</returns>
+		public static bool IsInstantiated()
+		{
+			return instance != null;
+		}
+
+		/// <summary>
+		///     Instantiate this instance.
+		///     1. Attempts to find an existing GameObject that matches (There will be 0 or 1 at any time)
+		///     2. Creates GameObject with name of subclass
+		///     3. Persists by default (optional)
+		///     4. Predictable life-cycle.
+		/// </summary>
+		private static void Instantiate()
 		{
 			if (IsInstantiated())
 			{
@@ -98,14 +106,14 @@ namespace TezosSDK.DesignPattern.Singleton
 			if (go == null)
 			{
 				go = new GameObject();
-				_instance = go.AddComponent<T>();
+				instance = go.AddComponent<T>();
 			}
 			else
 			{
-				_instance = go.GetComponent<T>();
+				instance = go.GetComponent<T>();
 			}
 
-			go.name = _instance.GetType().Name;
+			go.name = instance.GetType().Name;
 
 			//KLUGE: Must unparent/reparent before DontDestroyOnLoad to avoid error
 			var parent = go.transform.parent;
@@ -113,17 +121,7 @@ namespace TezosSDK.DesignPattern.Singleton
 			DontDestroyOnLoad(go);
 			go.transform.SetParent(parent);
 
-			OnInstantiateCompleted?.Invoke(_instance);
-		}
-
-        /// <summary>
-        ///     NOTE: Calling this will NEVER instantiate a new instance. That is useful and safe to call in any destructors /
-        ///     OnDestroy()
-        /// </summary>
-        /// <returns><c>true</c> if is instantiated; otherwise, <c>false</c>.</returns>
-        public static bool IsInstantiated()
-		{
-			return _instance != null;
+			OnInstantiateCompleted?.Invoke(instance);
 		}
 	}
 

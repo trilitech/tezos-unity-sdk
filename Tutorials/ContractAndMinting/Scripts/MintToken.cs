@@ -1,6 +1,5 @@
 #region
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,8 +97,7 @@ namespace TezosSDK.Contract.Scripts
 			if (!allTokenContracts.Any())
 			{
 				Logger.LogDebug("No contracts found");
-				var activeAddress = TezosManager.Instance.Tezos.Wallet.GetWalletAddress();
-				tokensCountText.text = $"{activeAddress} didn't deploy any contract yet.";
+				tokensCountText.text = "No contracts found.";
 				return;
 			}
 

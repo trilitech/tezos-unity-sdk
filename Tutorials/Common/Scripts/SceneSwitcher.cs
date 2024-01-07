@@ -1,9 +1,6 @@
-using System;
 using TezosSDK.Tezos;
-using TezosSDK.Tezos.API.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK
 {
@@ -18,7 +15,7 @@ namespace TezosSDK
 			{
 				TezosManager.Instance.Wallet.Disconnect();
 			}
-			
+
 			SceneManager.LoadScene(sceneNameToLoad);
 		}
 	}

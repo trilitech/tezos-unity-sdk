@@ -1,8 +1,6 @@
 #region
 
-using System;
 using TezosSDK.Beacon;
-using TezosSDK.Tezos;
 using UnityEngine;
 using UnityEngine.UI;
 using ZXing;
@@ -13,11 +11,11 @@ using ZXing.QrCode;
 namespace TezosSDK.View
 {
 
-	public class QRCodeView : MonoBehaviour
+	public class QrCodeView : MonoBehaviour
 	{
 		[SerializeField] private RawImage rawImage;
+		private bool _encoded;
 		private Texture2D _texture;
-		private bool encoded;
 
 		private void Start()
 		{
@@ -32,14 +30,14 @@ namespace TezosSDK.View
 
 		public void SetQrCode(HandshakeData handshakeData)
 		{
-			if (encoded)
+			if (_encoded)
 			{
 				return;
 			}
-			
+
 			var uri = "tezos://?type=tzip10&data=" + handshakeData.PairingData;
 			EncodeTextToQrCode(uri);
-			encoded = true;
+			_encoded = true;
 		}
 
 		private Color32[] Encode(string text, int width, int height)

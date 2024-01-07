@@ -1,5 +1,7 @@
 #region
 
+using System;
+using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Tezos.Wallet;
 
@@ -14,6 +16,11 @@ namespace TezosSDK.Beacon
 	/// </summary>
 	public interface IBeaconConnector
 	{
+		/// <summary>
+		///     Raised when any wallet operation is requested
+		/// </summary>
+		event Action<BeaconMessageType> OperationRequested;
+
 		/// <summary>
 		///     Starts the connection between Beacon SDK and a wallet to connect to
 		///     an account

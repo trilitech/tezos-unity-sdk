@@ -53,9 +53,9 @@ namespace TezosSDK.Tezos.API.Models
 			int amount)
 		{
 			_onMintCompleted = completedCallback;
-			
+
 			Logger.LogDebug($"Minting {amount} tokens to {destination} with metadata {tokenMetadata}");
-			
+
 			var getContractTokens = _tezosAPI.GetTokensForContract(TokensReceived, Address, false, 10_000,
 				new TokensForContractOrder.Default(0));
 

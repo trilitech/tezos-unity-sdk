@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
@@ -28,16 +29,9 @@ namespace TezosSDK.Tezos.Wallet
 			EventManager.PayloadSigned += OnPayloadSigned;
 			EventManager.ContractCallInjected += OnContractCallInjected;
 			_beaconConnector = beaconConnector;
-		}
 
-		private void OnWalletDisconnected(WalletInfo obj)
-		{
-			IsConnected = false;
-			HandshakeData = null;
+			_beaconConnector.OperationRequested += OnOperationRequested;
 		}
-
-		public bool IsConnected { get; private set; }
-		public HandshakeData HandshakeData { get; private set; }
 
 		public void Dispose()
 		{
@@ -46,6 +40,9 @@ namespace TezosSDK.Tezos.Wallet
 				disposable.Dispose();
 			}
 		}
+
+		public bool IsConnected { get; private set; }
+		public HandshakeData HandshakeData { get; private set; }
 
 		public IWalletEventManager EventManager { get; }
 
@@ -82,6 +79,38 @@ namespace TezosSDK.Tezos.Wallet
 		public void OriginateContract(string script, string delegateAddress)
 		{
 			_beaconConnector.RequestContractOrigination(script, delegateAddress);
+		}
+
+		/// <summary>
+		///     Raised when an operation requiring user interaction is requested by the IBeaconConnector implementation.
+		/// </summary>
+		private void OnOperationRequested(BeaconMessageType beaconMessageType)
+		{
+			Logger.LogDebug($"WalletProvider.OnOperationRequested of type: {beaconMessageType}");
+
+#if (UNITY_ANDROID || UNITY_IOS)
+
+			// The wallet will already be open for the pairing request during login
+			// We should ignore this message type
+			if (beaconMessageType != BeaconMessageType.permission_request)
+			{
+				OpenWallet();
+			}
+#endif
+		}
+
+		private void OpenWallet()
+		{
+			Logger.LogDebug("WalletProvider.OpenWallet");
+
+			// OpenURL can only be called from the main thread.
+			UnityMainThreadDispatcher.Enqueue(() => { Application.OpenURL("tezos://"); });
+		}
+
+		private void OnWalletDisconnected(WalletInfo obj)
+		{
+			IsConnected = false;
+			HandshakeData = null;
 		}
 
 		private void OnContractCallInjected(OperationResult transaction)
@@ -148,16 +177,21 @@ namespace TezosSDK.Tezos.Wallet
 
 			HandshakeData = handshake;
 
-#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+#if (UNITY_ANDROID || UNITY_IOS)
 			PairWithWallet();
 #endif
 		}
 
+#if (UNITY_ANDROID || UNITY_IOS)
 		private void PairWithWallet()
 		{
-			Logger.LogDebug("WalletProvider.PairWithWallet");
-			Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
+			UnityMainThreadDispatcher.Enqueue(() =>
+			{
+				Logger.LogDebug("WalletProvider.PairWithWallet");
+				Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
+			});
 		}
+#endif
 	}
 
 }

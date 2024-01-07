@@ -1,7 +1,8 @@
 #region
 
+using System;
 using System.Runtime.InteropServices;
-using Beacon.Sdk.Beacon.Permission;
+using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos;
@@ -19,6 +20,8 @@ namespace TezosSDK.Beacon
 	{
 		private string _activeWalletAddress;
 
+		public event Action<BeaconMessageType> OperationRequested;
+
 		public void ConnectWallet(WalletProviderType? walletProviderType)
 		{
 			if (walletProviderType == null)
@@ -26,9 +29,11 @@ namespace TezosSDK.Beacon
 				Logger.LogError("WalletProviderType is null");
 				return;
 			}
-			
-			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc, walletProviderType.ToString(),
-				TezosManager.Instance.DAppMetadata.Name, TezosManager.Instance.DAppMetadata.Url, TezosManager.Instance.DAppMetadata.Icon);
+
+			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc,
+				walletProviderType.ToString(), TezosManager.Instance.DAppMetadata.Name,
+				TezosManager.Instance.DAppMetadata.Url, TezosManager.Instance.DAppMetadata.Icon);
+
 			JsConnectAccount();
 		}
 
@@ -44,6 +49,7 @@ namespace TezosSDK.Beacon
 
 		public void RequestWalletConnection()
 		{
+			OperationRequested?.Invoke(BeaconMessageType.permission_request);
 		}
 
 		public void RequestOperation(
@@ -53,16 +59,19 @@ namespace TezosSDK.Beacon
 			ulong amount = 0)
 		{
 			JsSendContractCall(destination, amount.ToString(), entryPoint, input);
+			OperationRequested?.Invoke(BeaconMessageType.operation_request);
 		}
 
 		public void RequestSignPayload(SignPayloadType signingType, string payload)
 		{
 			JsSignPayload((int)signingType, payload);
+			OperationRequested?.Invoke(BeaconMessageType.sign_payload_request);
 		}
 
 		public void RequestContractOrigination(string script, string delegateAddress = null)
 		{
 			JsRequestContractOrigination(script, delegateAddress);
+			OperationRequested?.Invoke(BeaconMessageType.operation_request);
 		}
 
 #if UNITY_WEBGL
@@ -70,13 +79,7 @@ namespace TezosSDK.Beacon
 		#region Bridge to external functions
 
 		[DllImport("__Internal")]
-		private static extern void JsInitWallet(
-			string network,
-			string rpc,
-			string walletProvider,
-			string appName,
-			string appUrl,
-			string iconUrl);
+		private static extern void JsInitWallet(string network, string rpc, string walletProvider, string appName, string appUrl, string iconUrl);
 
 		[DllImport("__Internal")]
 		private static extern void JsConnectAccount();
@@ -109,7 +112,13 @@ namespace TezosSDK.Beacon
 		{
 		}
 
-		private void JsInitWallet(string network, string rpc, string toString, string metadataName, string metadataUrl, string metadataIcon)
+		private void JsInitWallet(
+			string network,
+			string rpc,
+			string toString,
+			string metadataName,
+			string metadataUrl,
+			string metadataIcon)
 		{
 		}
 

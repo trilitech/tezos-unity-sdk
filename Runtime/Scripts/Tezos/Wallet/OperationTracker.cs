@@ -52,14 +52,16 @@ namespace TezosSDK.Tezos.Wallet
 			// Begin polling loop for operation status
 			Logger.LogDebug($"Begin polling for operation status with hash: {_operationHash}");
 
-			while (Time.time - startTime < TIMEOUT)
+			var remainingTime = TIMEOUT - (Time.time - startTime);
+
+			while (remainingTime > 0)
 			{
 				yield return TezosManager.Instance.Tezos.API.GetOperationStatus(Callback, _operationHash);
 
 				// If the operation is positively confirmed, exit the loop.
 				if (operationConfirmed == true)
 				{
-					Logger.LogDebug($"Operation with hash {_operationHash} is confirmed. Exiting polling loop.");
+					Logger.LogDebug("Operation is confirmed. Exiting polling loop.");
 					break;
 				}
 
@@ -72,7 +74,11 @@ namespace TezosSDK.Tezos.Wallet
 
 				// Wait before the next status check
 				yield return new WaitForSecondsRealtime(WAIT_TIME);
-				Logger.LogDebug($"Waiting {WAIT_TIME} seconds before next operation status check for hash {_operationHash}.");
+
+				Logger.LogDebug($"Waiting {WAIT_TIME} seconds before next operation status check. " +
+				                $"Remaining time: {remainingTime}");
+
+				remainingTime = TIMEOUT - (Time.time - startTime);
 			}
 
 			// Determine final success and handle possible timeout
@@ -80,25 +86,23 @@ namespace TezosSDK.Tezos.Wallet
 
 			if (!success)
 			{
-				errorMessage = errorMessage ?? "Operation tracking timed out.";
+				errorMessage ??= "Operation tracking timed out.";
 				Logger.LogDebug(errorMessage);
 			}
 
-			// Invoke the callback with the result
-			Logger.LogDebug(
-				$"Operation tracking complete for hash {_operationHash}: Success: {success}, ErrorMessage: {errorMessage}");
+			Logger.LogDebug("Operation tracking complete. " + $"Success: {success}, ErrorMessage: {errorMessage}");
 
+			// Invoke the callback with the result
 			_onComplete?.Invoke(success, errorMessage);
 			yield break;
 
-			
 			void Callback(bool? result)
 			{
 				operationConfirmed = result;
-				
+
 				if (operationConfirmed.HasValue)
 				{
-					Logger.LogDebug($"Operation status check for hash \"{_operationHash}\" returned: {operationConfirmed.Value}");
+					Logger.LogDebug($"Operation status check returned: {operationConfirmed.Value}");
 				}
 				else
 				{

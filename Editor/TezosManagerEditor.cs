@@ -1,4 +1,3 @@
-using System;
 using TezosSDK.Tezos;
 using UnityEditor;
 using UnityEngine;
@@ -13,16 +12,16 @@ namespace TezosSDK.Editor
 
 		private void OnEnable()
 		{
-			logo = (Texture2D) Resources.Load("tezos-logo");
+			logo = (Texture2D)Resources.Load("tezos-logo");
 		}
 
 		public override void OnInspectorGUI()
 		{
-			GUILayout.Space(10);  
+			GUILayout.Space(10);
 
 			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace(); 
-			GUILayout.Label("Tezos SDK Manager", EditorStyles.boldLabel); 
+			GUILayout.FlexibleSpace();
+			GUILayout.Label("Tezos SDK Manager", EditorStyles.boldLabel);
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 

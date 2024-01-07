@@ -1,5 +1,4 @@
 using System;
-using TezosSDK.Tezos;
 using UnityEngine;
 
 namespace TezosSDK.Beacon
@@ -7,11 +6,7 @@ namespace TezosSDK.Beacon
 
 	public static class BeaconConnectorFactory
 	{
-		public static IBeaconConnector CreateConnector(
-			RuntimePlatform platform,
-			TezosConfigSO config,
-			WalletEventManager eventManager,
-			DAppMetadata dAppMetadata)
+		public static IBeaconConnector CreateConnector(RuntimePlatform platform, WalletEventManager eventManager)
 		{
 			switch (platform)
 			{

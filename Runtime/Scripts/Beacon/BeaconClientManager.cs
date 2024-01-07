@@ -170,7 +170,7 @@ namespace TezosSDK.Beacon
 
 			if (e.PairingDone)
 			{
-				HandlePairingDone(e);
+				HandlePairingDone();
 				return;
 			}
 
@@ -265,12 +265,11 @@ namespace TezosSDK.Beacon
 		/// <summary>
 		///     Handles the 'Pairing Done' type Beacon message.
 		/// </summary>
-		/// <param name="e">Event arguments.</param>
 		/// <remarks>
 		///     Checks for active wallet and dispatches pairing done event on the main (UI) thread, if no active wallet is found.
 		///     Pairing happens either through QR code scanning or deep linking.
 		/// </remarks>
-		private void HandlePairingDone(BeaconMessageEventArgs e)
+		private void HandlePairingDone()
 		{
 			Logger.LogDebug("Received message of type Pairing done");
 
@@ -281,7 +280,7 @@ namespace TezosSDK.Beacon
 			}
 
 			TezosManager.Instance.BeaconConnector.RequestWalletConnection();
-			_eventDispatcher.DispatchPairingDoneEvent(BeaconDappClient);
+			_eventDispatcher.DispatchPairingCompletedEvent(BeaconDappClient);
 		}
 
 		/// <summary>

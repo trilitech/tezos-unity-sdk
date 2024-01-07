@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading.Tasks;
 using TezosSDK.Tezos.API.Models;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -16,25 +15,25 @@ namespace TezosSDK.Tezos.API
 
 	public interface ITezosAPI
 	{
-        /// <summary>
-        ///     An IEnumerator for reading the account's balance
-        ///     Can be called in a StartCoroutine()
-        /// </summary>
-        /// <param name="callback">callback action that runs with the float balance is fetched</param>
-        /// <param name="address">tz address</param>
-        /// <returns></returns>
-        public IEnumerator GetTezosBalance(Action<ulong> callback, string address);
+		/// <summary>
+		///     An IEnumerator for reading the account's balance
+		///     Can be called in a StartCoroutine()
+		/// </summary>
+		/// <param name="callback">callback action that runs with the float balance is fetched</param>
+		/// <param name="address">tz address</param>
+		/// <returns></returns>
+		public IEnumerator GetTezosBalance(Action<ulong> callback, string address);
 
-        /// <summary>
-        ///     An IEnumerator for reading data from a contract view
-        ///     Can be called in a StartCoroutine()
-        /// </summary>
-        /// <param name="contractAddress">destination address of the smart contract</param>
-        /// <param name="entrypoint">entry point used in the smart contract</param>
-        /// <param name="input">parameters called on the entry point</param>
-        /// <param name="callback">callback action that runs with the json data is fetched</param>
-        /// <returns></returns>
-        public IEnumerator ReadView(
+		/// <summary>
+		///     An IEnumerator for reading data from a contract view
+		///     Can be called in a StartCoroutine()
+		/// </summary>
+		/// <param name="contractAddress">destination address of the smart contract</param>
+		/// <param name="entrypoint">entry point used in the smart contract</param>
+		/// <param name="input">parameters called on the entry point</param>
+		/// <param name="callback">callback action that runs with the json data is fetched</param>
+		/// <returns></returns>
+		public IEnumerator ReadView(
 			string contractAddress,
 			string entrypoint,
 			string input,

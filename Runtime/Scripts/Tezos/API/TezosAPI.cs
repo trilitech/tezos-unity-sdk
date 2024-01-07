@@ -19,7 +19,7 @@ namespace TezosSDK.Tezos.API
 
 	public class TezosAPI : HttpClient, ITezosAPI
 	{
-		public TezosAPI(TezosConfigSO config) : base(config)
+		public TezosAPI(TezosConfigSO config) : base(config.DataProvider)
 		{
 			Rpc = new Rpc(config);
 		}
@@ -65,8 +65,8 @@ namespace TezosSDK.Tezos.API
 			{
 				TokensForOwnerOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
 				TokensForOwnerOrder.ByLastTimeAsc byLastTimeAsc => $"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
-				TokensForOwnerOrder.ByLastTimeDesc ByLastTimeDesc =>
-					$"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+				TokensForOwnerOrder.ByLastTimeDesc byLastTimeDesc =>
+					$"sort.desc=lastLevel&offset.pg={byLastTimeDesc.page}",
 				_ => string.Empty
 			};
 
@@ -116,8 +116,8 @@ namespace TezosSDK.Tezos.API
 				OwnersForContractOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
 				OwnersForContractOrder.ByLastTimeAsc byLastTimeAsc =>
 					$"sort.asc=lastLevel&offset.pg={byLastTimeAsc.page}",
-				OwnersForContractOrder.ByLastTimeDesc ByLastTimeDesc =>
-					$"sort.desc=lastLevel&offset.pg={ByLastTimeDesc.page}",
+				OwnersForContractOrder.ByLastTimeDesc byLastTimeDesc =>
+					$"sort.desc=lastLevel&offset.pg={byLastTimeDesc.page}",
 				_ => string.Empty
 			};
 
@@ -199,14 +199,13 @@ namespace TezosSDK.Tezos.API
 			var requestRoutine = GetJson<string>(url);
 			yield return requestRoutine;
 
-			if (requestRoutine.Current is DJsonObject dJsonObject)
+			if (requestRoutine.Current is not DJsonObject dJsonObject)
 			{
-				// todo: improve this
-				var result =
-					JsonSerializer.Deserialize<JsonElement>(dJsonObject.ToString(), JsonOptions.DefaultOptions);
-
-				callback?.Invoke(result.TryGetProperty("metadata", out var metadata) ? metadata : new JsonElement());
+				yield break;
 			}
+
+			var result = JsonSerializer.Deserialize<JsonElement>(dJsonObject.ToString(), JsonOptions.DefaultOptions);
+			callback?.Invoke(result.TryGetProperty("metadata", out var metadata) ? metadata : new JsonElement());
 		}
 
 		public IEnumerator GetTokensForContract(
@@ -245,7 +244,7 @@ namespace TezosSDK.Tezos.API
 			var url = $"operations/{operationHash}/status";
 			var requestRoutine = GetJson<bool?>(url);
 
-			return new CoroutineWrapper<bool?>(requestRoutine, callback, error => { callback.Invoke(false); });
+			return new CoroutineWrapper<bool?>(requestRoutine, callback, error => callback.Invoke(false));
 		}
 
 		public IEnumerator GetLatestBlockLevel(Action<int> callback)
@@ -274,9 +273,7 @@ namespace TezosSDK.Tezos.API
 			long maxItems,
 			OriginatedContractsForOwnerOrder orderBy)
 		{
-			Logger.LogDebug(
-				$"GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}, maxItems={maxItems}," +
-				$" orderBy={orderBy} callback={callback}");
+			Logger.LogDebug($"GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}");
 
 			var sort = orderBy switch
 			{
@@ -297,7 +294,7 @@ namespace TezosSDK.Tezos.API
 			yield return new CoroutineWrapper<IEnumerable<TokenContract>>(requestRoutine, callback, error =>
 			{
 				callback.Invoke(new List<TokenContract>());
-				Logger.LogDebug($"Error during GetOriginatedFa2Contracts: {error}");
+				Logger.LogDebug($"Error during GetOriginatedContractsForOwner: {error}");
 			});
 		}
 	}

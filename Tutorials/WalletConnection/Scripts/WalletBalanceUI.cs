@@ -13,7 +13,6 @@ namespace TezosSDK
 	public class WalletBalanceUI : MonoBehaviour
 	{
 		[SerializeField] private TextMeshProUGUI balanceText;
-
 		private readonly string _notConnectedText = "Not connected";
 
 		private void Start()

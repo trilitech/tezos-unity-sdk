@@ -7,11 +7,12 @@ using UnityEngine;
 
 namespace TezosSDK.Scripts.FileUploaders.IPFS
 {
-#if UNITY_WEBGL && !UNITY_EDITOR
+
+#if UNITY_WEBGL
     public class WebPinataUploader : BaseUploader, IPinataUploader
     {
         public PinataCredentials PinataCredentials { get; set; }
-        
+
         public void FileRequestCallback(string path)
         {
             WebPinataUploaderHelper.SetResult(path);
@@ -26,25 +27,19 @@ namespace TezosSDK.Scripts.FileUploaders.IPFS
 
     public static class WebPinataUploaderHelper
     {
-        private static Action<string> _responseCallback;
+        private static Action<string> responseCallback;
 
         public static IPinataUploader GetUploader(string apiKey)
         {
-            const string callbackObjectName = nameof(WebPinataUploader);
-            const string callbackMethodName = nameof(WebPinataUploader.FileRequestCallback);
+            const string _callback_object_name = nameof(WebPinataUploader);
+            const string _callback_method_name = nameof(WebPinataUploader.FileRequestCallback);
 
             var webUploaderGameObject = GameObject.Find(nameof(WebPinataUploader));
-            var webFileUploader = webUploaderGameObject != null
-                ? webUploaderGameObject.GetComponent<WebPinataUploader>()
-                : new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
-            
+            var webFileUploader = webUploaderGameObject != null ? webUploaderGameObject.GetComponent<WebPinataUploader>() : new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
+
             webFileUploader.PinataCredentials = new PinataCredentials(apiKey);
 
-            JsInitPinataUploader(
-                callbackObjectName,
-                callbackMethodName,
-                webFileUploader.PinataCredentials.ApiUrl,
-                webFileUploader.PinataCredentials.ApiKey);
+            JsInitPinataUploader(_callback_object_name, _callback_method_name, webFileUploader.PinataCredentials.ApiUrl, webFileUploader.PinataCredentials.ApiKey);
 
             return webFileUploader;
         }
@@ -52,30 +47,27 @@ namespace TezosSDK.Scripts.FileUploaders.IPFS
         public static void RequestFile(Action<string> callback, string extensions)
         {
             JsRequestUserFile(extensions);
-            _responseCallback = callback;
+            responseCallback = callback;
         }
 
         public static void SetResult(string response)
         {
             var ipfsResponse = JsonSerializer.Deserialize<IpfsResponse>(response);
-            _responseCallback.Invoke($"ipfs://{ipfsResponse.IpfsHash}");
+            responseCallback.Invoke($"ipfs://{ipfsResponse.IpfsHash}");
             Dispose();
         }
 
         private static void Dispose()
         {
-            _responseCallback = null;
+            responseCallback = null;
         }
 
         [DllImport("__Internal")]
-        private static extern void JsInitPinataUploader(
-            string objectName,
-            string methodName,
-            string apiUrl,
-            string apiKey);
+        private static extern void JsInitPinataUploader(string objectName, string methodName, string apiUrl, string apiKey);
 
         [DllImport("__Internal")]
         private static extern void JsRequestUserFile(string extensions);
     }
 #endif
+
 }
