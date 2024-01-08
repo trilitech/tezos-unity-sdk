@@ -1,12 +1,8 @@
-#region
-
 using TezosSDK.Tezos;
 using UnityEngine;
 using UnityEngine.UI;
 using ZXing;
 using ZXing.QrCode;
-
-#endregion
 
 namespace TezosSDK.Helpers
 {

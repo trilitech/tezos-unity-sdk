@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace TezosSDK.Tests
+namespace TezosSDK.Tests.Editor
 {
 
 	public class EditmodeTests

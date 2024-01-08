@@ -3,17 +3,17 @@
   "version": "2.0.7",
   "unity": "2021.3",
   "displayName": "Tezos Unity SDK",
-  "description": "Unity SDK for Tezos",
+  "description": "Unity SDK for Tezos: Seamlessly Integrate Tezos with Your Unity Projects\n\nThis SDK empowers developers to easily incorporate Tezos blockchain functionality into Unity games or applications. Designed for efficiency and ease of use, it's the perfect tool for bringing blockchain capabilities to your Unity creations.\n\nFor detailed documentation, visit: [Tezos Unity Documentation](https://docs.tezos.com/unity/)\n\nGet Involved:\n- Join our vibrant community on Discord: [Tezos Discord](https://discord.gg/tezos)\n- Explore funding opportunities: [Tezos Grants](https://grants.tezos.foundation/)",
   "samples": [
     {
-      "displayName": "Sample Marketplace Game",
-      "description": "Simple game featuring a marketplace where players can create, buy and sell items.",
-      "path": "Samples~/MarketplaceSample"
+      "displayName": "Tutorials",
+      "description": "A set of tutorials showing how to use the Tezos Unity SDK, split into multiple scenes, each demonstrating a different feature.\nThe scenes are easy to follow and are well commented to help you begin your journey with Tezos and Unity.\n\nFor more information, you can also check out the documentation at https://docs.tezos.com/unity/",
+      "path": "Samples~/Tutorials"
     },
     {
-      "displayName": "Tutorials test",
-      "description": "-",
-      "path": "Samples~/Tutorials"
+      "displayName": "Sample Marketplace Game",
+      "description": "Simple game featuring a marketplace where players can mint and trade NFTs, deploy smart contracts, and more.\n\nFor more information, you can also check out the documentation at https://docs.tezos.com/unity/",
+      "path": "Samples~/MarketplaceSample"
     }
   ],
   "dependencies": {

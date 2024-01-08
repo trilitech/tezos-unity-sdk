@@ -1,4 +1,4 @@
-namespace TezosSDK.Tests
+namespace TezosSDK.Tests.Runtime
 {
 
 	public class ApiTests

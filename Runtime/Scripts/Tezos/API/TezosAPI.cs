@@ -1,6 +1,4 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +10,6 @@ using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using Logger = TezosSDK.Helpers.Logger;
-
-#endregion
 
 namespace TezosSDK.Tezos.API
 {

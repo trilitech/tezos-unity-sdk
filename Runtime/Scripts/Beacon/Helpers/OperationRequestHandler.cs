@@ -1,5 +1,3 @@
-#region
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,8 +14,6 @@ using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Tezos;
-
-#endregion
 
 namespace TezosSDK.Beacon
 {

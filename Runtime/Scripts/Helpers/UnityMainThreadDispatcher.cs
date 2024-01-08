@@ -11,8 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#region
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,8 +18,6 @@ using System.Threading.Tasks;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Patterns;
 using UnityEngine;
-
-#endregion
 
 namespace TezosSDK.Helpers
 {

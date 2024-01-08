@@ -1,66 +1,90 @@
+#if UNITY_WEBGL
+using System;
+using System.Collections;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using UnityEngine;
+#endif
+
 namespace TezosSDK.FileUploaders.IPFS
 {
 
 #if UNITY_WEBGL
-    public class WebPinataUploader : BaseUploader, IPinataUploader
-    {
-        public PinataCredentials PinataCredentials { get; set; }
+	public class WebPinataUploader : BaseUploader, IPinataUploader
+	{
+		#region IBaseUploader Implementation
 
-        public void FileRequestCallback(string path)
-        {
-            WebPinataUploaderHelper.SetResult(path);
-        }
+		public IEnumerator UploadFile(Action<string> callback)
+		{
+			yield return null;
+			WebPinataUploaderHelper.RequestFile(callback, SupportedFileExtensions);
+		}
 
-        public IEnumerator UploadFile(Action<string> callback)
-        {
-            yield return null;
-            WebPinataUploaderHelper.RequestFile(callback, SupportedFileExtensions);
-        }
-    }
+		#endregion
 
-    public static class WebPinataUploaderHelper
-    {
-        private static Action<string> responseCallback;
+		#region IPinataUploader Implementation
 
-        public static IPinataUploader GetUploader(string apiKey)
-        {
-            const string _callback_object_name = nameof(WebPinataUploader);
-            const string _callback_method_name = nameof(WebPinataUploader.FileRequestCallback);
+		public PinataCredentials PinataCredentials { get; set; }
 
-            var webUploaderGameObject = GameObject.Find(nameof(WebPinataUploader));
-            var webFileUploader = webUploaderGameObject != null ? webUploaderGameObject.GetComponent<WebPinataUploader>() : new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
+		#endregion
 
-            webFileUploader.PinataCredentials = new PinataCredentials(apiKey);
+		public void FileRequestCallback(string path)
+		{
+			WebPinataUploaderHelper.SetResult(path);
+		}
+	}
 
-            JsInitPinataUploader(_callback_object_name, _callback_method_name, webFileUploader.PinataCredentials.ApiUrl, webFileUploader.PinataCredentials.ApiKey);
+	public static class WebPinataUploaderHelper
+	{
+		private static Action<string> responseCallback;
 
-            return webFileUploader;
-        }
+		public static IPinataUploader GetUploader(string apiKey)
+		{
+			const string _callback_object_name = nameof(WebPinataUploader);
+			const string _callback_method_name = nameof(WebPinataUploader.FileRequestCallback);
 
-        public static void RequestFile(Action<string> callback, string extensions)
-        {
-            JsRequestUserFile(extensions);
-            responseCallback = callback;
-        }
+			var webUploaderGameObject = GameObject.Find(nameof(WebPinataUploader));
 
-        public static void SetResult(string response)
-        {
-            var ipfsResponse = JsonSerializer.Deserialize<IpfsResponse>(response);
-            responseCallback.Invoke($"ipfs://{ipfsResponse.IpfsHash}");
-            Dispose();
-        }
+			var webFileUploader = webUploaderGameObject != null
+				? webUploaderGameObject.GetComponent<WebPinataUploader>()
+				: new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
 
-        private static void Dispose()
-        {
-            responseCallback = null;
-        }
+			webFileUploader.PinataCredentials = new PinataCredentials(apiKey);
 
-        [DllImport("__Internal")]
-        private static extern void JsInitPinataUploader(string objectName, string methodName, string apiUrl, string apiKey);
+			JsInitPinataUploader(_callback_object_name, _callback_method_name, webFileUploader.PinataCredentials.ApiUrl,
+				webFileUploader.PinataCredentials.ApiKey);
 
-        [DllImport("__Internal")]
-        private static extern void JsRequestUserFile(string extensions);
-    }
+			return webFileUploader;
+		}
+
+		public static void RequestFile(Action<string> callback, string extensions)
+		{
+			JsRequestUserFile(extensions);
+			responseCallback = callback;
+		}
+
+		public static void SetResult(string response)
+		{
+			var ipfsResponse = JsonSerializer.Deserialize<IpfsResponse>(response);
+			responseCallback.Invoke($"ipfs://{ipfsResponse.IpfsHash}");
+			Dispose();
+		}
+
+		private static void Dispose()
+		{
+			responseCallback = null;
+		}
+
+		[DllImport("__Internal")]
+		private static extern void JsInitPinataUploader(
+			string objectName,
+			string methodName,
+			string apiUrl,
+			string apiKey);
+
+		[DllImport("__Internal")]
+		private static extern void JsRequestUserFile(string extensions);
+	}
 #endif
 
 }

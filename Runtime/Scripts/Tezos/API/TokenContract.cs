@@ -1,5 +1,3 @@
-#region
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +10,6 @@ using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
-
-#endregion
 
 namespace TezosSDK.Tezos.API
 {

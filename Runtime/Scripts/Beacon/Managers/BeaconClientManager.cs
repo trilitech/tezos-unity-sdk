@@ -1,5 +1,3 @@
-#region
-
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,8 +13,6 @@ using TezosSDK.Helpers.Extensions;
 using TezosSDK.Tezos;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
-
-#endregion
 
 namespace TezosSDK.Beacon
 {

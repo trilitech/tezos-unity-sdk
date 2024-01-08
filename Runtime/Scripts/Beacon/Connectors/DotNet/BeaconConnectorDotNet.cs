@@ -1,13 +1,9 @@
-#region
-
 using System;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Tezos;
-
-#endregion
 
 namespace TezosSDK.Beacon
 {

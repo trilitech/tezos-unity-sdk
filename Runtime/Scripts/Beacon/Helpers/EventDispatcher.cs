@@ -1,5 +1,3 @@
-#region
-
 using System;
 using Beacon.Sdk.Beacon.Operation;
 using Beacon.Sdk.Beacon.Sign;
@@ -10,8 +8,6 @@ using TezosSDK.Helpers;
 using TezosSDK.Tezos;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
-
-#endregion
 
 namespace TezosSDK.Beacon
 {

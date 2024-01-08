@@ -1,5 +1,3 @@
-#region
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,8 +5,6 @@ using System.Text.Json;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
-
-#endregion
 
 namespace TezosSDK.Tezos
 {

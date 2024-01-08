@@ -1,8 +1,4 @@
-#region
-
 using UnityEngine;
-
-#endregion
 
 namespace TezosSDK.Patterns
 {

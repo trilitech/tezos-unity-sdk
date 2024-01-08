@@ -1,12 +1,11 @@
-#region
-
+#if UNITY_WEBGL
+using System.Runtime.InteropServices;
+#endif
 using System;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Helpers;
 using TezosSDK.Tezos;
-
-#endregion
 
 namespace TezosSDK.Beacon
 {
@@ -74,8 +73,6 @@ namespace TezosSDK.Beacon
 
 #if UNITY_WEBGL
 
-		#region Bridge to external functions
-
 		[DllImport("__Internal")]
 		private static extern void JsInitWallet(string network, string rpc, string walletProvider, string appName, string appUrl, string iconUrl);
 
@@ -99,8 +96,6 @@ namespace TezosSDK.Beacon
 
 		[DllImport("__Internal")]
 		private static extern string JsUnityReadyEvent();
-
-		#endregion
 
 #else
 

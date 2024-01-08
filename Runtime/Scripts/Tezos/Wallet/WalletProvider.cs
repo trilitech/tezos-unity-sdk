@@ -1,6 +1,4 @@
-﻿#region
-
-using System;
+﻿using System;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
@@ -8,8 +6,6 @@ using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
-
-#endregion
 
 namespace TezosSDK.Tezos.Wallet
 {

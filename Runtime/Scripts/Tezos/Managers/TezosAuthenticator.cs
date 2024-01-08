@@ -1,11 +1,7 @@
-#region
-
 using TezosSDK.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = TezosSDK.Helpers.Logger;
-
-#endregion
 
 namespace TezosSDK.Tezos
 {
