@@ -2,8 +2,8 @@
     "name": "TezosSDK.Tutorials",
     "rootNamespace": "",
     "references": [
-        "TezosSDK",
-        "Unity.TextMeshPro"
+        "GUID:0c0f402fc1cb344ef87d37f5a81f2739",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
