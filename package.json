@@ -6,13 +6,14 @@
   "description": "Unity SDK for Tezos",
   "samples": [
     {
-      "displayName": "Tezos game sample",
-      "description": "Simple game to interact with the Tezos blockchain",
-      "path": "Samples~"
+      "displayName": "Sample Marketplace Game",
+      "description": "Simple game featuring a marketplace where players can create, buy and sell items.",
+      "path": "Samples~/MarketplaceSample"
     }
   ],
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.2.1"
+    "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "com.unity.textmeshpro": "3.2.0-pre.7"
   },
   "keywords": [
     "tezos",
@@ -29,10 +30,10 @@
     "type": "git",
     "url": "ssh://git@github.com:trilitech/tezos-unity-sdk.git"
   },
-  "documentationUrl": "https://opentezos.com/gaming/unity-sdk/getting-started/",
+  "documentationUrl": "https://docs.tezos.com/unity/",
   "changelogUrl": "https://github.com/trilitech/tezos-unity-sdk/blob/main/CHANGELOG.md",
   "author": {
-    "name": "Trilitech",
+    "name": "TriliTech",
     "email" : "contact@trili.tech",
     "url": "https://tezos.com/unity/"
   },
