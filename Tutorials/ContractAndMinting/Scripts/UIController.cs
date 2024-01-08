@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace TezosSDK.Contract.Scripts
+namespace TezosSDK.Tutorials.ContractAndMinting.Scripts
 {
 
 	public class UIController : MonoBehaviour

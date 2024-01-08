@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text.Json;
 using Dynamic.Json;
 using TezosSDK.Helpers;
-using TezosSDK.Tezos.API.Models;
+using TezosSDK.Helpers.Coroutines;
+using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using Logger = TezosSDK.Helpers.Logger;
@@ -17,7 +18,7 @@ using Logger = TezosSDK.Helpers.Logger;
 namespace TezosSDK.Tezos.API
 {
 
-	public class TezosAPI : HttpClient, ITezosAPI
+	public class TezosAPI : TezosHttpClient, ITezosAPI
 	{
 		public TezosAPI(TezosConfigSO config) : base(config.DataProvider)
 		{

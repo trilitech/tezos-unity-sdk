@@ -5,6 +5,7 @@ using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Beacon;
 using TezosSDK.Helpers;
+using TezosSDK.Helpers.Extensions;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -89,7 +90,6 @@ namespace TezosSDK.Tezos.Wallet
 			Logger.LogDebug($"WalletProvider.OnOperationRequested of type: {beaconMessageType}");
 
 #if (UNITY_ANDROID || UNITY_IOS)
-
 			// The wallet will already be open for the pairing request during login
 			// We should ignore this message type
 			if (beaconMessageType != BeaconMessageType.permission_request)

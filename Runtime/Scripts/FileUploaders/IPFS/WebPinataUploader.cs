@@ -1,11 +1,4 @@
-using System;
-using System.Collections;
-using System.Runtime.InteropServices;
-using System.Text.Json;
-using TezosSDK.Scripts.IpfsUploader;
-using UnityEngine;
-
-namespace TezosSDK.Scripts.FileUploaders.IPFS
+namespace TezosSDK.FileUploaders.IPFS
 {
 
 #if UNITY_WEBGL

@@ -1,15 +1,16 @@
-﻿using UnityEditor;
+﻿using TezosSDK.ReadMe.Scripts.Runtime;
+using UnityEditor;
 using UnityEngine;
 
-namespace RMC.Core.ReadMe
+namespace TezosSDK.ReadMe.Scripts.Editor
 {
 
 	/// <summary>
 	///     Editor to render <see cref="ReadMe" /> in the Unity Inspector
 	/// </summary>
-	[CustomEditor(typeof(ReadMe))]
+	[CustomEditor(typeof(Runtime.ReadMe))]
 	[InitializeOnLoad]
-	public class ReadMeEditor : Editor
+	public class ReadMeEditor : UnityEditor.Editor
 	{
 		[SerializeField] private GUIStyle TitleStyle;
 		[SerializeField] private GUIStyle IconStyle;
@@ -35,7 +36,7 @@ namespace RMC.Core.ReadMe
 
 		public override void OnInspectorGUI()
 		{
-			var readMe = (ReadMe)target;
+			var readMe = (Runtime.ReadMe)target;
 
 			Initialize();
 
@@ -139,7 +140,7 @@ namespace RMC.Core.ReadMe
 
 		protected override void OnHeaderGUI()
 		{
-			var readMe = (ReadMe)target;
+			var readMe = (Runtime.ReadMe)target;
 
 			Initialize();
 

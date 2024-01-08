@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using TezosSDK.Helpers;
+using TezosSDK.Helpers.Coroutines;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 

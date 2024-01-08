@@ -1,13 +1,12 @@
 #region
 
-using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
 
 #endregion
 
-namespace TezosSDK.Examples
+namespace TezosSDK.Tutorials.WalletConnection.Scripts
 {
 
 	public class WalletConnectionHandler : MonoBehaviour

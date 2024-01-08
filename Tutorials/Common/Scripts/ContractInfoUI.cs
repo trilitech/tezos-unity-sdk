@@ -1,6 +1,5 @@
 #region
 
-using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
@@ -8,7 +7,7 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace TezosSDK.Common.Scripts
+namespace TezosSDK.Tutorials.Common.Scripts
 {
 
 	public class ContractInfoUI : MonoBehaviour

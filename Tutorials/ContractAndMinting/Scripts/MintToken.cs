@@ -3,12 +3,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TezosSDK.Beacon;
-using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
-using TezosSDK.Tezos.API.Models;
+using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
+using TezosSDK.Tutorials.Common.Scripts;
 using TMPro;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
@@ -16,7 +15,7 @@ using Random = System.Random;
 
 #endregion
 
-namespace TezosSDK.Contract.Scripts
+namespace TezosSDK.Tutorials.ContractAndMinting.Scripts
 {
 
 	public class MintToken : MonoBehaviour

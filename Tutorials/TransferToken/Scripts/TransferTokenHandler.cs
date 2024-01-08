@@ -2,17 +2,16 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using TezosSDK.Beacon;
-using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
+using TezosSDK.Tutorials.Common.Scripts;
 using TMPro;
 using UnityEngine;
 
 #endregion
 
-namespace TezosSDK.Transfer.Scripts
+namespace TezosSDK.Tutorials.TransferToken.Scripts
 {
 
 	public class TransferTokenHandler : MonoBehaviour

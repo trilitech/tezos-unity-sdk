@@ -1,4 +1,4 @@
-﻿namespace RMC.Core.ReadMe
+﻿namespace TezosSDK.ReadMe.Scripts.Runtime
 {
 
 	/// <summary>

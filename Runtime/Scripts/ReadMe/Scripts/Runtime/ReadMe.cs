@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace RMC.Core.ReadMe
+namespace TezosSDK.ReadMe.Scripts.Runtime
 {
 
 	/// <summary>

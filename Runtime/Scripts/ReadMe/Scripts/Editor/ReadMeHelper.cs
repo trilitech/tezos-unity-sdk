@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using TezosSDK.ReadMe.Scripts.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace RMC.Core.ReadMe
+namespace TezosSDK.ReadMe.Scripts.Editor
 {
 
 	/// <summary>
@@ -16,7 +17,7 @@ namespace RMC.Core.ReadMe
 			EditorApplication.OpenProject(Directory.GetCurrentDirectory());
 		}
 
-		public static List<ReadMe> SelectReadmes()
+		public static List<Runtime.ReadMe> SelectReadmes()
 		{
 			var readMes = GetAllReadMes();
 
@@ -51,16 +52,16 @@ namespace RMC.Core.ReadMe
 			return GetAllReadMes().Count > 0;
 		}
 
-		private static List<ReadMe> GetAllReadMes()
+		private static List<Runtime.ReadMe> GetAllReadMes()
 		{
 			AssetDatabase.Refresh();
 			var ids = AssetDatabase.FindAssets("ReadMe t:ReadMe");
-			var results = new List<ReadMe>();
+			var results = new List<Runtime.ReadMe>();
 
 			foreach (var guid in ids)
 			{
 				var readmeObject = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(guid));
-				var readMe = (ReadMe)readmeObject;
+				var readMe = (Runtime.ReadMe)readmeObject;
 				results.Add(readMe);
 			}
 
@@ -94,7 +95,7 @@ namespace RMC.Core.ReadMe
 
 		public static void CreateNewReadMe(string newFilename = "")
 		{
-			ScriptableObjectUtility.CreateScriptableObject(typeof(ReadMe), newFilename);
+			ScriptableObjectUtility.CreateScriptableObject(typeof(Runtime.ReadMe), newFilename);
 		}
 	}
 

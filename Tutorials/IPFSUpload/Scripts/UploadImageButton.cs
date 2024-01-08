@@ -1,13 +1,13 @@
 #region
 
-using TezosSDK.Scripts.FileUploaders;
+using TezosSDK.FileUploaders;
 using TezosSDK.Tezos;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
 #endregion
 
-namespace TezosSDK.IPFSUpload.Scripts
+namespace TezosSDK.Tutorials.IPFSUpload.Scripts
 {
 
 	public class UploadImageButton : MonoBehaviour

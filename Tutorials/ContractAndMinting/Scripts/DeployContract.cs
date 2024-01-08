@@ -1,13 +1,13 @@
 #region
 
-using TezosSDK.Common.Scripts;
 using TezosSDK.Tezos;
+using TezosSDK.Tutorials.Common.Scripts;
 using TMPro;
 using UnityEngine;
 
 #endregion
 
-namespace TezosSDK.Contract.Scripts
+namespace TezosSDK.Tutorials.ContractAndMinting.Scripts
 {
 
 	public class DeployContract : MonoBehaviour

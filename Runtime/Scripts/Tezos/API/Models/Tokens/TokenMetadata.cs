@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using TezosSDK.Helpers;
+using TezosSDK.Helpers.Extensions;
 
 namespace TezosSDK.Tezos.API.Models.Tokens
 {

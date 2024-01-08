@@ -3,13 +3,12 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text.Json;
-using TezosSDK.Scripts.IpfsUploader;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using Logger = TezosSDK.Helpers.Logger;
 
-namespace TezosSDK.Scripts.FileUploaders.IPFS
+namespace TezosSDK.FileUploaders.IPFS
 {
 
 	public class EditorPinataUploader : BaseUploader, IPinataUploader

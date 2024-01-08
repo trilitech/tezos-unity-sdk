@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TezosSDK.Beacon;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.API.Models;
-using TezosSDK.Tezos.API.Models.Abstract;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
@@ -29,7 +27,7 @@ namespace TezosSDK.Tezos
 
 		public ITezosAPI API { get; }
 		public IWalletProvider Wallet { get; }
-		public IFA2 TokenContract { get; set; }
+		public IFa2 TokenContract { get; set; }
 
 		public IEnumerator GetCurrentWalletBalance(Action<ulong> callback)
 		{

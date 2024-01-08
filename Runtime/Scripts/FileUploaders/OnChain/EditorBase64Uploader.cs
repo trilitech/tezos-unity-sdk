@@ -4,7 +4,7 @@ using System.Collections;
 using System.IO;
 using UnityEditor;
 
-namespace TezosSDK.Scripts.FileUploaders.OnChain
+namespace TezosSDK.FileUploaders.OnChain
 {
 
 	public class EditorBase64Uploader : BaseUploader, IBaseUploader

@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
-using TezosSDK.Helpers;
+using TezosSDK.Helpers.HttpClients;
 
 namespace TezosSDK.Tezos.API
 {
 
-	public class Rpc : HttpClient
+	public class Rpc : TezosHttpClient
 	{
 		private const string CHAIN_ID = "NetXdQprcVkpaWU";
 

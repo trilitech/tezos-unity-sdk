@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Runtime.InteropServices;
-using UnityEngine;
-
-namespace TezosSDK.Scripts.FileUploaders.OnChain
+namespace TezosSDK.FileUploaders.OnChain
 {
 
 #if UNITY_WEBGL

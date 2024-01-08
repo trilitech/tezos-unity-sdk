@@ -1,8 +1,8 @@
-using TezosSDK.Scripts.FileUploaders.IPFS;
-using TezosSDK.Scripts.FileUploaders.OnChain;
+using TezosSDK.FileUploaders.IPFS;
+using TezosSDK.FileUploaders.OnChain;
 using UnityEngine;
 
-namespace TezosSDK.Scripts.FileUploaders
+namespace TezosSDK.FileUploaders
 {
 
 	public static class UploaderFactory

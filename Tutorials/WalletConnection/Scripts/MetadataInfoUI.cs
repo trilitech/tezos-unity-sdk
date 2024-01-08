@@ -6,7 +6,7 @@ using UnityEngine;
 
 #endregion
 
-namespace TezosSDK.Examples.WalletConnection.Scripts
+namespace TezosSDK.Tutorials.WalletConnection.Scripts
 {
 
 	public class MetadataInfoUI : MonoBehaviour

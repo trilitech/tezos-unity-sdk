@@ -7,7 +7,7 @@ using Logger = TezosSDK.Helpers.Logger;
 
 #endregion
 
-namespace TezosSDK.Transfer.Scripts
+namespace TezosSDK.Tutorials.TransferToken.Scripts
 {
 
 	public class TransferButton : MonoBehaviour

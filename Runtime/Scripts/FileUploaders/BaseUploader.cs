@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using TezosSDK.Scripts.FileUploaders.IPFS;
+using TezosSDK.FileUploaders.IPFS;
 using UnityEngine;
 
-namespace TezosSDK.Scripts.FileUploaders
+namespace TezosSDK.FileUploaders
 {
 
 	public abstract class BaseUploader : MonoBehaviour
