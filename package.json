@@ -9,6 +9,11 @@
       "displayName": "Sample Marketplace Game",
       "description": "Simple game featuring a marketplace where players can create, buy and sell items.",
       "path": "Samples~/MarketplaceSample"
+    },
+    {
+      "displayName": "Tutorials test",
+      "description": "-",
+      "path": "Samples~/Tutorials"
     }
   ],
   "dependencies": {
