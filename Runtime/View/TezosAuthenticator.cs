@@ -4,6 +4,7 @@ using TezosSDK.Beacon;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -14,7 +15,7 @@ namespace TezosSDK.View
 
 	public class TezosAuthenticator : MonoBehaviour
 	{
-		[SerializeField] private QrCodeView qrCodeView;
+		[SerializeField] private QrCodeImage qrCodeImage;
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
@@ -70,7 +71,7 @@ namespace TezosSDK.View
 			if (TezosManager.Instance != null && !TezosManager.Instance.Wallet.IsConnected &&
 			    TezosManager.Instance.Wallet.HandshakeData != null)
 			{
-				qrCodeView.SetQrCode(TezosManager.Instance.Wallet.HandshakeData);
+				qrCodeImage.SetQrCode(TezosManager.Instance.Wallet.HandshakeData);
 			}
 		}
 
@@ -89,7 +90,7 @@ namespace TezosSDK.View
 		private void OnHandshakeReceived(HandshakeData handshakeData)
 		{
 			Logger.LogDebug("TezosAuthenticator.OnHandshakeReceived");
-			qrCodeView.SetQrCode(handshakeData);
+			qrCodeImage.SetQrCode(handshakeData);
 		}
 
 		private void OnWalletConnected(WalletInfo walletInfo)
@@ -142,7 +143,7 @@ namespace TezosSDK.View
 			{
 				deepLinkButton.SetActive(false);
 				socialLoginButton.SetActive(false);
-				qrCodeView.gameObject.SetActive(false);
+				qrCodeImage.gameObject.SetActive(false);
 				darkBG.gameObject.SetActive(false);
 			}
 			else
@@ -154,7 +155,7 @@ namespace TezosSDK.View
 				socialLoginButton.SetActive(_isWebGL);
 
 				// Activate qrCodePanel only on standalone and not authenticated
-				qrCodeView.gameObject.SetActive(!_isMobile && !_isWebGL);
+				qrCodeImage.gameObject.SetActive(!_isMobile && !_isWebGL);
 
 				darkBG.gameObject.SetActive(true);
 			}

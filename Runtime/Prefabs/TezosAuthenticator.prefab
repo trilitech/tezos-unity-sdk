@@ -469,7 +469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a36293c38484941be89b83a6e75aadaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  qrCodeView: {fileID: 2221511952106025717}
+  qrCodeImage: {fileID: 2221511952106025717}
   deepLinkButton: {fileID: 2221511952733773064}
   socialLoginButton: {fileID: 2221511952751916822}
   logoutButton: {fileID: 2221511952828651889}

@@ -11,7 +11,7 @@ using ZXing.QrCode;
 namespace TezosSDK.View
 {
 
-	public class QrCodeView : MonoBehaviour
+	public class QrCodeImage : MonoBehaviour
 	{
 		[SerializeField] private RawImage rawImage;
 		private bool _encoded;
