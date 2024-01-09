@@ -1,16 +1,19 @@
 import { char2Bytes } from "@taquito/utils";
 import {
+  AbstractWallet,
+  AccountInfo,
+  ErrorInfo,
+  EventType,
+  OperationResult,
+  SignResult,
+  UnityEvent,
+} from "./Types";
+import {
   PartialTezosOriginationOperation,
   PartialTezosTransactionOperation,
   SigningType,
   TezosOperationType,
 } from "@airgap/beacon-types";
-import {
-  AbstractWallet,
-  AccountInfo,
-  OperationResult,
-  SignResult,
-} from "./Types";
 
 class BaseWallet implements AbstractWallet {
   dappName: string;
@@ -18,47 +21,102 @@ class BaseWallet implements AbstractWallet {
   iconUrl: string;
 
   constructor(appName: string, appUrl: string, iconUrl: string) {
+    console.log("BaseWallet constructor", appName, appUrl, iconUrl);
     this.dappName = appName;
     this.dappUrl = appUrl;
     this.iconUrl = iconUrl;
   }
+
+  CallUnityOnSDKInitialized() {
+    const eventData: UnityEvent = {
+      eventType: EventType.sdkInitialized,
+      data: {}, // No additional data is needed for this event.
+    };
+    this.CallUnityMethod(eventData);
+  }
   
-  CallUnityOnAccountFailedToConnect(error: Error) {
-    this.CallUnityMethod("OnAccountFailedToConnect", error);
+  CallUnityOnAccountFailedToConnect(error: ErrorInfo) {
+    const eventData: UnityEvent = {
+      eventType: EventType.accountConnectionFailed,
+      data: error,
+    };
+    this.CallUnityMethod(eventData);
   }
 
-  CallUnityOnContractCallCompleted(result: OperationResult) {
-    this.CallUnityMethod("OnContractCallCompleted", result);
+  CallUnityOnContractCallInjected(result: OperationResult) {
+    const eventData: UnityEvent = {
+      eventType: EventType.contractCallInjected,
+      data: result,
+    };
+    this.CallUnityMethod(eventData);
   }
 
-  CallUnityOnContractCallFailed(error: Error) {
-    this.CallUnityMethod("OnContractCallFailed", error);
+  CallUnityOnContractCallFailed(error: ErrorInfo) {
+    const eventData: UnityEvent = {
+      eventType: EventType.contractCallFailed,
+      data: error,
+    };
+    this.CallUnityMethod(eventData);
   }
 
   CallUnityOnPayloadSigned(result: SignResult) {
-    this.CallUnityMethod("OnPayloadSigned", result);
+    const eventData: UnityEvent = {
+      eventType: EventType.payloadSigned,
+      data: result,
+    };
+    this.CallUnityMethod(eventData);
   }
 
-  CallUnityOnAccountDisconnected(address: string) {
-    this.CallUnityMethod("OnAccountDisconnected", address);
+  CallUnityOnAccountDisconnected(accountInfo: AccountInfo) {
+    const eventData: UnityEvent = {
+      eventType: EventType.accountDisconnected,
+      data: accountInfo,
+    };
+    this.CallUnityMethod(eventData);
     localStorage.removeItem("dappName");
     localStorage.removeItem("dappUrl");
     localStorage.removeItem("iconUrl");
   }
 
   CallUnityOnAccountConnected(accountInfo: AccountInfo) {
-    this.CallUnityMethod("OnAccountConnected", { accountInfo });
+    const eventData: UnityEvent = {
+      eventType: EventType.accountConnected,
+      data: accountInfo,
+    };
+
+    this.CallUnityMethod(eventData);
     localStorage.setItem("dappName", this.dappName);
     localStorage.setItem("dappUrl", this.dappUrl);
     localStorage.setItem("iconUrl", this.iconUrl);
   }
 
-  private CallUnityMethod(methodName: string, value: any) {
+  private CallUnityMethod(eventData: UnityEvent) {
+    const resultEventData = {
+      EventType: eventData.eventType,
+      Data: JSON.stringify(this.CapitalizeKeys(eventData.data)),
+    };
+
     window.unityInstance.SendMessage(
-      "UnityBeacon",
-      methodName,
-      typeof value === "string" ? value : JSON.stringify(value)
+      "WalletEventManager",
+      "HandleEvent",
+      JSON.stringify(resultEventData)
     );
+  }
+
+  private CapitalizeKeys(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((o) => this.CapitalizeKeys(o));
+    } else if (typeof obj === "object" && obj !== null) {
+      return Object.entries(obj).reduce(
+        (r, [k, v]) => ({
+          ...r,
+          [`${k.charAt(0).toUpperCase()}${k.slice(1)}`]: this.CapitalizeKeys(v),
+        }),
+        {}
+      );
+    } else {
+      return obj;
+    }
   }
 
   GetHexPayloadString(
