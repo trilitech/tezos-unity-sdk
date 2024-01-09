@@ -1,3 +1,0 @@
-parameter (or (nat %viewNat) (or (int %viewInt) (or (string %viewString) (address %viewAddress))));
-storage unit;
-code { FAILWITH }
