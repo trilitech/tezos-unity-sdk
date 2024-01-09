@@ -7,7 +7,8 @@ on:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
     permissions:
       contents: write
     steps:
@@ -29,13 +30,13 @@ jobs:
           filename: "tezos-unity-sdk.zip"
           exclusions: "*.git* *.github*"
 
-      - name: Create unitypackageFiles
+      - name: Create .unitypackage Files
         run: |
           echo "Assets/TezosUnitySdk.meta" > unitypackageFiles
           mv Assets/TezosUnitySdk/Samples~ Assets/TezosUnitySdk/Samples
           find ./Assets/TezosUnitySdk/ -name \*.meta ! -path "./Assets/TezosUnitySdk/Tests*" ! -path "./Assets/TezosUnitySdk/*.md.meta" >> unitypackageFiles
 
-      - name: Create unitypackage
+      - name: Create .unitypackage
         uses: cnbrk13/create-unitypackage@master
         with:
           package-path: 'TezosUnitySdk.unitypackage'
