@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://tezos.com/unity/"><img height="200x" src="https://tezos.com/brand/NFTsTezos.png" /></a>
+<a href="https://tezos.com/unity/"><img height="300x" src="https://github.com/trilitech/tezos-unity-sdk/blob/main/Samples~/Art/Wiki/SDK_01.jpg" /></a>
 
   <h1>Tezos Unity SDK</h1>
 
@@ -15,99 +15,60 @@
   </p>
 </div>
 
-The Tezos Unity SDK invites developers to discover the future of Web3 gaming with a complete kit that empowers game
-developers with the ability to:
+**This project is fully open-source and free forever. You can view the source code and contribute to it on [here](https://github.com/trilitech/tezos-unity-sdk/).**
 
-- Connect to a Tezos wallet
-- Utilize data on the blockchain
-- Call smart contracts
-- True ownership of in-game assets
+***
 
-The Tezos SDK supports Desktop, Android, iOS, and browsers. Beyond allowing game developers to interact with the Tezos
-blockchain, this SDK is a helpful resource for developing any Tezos decentralized application (dApp).
+> [Documentation](https://docs.tezos.com) • [GitHub](https://github.com/trilitech/tezos-unity-sdk/) • [Discord](https://discord.com/tezos) • [Contact Us](https://discord.com/tezos)
 
-### Install from unitypackage file
+***
 
-You can install TezosUnitySdk via `.unitypackage` file. To load a package from a unitypackage file:
-
-* Go to [Releases](https://github.com/trilitech/tezos-unity-sdk/releases) page and download the latest `TezosUnitySdk.unitypackage`.
-* Open your project in Unity Editor.
-* Double-click the `TezosUnitySdk.unitypackage` file to import it into the current project.
-
-### Install from a Git URL
-
-You can install the UPM package via directly Git URL. To load a package from a Git URL:
-
-* Open [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui.html) window.
-* Click the add **+** button in the status bar.
-* The options for adding packages appear.
-* Select Add package from git URL from the add menu. A text box and an Add button appear.
-* Enter the `https://github.com/trilitech/tezos-unity-sdk.git` Git URL in the text box and click Add.
-* You may also install a specific package version by using the URL with the specified version.
-    * `https://github.com/trilitech/tezos-unity-sdk.git#X.Y.Z`
-    * Please note that the version `X.Y.Z` stated here is to be replaced with the version you would like to get.
-    * You can find all the available releases [here](https://github.com/trilitech/tezos-unity-sdk/releases).
-    * The latest available release version
-      is [![Last Release](https://img.shields.io/github/v/release/trilitech/tezos-unity-sdk)](https://github.com/trilitech/tezos-unity-sdk/releases/latest)
-
-For more information about what protocols Unity supports, see [Git URLs](https://docs.unity3d.com/Manual/upm-git.html).
-
-### Install from NPM
-
-* Navigate to the `Packages` directory of your project.
-* Adjust the [project manifest file](https://docs.unity3d.com/Manual/upm-manifestPrj.html) `manifest.json` in a text
-  editor.
-* Ensure `https://registry.npmjs.org/` is part of `scopedRegistries`.
-    * Ensure `com.trilitech` is part of `scopes`.
-    * Add `com.trilitech.tezos-unity-sdk` to the `dependencies`, stating the latest version.
-
-A minimal example ends up looking like this. Please note that the version `X.Y.Z` stated here is to be replaced
-with [the latest released version](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk), which is
-currently [![NPM Package](https://img.shields.io/npm/v/com.trilitech.tezos-unity-sdk?color=blue)](https://www.npmjs.com/package/com.trilitech.tezos-unity-sdk).
-
-```json
-{
-  "scopedRegistries": [
-    {
-      "name": "npmjs",
-      "url": "https://registry.npmjs.org/",
-      "scopes": [
-        "com.trilitech"
-      ]
-    }
-  ],
-  "dependencies": {
-    "com.trilitech.tezos-unity-sdk": "X.Y.Z",
-    ...
-  }
-}
-```
-
-* Switch back to the Unity Editor and wait for it to finish importing the added package.
-
-### WebGL Support
-
-* Open Unity Editor.
-* Navigate to `Packages` and find the `Tezos Unity SDK`.
-* Go to `WebGLFrontend/output` and copy the `StreamingAssets` and `WebGLTemplates` folders.
-* Navigate to the `Assets` folder of your project and paste copied folders.
-* This action will create WebGL template folders for your project. Each template is a subfolder within the
-  `WebGLTemplates` folder. Each template subfolder contains an `index.html` file along with any other resources the page
-  needs, such as images or stylesheets. You can choose the appropriate template to use in the WebGL build in
-  `Project settings/Player/Web tab/Resolution and Presentation`
-* By default, unfortunately, Web builds didn't support copy-and-paste operations. To handle them properly, install with
-  double-clicking `WebGLFrontend/output/WebGLCopyAndPaste.unitypackage`, this action will create `WebGLCopyAndPaste`
-  alongside with `StreamingAssets` and `WebGLTemplates` folders inside your project Assets directory.
+## Seamlessly Integrate Web3 Features Into Your Games
 
 
-### Mobiles Support
-If you are using SDK on mobile platforms (IOS or Android) you need to build your project with Disabled Managed Stripping
-Level, otherwise you may encounter [assembly errors](https://github.com/trilitech/tezos-unity-sdk/issues/90).
+Unlock the power of the Tezos blockchain in your Unity games with the Tezos SDK for Unity, the easy-to-use toolkit designed specifically for game developers with little to no blockchain experience. With this SDK, you can effortlessly integrate decentralized features, NFTs, and even custom cryptocurrencies into your games to make great games even better.
 
-To do this:
-* Open Project settings.
-* Navigate to Player tab.
-* Chose platform-specific settings (Android or IOS).
-* Make sure that `Managed Stripping Level` is disabled. (It's in optimization section)
+
+## Key Features
+
+### 💰 Grants for Top Games
+
+[The Tezos Foundation offers grants ](https://tezos.foundation/grants/)and support for top games utilizing the Tezos SDK for Unity. Take this opportunity to bring your game to life and receive the backing you need to succeed.
+
+
+### 🎮 Connect to Tezos Wallets
+
+Seamlessly integrate Tezos wallet authentication, enabling players to use their Tezos blockchain credentials in your game. Allow your users to sign transactions, access in-game assets, and make in-game purchases with cryptocurrency.
+
+
+### 🌐 Access Blockchain Data
+
+Fetch data directly from the Tezos blockchain, including player-owned in-game assets and account balances. Harness the power of smart contracts to access and manage data stored on the blockchain.
+
+
+### 🕹️ Interact with Smart Contracts
+
+Enhance your game with the ability to make calls to Tezos smart contracts, from in-game purchases using cryptocurrency to minting NFTs based on player achievements. Unlock endless possibilities for your game with smart contract integration.
+
+
+### 🔒 Digital Signing & Verification
+
+Enable your games to request digital signatures from players using their Tezos wallets and verify the authenticity of data signed by other users. Streamline the gaming experience by handling blockchain features on behalf of users with their authorization. Enable one-click social login, providing the best user experience.
+
+
+### 🌿 Enjoy the Benefits of Tezos
+
+Leverage the energy efficiency, low transaction fees, decentralized governance, and funding opportunities of the Tezos ecosystem to build innovative gaming experiences that stand out in the market.
+
+
+## Explore Tezos and the Future of Gaming:
+
+> * [What is Tezos?](https://tezos.com/)
+> * [Tezos Upgrades and Innovations](https://tezos.com/upgrades/)
+> * [Governance on Tezos](https://tezos.com/governance/)
+> * [Tezos Developer Portal](https://tezos.com/developers/)
+> * [Energy Efficiency and Tezos](https://tezos.com/carbon/)
+> * [Join our Discord](https://discord.com/invite/yXaPy6s5Nr)
+
 
 ### 📝 Read the [documentation.](https://opentezos.com/gaming/unity-sdk/)
