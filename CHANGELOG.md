@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2023-01-09
+### Added
+- Tutorial scenes within the `Tutorials` folder, offering step-by-step guidance on SDK features.
+- Centralised event management system `WalletEventManager.cs` for uniform event handling.
+- `TezosManager` as a singleton pattern and as a prefab for easy SDK initialization and management.
+- `TezosAuthenticator.prefab` to streamline user authentication processes with drag-and-drop setup.
+- `TezosConfigSO` and `DataProviderConfigSO` for flexible and user-friendly SDK configuration management.
+
+### Changed
+- Folder restructuring and namespace adjustments for clarity and better organization.
+- Renaming of classes and files across the SDK to enhance understandability (e.g., `DemoExample` to `Marketplace Example` and `NftApi Sample` to `Nft Api Example`).
+- Refactored HTTP client construction to utilise `DataProviderConfigSO` for data settings.
+- Namespace adjustments to reflect the new folder structure.
+- Update of `package.json` to provide better descriptions and categorisation of samples.
+- Improvement and consolidation of log messages and error handling throughout the SDK.
+- Major code cleanups and refactoring across multiple files (`BeaconClientManager.cs`, `WalletProvider.cs`, `Tezos.cs`, and others) for readability and maintainability.
+
+### Removed
+- Obsolete scripts, e.g., `WalletProviderInfo`, `ApiTests` and Unity events and prefabs associated with outdated functionalities.
+- Unused fields and refactored classes to remove redundant methods and streamline interfaces (e.g., changes in `IBeaconConnector`).
+
+### Fixed
+- Enhanced UI responsiveness and visual aesthetics.
+- Resolved TypeScript serialization issues on the WebGL frontend.
+- Bug fixes in `GetContractTokenIds` handling of zero token counts.
+- Miscellaneous bug fixes and improved error handling throughout the codebase.
+
+### Deprecated
+- Phased out classes and methods that have been replaced by the new event management system and singleton patterns.
+- Deprecated `TezosSingleton.cs` in favor of `TezosManager.cs`.
+
+## [Migration Notes]
+- Due to extensive changes, users are encouraged to review the changed file paths and updated namespaces to ensure compatibility with the new version.
+- Custom implementations should be revised to work with the new central event manager (`WalletEventManager.cs`).
+
 
 ## [2.0.7] - 2023-10-24
 ### Added
@@ -169,7 +204,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added auto releases with GH actions
 
 
-[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/2.0.7...HEAD
+[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/3.0.0
 [2.0.7]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.7
 [2.0.6]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.6
 [2.0.5]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.5
