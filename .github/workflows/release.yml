@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "Assets/TezosUnitySdk.meta" > unitypackageFiles
           mv Assets/TezosUnitySdk/Samples~ Assets/TezosUnitySdk/Samples
-          find ./Assets/TezosUnitySdk/ -name \*.meta ! -path "./Assets/TezosUnitySdk/Tests*" ! -path "./Assets/TezosUnitySdk/*.md.meta" >> unitypackageFiles
+          find ./Assets/TezosUnitySdk/ -name \*.meta ! -path "./Assets/TezosUnitySdk/Tests*" ! -path "./Assets/TezosUnitySdk/*.md.meta" ! -name "CODEOWNERS" >> unitypackageFiles
 
       - name: Create .unitypackage
         uses: cnbrk13/create-unitypackage@master
