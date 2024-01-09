@@ -1,10 +1,7 @@
 import BaseWallet from "./BaseWallet";
+import { AccountInfo, Wallet } from "./Types";
 import { DAppClient } from "@airgap/beacon-sdk";
-import { Wallet } from "./Types";
-import {
-  Network,
-  NetworkType,
-} from "@airgap/beacon-types";
+import { Network, NetworkType } from "@airgap/beacon-types";
 
 class BeaconWallet extends BaseWallet implements Wallet {
   client: DAppClient | null;
@@ -12,14 +9,15 @@ class BeaconWallet extends BaseWallet implements Wallet {
   networkType: NetworkType;
   rpcUrl: string;
   address: string;
-  
+
   constructor(appName: string, appUrl: string, iconUrl: string) {
+    console.log("BeaconWallet constructor", appName, appUrl, iconUrl);
     super(appName, appUrl, iconUrl);
   }
 
   SetNetwork(networkName: string, rpcUrl: string) {
     this.networkType =
-        NetworkType[networkName.toUpperCase() as keyof typeof NetworkType];
+      NetworkType[networkName.toUpperCase() as keyof typeof NetworkType];
     this.rpcUrl = rpcUrl;
   }
 
@@ -28,7 +26,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
       type: this.networkType,
       rpcUrl: this.rpcUrl,
     };
-    
+
     if (!this.client) {
       this.client = new DAppClient({
         name: this.dappName,
@@ -41,16 +39,16 @@ class BeaconWallet extends BaseWallet implements Wallet {
     try {
       const activeAccount = await this.client.getActiveAccount();
       let publicKey: string;
-      
+
       if (!activeAccount || activeAccount.scopes.length === 0) {
         const permissions = await this.client.requestPermissions();
         this.activeAddress = permissions.address;
-        publicKey = permissions.publicKey
+        publicKey = permissions.publicKey;
       } else {
         this.activeAddress = activeAccount.address;
         publicKey = activeAccount.publicKey;
       }
-      
+
       this.CallUnityOnAccountConnected({
         address: this.activeAddress,
         publicKey: publicKey,
@@ -62,7 +60,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
   }
 
   GetActiveAccountAddress() {
-    return this.activeAddress
+    return this.activeAddress;
   }
 
   async SendContract(
@@ -81,7 +79,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
         ),
       });
 
-      this.CallUnityOnContractCallCompleted({
+      this.CallUnityOnContractCallInjected({
         transactionHash: operationResult.transactionHash,
       });
     } catch (error) {
@@ -98,7 +96,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
         ),
       });
 
-      this.CallUnityOnContractCallCompleted({
+      this.CallUnityOnContractCallInjected({
         transactionHash: operationResult.transactionHash,
       });
     } catch (error) {
@@ -121,7 +119,13 @@ class BeaconWallet extends BaseWallet implements Wallet {
     const activeAccount = await this.client.getActiveAccount();
     this.activeAddress = "";
     await this.client.removeAllAccounts();
-    this.CallUnityOnAccountDisconnected(activeAccount.address);
+
+    const accountInfo: AccountInfo = {
+      publicKey: activeAccount.publicKey,
+      address: activeAccount.address,
+    };
+
+    this.CallUnityOnAccountDisconnected(accountInfo);
   }
 }
 

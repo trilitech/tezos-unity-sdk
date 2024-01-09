@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 302ae0521ba8483487d9f920d803356a, type: 3}
+  m_Name: DefaultTezosDataProviderConfig
+  m_EditorClassIdentifier: 
+  network: 1
+  baseUrlFormat: https://api.{network}.tzkt.io/v1/
+  requestTimeoutSeconds: 45
+  documentationUrl: https://api.tzkt.io/

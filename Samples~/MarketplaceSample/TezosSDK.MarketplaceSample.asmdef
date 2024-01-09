@@ -1,0 +1,17 @@
+{
+    "name": "TezosSDK.MarketplaceSample",
+    "rootNamespace": "",
+    "references": [
+        "TezosSDK",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
