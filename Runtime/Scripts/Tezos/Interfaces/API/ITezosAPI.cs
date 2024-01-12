@@ -65,7 +65,7 @@ namespace TezosSDK.Tezos
 		public IEnumerator IsHolderOfToken(Action<bool> callback, string wallet, string contractAddress, uint tokenId);
 
 		// Gets the metadata associated with a given token.
-		public IEnumerator GetTokenMetadata(Action<TokenMetadata> callback, string contractAddress, uint tokenId);
+		public IEnumerator GetTokenMetadata(Action<JsonElement> callback, string contractAddress, uint tokenId);
 
 		// Queries token high-level collection/contract level information.
 		public IEnumerator GetContractMetadata(Action<JsonElement> callback, string contractAddress);
