@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace TezosSDK.Tezos.API.Models.Tokens
 {
@@ -36,7 +37,7 @@ namespace TezosSDK.Tezos.API.Models.Tokens
 		/// <summary>
 		///     Token metadata.
 		/// </summary>
-		public TokenMetadata TokenMetadata { get; set; }
+		public JsonElement TokenMetadata { get; set; }
 
 		/// <summary>
 		///     Timestamp of the block where the token balance was last changed.
