@@ -9,7 +9,7 @@
   </p>
 
   <p>
-    <a href="https://opentezos.com/gaming/unity-sdk/"><img alt="Intro" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
+    <a href="https://docs.tezos.com/unity"><img alt="Intro" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
     <a href="https://github.com/trilitech/tezos-unity-sdk/issues"><img alt="Issues" src="https://img.shields.io/github/issues/trilitech/tezos-unity-sdk?color=blueviolet" /></a>
     <a href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/github/license/trilitech/tezos-unity-sdk?color=blueviolet" /></a>
   </p>
@@ -71,4 +71,4 @@ Leverage the energy efficiency, low transaction fees, decentralized governance, 
 > * [Join our Discord](https://discord.com/invite/yXaPy6s5Nr)
 
 
-### 📝 Read the [documentation.](https://opentezos.com/gaming/unity-sdk/)
+### 📝 Read the [documentation.](https://docs.tezos.com/unity)
