@@ -162,7 +162,7 @@ namespace TezosSDK.Tezos.API
 			}
 		}
 
-		public IEnumerator GetTokenMetadata(Action<TokenMetadata> callback, string contractAddress, uint tokenId)
+		public IEnumerator GetTokenMetadata(Action<JsonElement> callback, string contractAddress, uint tokenId)
 		{
 			var url = $"tokens?contract={contractAddress}&tokenId={tokenId}&select=metadata";
 			var requestRoutine = GetJson<string>(url);
@@ -175,18 +175,18 @@ namespace TezosSDK.Tezos.API
 					// Parse the JSON data into a strongly-typed object
 					var node = dJsonArray.First().ToString();
 
-					var tokenMetadata = JsonSerializer.Deserialize<TokenMetadata>(node, JsonOptions.DefaultOptions);
+					var tokenMetadata = JsonSerializer.Deserialize<JsonElement>(node, JsonOptions.DefaultOptions);
 					callback?.Invoke(tokenMetadata);
 				}
 				catch (JsonException e)
 				{
 					Logger.LogError("Failed to deserialize token metadata: " + e.Message);
-					callback?.Invoke(null);
+					callback?.Invoke(new JsonElement());
 				}
 			}
 			else
 			{
-				callback?.Invoke(null);
+				callback?.Invoke(new JsonElement());
 			}
 		}
 
