@@ -19,7 +19,7 @@
 
 ***
 
-> [Documentation](https://docs.tezos.com) • [GitHub](https://github.com/trilitech/tezos-unity-sdk/) • [Discord](https://discord.com/tezos) • [Contact Us](https://discord.com/tezos)
+> [Documentation](https://docs.tezos.com/unity/) • [GitHub](https://github.com/trilitech/tezos-unity-sdk/) • [Discord](https://discord.com/tezos) • [Contact Us](https://discord.com/tezos)
 
 ***
 
