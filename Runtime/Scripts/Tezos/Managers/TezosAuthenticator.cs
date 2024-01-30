@@ -23,6 +23,8 @@ namespace TezosSDK.Tezos
 		private void Start()
 		{
 			Tezos = TezosManager.Instance.Tezos;
+			DeepLinkManager.Instance.OnDeepLinkReceived += HandleDeepLink;
+			
 			SubscribeToEvents();
 			SetPlatformFlags();
 
@@ -42,6 +44,11 @@ namespace TezosSDK.Tezos
 					Tezos.Wallet.Connect(WalletProviderType.beacon);
 				}
 			}
+		}
+		
+		private void HandleDeepLink(string data)
+		{
+			// TODO: Process deep link data for authentication
 		}
 
 		private void Update()
@@ -161,6 +168,7 @@ namespace TezosSDK.Tezos
 			Logger.LogDebug("TezosAuthenticator.UnsubscribeFromEvents");
 			TezosManager.Instance.Wallet.EventManager.HandshakeReceived -= OnHandshakeReceived;
 			TezosManager.Instance.Wallet.EventManager.WalletConnected -= OnWalletConnected;
+			DeepLinkManager.Instance.OnDeepLinkReceived -= HandleDeepLink;
 		}
 	}
 
