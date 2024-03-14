@@ -15,8 +15,10 @@ namespace TezosSDK.Beacon
 	/// </summary>
 	public class BeaconConnectorWebGl : IBeaconConnector
 	{
-		private string _activeWalletAddress;
-
+		public BeaconConnectorWebGl(WalletEventManager walletEventManager)
+		{
+			walletEventManager.SDKInitialized += UnityReadyEvent;
+		}
 		public event Action<BeaconMessageType> OperationRequested;
 
 		public void ConnectWallet(WalletProviderType? walletProviderType)
@@ -96,6 +98,8 @@ namespace TezosSDK.Beacon
 
 		[DllImport("__Internal")]
 		private static extern string JsUnityReadyEvent();
+
+		private void UnityReadyEvent() => JsUnityReadyEvent();
 
 #else
 

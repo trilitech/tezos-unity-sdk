@@ -73,7 +73,6 @@ async function UnityReadyEvent() {
   
   const dAppClient: DAppClient = new DAppClient({ name: "Tezos SDK DApp" });
   const beaconActiveAccount: AccountInfo = await dAppClient.getActiveAccount();
-
   const dappName = localStorage.getItem("dappName");
   const dappUrl = localStorage.getItem("dappUrl");
   const iconUrl = localStorage.getItem("iconUrl");
@@ -107,10 +106,6 @@ async function UnityReadyEvent() {
       );
       window.WalletProvider.ConnectAccount();
     }
-  }
-
-  if (window.WalletProvider instanceof BaseWallet) {
-    window.WalletProvider.CallUnityOnSDKInitialized();
   }
 }
 

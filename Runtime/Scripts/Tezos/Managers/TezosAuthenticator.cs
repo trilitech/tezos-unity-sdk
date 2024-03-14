@@ -92,6 +92,12 @@ namespace TezosSDK.Tezos
 			ToggleUIElements(true);
 		}
 
+		private void OnWalletDisconnected(WalletInfo walletInfo)
+		{
+			Logger.LogDebug("TezosAuthenticator.OnWalletDisconnected");
+			ToggleUIElements(false);
+		}
+
 		public void ConnectByDeeplink()
 		{
 			Logger.LogDebug("TezosAuthenticator.ConnectByDeeplink");
@@ -122,6 +128,7 @@ namespace TezosSDK.Tezos
 			// Subscribe to wallet events for handling user authentication.
 			Tezos.Wallet.EventManager.HandshakeReceived += OnHandshakeReceived;
 			Tezos.Wallet.EventManager.WalletConnected += OnWalletConnected;
+			Tezos.Wallet.EventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
 		/// <summary>
@@ -161,6 +168,7 @@ namespace TezosSDK.Tezos
 			Logger.LogDebug("TezosAuthenticator.UnsubscribeFromEvents");
 			TezosManager.Instance.Wallet.EventManager.HandshakeReceived -= OnHandshakeReceived;
 			TezosManager.Instance.Wallet.EventManager.WalletConnected -= OnWalletConnected;
+			TezosManager.Instance.Wallet.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 	}
 
