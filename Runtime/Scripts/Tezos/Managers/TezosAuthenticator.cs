@@ -12,7 +12,7 @@ namespace TezosSDK.Tezos
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
-		[SerializeField] private Image darkBG;
+		// [SerializeField] private Image darkBG;
 
 		// Platform flags to determine the current running platform
 		private bool _isMobile;
@@ -144,7 +144,7 @@ namespace TezosSDK.Tezos
 				deepLinkButton.SetActive(false);
 				socialLoginButton.SetActive(false);
 				qrCodeGenerator.gameObject.SetActive(false);
-				darkBG.gameObject.SetActive(false);
+				// darkBG.gameObject.SetActive(false);
 			}
 			else
 			{
@@ -157,7 +157,7 @@ namespace TezosSDK.Tezos
 				// Activate qrCodePanel only on standalone and not authenticated
 				qrCodeGenerator.gameObject.SetActive(!_isMobile && !_isWebGL);
 
-				darkBG.gameObject.SetActive(true);
+				// darkBG.gameObject.SetActive(true);
 			}
 
 			logoutButton.SetActive(isAuthenticated);
