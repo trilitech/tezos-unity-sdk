@@ -57,6 +57,12 @@ namespace TezosSDK.Tezos
 			DontDestroyOnLoad(gameObject);
 		}
 
+		private void Start()
+		{
+			Logger.LogDebug("Tezos SDK initialized");
+			EventManager.DispatchSDKInitializedEvent();
+		}
+
 		private void CreateEventManager()
 		{
 			// Create or get a WalletMessageReceiver Game object to receive callback messages
@@ -72,17 +78,10 @@ namespace TezosSDK.Tezos
 		private void InitializeTezos()
 		{
 			Logger.CurrentLogLevel = logLevel;
-
 			Logger.LogDebug("Tezos SDK initializing...");
-
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
-
 			BeaconConnector = BeaconConnectorFactory.CreateConnector(Application.platform, EventManager);
-
 			Tezos = new Tezos(config, EventManager, BeaconConnector);
-
-			Logger.LogDebug("Tezos SDK initialized");
-			EventManager.DispatchSDKInitializedEvent();
 		}
 
 		private void ValidateConfig()
