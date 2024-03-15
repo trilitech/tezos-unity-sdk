@@ -1,7 +1,5 @@
-#if UNITY_WEBGL
-using System.Runtime.InteropServices;
-#endif
 using System;
+using System.Runtime.InteropServices;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Helpers;
@@ -17,7 +15,7 @@ namespace TezosSDK.Beacon
 	{
 		public BeaconConnectorWebGl(WalletEventManager walletEventManager)
 		{
-			walletEventManager.SDKInitialized += UnityReadyEvent;
+			walletEventManager.SDKInitialized += UnityReady;
 		}
 		public event Action<BeaconMessageType> OperationRequested;
 
@@ -73,6 +71,8 @@ namespace TezosSDK.Beacon
 			OperationRequested?.Invoke(BeaconMessageType.operation_request);
 		}
 
+		private void UnityReady() => JsUnityReadyEvent();
+
 #if UNITY_WEBGL
 
 		[DllImport("__Internal")]
@@ -98,9 +98,6 @@ namespace TezosSDK.Beacon
 
 		[DllImport("__Internal")]
 		private static extern string JsUnityReadyEvent();
-
-		private void UnityReadyEvent() => JsUnityReadyEvent();
-
 #else
 
 		#region Stub functions
