@@ -173,17 +173,17 @@ namespace TezosSDK.Tezos.Wallet
 
 			HandshakeData = handshake;
 
-#if (UNITY_ANDROID || UNITY_IOS)
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 			PairWithWallet();
 #endif
 		}
 
-#if (UNITY_ANDROID || UNITY_IOS)
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 		private void PairWithWallet()
 		{
 			UnityMainThreadDispatcher.Enqueue(() =>
 			{
-				Logger.LogDebug("WalletProvider.PairWithWallet");
+				Logger.LogDebug("WalletProvider.PairWithWallet (OpenURL)");
 				Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
 			});
 		}

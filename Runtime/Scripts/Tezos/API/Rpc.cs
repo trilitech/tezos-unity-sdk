@@ -20,12 +20,12 @@ namespace TezosSDK.Tezos.API
 
 		public IEnumerator GetTzBalance<T>(string address)
 		{
-			return GetJson<T>($"chains/main/blocks/head/context/contracts/{address}/balance/");
+			return GetJsonCoroutine<T>($"chains/main/blocks/head/context/contracts/{address}/balance/");
 		}
 
 		public IEnumerator GetContractCode<T>(string contract)
 		{
-			return GetJson<T>($"chains/main/blocks/head/context/contracts/{contract}/script/");
+			return GetJsonCoroutine<T>($"chains/main/blocks/head/context/contracts/{contract}/script/");
 		}
 
 		public IEnumerator RunView<T>(
@@ -55,7 +55,7 @@ namespace TezosSDK.Tezos.API
 				level = level?.ToString()
 			};
 
-			return PostJson<T>("chains/main/blocks/head/helpers/scripts/run_script_view/", data);
+			return PostJsonCoroutine<T>("chains/main/blocks/head/helpers/scripts/run_script_view/", data);
 		}
 	}
 
