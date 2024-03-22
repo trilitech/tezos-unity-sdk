@@ -5,7 +5,7 @@
   <h1>Tezos Unity SDK</h1>
 
   <p>
-    <strong>Tezos SDK for Unity</strong>
+    <strong>Tezos Unity SDK</strong>
   </p>
 
   <p>
@@ -26,14 +26,14 @@
 ## Seamlessly Integrate Web3 Features Into Your Games
 
 
-Unlock the power of the Tezos blockchain in your Unity games with the Tezos SDK for Unity, the easy-to-use toolkit designed specifically for game developers with little to no blockchain experience. With this SDK, you can effortlessly integrate decentralized features, NFTs, and even custom cryptocurrencies into your games to make great games even better.
+Unlock the power of the Tezos blockchain in your Unity games with the Tezos Unity SDK, the easy-to-use toolkit designed specifically for game developers with little to no blockchain experience. With this SDK, you can effortlessly integrate decentralized features, NFTs, and even custom cryptocurrencies into your games to make great games even better.
 
 
 ## Key Features
 
 ### 💰 Grants for Top Games
 
-[The Tezos Foundation offers grants ](https://tezos.foundation/grants/)and support for top games utilizing the Tezos SDK for Unity. Take this opportunity to bring your game to life and receive the backing you need to succeed.
+[The Tezos Foundation offers grants ](https://tezos.foundation/grants/)and support for top games utilizing the Tezos Unity SDK. Take this opportunity to bring your game to life and receive the backing you need to succeed.
 
 
 ### 🎮 Connect to Tezos Wallets
