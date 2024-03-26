@@ -18,6 +18,7 @@ namespace TezosSDK.Beacon
 				case RuntimePlatform.WindowsPlayer:
 				case RuntimePlatform.WindowsEditor:
 				case RuntimePlatform.LinuxPlayer:
+				case RuntimePlatform.LinuxEditor:
 				case RuntimePlatform.OSXPlayer:
 				case RuntimePlatform.OSXEditor:
 					return new BeaconConnectorDotNet(eventManager);
