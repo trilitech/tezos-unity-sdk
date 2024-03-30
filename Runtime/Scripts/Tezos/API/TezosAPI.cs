@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using Dynamic.Json;
-using TezosSDK.Helpers;
-using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -23,36 +19,22 @@ namespace TezosSDK.Tezos.API
 
 		private Rpc Rpc { get; }
 
-		public IEnumerator GetTezosBalance(Action<ulong> callback, string address)
+		public IEnumerator GetTezosBalance(Action<Result<ulong>> callback, string address)
 		{
-			var getBalanceRequest = Rpc.GetTzBalance<ulong>(address);
-			return new CoroutineWrapper<ulong>(getBalanceRequest, callback);
+			yield return Rpc.GetTzBalance(address, callback);
 		}
 
 		public IEnumerator ReadView(
 			string contractAddress,
 			string entrypoint,
 			string input,
-			Action<JsonElement> callback)
+			Action<Result<JsonElement>> callback)
 		{
-			var runViewOp = Rpc.RunView<JsonElement>(contractAddress, entrypoint, input);
-
-			return new CoroutineWrapper<JsonElement>(runViewOp, result =>
-			{
-				if (result.ValueKind != JsonValueKind.Null && result.ValueKind != JsonValueKind.Undefined &&
-				    result.TryGetProperty("data", out var val))
-				{
-					callback(val);
-				}
-				else
-				{
-					Logger.LogError("Can't parse response from run_script_view query");
-				}
-			});
+			yield return Rpc.RunView(contractAddress, entrypoint, input, callback);
 		}
 
 		public IEnumerator GetTokensForOwner(
-			Action<IEnumerable<TokenBalance>> callback,
+			Action<Result<IEnumerable<TokenBalance>>> callback,
 			string owner,
 			bool withMetadata,
 			long maxItems,
@@ -72,12 +54,11 @@ namespace TezosSDK.Tezos.API
 			          $"token.tokenId as token_id{(withMetadata ? ",token.metadata as token_metadata" : "")}," +
 			          "lastTime as last_time,id&" + $"{sort}&limit={maxItems}";
 
-			var requestRoutine = GetJsonCoroutine<IEnumerable<TokenBalance>>(url);
-			return new CoroutineWrapper<IEnumerable<TokenBalance>>(requestRoutine, callback);
+			yield return GetJsonCoroutine(url, callback);
 		}
 
 		public IEnumerator GetOwnersForToken(
-			Action<IEnumerable<TokenBalance>> callback,
+			Action<Result<IEnumerable<TokenBalance>>> callback,
 			string contractAddress,
 			uint tokenId,
 			long maxItems,
@@ -98,12 +79,11 @@ namespace TezosSDK.Tezos.API
 			          "select=account.address as owner,balance,token.contract as token_contract," +
 			          "token.tokenId as token_id,lastTime as last_time,id&" + $"{sort}&limit={maxItems}";
 
-			var requestRoutine = GetJsonCoroutine<IEnumerable<TokenBalance>>(url);
-			return new CoroutineWrapper<IEnumerable<TokenBalance>>(requestRoutine, callback);
+			yield return GetJsonCoroutine(url, callback);
 		}
 
 		public IEnumerator GetOwnersForContract(
-			Action<IEnumerable<TokenBalance>> callback,
+			Action<Result<IEnumerable<TokenBalance>>> callback,
 			string contractAddress,
 			long maxItems,
 			OwnersForContractOrder orderBy)
@@ -122,90 +102,44 @@ namespace TezosSDK.Tezos.API
 			          "select=account.address as owner,balance,token.contract as token_contract," +
 			          "token.tokenId as token_id,id&" + $"{sort}&limit={maxItems}";
 
-			var requestRoutine = GetJsonCoroutine<IEnumerable<TokenBalance>>(url);
-			return new CoroutineWrapper<IEnumerable<TokenBalance>>(requestRoutine, callback);
+			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator IsHolderOfContract(Action<bool> callback, string wallet, string contractAddress)
+		public IEnumerator IsHolderOfContract(Action<Result<bool>> callback, string wallet, string contractAddress)
 		{
-			var requestRoutine =
-				GetJsonCoroutine<string>(
-					$"tokens/balances?account={wallet}&token.contract={contractAddress}&balance.ne=0&select=id");
+			var url = $"tokens/balances?account={wallet}&token.contract={contractAddress}&balance.ne=0&select=id";
 
-			yield return requestRoutine;
-
-			if (requestRoutine.Current is DJsonArray dJsonArray)
-			{
-				callback?.Invoke(dJsonArray.Length > 0);
-			}
-			else
-			{
-				callback?.Invoke(false);
-			}
+			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator IsHolderOfToken(Action<bool> callback, string wallet, string contractAddress, uint tokenId)
+		public IEnumerator IsHolderOfToken(
+			Action<Result<bool>> callback,
+			string wallet,
+			string contractAddress,
+			uint tokenId)
 		{
-			var requestRoutine = GetJsonCoroutine<string>(
-				$"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id");
+			var url =
+				$"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id";
 
-			yield return requestRoutine;
-
-			if (requestRoutine.Current is DJsonArray dJsonArray)
-			{
-				callback?.Invoke(dJsonArray.Length > 0);
-			}
-			else
-			{
-				callback?.Invoke(false);
-			}
+			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetTokenMetadata(Action<JsonElement> callback, string contractAddress, uint tokenId)
+		public IEnumerator GetTokenMetadata(Action<Result<JsonElement>> callback, string contractAddress, uint tokenId)
 		{
 			var url = $"tokens?contract={contractAddress}&tokenId={tokenId}&select=metadata";
-			var requestRoutine = GetJsonCoroutine<string>(url);
-			yield return requestRoutine;
 
-			if (requestRoutine.Current is DJsonArray { Length: 1 } dJsonArray)
-			{
-				try
-				{
-					// Parse the JSON data into a strongly-typed object
-					var node = dJsonArray.First().ToString();
-
-					var tokenMetadata = JsonSerializer.Deserialize<JsonElement>(node, JsonOptions.DefaultOptions);
-					callback?.Invoke(tokenMetadata);
-				}
-				catch (JsonException e)
-				{
-					Logger.LogError("Failed to deserialize token metadata: " + e.Message);
-					callback?.Invoke(new JsonElement());
-				}
-			}
-			else
-			{
-				callback?.Invoke(new JsonElement());
-			}
+			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetContractMetadata(Action<JsonElement> callback, string contractAddress)
+		public IEnumerator GetContractMetadata(Action<Result<JsonElement>> callback, string contractAddress)
 		{
 			var url = $"accounts/{contractAddress}?legacy=false";
-			var requestRoutine = GetJsonCoroutine<string>(url);
-			yield return requestRoutine;
 
-			if (requestRoutine.Current is not DJsonObject dJsonObject)
-			{
-				yield break;
-			}
-
-			var result = JsonSerializer.Deserialize<JsonElement>(dJsonObject.ToString(), JsonOptions.DefaultOptions);
-			callback?.Invoke(result.TryGetProperty("metadata", out var metadata) ? metadata : new JsonElement());
+			yield return GetJsonCoroutine(url, callback);
 		}
 
 		public IEnumerator GetTokensForContract(
-			Action<IEnumerable<Token>> callback,
+			Action<Result<IEnumerable<Token>>> callback,
 			string contractAddress,
 			bool withMetadata,
 			long maxItems,
@@ -231,39 +165,32 @@ namespace TezosSDK.Tezos.API
 			          $"{(withMetadata ? ",metadata as token_metadata" : "")},holdersCount as holders_count,id," +
 			          $"lastTime as last_time&{sort}&limit={maxItems}";
 
-			var requestRoutine = GetJsonCoroutine<IEnumerable<Token>>(url);
-			return new CoroutineWrapper<IEnumerable<Token>>(requestRoutine, callback);
+			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetOperationStatus(Action<bool?> callback, string operationHash)
+		public IEnumerator GetOperationStatus(Action<Result<bool?>> callback, string operationHash)
 		{
 			var url = $"operations/{operationHash}/status";
-			var requestRoutine = GetJsonCoroutine<bool?>(url);
 
-			return new CoroutineWrapper<bool?>(requestRoutine, callback, error => callback.Invoke(false));
+			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetLatestBlockLevel(Action<int> callback)
+		public IEnumerator GetLatestBlockLevel(Action<Result<int>> callback)
 		{
 			var url = $"blocks/{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}/level";
-			var requestRoutine = GetJsonCoroutine<int>(url);
 
-			yield return requestRoutine;
-
-			callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
+			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetAccountCounter(Action<int> callback, string address)
+		public IEnumerator GetAccountCounter(Action<Result<int>> callback, string address)
 		{
 			var url = $"accounts/{address}/counter";
-			var requestRoutine = GetJsonCoroutine<int>(url);
-			yield return requestRoutine;
 
-			callback?.Invoke(Convert.ToInt32(requestRoutine.Current));
+			yield return GetJsonCoroutine(url, callback);
 		}
 
 		public IEnumerator GetOriginatedContractsForOwner(
-			Action<IEnumerable<TokenContract>> callback,
+			Action<Result<IEnumerable<TokenContract>>> callback,
 			string creator,
 			string codeHash,
 			long maxItems,
@@ -285,13 +212,7 @@ namespace TezosSDK.Tezos.API
 			          "select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time" +
 			          $",id&{sort}&limit={maxItems}";
 
-			var requestRoutine = GetJsonCoroutine<IEnumerable<TokenContract>>(url);
-
-			yield return new CoroutineWrapper<IEnumerable<TokenContract>>(requestRoutine, callback, error =>
-			{
-				callback.Invoke(new List<TokenContract>());
-				Logger.LogDebug($"Error during GetOriginatedContractsForOwner: {error}");
-			});
+			yield return GetJsonCoroutine(url, callback);
 		}
 	}
 

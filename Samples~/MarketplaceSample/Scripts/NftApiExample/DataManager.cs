@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using TezosSDK.Helpers.Coroutines;
+using System.Linq;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
-using TezosSDK.Tezos.API.Models.Tokens;
 using UnityEngine;
 
 namespace TezosSDK.MarketplaceSample.NftApiExample
@@ -35,30 +33,30 @@ namespace TezosSDK.MarketplaceSample.NftApiExample
 		{
 			var walletAddress = string.IsNullOrEmpty(_checkAddress) ? _connectedAddress : _checkAddress;
 
-			CoroutineRunner.Instance.StartCoroutine(_tezos.API.GetTokensForOwner(tbs =>
+			StartCoroutine(_tezos.API.GetTokensForOwner(result =>
 			{
-				if (tbs == null)
+				if (!result.Success)
 				{
-					DataReceived.Invoke($"Incorrect address - {walletAddress}");
-					Debug.Log($"Incorrect address - {walletAddress}");
+					DataReceived.Invoke(result.ErrorMessage);
+					Debug.Log(result.ErrorMessage);
 					return;
 				}
 
-				var tokens = new List<TokenBalance>(tbs);
+				var tokens = result.Data.ToList();
 
 				if (tokens.Count > 0)
 				{
-					var result = "";
+					var message = "";
 
 					foreach (var tb in tokens)
 					{
-						result += $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}" +
-						          "\r\n" + "\r\n";
+						message += $"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}" +
+						           "\r\n" + "\r\n";
 
 						Debug.Log($"{walletAddress} has {tb.Balance} tokens on contract {tb.TokenContract.Address}");
 					}
 
-					DataReceived.Invoke(result);
+					DataReceived.Invoke(message);
 				}
 				else
 				{
@@ -79,14 +77,24 @@ namespace TezosSDK.MarketplaceSample.NftApiExample
 				return;
 			}
 
-			CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfContract(flag =>
+			StartCoroutine(_tezos.API.IsHolderOfContract(result =>
 			{
-				var message = flag
-					? $"{walletAddress} is HOLDER of contract {_checkContract}"
-					: $"{walletAddress} is NOT HOLDER of contract {_checkContract}";
+				if (result.Success)
+				{
+					var flag = result.Data;
 
-				DataReceived.Invoke(message);
-				Debug.Log(message);
+					var message = flag
+						? $"{walletAddress} is HOLDER of contract {_checkContract}"
+						: $"{walletAddress} is NOT HOLDER of contract {_checkContract}";
+
+					DataReceived.Invoke(message);
+					Debug.Log(message);
+				}
+				else
+				{
+					DataReceived.Invoke(result.ErrorMessage);
+					Debug.Log(result.ErrorMessage);
+				}
 			}, walletAddress, _checkContract));
 		}
 
@@ -103,12 +111,24 @@ namespace TezosSDK.MarketplaceSample.NftApiExample
 				return;
 			}
 
-			CoroutineRunner.Instance.StartCoroutine(_tezos.API.IsHolderOfToken(flag =>
+			StartCoroutine(_tezos.API.IsHolderOfToken(result =>
 			{
-				var message = flag ? $"{walletAddress} is HOLDER of token" : $"{walletAddress} is NOT HOLDER of token";
+				if (result.Success)
+				{
+					var flag = result.Data;
 
-				DataReceived.Invoke(message);
-				Debug.Log(message);
+					var message = flag
+						? $"{walletAddress} is HOLDER of token {tokenId} on contract {_checkContract}"
+						: $"{walletAddress} is NOT HOLDER of token {tokenId} on contract {_checkContract}";
+
+					DataReceived.Invoke(message);
+					Debug.Log(message);
+				}
+				else
+				{
+					DataReceived.Invoke(result.ErrorMessage);
+					Debug.Log(result.ErrorMessage);
+				}
 			}, walletAddress, _checkContract, tokenId));
 		}
 

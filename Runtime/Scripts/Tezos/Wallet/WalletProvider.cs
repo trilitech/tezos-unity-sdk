@@ -24,9 +24,9 @@ namespace TezosSDK.Tezos.Wallet
 			EventManager.WalletConnected += OnWalletConnected;
 			EventManager.WalletDisconnected += OnWalletDisconnected;
 			EventManager.PayloadSigned += OnPayloadSigned;
-			EventManager.ContractCallInjected += OnContractCallInjected;
-			_beaconConnector = beaconConnector;
+			EventManager.OperationInjected += OnOperationInjected;
 
+			_beaconConnector = beaconConnector;
 			_beaconConnector.OperationRequested += OnOperationRequested;
 		}
 
@@ -85,7 +85,7 @@ namespace TezosSDK.Tezos.Wallet
 		{
 			Logger.LogDebug($"WalletProvider.OnOperationRequested of type: {beaconMessageType}");
 
-#if (UNITY_ANDROID || UNITY_IOS)
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 			// The wallet will already be open for the pairing request during login
 			// We should ignore this message type
 			if (beaconMessageType != BeaconMessageType.permission_request)
@@ -109,8 +109,9 @@ namespace TezosSDK.Tezos.Wallet
 			HandshakeData = null;
 		}
 
-		private void OnContractCallInjected(OperationResult transaction)
+		private void OnOperationInjected(OperationResult transaction)
 		{
+			Logger.LogDebug($"WalletProvider.OnOperationInjected: {transaction.TransactionHash}");
 			var operationHash = transaction.TransactionHash;
 
 			var tracker = new OperationTracker(operationHash, OnComplete);
@@ -123,16 +124,15 @@ namespace TezosSDK.Tezos.Wallet
 			{
 				if (isSuccess)
 				{
-					var operationResult = new OperationResult
-					{
-						TransactionHash = operationHash
-					};
+					var operationResult = new OperationResult(operationHash, transaction.Id, transaction.OperationType);
 
-					var contractCallCompletedEvent = new UnifiedEvent(WalletEventManager.EventTypeContractCallCompleted,
+					var contractCallCompletedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationCompleted,
 						JsonUtility.ToJson(operationResult));
 
-					Logger.LogDebug($"Contract call completed: {operationHash}");
-					EventManager.HandleEvent(contractCallCompletedEvent);
+					Logger.LogDebug($"Operation completed: {operationHash}");
+
+					EventManager.HandleEvent(
+						contractCallCompletedEvent); // TODO: Check if this is the correct event type, check and compare with injected event dispatching
 				}
 				else
 				{
@@ -143,7 +143,7 @@ namespace TezosSDK.Tezos.Wallet
 						Message = errorMessage
 					};
 
-					var contractCallFailedEvent = new UnifiedEvent(WalletEventManager.EventTypeContractCallFailed,
+					var contractCallFailedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationFailed,
 						JsonUtility.ToJson(errorinfo));
 
 					EventManager.HandleEvent(contractCallFailedEvent);

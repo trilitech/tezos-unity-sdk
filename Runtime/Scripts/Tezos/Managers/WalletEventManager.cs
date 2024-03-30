@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Beacon.Sdk.Beacon;
 using TezosSDK.Patterns;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
@@ -16,10 +17,10 @@ namespace TezosSDK.Tezos
 	/// </summary>
 	public class WalletEventManager : SingletonMonoBehaviour<WalletEventManager>, IWalletEventManager
 	{
-		public const string EventTypeContractCallCompleted = "ContractCallCompleted";
-		public const string EventTypeContractCallFailed = "ContractCallFailed";
-		public const string EventTypeContractCallInjected = "ContractCallInjected";
 		public const string EventTypeHandshakeReceived = "HandshakeReceived";
+		public const string EventTypeOperationCompleted = "OperationCompleted";
+		public const string EventTypeOperationFailed = "OperationFailed";
+		public const string EventTypeOperationInjected = "OperationInjected";
 		public const string EventTypePairingDone = "PairingDone";
 		public const string EventTypePayloadSigned = "PayloadSigned";
 		public const string EventTypeSDKInitialized = "SDKInitialized";
@@ -47,8 +48,8 @@ namespace TezosSDK.Tezos
 
 		private event Action<OperationResult> contractCallCompleted;
 		private event Action<ErrorInfo> contractCallFailed;
-		private event Action<OperationResult> contractCallInjected;
 		private event Action<HandshakeData> handshakeReceived;
+		private event Action<OperationResult> operationInjected;
 		private event Action<PairingDoneData> pairingCompleted;
 		private event Action<SignResult> payloadSigned;
 		private event Action sdkInitialized;
@@ -98,27 +99,6 @@ namespace TezosSDK.Tezos
 		}
 
 		/// <summary>
-		///     Runs when a call to a smart contract is sent to Tezos but before it has been included in a block and confirmed.
-		///     Provides the hash of the transaction.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="OperationResult" /> object containing the transaction hash and success status after the
-		///     contract call is injected.
-		///     It is triggered after an operation request (like a contract call) is sent successfully to the blockchain network.
-		/// </remarks>
-		public event Action<OperationResult> ContractCallInjected
-		{
-			add
-			{
-				if (contractCallInjected == null || !contractCallInjected.GetInvocationList().Contains(value))
-				{
-					contractCallInjected += value;
-				}
-			}
-			remove => contractCallInjected -= value;
-		}
-
-		/// <summary>
 		///     Runs when a handshake with a user's wallet application is received. Provides the handshake details.
 		/// </summary>
 		/// <remarks>
@@ -136,6 +116,27 @@ namespace TezosSDK.Tezos
 				}
 			}
 			remove => handshakeReceived -= value;
+		}
+
+		/// <summary>
+		///     Runs when a call to a smart contract is sent to Tezos but before it has been included in a block and confirmed.
+		///     Provides the hash of the transaction.
+		/// </summary>
+		/// <remarks>
+		///     Provides an <see cref="OperationResult" /> object containing the transaction hash and success status after the
+		///     contract call is injected.
+		///     It is triggered after an operation request (like a contract call) is sent successfully to the blockchain network.
+		/// </remarks>
+		public event Action<OperationResult> OperationInjected
+		{
+			add
+			{
+				if (operationInjected == null || !operationInjected.GetInvocationList().Contains(value))
+				{
+					operationInjected += value;
+				}
+			}
+			remove => operationInjected -= value;
 		}
 
 		/// <summary>
@@ -301,13 +302,13 @@ namespace TezosSDK.Tezos
 					case EventTypeWalletDisconnected:
 						HandleEvent(eventData.GetData(), walletDisconnected);
 						break;
-					case EventTypeContractCallInjected:
-						HandleEvent(eventData.GetData(), contractCallInjected);
+					case EventTypeOperationInjected:
+						HandleEvent(eventData.GetData(), operationInjected);
 						break;
-					case EventTypeContractCallCompleted:
+					case EventTypeOperationCompleted:
 						HandleEvent(eventData.GetData(), contractCallCompleted);
 						break;
-					case EventTypeContractCallFailed:
+					case EventTypeOperationFailed:
 						HandleEvent(eventData.GetData(), contractCallFailed);
 						break;
 					case EventTypePayloadSigned:
@@ -414,6 +415,23 @@ namespace TezosSDK.Tezos
 		///     The hash of the transaction associated with the operation.
 		/// </summary>
 		public string TransactionHash;
+
+		/// <summary>
+		///     The ID of the operation.
+		/// </summary>
+		public string Id;
+
+		/// <summary>
+		///     The type of operation.
+		/// </summary>
+		public BeaconMessageType OperationType;
+
+		public OperationResult(string transactionHash, string id, BeaconMessageType operationType)
+		{
+			TransactionHash = transactionHash;
+			Id = id;
+			OperationType = operationType;
+		}
 	}
 
 	/// <summary>

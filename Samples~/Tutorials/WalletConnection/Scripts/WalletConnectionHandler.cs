@@ -1,6 +1,7 @@
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tutorials.WalletConnection
 {
@@ -29,9 +30,19 @@ namespace TezosSDK.Tutorials.WalletConnection
 
 		private void OnWalletConnected(WalletInfo _)
 		{
-			// OnBalanceFetched will be called when the balance is fetched
-			var routine = TezosManager.Instance.Tezos.GetCurrentWalletBalance(OnBalanceFetched);
-			StartCoroutine(routine);
+			StartCoroutine(TezosManager.Instance.Tezos.GetCurrentWalletBalance(result =>
+			{
+				if (result.Success)
+				{
+					// Handle the successful retrieval of the wallet balance
+					OnBalanceFetched(result.Data);
+				}
+				else
+				{
+					// Handle the error case, update UI or log error
+					Logger.LogError(result.ErrorMessage);
+				}
+			}));
 		}
 
 		private void OnWalletDisconnected(WalletInfo _)

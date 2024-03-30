@@ -44,7 +44,8 @@ namespace TezosSDK.Helpers.Extensions
 		{
 			return $"{nameof(OperationRequest)} {{ " + $"Network = {request.Network}, " +
 			       $"OperationDetails = {request.OperationDetails.Print()}, " +
-			       $"SourceAddress = {request.SourceAddress} }}";
+			       $"SourceAddress = {request.SourceAddress} }}, " + $"ID = {request.Id}, " +
+			       $"SenderID = {request.SenderId}";
 		}
 
 		private static string Print(this List<TezosBaseOperation> operations)

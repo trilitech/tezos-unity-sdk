@@ -68,22 +68,32 @@ namespace TezosSDK.Helpers.HttpClients
 
 			if (request.result != UnityWebRequest.Result.Success)
 			{
+				Logger.LogError($"Request failed with error: {request.error}");
 				callback?.Invoke(new Result<T>(request.error));
-			}
-			else if (string.IsNullOrWhiteSpace(request.downloadHandler.text))
-			{
-				callback?.Invoke(new Result<T>("No data or empty JSON received."));
 			}
 			else
 			{
-				try
+				var downloadHandlerText = request.downloadHandler.text;
+
+				if (string.IsNullOrWhiteSpace(downloadHandlerText))
 				{
-					result = DeserializeJson<T>(request.downloadHandler.text);
-					callback?.Invoke(new Result<T>(result));
+					var msg =
+						$"Request: {request.url} - Status code: {request.responseCode} - Error: {request.error} - Response: {downloadHandlerText}";
+
+					Logger.LogError(msg);
+					callback?.Invoke(new Result<T>(msg));
 				}
-				catch (Exception ex)
+				else
 				{
-					callback?.Invoke(new Result<T>(ex.Message));
+					try
+					{
+						result = DeserializeJson<T>(downloadHandlerText);
+						callback?.Invoke(new Result<T>(result));
+					}
+					catch (Exception ex)
+					{
+						callback?.Invoke(new Result<T>(ex.Message));
+					}
 				}
 			}
 		}
@@ -91,15 +101,13 @@ namespace TezosSDK.Helpers.HttpClients
 		protected IEnumerator GetJsonCoroutine<T>(string path, Action<Result<T>> callback = null)
 		{
 			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
-			Logger.LogDebug($"Request: {request.url}");
 			yield return request.SendWebRequest();
 
-			T result;
-			HandleResponse(request, callback, out result);
-			yield return result; // Yield the result now instead of yielding control to another coroutine
+			HandleResponse(request, callback, out var result);
+			yield return result;
 		}
 
-		protected IEnumerator PostJsonCoroutine<T>(string path, object data, Action<Result<T>> callback = null)
+		protected IEnumerator PostJsonCoroutine<T>(string path, object data, Action<Result<T>> callback)
 		{
 			var serializedData = JsonSerializer.Serialize(data, JsonOptions.DefaultOptions);
 			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbPOST, path);
@@ -107,15 +115,13 @@ namespace TezosSDK.Helpers.HttpClients
 			request.SetRequestHeader(HttpHeaders.ContentType.Key, HttpHeaders.ContentType.Value);
 			yield return request.SendWebRequest();
 
-			T result;
-			HandleResponse(request, callback, out result);
-			yield return result; // Yield the result now instead of yielding control to another coroutine
+			HandleResponse(request, callback, out var result);
+			yield return result;
 		}
 
 		private UnityWebRequest GetUnityWebRequest(string method, string path)
 		{
 			var request = new UnityWebRequest($"{BaseAddress}{path}", method);
-			Logger.LogDebug($"Preparing {method} request to {request.url}");
 			request.downloadHandler = new DownloadHandlerBuffer();
 			request.SetRequestHeader(HttpHeaders.Accept.Key, HttpHeaders.Accept.Value);
 			request.SetRequestHeader(HttpHeaders.UserAgent.Key, HttpHeaders.UserAgent.Value);

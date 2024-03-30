@@ -57,7 +57,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 			DisplayPopup($"Transaction failed, error: {errorInfo.Message}");
 		}
 
-		private void OnContractCallInjected(OperationResult operationResult)
+		private void OnOperationInjected(OperationResult operationResult)
 		{
 			if (!string.IsNullOrEmpty(operationResult.TransactionHash))
 			{
@@ -244,7 +244,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 			_manager.GetWalletMessageReceiver().WalletDisconnected += OnWalletDisconnected;
 			_manager.GetWalletMessageReceiver().ContractCallCompleted += OnContractCallCompleted;
 			_manager.GetWalletMessageReceiver().ContractCallFailed += OnContractCallFailed;
-			_manager.GetWalletMessageReceiver().ContractCallInjected += OnContractCallInjected;
+			_manager.GetWalletMessageReceiver().OperationInjected += OnOperationInjected;
 			_manager.GetWalletMessageReceiver().PayloadSigned += OnPayloadSigned;
 		}
 

@@ -40,10 +40,10 @@ namespace TezosSDK.Tezos.Wallet
 		/// </summary>
 		/// <remarks>
 		///     Provides an <see cref="OperationResult" /> object containing the transaction hash and success status after the
-		///     contract call is injected.
+		///     operation is injected.
 		///     It is triggered after an operation request (like a contract call) is sent successfully to the blockchain network.
 		/// </remarks>
-		event Action<OperationResult> ContractCallInjected;
+		event Action<OperationResult> OperationInjected;
 
 		/// <summary>
 		///     Runs when a handshake with a user's wallet application is received. Provides the handshake details.

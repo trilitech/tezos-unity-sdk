@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -18,7 +19,7 @@ namespace TezosSDK.Tezos
 		/// <param name="callback">callback action that runs with the float balance is fetched</param>
 		/// <param name="address">tz address</param>
 		/// <returns></returns>
-		public IEnumerator GetTezosBalance(Action<ulong> callback, string address);
+		IEnumerator GetTezosBalance(Action<Result<ulong>> callback, string address);
 
 		/// <summary>
 		///     An IEnumerator for reading data from a contract view
@@ -33,11 +34,11 @@ namespace TezosSDK.Tezos
 			string contractAddress,
 			string entrypoint,
 			string input,
-			Action<JsonElement> callback);
+			Action<Result<JsonElement>> callback);
 
 		// Gets all tokens currently owned by a given address.
 		public IEnumerator GetTokensForOwner(
-			Action<IEnumerable<TokenBalance>> callback,
+			Action<Result<IEnumerable<TokenBalance>>> callback,
 			string owner,
 			bool withMetadata,
 			long maxItems,
@@ -45,7 +46,7 @@ namespace TezosSDK.Tezos
 
 		// Get the owner(s) for a token.
 		public IEnumerator GetOwnersForToken(
-			Action<IEnumerable<TokenBalance>> callback,
+			Action<Result<IEnumerable<TokenBalance>>> callback,
 			string contractAddress,
 			uint tokenId,
 			long maxItems,
@@ -53,43 +54,47 @@ namespace TezosSDK.Tezos
 
 		// Gets all owners for a given token contract.
 		public IEnumerator GetOwnersForContract(
-			Action<IEnumerable<TokenBalance>> callback,
+			Action<Result<IEnumerable<TokenBalance>>> callback,
 			string contractAddress,
 			long maxItems,
 			OwnersForContractOrder orderBy);
 
 		// Checks whether a wallet holds a token in a given contract.
-		public IEnumerator IsHolderOfContract(Action<bool> callback, string wallet, string contractAddress);
+		public IEnumerator IsHolderOfContract(Action<Result<bool>> callback, string wallet, string contractAddress);
 
 		// Checks whether a wallet holds a particular token.
-		public IEnumerator IsHolderOfToken(Action<bool> callback, string wallet, string contractAddress, uint tokenId);
+		public IEnumerator IsHolderOfToken(
+			Action<Result<bool>> callback,
+			string wallet,
+			string contractAddress,
+			uint tokenId);
 
 		// Gets the metadata associated with a given token.
-		public IEnumerator GetTokenMetadata(Action<JsonElement> callback, string contractAddress, uint tokenId);
+		public IEnumerator GetTokenMetadata(Action<Result<JsonElement>> callback, string contractAddress, uint tokenId);
 
 		// Queries token high-level collection/contract level information.
-		public IEnumerator GetContractMetadata(Action<JsonElement> callback, string contractAddress);
+		public IEnumerator GetContractMetadata(Action<Result<JsonElement>> callback, string contractAddress);
 
 		// Gets all tokens for a given token contract.
 		public IEnumerator GetTokensForContract(
-			Action<IEnumerable<Token>> callback,
+			Action<Result<IEnumerable<Token>>> callback,
 			string contractAddress,
 			bool withMetadata,
 			long maxItems,
 			TokensForContractOrder orderBy);
 
 		// Returns operation status: true if applied, false if failed, null (or HTTP 204) if doesn't exist.
-		public IEnumerator GetOperationStatus(Action<bool?> callback, string operationHash);
+		public IEnumerator GetOperationStatus(Action<Result<bool?>> callback, string operationHash);
 
 		// Returns a level of the block closest to the current timestamp.
-		public IEnumerator GetLatestBlockLevel(Action<int> callback);
+		public IEnumerator GetLatestBlockLevel(Action<Result<int>> callback);
 
 		// Get account's counter.
-		public IEnumerator GetAccountCounter(Action<int> callback, string address);
+		public IEnumerator GetAccountCounter(Action<Result<int>> callback, string address);
 
 		// Get list of originated contracts by creator
 		public IEnumerator GetOriginatedContractsForOwner(
-			Action<IEnumerable<TokenContract>> callback,
+			Action<Result<IEnumerable<TokenContract>>> callback,
 			string creator,
 			string codeHash,
 			long maxItems,
