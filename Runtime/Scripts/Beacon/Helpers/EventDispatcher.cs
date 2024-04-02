@@ -89,7 +89,7 @@ namespace TezosSDK.Beacon
 
 		public void DispatchOperationInjectedEvent(OperationResponse operationResponse)
 		{
-			var operationResult = new OperationResult(operationResponse.TransactionHash, operationResponse.Id,
+			var operationResult = new OperationInfo(operationResponse.TransactionHash, operationResponse.Id,
 				operationResponse.Type);
 
 			var unifiedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationInjected,

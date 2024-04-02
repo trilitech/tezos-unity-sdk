@@ -109,13 +109,21 @@ namespace TezosSDK.Tezos.Wallet
 			HandshakeData = null;
 		}
 
-		private void OnOperationInjected(OperationResult transaction)
+		/// <summary>
+		///     An operation has been injected into the network (i.e. the transaction has been sent to the network).
+		///     Raised when an operation is injected into the network and the operation hash is received. (By the IBeaconConnector
+		///     implementation)
+		/// </summary>
+		/// <param name="transaction"></param>
+		private void OnOperationInjected(OperationInfo transaction)
 		{
-			Logger.LogDebug($"WalletProvider.OnOperationInjected: {transaction.TransactionHash}");
+			StartTrackingOperation(transaction);
+		}
+
+		private void StartTrackingOperation(OperationInfo transaction)
+		{
 			var operationHash = transaction.TransactionHash;
-
 			var tracker = new OperationTracker(operationHash, OnComplete);
-
 			tracker.BeginTracking();
 			return;
 
@@ -124,29 +132,26 @@ namespace TezosSDK.Tezos.Wallet
 			{
 				if (isSuccess)
 				{
-					var operationResult = new OperationResult(operationHash, transaction.Id, transaction.OperationType);
+					var operationResult = new OperationInfo(operationHash, transaction.Id, transaction.OperationType);
 
-					var contractCallCompletedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationCompleted,
+					var completedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationCompleted,
 						JsonUtility.ToJson(operationResult));
 
 					Logger.LogDebug($"Operation completed: {operationHash}");
 
-					EventManager.HandleEvent(
-						contractCallCompletedEvent); // TODO: Check if this is the correct event type, check and compare with injected event dispatching
+					EventManager.HandleEvent(completedEvent);
 				}
 				else
 				{
-					Logger.LogError($"Contract call failed: {errorMessage}");
+					Logger.LogError($"Operation failed: {errorMessage}");
 
-					var errorinfo = new ErrorInfo
-					{
-						Message = errorMessage
-					};
+					var errorinfo = new OperationInfo(operationHash, transaction.Id, transaction.OperationType,
+						errorMessage);
 
-					var contractCallFailedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationFailed,
+					var failEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationFailed,
 						JsonUtility.ToJson(errorinfo));
 
-					EventManager.HandleEvent(contractCallFailedEvent);
+					EventManager.HandleEvent(failEvent);
 				}
 			}
 		}

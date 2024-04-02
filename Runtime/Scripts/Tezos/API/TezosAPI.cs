@@ -168,7 +168,7 @@ namespace TezosSDK.Tezos.API
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetOperationStatus(Action<Result<bool?>> callback, string operationHash)
+		public IEnumerator GetOperationStatus(Action<Result<bool>> callback, string operationHash)
 		{
 			var url = $"operations/{operationHash}/status";
 

@@ -76,7 +76,7 @@ namespace TezosSDK.Tezos.API
 						token_id = tokenId.ToString()
 					}).ToJson();
 
-					_wallet.EventManager.ContractCallCompleted += MintCompleted; // TODO: This is not removed FIX IT
+					_wallet.EventManager.OperationCompleted += MintCompleted; // TODO: This is not removed FIX IT
 					_wallet.CallContract(Address, _entrypoint, mintParameters);
 				}
 				else
@@ -109,7 +109,7 @@ namespace TezosSDK.Tezos.API
 				}
 			}).ToJson();
 
-			_wallet.EventManager.ContractCallCompleted += TransferCompleted;
+			_wallet.EventManager.OperationCompleted += TransferCompleted;
 			_wallet.CallContract(Address, _entry_point, param);
 		}
 
@@ -122,14 +122,14 @@ namespace TezosSDK.Tezos.API
 			var address = _wallet.GetWalletAddress();
 			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
-			_wallet.EventManager.ContractCallCompleted += DeployCompleted; // TODO: This is not removed FIX IT
+			_wallet.EventManager.OperationCompleted += DeployCompleted; // TODO: This is not removed FIX IT
 
 			_wallet.OriginateContract(scriptWithAdmin);
 		}
 
-		private void MintCompleted(OperationResult operationResult)
+		private void MintCompleted(OperationInfo operationInfo)
 		{
-			_wallet.EventManager.ContractCallCompleted -= MintCompleted; // TODO: This is not removed FIX IT
+			_wallet.EventManager.OperationCompleted -= MintCompleted; // TODO: This is not removed FIX IT
 
 			var owner = _wallet.GetWalletAddress();
 
@@ -151,16 +151,16 @@ namespace TezosSDK.Tezos.API
 			}
 		}
 
-		private void TransferCompleted(OperationResult operationResult)
+		private void TransferCompleted(OperationInfo operationInfo)
 		{
-			var transactionHash = operationResult.TransactionHash;
+			var transactionHash = operationInfo.TransactionHash;
 			_onTransferCompleted.Invoke(transactionHash);
 		}
 
-		private void DeployCompleted(OperationResult operationResult)
+		private void DeployCompleted(OperationInfo operationInfo)
 		{
 			Logger.LogDebug("Deploy completed");
-			_wallet.EventManager.ContractCallCompleted -= DeployCompleted; // TODO: This is not removed FIX IT
+			_wallet.EventManager.OperationCompleted -= DeployCompleted; // TODO: This is not removed FIX IT
 
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 			var creator = _wallet.GetWalletAddress();

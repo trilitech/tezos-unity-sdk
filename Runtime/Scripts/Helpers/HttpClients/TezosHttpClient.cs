@@ -75,25 +75,14 @@ namespace TezosSDK.Helpers.HttpClients
 			{
 				var downloadHandlerText = request.downloadHandler.text;
 
-				if (string.IsNullOrWhiteSpace(downloadHandlerText))
+				try
 				{
-					var msg =
-						$"Request: {request.url} - Status code: {request.responseCode} - Error: {request.error} - Response: {downloadHandlerText}";
-
-					Logger.LogError(msg);
-					callback?.Invoke(new Result<T>(msg));
+					result = DeserializeJson<T>(downloadHandlerText);
+					callback?.Invoke(new Result<T>(result));
 				}
-				else
+				catch (Exception ex)
 				{
-					try
-					{
-						result = DeserializeJson<T>(downloadHandlerText);
-						callback?.Invoke(new Result<T>(result));
-					}
-					catch (Exception ex)
-					{
-						callback?.Invoke(new Result<T>(ex.Message));
-					}
+					callback?.Invoke(new Result<T>(ex.Message));
 				}
 			}
 		}

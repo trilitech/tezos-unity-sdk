@@ -84,7 +84,7 @@ namespace TezosSDK.Tezos
 			TokensForContractOrder orderBy);
 
 		// Returns operation status: true if applied, false if failed, null (or HTTP 204) if doesn't exist.
-		public IEnumerator GetOperationStatus(Action<Result<bool?>> callback, string operationHash);
+		public IEnumerator GetOperationStatus(Action<Result<bool>> callback, string operationHash);
 
 		// Returns a level of the block closest to the current timestamp.
 		public IEnumerator GetLatestBlockLevel(Action<Result<int>> callback);
