@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [3.0.1] - 2024-04-08
+### Added
+- `OnWalletDisconnected` event handling in `TezosAuthenticator`.
+
+### Fixed
+- Handling of `SDKInitialized` event in `BeaconConnectorWebGl`.
+- WebGL persistent auth for Beacon wallet provider.
+
+### Changed
+- `TokenMetadata` type to `JsonElement` to be able to handle generic metadata.
+
+### Removed
+- Dark background UI element in `TezosAuthenticator` prefab.
+
+
 ## [3.0.0] - 2023-01-09
 ### Added
 - Tutorial scenes within the `Tutorials` folder, offering step-by-step guidance on SDK features.
@@ -204,7 +220,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added auto releases with GH actions
 
 
-[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/3.0.0...HEAD
+[unreleased]: https://github.com/trilitech/tezos-unity-sdk/compare/3.0.1...HEAD
+[3.0.1]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/3.0.1
 [3.0.0]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/3.0.0
 [2.0.7]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.7
 [2.0.6]: https://github.com/trilitech/tezos-unity-sdk/releases/tag/2.0.6

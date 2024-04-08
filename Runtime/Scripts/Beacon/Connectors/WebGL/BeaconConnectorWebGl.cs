@@ -1,5 +1,7 @@
-using System;
+#if UNITY_WEBGL
 using System.Runtime.InteropServices;
+#endif
+using System;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Helpers;
