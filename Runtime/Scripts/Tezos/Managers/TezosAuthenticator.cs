@@ -43,18 +43,18 @@ namespace TezosSDK.Tezos
 			}
 		}
 
-		private void Update()
-		{
-			if (Input.GetKeyDown(KeyCode.Return))
-			{
-				Tezos.Wallet.Connect(WalletProviderType.beacon);
-			}
-
-			if (Input.GetKeyDown(KeyCode.Escape))
-			{
-				Tezos.Wallet.Disconnect();
-			}
-		}
+		// private void Update()
+		// {
+		// 	if (Input.GetKeyDown(KeyCode.Return))
+		// 	{
+		// 		Tezos.Wallet.Connect(WalletProviderType.beacon);
+		// 	}
+		//
+		// 	if (Input.GetKeyDown(KeyCode.Escape))
+		// 	{
+		// 		Tezos.Wallet.Disconnect();
+		// 	}
+		// }
 
 		private void OnEnable()
 		{
