@@ -70,6 +70,8 @@ window.UnityReadyEvent = UnityReadyEvent;
 async function UnityReadyEvent() {
 
     console.log("UnityReadyEvent");
+    if (window.UnityReadyCallback)
+        window.UnityReadyCallback();
 
     const dappName = localStorage.getItem("dappName");
     const dappUrl = localStorage.getItem("dappUrl");
@@ -140,5 +142,7 @@ declare global {
         InitBase64Uploader(config: BaseUploaderConfig): void;
 
         FileUploader: BaseFileUploaderType | null;
+        
+        UnityReadyCallback(): void | null;
     }
 }
