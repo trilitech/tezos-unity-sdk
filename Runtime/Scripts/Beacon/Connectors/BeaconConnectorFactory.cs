@@ -12,7 +12,7 @@ namespace TezosSDK.Beacon
 			switch (platform)
 			{
 				case RuntimePlatform.WebGLPlayer:
-					return new BeaconConnectorWebGl();
+					return new BeaconConnectorWebGl(eventManager);
 				case RuntimePlatform.IPhonePlayer:
 				case RuntimePlatform.Android:
 				case RuntimePlatform.WindowsPlayer:

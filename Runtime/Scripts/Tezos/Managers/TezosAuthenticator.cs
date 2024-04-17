@@ -12,7 +12,6 @@ namespace TezosSDK.Tezos
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
-		[SerializeField] private Image darkBG;
 
 		// Platform flags to determine the current running platform
 		private bool _isMobile;
@@ -44,18 +43,18 @@ namespace TezosSDK.Tezos
 			}
 		}
 
-		private void Update()
-		{
-			if (Input.GetKeyDown(KeyCode.Return))
-			{
-				Tezos.Wallet.Connect(WalletProviderType.beacon);
-			}
-
-			if (Input.GetKeyDown(KeyCode.Escape))
-			{
-				Tezos.Wallet.Disconnect();
-			}
-		}
+		// private void Update()
+		// {
+		// 	if (Input.GetKeyDown(KeyCode.Return))
+		// 	{
+		// 		Tezos.Wallet.Connect(WalletProviderType.beacon);
+		// 	}
+		//
+		// 	if (Input.GetKeyDown(KeyCode.Escape))
+		// 	{
+		// 		Tezos.Wallet.Disconnect();
+		// 	}
+		// }
 
 		private void OnEnable()
 		{
@@ -92,6 +91,12 @@ namespace TezosSDK.Tezos
 			ToggleUIElements(true);
 		}
 
+		private void OnWalletDisconnected(WalletInfo walletInfo)
+		{
+			Logger.LogDebug("TezosAuthenticator.OnWalletDisconnected");
+			ToggleUIElements(false);
+		}
+
 		public void ConnectByDeeplink()
 		{
 			Logger.LogDebug("TezosAuthenticator.ConnectByDeeplink");
@@ -122,6 +127,7 @@ namespace TezosSDK.Tezos
 			// Subscribe to wallet events for handling user authentication.
 			Tezos.Wallet.EventManager.HandshakeReceived += OnHandshakeReceived;
 			Tezos.Wallet.EventManager.WalletConnected += OnWalletConnected;
+			Tezos.Wallet.EventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
 		/// <summary>
@@ -137,7 +143,6 @@ namespace TezosSDK.Tezos
 				deepLinkButton.SetActive(false);
 				socialLoginButton.SetActive(false);
 				qrCodeGenerator.gameObject.SetActive(false);
-				darkBG.gameObject.SetActive(false);
 			}
 			else
 			{
@@ -149,8 +154,6 @@ namespace TezosSDK.Tezos
 
 				// Activate qrCodePanel only on standalone and not authenticated
 				qrCodeGenerator.gameObject.SetActive(!_isMobile && !_isWebGL);
-
-				darkBG.gameObject.SetActive(true);
 			}
 
 			logoutButton.SetActive(isAuthenticated);
@@ -161,6 +164,7 @@ namespace TezosSDK.Tezos
 			Logger.LogDebug("TezosAuthenticator.UnsubscribeFromEvents");
 			TezosManager.Instance.Wallet.EventManager.HandshakeReceived -= OnHandshakeReceived;
 			TezosManager.Instance.Wallet.EventManager.WalletConnected -= OnWalletConnected;
+			TezosManager.Instance.Wallet.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 	}
 
