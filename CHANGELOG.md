@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+### Changed
+- Refactored asynchronous callbacks throughout the SDK to use the `Result<T>` pattern for improved error handling and clarity.
+- Simplified HTTP request logic for better efficiency and readability, including updates to `TezosHttpClient` to utilize coroutine callbacks.
+- Improved operation tracking in `OperationTracker` and `WalletProvider` to improve blockchain operation tracking and error reporting mechanisms.
+- Updated event naming and handling to improve clarity and streamline the event handling process, renaming events such as `ContractCallInjected` to `OperationInjected` and using generic events like `OperationCompleted` in `WalletEventManager`.
+
+### Fixed
+- Addressed a memory leak in `TokenContract` where event handlers were not being properly unsubscribed.
+
+### Removed
+- Outdated debug logs to clean up codebase and improve maintainability.
+
+### Documentation
+- Updated comments to reflect new callback signatures and their behaviors as well as the use of the `Result<T>` pattern.
+
+
 ## [3.0.0] - 2023-01-09
 ### Added
 - Tutorial scenes within the `Tutorials` folder, offering step-by-step guidance on SDK features.
