@@ -54,8 +54,11 @@ namespace TezosSDK.Tezos
 			{
 				Logger.LogInfo("Found deployed contract address in player prefs: " + address);
 			}
-			
-			if (TokenContract != null) return;
+
+			if (TokenContract != null)
+			{
+				return;
+			}
 
 			TokenContract = !string.IsNullOrEmpty(address)
 				// if there is a contract address in the player prefs, use it
