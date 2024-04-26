@@ -5,11 +5,11 @@
   <h1>Tezos Unity SDK</h1>
 
   <p>
-    <strong>Tezos SDK for Unity</strong>
+    <strong>Tezos Unity SDK</strong>
   </p>
 
   <p>
-    <a href="https://opentezos.com/gaming/unity-sdk/"><img alt="Intro" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
+    <a href="https://docs.tezos.com/unity"><img alt="Intro" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
     <a href="https://github.com/trilitech/tezos-unity-sdk/issues"><img alt="Issues" src="https://img.shields.io/github/issues/trilitech/tezos-unity-sdk?color=blueviolet" /></a>
     <a href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/github/license/trilitech/tezos-unity-sdk?color=blueviolet" /></a>
   </p>
@@ -19,21 +19,21 @@
 
 ***
 
-> [Documentation](https://docs.tezos.com) • [GitHub](https://github.com/trilitech/tezos-unity-sdk/) • [Discord](https://discord.com/tezos) • [Contact Us](https://discord.com/tezos)
+> [Documentation](https://docs.tezos.com/unity/) • [GitHub](https://github.com/trilitech/tezos-unity-sdk/) • [Discord](https://discord.com/tezos) • [Contact Us](https://discord.com/tezos)
 
 ***
 
 ## Seamlessly Integrate Web3 Features Into Your Games
 
 
-Unlock the power of the Tezos blockchain in your Unity games with the Tezos SDK for Unity, the easy-to-use toolkit designed specifically for game developers with little to no blockchain experience. With this SDK, you can effortlessly integrate decentralized features, NFTs, and even custom cryptocurrencies into your games to make great games even better.
+Unlock the power of the Tezos blockchain in your Unity games with the Tezos Unity SDK, the easy-to-use toolkit designed specifically for game developers with little to no blockchain experience. With this SDK, you can effortlessly integrate decentralized features, NFTs, and even custom cryptocurrencies into your games to make great games even better.
 
 
 ## Key Features
 
 ### 💰 Grants for Top Games
 
-[The Tezos Foundation offers grants ](https://tezos.foundation/grants/)and support for top games utilizing the Tezos SDK for Unity. Take this opportunity to bring your game to life and receive the backing you need to succeed.
+[The Tezos Foundation offers grants ](https://tezos.foundation/grants/)and support for top games utilizing the Tezos Unity SDK. Take this opportunity to bring your game to life and receive the backing you need to succeed.
 
 
 ### 🎮 Connect to Tezos Wallets
@@ -71,4 +71,4 @@ Leverage the energy efficiency, low transaction fees, decentralized governance, 
 > * [Join our Discord](https://discord.com/invite/yXaPy6s5Nr)
 
 
-### 📝 Read the [documentation.](https://opentezos.com/gaming/unity-sdk/)
+### 📝 Read the [documentation.](https://docs.tezos.com/unity)

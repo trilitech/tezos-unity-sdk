@@ -22,6 +22,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated comments to reflect new callback signatures and their behaviors as well as the use of the `Result<T>` pattern.
 
 
+
+## [3.0.1] - 2024-04-08
+### Added
+- `OnWalletDisconnected` event handling in `TezosAuthenticator`.
+
+### Fixed
+- Handling of `SDKInitialized` event in `BeaconConnectorWebGl`.
+- WebGL persistent auth for Beacon wallet provider.
+
+### Changed
+- `TokenMetadata` type to `JsonElement` to be able to handle generic metadata.
+
+### Removed
+- Dark background UI element in `TezosAuthenticator` prefab.
+
+
 ## [3.0.0] - 2023-01-09
 ### Added
 - Tutorial scenes within the `Tutorials` folder, offering step-by-step guidance on SDK features.
