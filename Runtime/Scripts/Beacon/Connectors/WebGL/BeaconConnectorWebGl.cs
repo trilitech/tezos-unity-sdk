@@ -19,6 +19,7 @@ namespace TezosSDK.Beacon
 		{
 			walletEventManager.SDKInitialized += UnityReady;
 		}
+
 		public event Action<BeaconMessageType> OperationRequested;
 
 		public void ConnectWallet(WalletProviderType? walletProviderType)
@@ -73,10 +74,12 @@ namespace TezosSDK.Beacon
 			OperationRequested?.Invoke(BeaconMessageType.operation_request);
 		}
 
-		private void UnityReady() => JsUnityReadyEvent();
+		private void UnityReady()
+		{
+			JsUnityReadyEvent();
+		}
 
 #if UNITY_WEBGL
-
 		[DllImport("__Internal")]
 		private static extern void JsInitWallet(string network, string rpc, string walletProvider, string appName, string appUrl, string iconUrl);
 

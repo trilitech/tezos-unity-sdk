@@ -43,13 +43,12 @@ namespace TezosSDK.Beacon
 		/// <param name="eventData"></param>
 		private void DispatchEvent(UnifiedEvent eventData)
 		{
-			Logger.Log("Dispatching event");
+			Logger.Log($"Dispatching event: {eventData.GetEventType()}");
 			UnityMainThreadDispatcher.Enqueue(() => _eventManager.HandleEvent(eventData));
 		}
 
 		public void DispatchWalletConnectedEvent(DappBeaconClient beaconDappClient)
 		{
-			Logger.Log("Dispatching WalletConnectedEvent");
 			var accountConnectedEvent = CreateWalletConnectedEvent(beaconDappClient.GetActiveAccount());
 			DispatchEvent(accountConnectedEvent);
 		}
@@ -88,17 +87,15 @@ namespace TezosSDK.Beacon
 			DispatchEvent(pairingDoneEvent);
 		}
 
-		public void DispatchContractCallInjectedEvent(OperationResponse operationResponse)
+		public void DispatchOperationInjectedEvent(OperationResponse operationResponse)
 		{
-			var operationResult = new OperationResult
-			{
-				TransactionHash = operationResponse.TransactionHash
-			};
+			var operationResult = new OperationInfo(operationResponse.TransactionHash, operationResponse.Id,
+				operationResponse.Type);
 
-			var contractEvent = new UnifiedEvent(WalletEventManager.EventTypeContractCallInjected,
+			var unifiedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationInjected,
 				JsonUtility.ToJson(operationResult));
 
-			DispatchEvent(contractEvent);
+			DispatchEvent(unifiedEvent);
 		}
 
 		public void DispatchPayloadSignedEvent(SignPayloadResponse signPayloadResponse)

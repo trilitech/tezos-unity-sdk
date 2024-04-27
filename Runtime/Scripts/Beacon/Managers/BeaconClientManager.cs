@@ -96,8 +96,7 @@ namespace TezosSDK.Beacon
 				return false;
 			}
 
-			Logger.LogInfo("We already have connection with wallet:");
-			Logger.LogInfo(activeAccountPermissions.Print());
+			Logger.LogInfo("We already have connection with wallet: " + activeAccountPermissions.Print());
 			return true;
 		}
 
@@ -163,7 +162,7 @@ namespace TezosSDK.Beacon
 				return;
 			}
 
-			Logger.LogDebug($"Received message of type: {e.Request?.Type}");
+			Logger.LogDebug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
 
 			if (e.PairingDone)
 			{
@@ -210,7 +209,11 @@ namespace TezosSDK.Beacon
 		/// </summary>
 		/// <param name="operationResponse">The operation response message to handle.</param>
 		/// <remarks>
-		///     Dispatches a contract call injected event on the main (UI) thread.
+		///     We only get beacon messages for operations that were injected.
+		///     To confirm completion, we need to track the operation hash using
+		///     <see cref="TezosSDK.Tezos.Wallet.OperationTracker" />
+		///     and then dispatch <see cref="WalletEventManager.EventTypeOperationCompleted" /> or
+		///     <see cref="WalletEventManager.EventTypeOperationFailed" /> or any other event as needed.
 		/// </remarks>
 		private void HandleOperationResponse(OperationResponse operationResponse)
 		{
@@ -219,17 +222,13 @@ namespace TezosSDK.Beacon
 				return;
 			}
 
-			Logger.LogDebug($"Received operation response with hash {operationResponse.TransactionHash}");
-			_eventDispatcher.DispatchContractCallInjectedEvent(operationResponse);
+			_eventDispatcher.DispatchOperationInjectedEvent(operationResponse);
 		}
 
 		/// <summary>
 		///     Asynchronously handles a sign payload response message.
 		/// </summary>
 		/// <param name="signPayloadResponse">The sign payload response message to handle.</param>
-		/// <remarks>
-		///     Checks sender permissions and dispatches a payload signed event on the main (UI) thread.
-		/// </remarks>
 		private async Task HandleSignPayloadResponse(SignPayloadResponse signPayloadResponse)
 		{
 			if (signPayloadResponse == null)

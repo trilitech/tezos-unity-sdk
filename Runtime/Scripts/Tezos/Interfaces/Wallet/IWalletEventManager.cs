@@ -16,34 +16,32 @@ namespace TezosSDK.Tezos.Wallet
 		void HandleEvent(UnifiedEvent unifiedEvent);
 
 		/// <summary>
-		///     Runs when a call to a smart contract is confirmed on the blockchain. Provides the result of the call.
+		///     Runs when an operation is successfully completed. Provides the operation information.
 		/// </summary>
 		/// <remarks>
-		///     Provides an <see cref="OperationResult" /> object with the transaction hash and success status.
-		///     This event is fired when a blockchain operation completes and has been injected into the blockchain.
-		///     The result includes the transaction hash and an indication of whether it was successful.
+		///     Provides an <see cref="OperationInfo" /> object with the transaction hash and an ID.
 		/// </remarks>
-		event Action<OperationResult> ContractCallCompleted;
+		event Action<OperationInfo> OperationCompleted;
 
 		/// <summary>
-		///     Runs when a call to a smart contract fails. Provides error details.
+		///     Runs when an operation fails.
 		/// </summary>
 		/// <remarks>
-		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed contract call.
-		///     It is triggered when a contract call attempted by the wallet encounters an error.
+		///     Provides an <see cref="OperationInfo" /> object containing the error message of the failed operation.
+		///     It is triggered when an attempt to perform an operation on the blockchain fails.
 		/// </remarks>
-		event Action<ErrorInfo> ContractCallFailed;
+		event Action<OperationInfo> OperationFailed;
 
 		/// <summary>
 		///     Runs when a call to a smart contract is sent to Tezos but before it has been included in a block and confirmed.
 		///     Provides the hash of the transaction.
 		/// </summary>
 		/// <remarks>
-		///     Provides an <see cref="OperationResult" /> object containing the transaction hash and success status after the
-		///     contract call is injected.
+		///     Provides an <see cref="OperationInfo" /> object containing the transaction hash and success status after the
+		///     operation is injected.
 		///     It is triggered after an operation request (like a contract call) is sent successfully to the blockchain network.
 		/// </remarks>
-		event Action<OperationResult> ContractCallInjected;
+		event Action<OperationInfo> OperationInjected;
 
 		/// <summary>
 		///     Runs when a handshake with a user's wallet application is received. Provides the handshake details.
@@ -89,11 +87,7 @@ namespace TezosSDK.Tezos.Wallet
 		/// <summary>
 		///     Runs when a connection to an account fails. Provides error information.
 		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed connection attempt.
-		///     It is triggered when a connection attempt to an account encounters an error.
-		/// </remarks>
-		event Action<ErrorInfo> WalletConnectionFailed;
+		event Action<string> WalletConnectionFailed;
 
 		/// <summary>
 		///     Runs when an account disconnects successfully. Provides the account information.

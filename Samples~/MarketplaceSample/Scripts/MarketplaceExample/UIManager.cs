@@ -47,19 +47,19 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 			inventory.onItemMint.AddListener(MintItem);
 		}
 
-		private void OnContractCallCompleted(OperationResult operationResult)
+		private void OnContractCallCompleted(OperationInfo operationInfo)
 		{
-			DisplayPopup($"Transaction completed with hash {operationResult.TransactionHash}");
+			DisplayPopup($"Transaction completed with hash {operationInfo.TransactionHash}");
 		}
 
-		private void OnContractCallFailed(ErrorInfo errorInfo)
+		private void OnOperationFailed(OperationInfo info)
 		{
-			DisplayPopup($"Transaction failed, error: {errorInfo.Message}");
+			DisplayPopup($"Operation failed, error: {info.ErrorMesssage}");
 		}
 
-		private void OnContractCallInjected(OperationResult operationResult)
+		private void OnOperationInjected(OperationInfo operationInfo)
 		{
-			if (!string.IsNullOrEmpty(operationResult.TransactionHash))
+			if (!string.IsNullOrEmpty(operationInfo.TransactionHash))
 			{
 				_manager.FetchMarketItems(PopulateMarket);
 				_manager.FetchInventoryItems(PopulateInventory);
@@ -67,7 +67,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 				DisplayWalletData();
 			}
 
-			DisplayPopup("Call injected!\n \n" + "\n \nTransaction Hash:\n" + operationResult.TransactionHash);
+			DisplayPopup("Call injected!\n \n" + "\n \nTransaction Hash:\n" + operationInfo.TransactionHash);
 		}
 
 		private void OnPayloadSigned(SignResult signResult)
@@ -83,9 +83,9 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 			}
 		}
 
-		private void OnWalletConnectionFailed(ErrorInfo errorInfo)
+		private void OnWalletConnectionFailed(string errorInfo)
 		{
-			DisplayPopup("Wallet connection failed!\n \n" + "Response: \n" + errorInfo.Message);
+			DisplayPopup("Wallet connection failed!\n \n" + "Response: \n" + errorInfo);
 		}
 
 		private void OnWalletDisconnected(WalletInfo walletInfo)
@@ -242,9 +242,9 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 			_manager.GetWalletMessageReceiver().WalletConnected += OnWalletConnected;
 			_manager.GetWalletMessageReceiver().WalletConnectionFailed += OnWalletConnectionFailed;
 			_manager.GetWalletMessageReceiver().WalletDisconnected += OnWalletDisconnected;
-			_manager.GetWalletMessageReceiver().ContractCallCompleted += OnContractCallCompleted;
-			_manager.GetWalletMessageReceiver().ContractCallFailed += OnContractCallFailed;
-			_manager.GetWalletMessageReceiver().ContractCallInjected += OnContractCallInjected;
+			_manager.GetWalletMessageReceiver().OperationCompleted += OnContractCallCompleted;
+			_manager.GetWalletMessageReceiver().OperationFailed += OnOperationFailed;
+			_manager.GetWalletMessageReceiver().OperationInjected += OnOperationInjected;
 			_manager.GetWalletMessageReceiver().PayloadSigned += OnPayloadSigned;
 		}
 

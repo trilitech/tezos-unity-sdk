@@ -6,6 +6,7 @@ using Netezos.Encoding;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.Extensions;
+using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.API.Models.Tokens;
@@ -58,14 +59,19 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			};
 
 			CoroutineRunner.Instance.StartWrappedCoroutine(Tezos.API.ReadView(contractAddress, entrypoint,
-				JsonSerializer.Serialize(input, JsonOptions.DefaultOptions), result =>
+				SerializeInput(input), readViewResult =>
 				{
-					Logger.LogDebug("READING INVENTORY DATA");
-
-					// deserialize the json data to inventory items
-					CoroutineRunner.Instance.StartWrappedCoroutine(NetezosExtensions.HumanizeValue(result, _networkRPC,
-						contractAddress, "humanizeInventory",
-						(ContractInventoryViewResult[] inventory) => OnInventoryFetched(inventory, callback)));
+					if (readViewResult.Success)
+					{
+						Logger.LogDebug("READING INVENTORY DATA");
+						// Start another coroutine to process the result
+						ProcessInventoryResult(readViewResult.Data, callback);
+					}
+					else
+					{
+						// Handle errors
+						Logger.LogError("Error fetching inventory: " + readViewResult.ErrorMessage);
+					}
 				}));
 		}
 
@@ -85,8 +91,8 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 				result =>
 				{
 					// deserialize the json data to market items
-					CoroutineRunner.Instance.StartWrappedCoroutine(NetezosExtensions.HumanizeValue(result, _networkRPC,
-						contractAddress, "humanizeMarketplace",
+					CoroutineRunner.Instance.StartWrappedCoroutine(NetezosExtensions.HumanizeValue(result.Data,
+						_networkRPC, contractAddress, "humanizeMarketplace",
 						(ContractMarketplaceViewResult[] market) => OnMarketplaceFetched(market, callback)));
 				}));
 		}
@@ -109,7 +115,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -121,7 +127,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.Wallet.CallContract(contractAddress, entrypoint, input);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -148,7 +154,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.TokenContract.Mint(callback, metadata, activeAccount, randomAmount);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -159,8 +165,19 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		public void GetBalance(Action<ulong> callback)
 		{
-			var routine = Tezos.GetCurrentWalletBalance(callback);
-			CoroutineRunner.Instance.StartWrappedCoroutine(routine);
+			CoroutineRunner.Instance.StartCoroutine(TezosManager.Instance.Tezos.GetCurrentWalletBalance(result =>
+			{
+				if (result.Success)
+				{
+					// Handle the successful retrieval of the wallet balance
+					callback(result.Data);
+				}
+				else
+				{
+					// Handle the error case, update UI or log error
+					Logger.LogError(result.ErrorMessage);
+				}
+			}));
 		}
 
 		public void GetSoftBalance(Action<int> callback)
@@ -183,7 +200,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.Wallet.CallContract(contractAddress, entrypoint, input);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -214,7 +231,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -239,7 +256,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -262,7 +279,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -283,7 +300,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			CoroutineRunner.Instance.StartWrappedCoroutine(Tezos.API.ReadView(contractAddress, entrypoint, input,
 				result =>
 				{
-					var boolString = result.GetProperty("prim");
+					var boolString = result.Data.GetProperty("prim");
 					var boolVal = boolString.GetString() == "True";
 					callback?.Invoke(boolVal);
 				}));
@@ -294,7 +311,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			Tezos.Wallet.RequestSignPayload(signingType, payload);
 
 #if UNITY_IOS || UNITY_ANDROID
-            Application.OpenURL("tezos://");
+			Application.OpenURL("tezos://");
 #endif
 		}
 
@@ -320,12 +337,39 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		public void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback)
 		{
-			var routine = Tezos.GetOriginatedContracts(callback);
-			CoroutineRunner.Instance.StartWrappedCoroutine(routine);
+			GetOriginatedContracts(result =>
+			{
+				if (result.Success)
+				{
+					callback?.Invoke(result.Data);
+				}
+				else
+				{
+					Logger.LogError(result.ErrorMessage);
+				}
+			});
 		}
 
 		public void OnReady()
 		{
+		}
+
+		private void GetOriginatedContracts(Action<Result<IEnumerable<TokenContract>>> callback)
+		{
+			var routine = Tezos.GetOriginatedContracts(callback);
+			CoroutineRunner.Instance.StartWrappedCoroutine(routine);
+		}
+
+		private void ProcessInventoryResult(JsonElement data, Action<List<IItemModel>> callback)
+		{
+			CoroutineRunner.Instance.StartWrappedCoroutine(
+				NetezosExtensions.HumanizeValue<ContractInventoryViewResult[]>(data, _networkRPC, contractAddress,
+					"humanizeInventory", inventoryResult => { OnInventoryFetched(inventoryResult, callback); }));
+		}
+
+		private string SerializeInput(object input)
+		{
+			return JsonSerializer.Serialize(input, JsonOptions.DefaultOptions);
 		}
 
 		private void OnInventoryFetched(ContractInventoryViewResult[] inventory, Action<List<IItemModel>> callback)
@@ -396,7 +440,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			CoroutineRunner.Instance.StartWrappedCoroutine(Tezos.API.ReadView(contractAddress, "get_balance", input,
 				result =>
 				{
-					var intProp = result.GetProperty("int");
+					var intProp = result.Data.GetProperty("int");
 					var intValue = Convert.ToInt32(intProp.ToString());
 					callback(intValue);
 				}));

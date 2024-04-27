@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos;
 using TezosSDK.Tezos.API.Models.Filters;
 using TezosSDK.Tezos.API.Models.Tokens;
 using TezosSDK.Tutorials.Common;
 using TMPro;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tutorials.TransferToken
 {
@@ -36,15 +38,21 @@ namespace TezosSDK.Tutorials.TransferToken
 				return;
 			}
 
-			var getOriginatedContractsRoutine = TezosManager.Instance.Tezos.GetOriginatedContracts(contracts =>
+			var getOriginatedContractsRoutine = TezosManager.Instance.Tezos.GetOriginatedContracts(result =>
 			{
-				var tokenContracts = contracts.ToList();
+				if (!result.Success)
+				{
+					Logger.LogError($"Failed to get originated contracts: {result.ErrorMessage}");
+					return;
+				}
+
+				var tokenContracts = result.Data.ToList();
 
 				if (!tokenContracts.Any())
 				{
-					var activeAddress = TezosManager.Instance.Tezos.Wallet.GetWalletAddress();
+					availableTokensTMP.text =
+						$"{TezosManager.Instance.Tezos.Wallet.GetWalletAddress()} didn't deploy any contract yet.";
 
-					availableTokensTMP.text = $"{activeAddress} didn't deploy any contract yet.";
 					return;
 				}
 
@@ -60,14 +68,18 @@ namespace TezosSDK.Tutorials.TransferToken
 
 		private void GetContractTokenIds(string contractAddress)
 		{
+			Logger.LogDebug($"Getting token IDs for contract: {contractAddress}");
+
 			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(Callback,
 				contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
 
 			StartCoroutine(tokensForContractCoroutine);
 			return;
 
-			void Callback(IEnumerable<Token> tokens)
+			void Callback(Result<IEnumerable<Token>> result)
 			{
+				var tokens = result.Data.ToList();
+				Logger.LogDebug($"Received {tokens.Count()} tokens for contract: {contractAddress}");
 				// Join the token IDs with ", " as the separator
 				var idsResult = string.Join(", ", tokens.Select(token => token.TokenId));
 				availableTokensTMP.text = idsResult;

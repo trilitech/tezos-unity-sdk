@@ -2,11 +2,12 @@ using TezosSDK.Tezos;
 using TezosSDK.Tutorials.Common;
 using TMPro;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tutorials.ContractAndMinting
 {
 
-	public class DeployContract : MonoBehaviour
+	public class DeployContractButton : MonoBehaviour
 	{
 		[SerializeField] private TMP_InputField tokensCountText;
 		[SerializeField] private ContractInfoUI contractInfoUI;
@@ -20,6 +21,7 @@ namespace TezosSDK.Tutorials.ContractAndMinting
 
 		private void OnContractDeployed(string contractAddress)
 		{
+			Logger.LogDebug($"DeployContractButton - Contract deployed at address: {contractAddress}");
 			contractInfoUI.SetAddress(contractAddress);
 			tokensCountText.text = "0";
 		}

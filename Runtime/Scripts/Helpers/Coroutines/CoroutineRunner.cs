@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using TezosSDK.Patterns;
 using UnityEngine;
@@ -11,12 +10,6 @@ namespace TezosSDK.Helpers.Coroutines
 	/// </summary>
 	public class CoroutineRunner : SingletonMonoBehaviour<CoroutineRunner>
 	{
-		[Obsolete("StartCoroutineWrapper is obsolete and will be replaced by StartWrappedCoroutine in future releases")]
-		public Coroutine StartCoroutineWrapper(IEnumerator coroutine)
-		{
-			return StartWrappedCoroutine(coroutine);
-		}
-
 		public Coroutine StartWrappedCoroutine(IEnumerator coroutine)
 		{
 			return StartCoroutine(new CoroutineWrapper<object>(coroutine, null,

@@ -1,13 +1,34 @@
+using System;
 using System.Collections;
 using System.Text;
 using System.Text.Json;
 using Dynamic.Json;
 using TezosSDK.Tezos;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace TezosSDK.Helpers.HttpClients
 {
+
+	public class Result<T>
+	{
+		public Result(T data)
+		{
+			Data = data;
+			Success = true;
+			ErrorMessage = string.Empty;
+		}
+
+		public Result(string errorMessage)
+		{
+			Data = default;
+			Success = false;
+			ErrorMessage = errorMessage;
+		}
+
+		public T Data { get; private set; }
+		public bool Success { get; private set; }
+		public string ErrorMessage { get; private set; }
+	}
 
 	public class TezosHttpClient
 	{
@@ -26,59 +47,70 @@ namespace TezosSDK.Helpers.HttpClients
 		private string BaseAddress { get; }
 		private int RequestTimeout { get; }
 
+		private T DeserializeJson<T>(string json)
+		{
+			if (typeof(T) == typeof(string))
+			{
+				return (T)(object)DJson.Parse(json, JsonOptions.DefaultOptions);
+			}
+
+			return JsonSerializer.Deserialize<T>(json, JsonOptions.DefaultOptions);
+		}
+
 		private string AddSlashIfNeeded(string url)
 		{
 			return url.EndsWith("/") ? url : $"{url}/";
 		}
 
-		protected IEnumerator GetJson<T>(string path)
+		private void HandleResponse<T>(UnityWebRequest request, Action<Result<T>> callback, out T result)
 		{
-			var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
-			yield return request.SendWebRequest();
+			result = default;
 
 			if (request.result != UnityWebRequest.Result.Success)
 			{
-				Logger.LogError($"GetJson request failed with error: {request.error} - on url: {request.url}");
-				request.Dispose();
-				yield break;
-			}
-
-			// Check if the downloaded text is not null or empty.
-			if (string.IsNullOrWhiteSpace(request.downloadHandler.text))
-			{
-				Logger.LogDebug("GetJson: No data or empty JSON received.");
-				request.Dispose();
-				yield break;
-			}
-
-			if (typeof(T) == typeof(string))
-			{
-				yield return DJson.Parse(request.downloadHandler.text, JsonOptions.DefaultOptions);
+				Logger.LogError($"Request failed with error: {request.error}");
+				callback?.Invoke(new Result<T>(request.error));
 			}
 			else
 			{
-				yield return JsonSerializer.Deserialize<T>(request.downloadHandler.text, JsonOptions.DefaultOptions);
-			}
+				var downloadHandlerText = request.downloadHandler.text;
 
-			request.Dispose();
+				try
+				{
+					result = DeserializeJson<T>(downloadHandlerText);
+					callback?.Invoke(new Result<T>(result));
+				}
+				catch (Exception ex)
+				{
+					callback?.Invoke(new Result<T>(ex.Message));
+				}
+			}
 		}
 
-		protected IEnumerator PostJson<T>(string path, object data)
+		protected IEnumerator GetJsonCoroutine<T>(string path, Action<Result<T>> callback = null)
+		{
+			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
+			yield return request.SendWebRequest();
+
+			HandleResponse(request, callback, out var result);
+			yield return result;
+		}
+
+		protected IEnumerator PostJsonCoroutine<T>(string path, object data, Action<Result<T>> callback)
 		{
 			var serializedData = JsonSerializer.Serialize(data, JsonOptions.DefaultOptions);
-			var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbPOST, path);
+			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbPOST, path);
 			request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(serializedData));
 			request.SetRequestHeader(HttpHeaders.ContentType.Key, HttpHeaders.ContentType.Value);
-			request.SendWebRequest();
-			yield return new WaitUntil(() => request.isDone);
-			yield return JsonSerializer.Deserialize<T>(request.downloadHandler.text, JsonOptions.DefaultOptions);
-			request.Dispose();
+			yield return request.SendWebRequest();
+
+			HandleResponse(request, callback, out var result);
+			yield return result;
 		}
 
 		private UnityWebRequest GetUnityWebRequest(string method, string path)
 		{
 			var request = new UnityWebRequest($"{BaseAddress}{path}", method);
-			Logger.LogDebug($"Sending {method} request to {request.url}");
 			request.downloadHandler = new DownloadHandlerBuffer();
 			request.SetRequestHeader(HttpHeaders.Accept.Key, HttpHeaders.Accept.Value);
 			request.SetRequestHeader(HttpHeaders.UserAgent.Key, HttpHeaders.UserAgent.Value);

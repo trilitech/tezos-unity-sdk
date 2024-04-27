@@ -1,6 +1,8 @@
+using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos;
 using TMPro;
 using UnityEngine;
+using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tutorials.WalletConnection
 {
@@ -19,8 +21,7 @@ namespace TezosSDK.Tutorials.WalletConnection
 
 		private void OnWalletConnected(WalletInfo _)
 		{
-			// OnBalanceFetched will be called when the balance is fetched
-			var routine = TezosManager.Instance.Tezos.GetCurrentWalletBalance(OnBalanceFetched);
+			var routine = TezosManager.Instance.Tezos.GetCurrentWalletBalance(OnBalanceResult);
 			StartCoroutine(routine);
 		}
 
@@ -33,6 +34,18 @@ namespace TezosSDK.Tutorials.WalletConnection
 		{
 			// Balance is in microtez, so we divide it by 1.000.000 to get tez
 			balanceText.text = $"{balance / 1000000f}";
+		}
+
+		private void OnBalanceResult(Result<ulong> result)
+		{
+			if (result.Success)
+			{
+				OnBalanceFetched(result.Data);
+			}
+			else
+			{
+				Logger.LogError(result.ErrorMessage);
+			}
 		}
 	}
 

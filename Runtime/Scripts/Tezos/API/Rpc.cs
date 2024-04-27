@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
 using TezosSDK.Helpers.HttpClients;
@@ -18,20 +19,32 @@ namespace TezosSDK.Tezos.API
 		{
 		}
 
-		public IEnumerator GetTzBalance<T>(string address)
+		public IEnumerator GetTzBalance(string address, Action<Result<ulong>> callback)
 		{
-			return GetJson<T>($"chains/main/blocks/head/context/contracts/{address}/balance/");
+			yield return GetJsonCoroutine<ulong>($"chains/main/blocks/head/context/contracts/{address}/balance/",
+				result =>
+				{
+					if (result.Success)
+					{
+						callback?.Invoke(new Result<ulong>(result.Data));
+					}
+					else
+					{
+						callback?.Invoke(new Result<ulong>(result.ErrorMessage));
+					}
+				});
 		}
 
 		public IEnumerator GetContractCode<T>(string contract)
 		{
-			return GetJson<T>($"chains/main/blocks/head/context/contracts/{contract}/script/");
+			return GetJsonCoroutine<T>($"chains/main/blocks/head/context/contracts/{contract}/script/");
 		}
 
 		public IEnumerator RunView<T>(
 			string contract,
 			string view,
 			string input,
+			Action<Result<T>> callback,
 			string chainId = CHAIN_ID,
 			string source = null,
 			string payer = null,
@@ -55,7 +68,7 @@ namespace TezosSDK.Tezos.API
 				level = level?.ToString()
 			};
 
-			return PostJson<T>("chains/main/blocks/head/helpers/scripts/run_script_view/", data);
+			return PostJsonCoroutine("chains/main/blocks/head/helpers/scripts/run_script_view/", data, callback);
 		}
 	}
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using TezosSDK.Helpers.Coroutines;
+using TezosSDK.Helpers.HttpClients;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -16,6 +17,7 @@ namespace TezosSDK.Tezos.Wallet
 		private const float WAIT_TIME = 2f; // seconds
 		private readonly Action<bool, string> _onComplete;
 		private readonly string _operationHash;
+		private Coroutine _trackingCoroutine;
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="OperationTracker" /> class.
@@ -36,79 +38,46 @@ namespace TezosSDK.Tezos.Wallet
 		/// </summary>
 		public void BeginTracking()
 		{
-			Logger.LogDebug($"Starting to track operation with hash: {_operationHash}");
-			CoroutineRunner.Instance.StartWrappedCoroutine(TrackOperationCoroutine());
+			Logger.LogDebug($"Begin tracking operation with hash: {_operationHash}");
+			_trackingCoroutine = CoroutineRunner.Instance.StartCoroutine(TrackOperationCoroutine());
 		}
 
-		/// <summary>
-		///     Coroutine that polls the blockchain operation status until it is confirmed, fails, or times out.
-		/// </summary>
 		private IEnumerator TrackOperationCoroutine()
 		{
 			var startTime = Time.time;
-			bool? operationConfirmed = null;
-			string errorMessage = null;
 
-			// Begin polling loop for operation status
-			Logger.LogDebug($"Begin polling for operation status with hash: {_operationHash}");
-
-			var remainingTime = TIMEOUT - (Time.time - startTime);
-
-			while (remainingTime > 0)
+			while (Time.time - startTime < TIMEOUT)
 			{
-				yield return TezosManager.Instance.Tezos.API.GetOperationStatus(Callback, _operationHash);
+				Logger.LogDebug($"Checking operation status for hash {_operationHash}");
 
-				// If the operation is positively confirmed, exit the loop.
-				if (operationConfirmed == true)
-				{
-					Logger.LogDebug("Operation is confirmed. Exiting polling loop.");
-					break;
-				}
+				yield return
+					TezosManager.Instance.Tezos.API.GetOperationStatus(OperationStatusCallback, _operationHash);
 
-				// Handle the case where operationConfirmed is null or false
-				if (!operationConfirmed.HasValue)
-				{
-					errorMessage = "Operation status check failed or returned null.";
-					Logger.LogDebug($"Operation status check for hash {_operationHash} failed or returned null.");
-				}
-
-				// Wait before the next status check
 				yield return new WaitForSecondsRealtime(WAIT_TIME);
 
-				Logger.LogDebug($"Waiting {WAIT_TIME} seconds before next operation status check. " +
-				                $"Remaining time: {remainingTime}");
-
-				remainingTime = TIMEOUT - (Time.time - startTime);
+				Logger.LogDebug(
+					$"Waiting {WAIT_TIME} seconds before next operation status check. Remaining time: {TIMEOUT - (Time.time - startTime)}");
 			}
 
-			// Determine final success and handle possible timeout
-			var success = operationConfirmed == true;
+			Logger.LogError("Operation tracking timed out.");
+			_onComplete?.Invoke(false, "Operation tracking timed out.");
+		}
 
-			if (!success)
+		private void OperationStatusCallback(Result<bool> result)
+		{
+			if (!result.Success)
 			{
-				errorMessage ??= "Operation tracking timed out.";
-				Logger.LogDebug(errorMessage);
+				return;
 			}
 
-			Logger.LogDebug("Operation tracking complete. " + $"Success: {success}, ErrorMessage: {errorMessage}");
-
-			// Invoke the callback with the result
-			_onComplete?.Invoke(success, errorMessage);
-			yield break;
-
-			void Callback(bool? result)
+			if (!result.Data)
 			{
-				operationConfirmed = result;
-
-				if (operationConfirmed.HasValue)
-				{
-					Logger.LogDebug($"Operation status check returned: {operationConfirmed.Value}");
-				}
-				else
-				{
-					Logger.LogDebug($"Operation status check for hash \"{_operationHash}\" returned null.");
-				}
+				return;
 			}
+
+			Logger.LogDebug("Operation is confirmed. Exiting polling loop.");
+			_onComplete?.Invoke(true, null);
+			CoroutineRunner.Instance.StopCoroutine(_trackingCoroutine);
 		}
 	}
 

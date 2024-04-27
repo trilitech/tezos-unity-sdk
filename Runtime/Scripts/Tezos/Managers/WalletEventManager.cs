@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Beacon.Sdk.Beacon;
 using TezosSDK.Patterns;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
@@ -16,10 +17,10 @@ namespace TezosSDK.Tezos
 	/// </summary>
 	public class WalletEventManager : SingletonMonoBehaviour<WalletEventManager>, IWalletEventManager
 	{
-		public const string EventTypeContractCallCompleted = "ContractCallCompleted";
-		public const string EventTypeContractCallFailed = "ContractCallFailed";
-		public const string EventTypeContractCallInjected = "ContractCallInjected";
 		public const string EventTypeHandshakeReceived = "HandshakeReceived";
+		public const string EventTypeOperationCompleted = "OperationCompleted";
+		public const string EventTypeOperationFailed = "OperationFailed";
+		public const string EventTypeOperationInjected = "OperationInjected";
 		public const string EventTypePairingDone = "PairingDone";
 		public const string EventTypePayloadSigned = "PayloadSigned";
 		public const string EventTypeSDKInitialized = "SDKInitialized";
@@ -27,12 +28,6 @@ namespace TezosSDK.Tezos
 		public const string EventTypeWalletConnectionFailed = "AccountConnectionFailed";
 		public const string EventTypeWalletDisconnected = "AccountDisconnected";
 
-		/// <summary>
-		///     Runs when the SDK is initialized successfully.
-		/// </summary>
-		/// <remarks>
-		///     This event is triggered after the SDK has completed its initialization process.
-		/// </remarks>
 		public event Action SDKInitialized
 		{
 			add
@@ -45,87 +40,19 @@ namespace TezosSDK.Tezos
 			remove => sdkInitialized -= value;
 		}
 
-		private event Action<OperationResult> contractCallCompleted;
-		private event Action<ErrorInfo> contractCallFailed;
-		private event Action<OperationResult> contractCallInjected;
 		private event Action<HandshakeData> handshakeReceived;
+		private event Action<OperationInfo> operationCompleted;
+		private event Action<OperationInfo> operationFailed;
+		private event Action<OperationInfo> operationInjected;
 		private event Action<PairingDoneData> pairingCompleted;
 		private event Action<SignResult> payloadSigned;
 		private event Action sdkInitialized;
 		private event Action<WalletInfo> walletConnected;
-		private event Action<ErrorInfo> walletConnectionFailed;
+		private event Action<string> walletConnectionFailed;
 		private event Action<WalletInfo> walletDisconnected;
 
 		#region IWalletEventManager Implementation
 
-		/// <summary>
-		///     Runs when a call to a smart contract is confirmed on the blockchain. Provides the result of the call.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="OperationResult" /> object with the transaction hash and success status.
-		///     This event is fired when a blockchain operation completes and has been injected into the blockchain.
-		///     The result includes the transaction hash and an indication of whether it was successful.
-		/// </remarks>
-		public event Action<OperationResult> ContractCallCompleted
-		{
-			add
-			{
-				if (contractCallCompleted == null || !contractCallCompleted.GetInvocationList().Contains(value))
-				{
-					contractCallCompleted += value;
-				}
-			}
-			remove => contractCallCompleted -= value;
-		}
-
-		/// <summary>
-		///     Runs when a call to a smart contract fails. Provides error details.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed contract call.
-		///     It is triggered when a contract call attempted by the wallet encounters an error.
-		/// </remarks>
-		public event Action<ErrorInfo> ContractCallFailed
-		{
-			add
-			{
-				if (contractCallFailed == null || !contractCallFailed.GetInvocationList().Contains(value))
-				{
-					contractCallFailed += value;
-				}
-			}
-			remove => contractCallFailed -= value;
-		}
-
-		/// <summary>
-		///     Runs when a call to a smart contract is sent to Tezos but before it has been included in a block and confirmed.
-		///     Provides the hash of the transaction.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="OperationResult" /> object containing the transaction hash and success status after the
-		///     contract call is injected.
-		///     It is triggered after an operation request (like a contract call) is sent successfully to the blockchain network.
-		/// </remarks>
-		public event Action<OperationResult> ContractCallInjected
-		{
-			add
-			{
-				if (contractCallInjected == null || !contractCallInjected.GetInvocationList().Contains(value))
-				{
-					contractCallInjected += value;
-				}
-			}
-			remove => contractCallInjected -= value;
-		}
-
-		/// <summary>
-		///     Runs when a handshake with a user's wallet application is received. Provides the handshake details.
-		/// </summary>
-		/// <remarks>
-		///     Provides a <see cref="HandshakeData" /> object with the pairing information required for user completion.
-		///     This event is triggered as part of the pairing process. The handshake data may include a QR code or other
-		///     information necessary to complete pairing with a DApp.
-		/// </remarks>
 		public event Action<HandshakeData> HandshakeReceived
 		{
 			add
@@ -138,17 +65,42 @@ namespace TezosSDK.Tezos
 			remove => handshakeReceived -= value;
 		}
 
-		/// <summary>
-		///     Runs when the user's wallet is connected but before the user has approved the connection in the wallet app.
-		///     Provides details of the pairing completion.
-		///     Note: This event is not supported in WebGL builds.
-		/// </summary>
-		/// <remarks>
-		///     Provides a <see cref="PairingDoneData" /> object with details about the pairing, such as the DApp's public key and
-		///     the timestamp of pairing completion.
-		///     Triggered when the pairing between the Tezos wallet and a DApp is completed. Reveals public key and a timestamp
-		///     indicating when the pairing was finalized.
-		/// </remarks>
+		public event Action<OperationInfo> OperationCompleted
+		{
+			add
+			{
+				if (operationCompleted == null || !operationCompleted.GetInvocationList().Contains(value))
+				{
+					operationCompleted += value;
+				}
+			}
+			remove => operationCompleted -= value;
+		}
+
+		public event Action<OperationInfo> OperationFailed
+		{
+			add
+			{
+				if (operationFailed == null || !operationFailed.GetInvocationList().Contains(value))
+				{
+					operationFailed += value;
+				}
+			}
+			remove => operationFailed -= value;
+		}
+
+		public event Action<OperationInfo> OperationInjected
+		{
+			add
+			{
+				if (operationInjected == null || !operationInjected.GetInvocationList().Contains(value))
+				{
+					operationInjected += value;
+				}
+			}
+			remove => operationInjected -= value;
+		}
+
 		public event Action<PairingDoneData> PairingCompleted
 		{
 			add
@@ -165,13 +117,6 @@ namespace TezosSDK.Tezos
 			remove => pairingCompleted -= value;
 		}
 
-		/// <summary>
-		///     Runs when the user signs a payload. Provides the sign result.
-		/// </summary>
-		/// <remarks>
-		///     Provides a <see cref="SignResult" /> object containing the signature value.
-		///     The event is triggered in response to a successful payload signing request.
-		/// </remarks>
 		public event Action<SignResult> PayloadSigned
 		{
 			add
@@ -184,13 +129,6 @@ namespace TezosSDK.Tezos
 			remove => payloadSigned -= value;
 		}
 
-		/// <summary>
-		///     Runs when an account connects successfully. Provides the account information.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the connected account.
-		///     It is triggered in response to a successful connection action from the wallet.
-		/// </remarks>
 		public event Action<WalletInfo> WalletConnected
 		{
 			add
@@ -203,14 +141,7 @@ namespace TezosSDK.Tezos
 			remove => walletConnected -= value;
 		}
 
-		/// <summary>
-		///     Runs when a connection to an account fails. Provides error information.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="ErrorInfo" /> object containing the error message of the failed connection attempt.
-		///     It is triggered when a connection attempt to an account encounters an error.
-		/// </remarks>
-		public event Action<ErrorInfo> WalletConnectionFailed
+		public event Action<string> WalletConnectionFailed
 		{
 			add
 			{
@@ -222,13 +153,6 @@ namespace TezosSDK.Tezos
 			remove => walletConnectionFailed -= value;
 		}
 
-		/// <summary>
-		///     Runs when an account disconnects successfully. Provides the account information.
-		/// </summary>
-		/// <remarks>
-		///     Provides an <see cref="WalletInfo" /> object containing the address and public key of the disconnected account.
-		///     It is triggered in response to a successful disconnection action from the wallet.
-		/// </remarks>
 		public event Action<WalletInfo> WalletDisconnected
 		{
 			add
@@ -241,14 +165,6 @@ namespace TezosSDK.Tezos
 			remove => walletDisconnected -= value;
 		}
 
-		/// <summary>
-		///     Processes the incoming event data and dispatches it to the corresponding event
-		///     based on the <see cref="UnifiedEvent.EventType" />.
-		/// </summary>
-		/// <param name="unifiedEvent">
-		///     The <see cref="UnifiedEvent" /> to be handled, which contains
-		///     the event type and data (if any).
-		/// </param>
 		public void HandleEvent(UnifiedEvent unifiedEvent)
 		{
 			var jsonEventData = JsonUtility.ToJson(unifiedEvent);
@@ -301,14 +217,14 @@ namespace TezosSDK.Tezos
 					case EventTypeWalletDisconnected:
 						HandleEvent(eventData.GetData(), walletDisconnected);
 						break;
-					case EventTypeContractCallInjected:
-						HandleEvent(eventData.GetData(), contractCallInjected);
+					case EventTypeOperationInjected:
+						HandleEvent(eventData.GetData(), operationInjected);
 						break;
-					case EventTypeContractCallCompleted:
-						HandleEvent(eventData.GetData(), contractCallCompleted);
+					case EventTypeOperationCompleted:
+						HandleEvent(eventData.GetData(), operationCompleted);
 						break;
-					case EventTypeContractCallFailed:
-						HandleEvent(eventData.GetData(), contractCallFailed);
+					case EventTypeOperationFailed:
+						HandleEvent(eventData.GetData(), operationFailed);
 						break;
 					case EventTypePayloadSigned:
 						HandleEvent(eventData.GetData(), payloadSigned);
@@ -392,28 +308,55 @@ namespace TezosSDK.Tezos
 		public string PublicKey;
 	}
 
-	/// <summary>
-	///     Contains error information, primarily used when an operation or connection attempt fails.
-	/// </summary>
-	[Serializable]
-	public class ErrorInfo
-	{
-		/// <summary>
-		///     The error message providing details about the failure.
-		/// </summary>
-		public string Message;
-	}
+	// /// <summary>
+	// ///     Contains error information, primarily used when an operation or connection attempt fails.
+	// /// </summary>
+	// [Serializable]
+	// public class ErrorInfo
+	// {
+	// 	/// <summary>
+	// 	///     The error message providing details about the failure.
+	// 	/// </summary>
+	// 	public string Message;
+	// }
 
 	/// <summary>
 	///     Contains the result of a blockchain operation, indicating its success and transaction details.
 	/// </summary>
 	[Serializable]
-	public class OperationResult
+	public class OperationInfo
 	{
 		/// <summary>
 		///     The hash of the transaction associated with the operation.
 		/// </summary>
 		public string TransactionHash;
+
+		/// <summary>
+		///     The ID of the operation.
+		/// </summary>
+		public string Id;
+
+		/// <summary>
+		///     The type of operation.
+		/// </summary>
+		public BeaconMessageType OperationType;
+
+		/// <summary>
+		///     Conveys the error message if the operation failed.
+		/// </summary>
+		public string ErrorMesssage;
+
+		public OperationInfo(
+			string transactionHash,
+			string id,
+			BeaconMessageType operationType,
+			string errorMessage = null)
+		{
+			TransactionHash = transactionHash;
+			Id = id;
+			OperationType = operationType;
+			ErrorMesssage = errorMessage;
+		}
 	}
 
 	/// <summary>

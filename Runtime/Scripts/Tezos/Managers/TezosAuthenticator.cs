@@ -1,6 +1,5 @@
 using TezosSDK.Helpers;
 using UnityEngine;
-using UnityEngine.UI;
 using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos
@@ -27,12 +26,10 @@ namespace TezosSDK.Tezos
 
 			if (Tezos.Wallet.IsConnected)
 			{
-				Logger.LogDebug("TezosAuthenticator.Start: Wallet is connected");
 				ToggleUIElements(true);
 			}
 			else
 			{
-				Logger.LogDebug("TezosAuthenticator.Start: Wallet is not connected");
 				ToggleUIElements(false);
 
 				// Call Connect() only when on standalone
@@ -58,8 +55,6 @@ namespace TezosSDK.Tezos
 
 		private void OnEnable()
 		{
-			Logger.LogDebug("TezosAuthenticator.OnEnable");
-
 			if (TezosManager.Instance != null && !TezosManager.Instance.Wallet.IsConnected &&
 			    TezosManager.Instance.Wallet.HandshakeData != null)
 			{
@@ -69,25 +64,21 @@ namespace TezosSDK.Tezos
 
 		private void OnDisable()
 		{
-			Logger.LogDebug("TezosAuthenticator.OnDisable");
 			UnsubscribeFromEvents();
 		}
 
 		private void OnDestroy()
 		{
-			Logger.LogDebug("TezosAuthenticator.OnDestroy");
 			UnsubscribeFromEvents();
 		}
 
 		private void OnHandshakeReceived(HandshakeData handshakeData)
 		{
-			Logger.LogDebug("TezosAuthenticator.OnHandshakeReceived");
 			qrCodeGenerator.SetQrCode(handshakeData);
 		}
 
 		private void OnWalletConnected(WalletInfo walletInfo)
 		{
-			Logger.LogDebug("TezosAuthenticator.OnWalletConnected");
 			ToggleUIElements(true);
 		}
 
@@ -99,13 +90,11 @@ namespace TezosSDK.Tezos
 
 		public void ConnectByDeeplink()
 		{
-			Logger.LogDebug("TezosAuthenticator.ConnectByDeeplink");
 			Tezos.Wallet.Connect(WalletProviderType.beacon);
 		}
 
 		public void ConnectWithSocial()
 		{
-			Logger.LogDebug("TezosAuthenticator.ConnectWithSocial");
 			Tezos.Wallet.Connect(WalletProviderType.kukai);
 		}
 
@@ -136,8 +125,6 @@ namespace TezosSDK.Tezos
 		/// <param name="isAuthenticated">Indicates whether the user is authenticated.</param>
 		private void ToggleUIElements(bool isAuthenticated)
 		{
-			Logger.LogDebug($"ToggleUIElements: isAuthenticated: {isAuthenticated}");
-
 			if (isAuthenticated)
 			{
 				deepLinkButton.SetActive(false);
@@ -161,7 +148,6 @@ namespace TezosSDK.Tezos
 
 		private void UnsubscribeFromEvents()
 		{
-			Logger.LogDebug("TezosAuthenticator.UnsubscribeFromEvents");
 			TezosManager.Instance.Wallet.EventManager.HandshakeReceived -= OnHandshakeReceived;
 			TezosManager.Instance.Wallet.EventManager.WalletConnected -= OnWalletConnected;
 			TezosManager.Instance.Wallet.EventManager.WalletDisconnected -= OnWalletDisconnected;
