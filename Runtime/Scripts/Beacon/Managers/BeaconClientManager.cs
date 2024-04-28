@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
+using Beacon.Sdk.Beacon.Error;
 using Beacon.Sdk.Beacon.Operation;
 using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
@@ -159,19 +160,25 @@ namespace TezosSDK.Beacon
 		{
 			if (e == null)
 			{
+				Logger.LogError("Received a null Beacon message.");
 				return;
 			}
 
-			Logger.LogDebug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
 
 			if (e.PairingDone)
 			{
+				Logger.LogDebug("Received message of type: Pairing done");
 				HandlePairingDone();
 				return;
 			}
+			
+			Logger.LogDebug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
 
 			switch (e.Request?.Type)
 			{
+				case BeaconMessageType.error:
+					HandleBeaconError(e.Request as BaseBeaconError);
+					break;
 				case BeaconMessageType.permission_response:
 					HandlePermissionResponse(e.Request as PermissionResponse);
 					break;
@@ -185,6 +192,17 @@ namespace TezosSDK.Beacon
 					HandleDisconnect();
 					break;
 			}
+		}
+
+		private void HandleBeaconError(BaseBeaconError error)
+		{
+			if (error == null)
+			{
+				Logger.LogError("Received a null Beacon error message.");
+				return;
+			}
+
+			Logger.LogError($"Received Beacon error message: {error.ErrorType} - ID: {error.Id}");
 		}
 
 		/// <summary>
@@ -267,8 +285,6 @@ namespace TezosSDK.Beacon
 		/// </remarks>
 		private void HandlePairingDone()
 		{
-			Logger.LogDebug("Received message of type Pairing done");
-
 			if (_activeWallet != null)
 			{
 				Logger.LogDebug("Active wallet already exists, ignoring duplicate pairing done event");
