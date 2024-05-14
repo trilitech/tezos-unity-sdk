@@ -18,21 +18,32 @@ namespace TezosSDK.Tezos
 	/// </summary>
 	public class Tezos : ITezos
 	{
-		public Tezos(TezosConfigSO config, IWalletEventManager eventManager, IBeaconConnector beaconConnector)
+		public IWalletConnection WalletConnection { get; }
+		public IWalletAccount WalletAccount { get; }
+		public IWalletTransaction WalletTransaction { get; }
+		public IWalletContract WalletContract { get; }
+		public IWalletEventProvider WalletEventProvider { get; }
+		
+		public Tezos(TezosConfigSO config, WalletProvider walletProvider)
 		{
 			API = new TezosAPI(config);
 
-			Wallet = new WalletProvider(eventManager, beaconConnector);
-			Wallet.EventManager.WalletConnected += OnWalletConnected;
+			WalletConnection = walletProvider;
+			WalletAccount = walletProvider;
+			WalletTransaction = walletProvider;
+			WalletContract = walletProvider;
+			WalletEventProvider = walletProvider;
+
+			// Subscribe to wallet events
+			walletProvider.EventManager.WalletConnected += OnWalletConnected;
 		}
 
 		public ITezosAPI API { get; }
-		public IWalletProvider Wallet { get; }
 		public IFa2 TokenContract { get; set; }
 
 		public IEnumerator GetCurrentWalletBalance(Action<Result<ulong>> callback)
 		{
-			var address = Wallet.GetWalletAddress();
+			var address = WalletAccount.GetWalletAddress();
 			yield return API.GetTezosBalance(callback, address);
 		}
 
@@ -40,7 +51,7 @@ namespace TezosSDK.Tezos
 		{
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 
-			return API.GetOriginatedContractsForOwner(callback, Wallet.GetWalletAddress(), codeHash, 1000,
+			return API.GetOriginatedContractsForOwner(callback, WalletAccount.GetWalletAddress(), codeHash, 1000,
 				new OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc(0));
 		}
 
@@ -61,10 +72,8 @@ namespace TezosSDK.Tezos
 			}
 
 			TokenContract = !string.IsNullOrEmpty(address)
-				// if there is a contract address in the player prefs, use it
-				? new TokenContract(address)
-				// otherwise, create a new contract
-				: new TokenContract();
+				? new TokenContract(address, WalletAccount, WalletTransaction, WalletContract, WalletEventProvider, API)
+				: new TokenContract(WalletAccount, WalletTransaction, WalletContract, WalletEventProvider, API);
 		}
 	}
 

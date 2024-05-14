@@ -28,7 +28,7 @@ namespace TezosSDK.Tutorials.Common
 		private void OnWalletConnected(WalletInfo walletInfo)
 		{
 			// We can get the address from the wallet
-			addressText.text = TezosManager.Instance.Wallet.GetWalletAddress();
+			addressText.text = TezosManager.Instance.WalletAccount.GetWalletAddress();
 			// Or from the event data
 			addressText.text = walletInfo.Address;
 		}

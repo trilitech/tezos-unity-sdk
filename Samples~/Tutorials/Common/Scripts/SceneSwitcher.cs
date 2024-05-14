@@ -13,7 +13,7 @@ namespace TezosSDK.Tutorials.Common
 		{
 			if (TezosManager.Instance)
 			{
-				TezosManager.Instance.Wallet.Disconnect();
+				TezosManager.Instance.WalletConnector.DisconnectWallet();
 			}
 
 			SceneManager.LoadScene(sceneNameToLoad);

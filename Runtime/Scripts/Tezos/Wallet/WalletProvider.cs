@@ -10,14 +10,14 @@ using Logger = TezosSDK.Helpers.Logger;
 namespace TezosSDK.Tezos.Wallet
 {
 
-	public class WalletProvider : IWalletProvider, IDisposable
+	public class WalletProvider : IWalletConnection, IWalletAccount, IWalletTransaction, IWalletContract, IWalletEventProvider, IDisposable
 	{
-		private readonly IBeaconConnector _beaconConnector;
+		private readonly IWalletConnector _walletConnector;
 		private string _pubKey;
 		private string _signature;
 		private string _transactionHash;
 
-		public WalletProvider(IWalletEventManager eventManager, IBeaconConnector beaconConnector)
+		public WalletProvider(IWalletEventManager eventManager, IWalletConnector walletConnector)
 		{
 			EventManager = eventManager;
 			EventManager.HandshakeReceived += OnHandshakeReceived;
@@ -26,13 +26,13 @@ namespace TezosSDK.Tezos.Wallet
 			EventManager.PayloadSigned += OnPayloadSigned;
 			EventManager.OperationInjected += OnOperationInjected;
 
-			_beaconConnector = beaconConnector;
-			_beaconConnector.OperationRequested += OnOperationRequested;
+			_walletConnector = walletConnector;
+			_walletConnector.OperationRequested += OperationRequestedHandler;
 		}
 
 		public void Dispose()
 		{
-			if (_beaconConnector is IDisposable disposable)
+			if (_walletConnector is IDisposable disposable)
 			{
 				disposable.Dispose();
 			}
@@ -40,27 +40,31 @@ namespace TezosSDK.Tezos.Wallet
 
 		public bool IsConnected { get; private set; }
 		public HandshakeData HandshakeData { get; private set; }
-
 		public IWalletEventManager EventManager { get; }
 
 		public void Connect(WalletProviderType walletProvider)
 		{
-			_beaconConnector.ConnectWallet(walletProvider);
+			_walletConnector.ConnectWallet();
 		}
 
 		public void Disconnect()
 		{
-			_beaconConnector.DisconnectWallet();
+			_walletConnector.DisconnectWallet();
 		}
 
 		public string GetWalletAddress()
 		{
-			return _beaconConnector.GetWalletAddress();
+			return _walletConnector.GetWalletAddress();
 		}
 
 		public void RequestSignPayload(SignPayloadType signingType, string payload)
 		{
-			_beaconConnector.RequestSignPayload(signingType, payload);
+			var signRequest = new WalletSignPayloadRequest
+			{
+				SigningType = signingType,
+				Payload = payload
+			};
+			_walletConnector.RequestSignPayload(signRequest);
 		}
 
 		public bool VerifySignedPayload(SignPayloadType signingType, string payload)
@@ -70,20 +74,49 @@ namespace TezosSDK.Tezos.Wallet
 
 		public void CallContract(string contractAddress, string entryPoint, string input, ulong amount = 0)
 		{
-			_beaconConnector.RequestOperation(contractAddress, entryPoint, input, amount);
+			var operationRequest = new WalletOperationRequest
+			{
+				Destination = contractAddress,
+				EntryPoint = entryPoint,
+				Arg = input,
+				Amount = amount
+			};
+			
+			_walletConnector.RequestOperation(operationRequest);
 		}
 
 		public void OriginateContract(string script, string delegateAddress)
 		{
-			_beaconConnector.RequestContractOrigination(script, delegateAddress);
+			var originationRequest = new WalletOriginateContractRequest
+			{
+				Script = script,
+				DelegateAddress = delegateAddress
+			};
+			_walletConnector.RequestContractOrigination(originationRequest);
 		}
 
 		/// <summary>
 		///     Raised when an operation requiring user interaction is requested by the IBeaconConnector implementation.
 		/// </summary>
-		private void OnOperationRequested(BeaconMessageType beaconMessageType)
+		private void OperationRequestedHandler(WalletMessageType messageType)
 		{
-			Logger.LogDebug($"WalletProvider.OnOperationRequested of type: {beaconMessageType}");
+			Logger.LogDebug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
+			
+			switch (messageType)
+			{
+				case WalletMessageType.ConnectionRequest:
+					// Handle connection request logic
+					break;
+				case WalletMessageType.OperationRequest:
+					// Handle operation request logic
+					break;
+				case WalletMessageType.SignPayloadRequest:
+					// Handle sign payload request logic
+					break;
+				case WalletMessageType.DisconnectionRequest:
+					// Handle disconnection request logic
+					break;
+			}
 
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 			// The wallet will already be open for the pairing request during login

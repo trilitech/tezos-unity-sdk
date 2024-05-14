@@ -18,23 +18,29 @@ namespace TezosSDK.Tezos.API
 	public class TokenContract : IFa2
 	{
 		private readonly ITezosAPI _tezosAPI;
-		private readonly IWalletProvider _wallet;
+		private readonly IWalletAccount _walletAccount;
+		private readonly IWalletTransaction _walletTransaction;
+		private readonly IWalletContract _walletContract;
+		private readonly IWalletEventProvider _walletEventProvider;
 
 		private Action<string> _onDeployCompleted;
 		private Action<TokenBalance> _onMintCompleted;
 		private Action<string> _onTransferCompleted;
 
-		public TokenContract(string address)
+		public TokenContract(string address, IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, IWalletEventProvider walletEventProvider, ITezosAPI tezosAPI)
 		{
-			_wallet = TezosManager.Instance.Wallet;
-			_tezosAPI = TezosManager.Instance.Tezos.API;
 			Address = address;
+			_walletAccount = walletAccount;
+			_walletTransaction = walletTransaction;
+			_walletContract = walletContract;
+			_walletEventProvider = walletEventProvider;
+			_tezosAPI = tezosAPI;
 		}
 
-		public TokenContract()
+		// Constructor without address parameter
+		public TokenContract(IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, IWalletEventProvider walletEventProvider, ITezosAPI tezosAPI)
+			: this(null, walletAccount, walletTransaction, walletContract, walletEventProvider, tezosAPI)
 		{
-			_wallet = TezosManager.Instance.Wallet;
-			_tezosAPI = TezosManager.Instance.Tezos.API;
 		}
 
 		public string Address { get; set; }
@@ -76,8 +82,8 @@ namespace TezosSDK.Tezos.API
 						token_id = tokenId.ToString()
 					}).ToJson();
 
-					_wallet.EventManager.OperationCompleted += MintCompleted; // TODO: This is not removed FIX IT
-					_wallet.CallContract(Address, _entrypoint, mintParameters);
+					_walletEventProvider.EventManager.OperationCompleted += MintCompleted; // TODO: This is not removed FIX IT
+					_walletTransaction.CallContract(Address, _entrypoint, mintParameters);
 				}
 				else
 				{
@@ -89,7 +95,7 @@ namespace TezosSDK.Tezos.API
 		public void Transfer(Action<string> completedCallback, string destination, int tokenId, int amount)
 		{
 			_onTransferCompleted = completedCallback;
-			var activeAddress = _wallet.GetWalletAddress();
+			var activeAddress = _walletAccount.GetWalletAddress();
 			const string _entry_point = "transfer";
 
 			var param = GetContractScript().BuildParameter(_entry_point, new List<object>
@@ -109,8 +115,8 @@ namespace TezosSDK.Tezos.API
 				}
 			}).ToJson();
 
-			_wallet.EventManager.OperationCompleted += TransferCompleted;
-			_wallet.CallContract(Address, _entry_point, param);
+			_walletEventProvider.EventManager.OperationCompleted += TransferCompleted;
+			_walletTransaction.CallContract(Address, _entry_point, param);
 		}
 
 		public void Deploy(Action<string> completedCallback)
@@ -119,19 +125,19 @@ namespace TezosSDK.Tezos.API
 			_onDeployCompleted = completedCallback;
 
 			var stringScript = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
-			var address = _wallet.GetWalletAddress();
+			var address = _walletAccount.GetWalletAddress();
 			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
-			_wallet.EventManager.OperationCompleted += DeployCompleted; // TODO: This is not removed FIX IT
+			_walletEventProvider.EventManager.OperationCompleted += DeployCompleted; // TODO: This is not removed FIX IT
 
-			_wallet.OriginateContract(scriptWithAdmin);
+			_walletContract.OriginateContract(scriptWithAdmin);
 		}
 
 		private void MintCompleted(OperationInfo operationInfo)
 		{
-			_wallet.EventManager.OperationCompleted -= MintCompleted; // TODO: This is not removed FIX IT
+			_walletEventProvider.EventManager.OperationCompleted -= MintCompleted; // TODO: This is not removed FIX IT
 
-			var owner = _wallet.GetWalletAddress();
+			var owner = _walletAccount.GetWalletAddress();
 
 			var getOwnerTokensCoroutine = _tezosAPI.GetTokensForOwner(GetTokensCallback, owner, true, 10_000,
 				new TokensForOwnerOrder.Default(0));
@@ -160,10 +166,10 @@ namespace TezosSDK.Tezos.API
 		private void DeployCompleted(OperationInfo operationInfo)
 		{
 			Logger.LogDebug("Deploy completed");
-			_wallet.EventManager.OperationCompleted -= DeployCompleted; // TODO: This is not removed FIX IT
+			_walletEventProvider.EventManager.OperationCompleted -= DeployCompleted; // TODO: This is not removed FIX IT
 
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
-			var creator = _wallet.GetWalletAddress();
+			var creator = _walletAccount.GetWalletAddress();
 
 			CoroutineRunner.Instance.StartCoroutine(_tezosAPI.GetOriginatedContractsForOwner(OnGetContracts, creator,
 				codeHash, 1000, new OriginatedContractsForOwnerOrder.Default(0)));

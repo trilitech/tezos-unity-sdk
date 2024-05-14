@@ -1,4 +1,5 @@
 using TezosSDK.Helpers;
+using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -11,6 +12,17 @@ namespace TezosSDK.Tezos
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
+		
+		
+		private IWalletConnection WalletConnection
+		{
+			get => TezosManager.Instance.WalletConnection;
+		}
+
+		private IWalletEventProvider WalletEventProvider
+		{
+			get => TezosManager.Instance.WalletEventProvider;
+		}
 
 		// Platform flags to determine the current running platform
 		private bool _isMobile;
@@ -24,7 +36,7 @@ namespace TezosSDK.Tezos
 			SubscribeToEvents();
 			SetPlatformFlags();
 
-			if (Tezos.Wallet.IsConnected)
+			if (WalletConnection.IsConnected)
 			{
 				ToggleUIElements(true);
 			}
@@ -35,7 +47,7 @@ namespace TezosSDK.Tezos
 				// Call Connect() only when on standalone
 				if (!_isWebGL && !_isMobile)
 				{
-					Tezos.Wallet.Connect(WalletProviderType.beacon);
+					WalletConnection.Connect(WalletProviderType.beacon);
 				}
 			}
 		}
@@ -55,10 +67,10 @@ namespace TezosSDK.Tezos
 
 		private void OnEnable()
 		{
-			if (TezosManager.Instance != null && !TezosManager.Instance.Wallet.IsConnected &&
-			    TezosManager.Instance.Wallet.HandshakeData != null)
+			if (TezosManager.Instance != null && !WalletConnection.IsConnected && 
+			    WalletConnection.HandshakeData != null)
 			{
-				qrCodeGenerator.SetQrCode(TezosManager.Instance.Wallet.HandshakeData);
+				qrCodeGenerator.SetQrCode(WalletConnection.HandshakeData);
 			}
 		}
 
@@ -90,17 +102,17 @@ namespace TezosSDK.Tezos
 
 		public void ConnectByDeeplink()
 		{
-			Tezos.Wallet.Connect(WalletProviderType.beacon);
+			WalletConnection.Connect(WalletProviderType.beacon);
 		}
 
 		public void ConnectWithSocial()
 		{
-			Tezos.Wallet.Connect(WalletProviderType.kukai);
+			WalletConnection.Connect(WalletProviderType.kukai);
 		}
 
 		public void DisconnectWallet()
 		{
-			Tezos.Wallet.Disconnect();
+			WalletConnection.Disconnect();
 		}
 
 		private void SetPlatformFlags()
@@ -114,9 +126,9 @@ namespace TezosSDK.Tezos
 		private void SubscribeToEvents()
 		{
 			// Subscribe to wallet events for handling user authentication.
-			Tezos.Wallet.EventManager.HandshakeReceived += OnHandshakeReceived;
-			Tezos.Wallet.EventManager.WalletConnected += OnWalletConnected;
-			Tezos.Wallet.EventManager.WalletDisconnected += OnWalletDisconnected;
+			WalletEventProvider.EventManager.HandshakeReceived += OnHandshakeReceived;
+			WalletEventProvider.EventManager.WalletConnected += OnWalletConnected;
+			WalletEventProvider.EventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
 		/// <summary>
@@ -148,9 +160,9 @@ namespace TezosSDK.Tezos
 
 		private void UnsubscribeFromEvents()
 		{
-			TezosManager.Instance.Wallet.EventManager.HandshakeReceived -= OnHandshakeReceived;
-			TezosManager.Instance.Wallet.EventManager.WalletConnected -= OnWalletConnected;
-			TezosManager.Instance.Wallet.EventManager.WalletDisconnected -= OnWalletDisconnected;
+			WalletEventProvider.EventManager.HandshakeReceived -= OnHandshakeReceived;
+			WalletEventProvider.EventManager.WalletConnected -= OnWalletConnected;
+			WalletEventProvider.EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 	}
 

@@ -8,13 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - `OnWalletDisconnected` event handling in `TezosAuthenticator`.
-  
+- Refactor of wallet and connector interfaces to improve modularity and flexibility, including:
+  - New focused wallet interfaces (`IWalletConnection`, `IWalletAccount`, `IWalletTransaction`, `IWalletContract`, `IWalletEventProvider`) for better separation of concerns.
+  - `WalletConnectorFactory` to replace `BeaconConnectorFactory`, reflecting a more generic wallet connection approach.
+
 ### Changed
 - Refactored asynchronous callbacks throughout the SDK to use the `Result<T>` pattern for improved error handling and clarity.
 - Simplified HTTP request logic for better efficiency and readability, including updates to `TezosHttpClient` to utilize coroutine callbacks.
 - Improved operation tracking in `OperationTracker` and `WalletProvider` to improve blockchain operation tracking and error reporting mechanisms.
 - Updated event naming and handling to improve clarity and streamline the event handling process, renaming events such as `ContractCallInjected` to `OperationInjected` and using generic events like `OperationCompleted` in `WalletEventManager`.
 - `TokenMetadata` type to `JsonElement` to be able to handle generic metadata.
+- Connector system, renaming `IBeaconConnector` to `IWalletConnector` and modifying implementations (`BeaconConnectorDotNet`, `BeaconConnectorWebGL`) to align with new interface.
+- `TokenContract` and `BeaconConnectorDotNet` classes updated to use the new wallet interfaces.
+- Method signatures and implementations across wallet-related classes to align with new interfaces.
+- Event handling in connectors to ensure proper translation and dispatch according to the new event system structure.
+- Logging and error handling across the modified classes for better debugging and maintenance.
+- Connection and operation request flows in wallet connectors to enhance performance and user experience.
 
 ### Fixed
 - Addressed a memory leak in `TokenContract` where event handlers were not being properly unsubscribed.
@@ -27,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 - Updated comments to reflect new callback signatures and their behaviors as well as the use of the `Result<T>` pattern.
+- Updated comments to describe the new wallet and connector interface structure and their benefits.
+
 
 
 ## [3.0.0] - 2023-01-09

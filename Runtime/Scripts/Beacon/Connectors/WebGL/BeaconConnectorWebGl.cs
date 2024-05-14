@@ -13,17 +13,20 @@ namespace TezosSDK.Beacon
 	/// <summary>
 	///     WebGL implementation of the BeaconConnector.
 	/// </summary>
-	public class BeaconConnectorWebGl : IBeaconConnector
+	public class BeaconConnectorWebGl : IWalletConnector
 	{
 		public BeaconConnectorWebGl(WalletEventManager walletEventManager)
 		{
 			walletEventManager.SDKInitialized += UnityReady;
 		}
 
-		public event Action<BeaconMessageType> OperationRequested;
-
-		public void ConnectWallet(WalletProviderType? walletProviderType)
+		public event Action<WalletMessageType> OperationRequested;
+		
+		public void ConnectWallet()
 		{
+			
+			WalletProviderType? walletProviderType = WalletProviderType.beacon; // TODO: Fix this
+			
 			if (walletProviderType == null)
 			{
 				Logger.LogError("WalletProviderType is null");
@@ -49,29 +52,31 @@ namespace TezosSDK.Beacon
 
 		public void RequestWalletConnection()
 		{
-			OperationRequested?.Invoke(BeaconMessageType.permission_request);
+			OperationRequested?.Invoke(WalletMessageType.ConnectionRequest);
 		}
 
-		public void RequestOperation(
-			string destination,
-			string entryPoint = "default",
-			string input = null,
-			ulong amount = 0)
+		public void RequestOperation(WalletOperationRequest operationRequest)
 		{
-			JsSendContractCall(destination, amount.ToString(), entryPoint, input);
-			OperationRequested?.Invoke(BeaconMessageType.operation_request);
+			JsSendContractCall(
+				operationRequest.Destination,
+				operationRequest.Amount.ToString(),
+				operationRequest.EntryPoint,
+				operationRequest.Arg
+			);
+			OperationRequested?.Invoke(WalletMessageType.OperationRequest);
 		}
 
-		public void RequestSignPayload(SignPayloadType signingType, string payload)
+		public void RequestSignPayload(WalletSignPayloadRequest signRequest)
 		{
-			JsSignPayload((int)signingType, payload);
-			OperationRequested?.Invoke(BeaconMessageType.sign_payload_request);
+			// Adjust the method to accept the WalletSignPayloadRequest parameter
+			JsSignPayload((int)signRequest.SigningType, signRequest.Payload);
+			OperationRequested?.Invoke(WalletMessageType.SignPayloadRequest);
 		}
 
-		public void RequestContractOrigination(string script, string delegateAddress = null)
+		public void RequestContractOrigination(WalletOriginateContractRequest originationRequest)
 		{
-			JsRequestContractOrigination(script, delegateAddress);
-			OperationRequested?.Invoke(BeaconMessageType.operation_request);
+			JsRequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress);
+			OperationRequested?.Invoke(WalletMessageType.OperationRequest);
 		}
 
 		private void UnityReady()

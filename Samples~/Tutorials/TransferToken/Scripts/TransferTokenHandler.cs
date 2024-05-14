@@ -51,7 +51,7 @@ namespace TezosSDK.Tutorials.TransferToken
 				if (!tokenContracts.Any())
 				{
 					availableTokensTMP.text =
-						$"{TezosManager.Instance.Tezos.Wallet.GetWalletAddress()} didn't deploy any contract yet.";
+						$"{TezosManager.Instance.Tezos.WalletAccount.GetWalletAddress()} didn't deploy any contract yet.";
 
 					return;
 				}

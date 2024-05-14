@@ -41,6 +41,12 @@ namespace TezosSDK.Beacon
 		/// </remarks>
 		public async Task RequestTezosPermission(DappBeaconClient beaconDappClient)
 		{
+			if (beaconDappClient == null)
+			{
+				Logger.LogError("BeaconDappClient is null");
+				return;
+			}
+			
 			// Check for active peer and log error if not found
 			var activePeer = beaconDappClient.GetActivePeer();
 
@@ -52,6 +58,7 @@ namespace TezosSDK.Beacon
 
 			var network = CreateNetwork();
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
+            Logger.LogInfo("Permission request: " + permissionRequest);
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
 			Logger.LogInfo("Permission request sent");
 		}

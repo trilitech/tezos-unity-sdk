@@ -20,13 +20,18 @@ namespace TezosSDK.Beacon
 	public class BeaconClientManager : IDisposable
 	{
 		private readonly EventDispatcher _eventDispatcher;
-		private WalletInfo _activeWallet; // Keep track of the active wallet
 
-		public BeaconClientManager(WalletEventManager eventManager)
+		private readonly IWalletConnector _walletConnector;
+		private WalletInfo _activeWallet; // Keep track of the active wallet
+		private bool _isInitialized;
+
+		public BeaconClientManager(WalletEventManager eventManager, IWalletConnector walletConnector)
 		{
 			_eventDispatcher = new EventDispatcher(eventManager);
+			_walletConnector = walletConnector;
 			eventManager.WalletConnected += OnWalletConnected;
 			eventManager.WalletDisconnected += OnWalletDisconnected;
+			_walletConnector.OperationRequested += OperationRequestedHandler;
 		}
 
 		public DappBeaconClient BeaconDappClient { get; private set; }
@@ -34,6 +39,46 @@ namespace TezosSDK.Beacon
 		public void Dispose()
 		{
 			BeaconDappClient?.Disconnect();
+		}
+
+		// private void OperationRequestedHandler(WalletMessageType messageType)
+		// {
+		// 	switch (messageType)
+		// 	{
+		// 		case WalletMessageType.ConnectionRequest:
+		// 			// Handle connection request logic
+		// 			break;
+		// 		case WalletMessageType.OperationRequest:
+		// 			// Handle operation request logic
+		// 			break;
+		// 		case WalletMessageType.SignPayloadRequest:
+		// 			// Handle sign payload request logic
+		// 			break;
+		// 		case WalletMessageType.DisconnectionRequest:
+		// 			// Handle disconnection request logic
+		// 			break;
+		// 	}
+		// }
+
+		private void OperationRequestedHandler(WalletMessageType messageType)
+		{
+			Logger.LogDebug($"OperationRequestedHandler - MessageType: {messageType}");
+
+			switch (messageType)
+			{
+				case WalletMessageType.ConnectionRequest:
+					// _walletConnector.ConnectWallet();
+					break;
+				case WalletMessageType.OperationRequest:
+					// _walletConnector.RequestOperation(operationDetails);
+					break;
+				case WalletMessageType.SignPayloadRequest:
+					// _walletConnector.RequestSignPayload(signPayloadDetails);
+					break;
+				case WalletMessageType.DisconnectionRequest:
+					// _walletConnector.DisconnectWallet();
+					break;
+			}
 		}
 
 		private void OnWalletDisconnected(WalletInfo obj)
@@ -46,19 +91,37 @@ namespace TezosSDK.Beacon
 			_activeWallet = wallet; // Set active wallet
 		}
 
-		public async void InitAsyncAndConnect()
+		public async Task Initalize()
+		{
+			if (_isInitialized)
+			{
+				Logger.LogWarning("BeaconClientManager already initialized");
+				return;
+			}
+			
+			if (BeaconDappClient == null)
+			{
+				Logger.LogError("BeaconDappClient is null");
+				return;
+			}
+
+			Logger.LogInfo("Initializing BeaconDappClient");
+
+			await BeaconDappClient.InitAsync();
+
+			Logger.LogInfo("BeaconDappClient initialized");
+		}
+
+		public void Connect()
 		{
 			try
 			{
 				if (BeaconDappClient == null)
 				{
-					Logger.LogError("BeaconDappClient is null - Call CreateBeaconClient() first!");
+					Logger.LogError("BeaconDappClient is null");
 					return;
 				}
 
-				Logger.LogInfo("Initializing BeaconDappClient");
-
-				await BeaconDappClient.InitAsync();
 				BeaconDappClient.Connect();
 
 				var activePeer = BeaconDappClient.GetActivePeer();
@@ -101,7 +164,7 @@ namespace TezosSDK.Beacon
 		}
 
 		/// <summary>
-		///     Creates and initializes the Beacon client.
+		///     Creates the Beacon client.
 		/// </summary>
 		public void Create()
 		{
@@ -162,13 +225,13 @@ namespace TezosSDK.Beacon
 				return;
 			}
 
-			Logger.LogDebug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
-
 			if (e.PairingDone)
 			{
 				HandlePairingDone();
 				return;
 			}
+
+			Logger.LogDebug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
 
 			switch (e.Request?.Type)
 			{
@@ -275,7 +338,7 @@ namespace TezosSDK.Beacon
 				return;
 			}
 
-			TezosManager.Instance.BeaconConnector.RequestWalletConnection();
+			TezosManager.Instance.WalletConnector.ConnectWallet();
 			_eventDispatcher.DispatchPairingCompletedEvent(BeaconDappClient);
 		}
 

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace TezosSDK.Beacon
 {
 
-	public static class BeaconConnectorFactory
+	public static class WalletConnectorFactory
 	{
-		public static IBeaconConnector CreateConnector(RuntimePlatform platform, WalletEventManager eventManager)
+		public static IWalletConnector CreateConnector(RuntimePlatform platform, WalletEventManager eventManager)
 		{
 			switch (platform)
 			{

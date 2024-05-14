@@ -11,29 +11,49 @@ namespace TezosSDK.Tezos
 	public interface ITezos
 	{
 		/// <summary>
-		///     Tezos chain data source
+		/// Tezos chain data source
 		/// </summary>
 		ITezosAPI API { get; }
 
 		/// <summary>
-		///     Wallet features
+		/// Connection to the wallet
 		/// </summary>
-		IWalletProvider Wallet { get; }
+		IWalletConnection WalletConnection { get; }
 
 		/// <summary>
-		///     Currently used FA2 Contract.
+		/// Account information for the wallet
+		/// </summary>
+		IWalletAccount WalletAccount { get; }
+
+		/// <summary>
+		/// Transaction-related functionalities for the wallet
+		/// </summary>
+		IWalletTransaction WalletTransaction { get; }
+
+		/// <summary>
+		/// Contract-related functionalities for the wallet
+		/// </summary>
+		IWalletContract WalletContract { get; }
+		
+		/// <summary>
+		/// Event management for wallet-related events
+		/// </summary>
+		IWalletEventProvider WalletEventProvider { get; }
+
+		/// <summary>
+		/// Currently used FA2 Contract.
 		/// </summary>
 		IFa2 TokenContract { get; set; }
 
 		/// <summary>
-		///     Current wallet tz balance.
+		/// Current wallet tz balance.
 		/// </summary>
-		public IEnumerator GetCurrentWalletBalance(Action<Result<ulong>> callback);
+		IEnumerator GetCurrentWalletBalance(Action<Result<ulong>> callback);
 
 		/// <summary>
-		///     Get all originated contracts by the account.
+		/// Get all originated contracts by the account.
 		/// </summary>
-		public IEnumerator GetOriginatedContracts(Action<Result<IEnumerable<TokenContract>>> callback);
+		IEnumerator GetOriginatedContracts(Action<Result<IEnumerable<TokenContract>>> callback);
 	}
 
 }

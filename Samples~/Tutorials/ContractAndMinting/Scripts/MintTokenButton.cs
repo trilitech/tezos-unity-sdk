@@ -40,7 +40,7 @@ namespace TezosSDK.Tutorials.ContractAndMinting
 			Logger.LogDebug("Minting token...");
 
 			var tokenMetadata = CreateRandomTokenMetadata();
-			var destinationAddress = TezosManager.Instance.Wallet.GetWalletAddress();
+			var destinationAddress = TezosManager.Instance.WalletAccount.GetWalletAddress();
 			var randomAmount = new Random().Next(1, 1024);
 
 			TezosManager.Instance.Tezos.TokenContract.Mint(OnTokenMinted, tokenMetadata, destinationAddress,

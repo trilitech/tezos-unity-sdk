@@ -23,7 +23,7 @@ namespace TezosSDK.Tezos
 		[SerializeField] private Logger.LogLevel logLevel = Logger.LogLevel.Debug;
 		public static TezosManager Instance;
 
-		public IBeaconConnector BeaconConnector { get; private set; }
+		public IWalletConnector WalletConnector { get; private set; }
 
 		public TezosConfigSO Config
 		{
@@ -36,9 +36,29 @@ namespace TezosSDK.Tezos
 
 		public ITezos Tezos { get; private set; }
 
-		public IWalletProvider Wallet
+		public IWalletConnection WalletConnection
 		{
-			get => Tezos?.Wallet;
+			get => Tezos?.WalletConnection;
+		}
+
+		public IWalletAccount WalletAccount
+		{
+			get => Tezos?.WalletAccount;
+		}
+
+		public IWalletTransaction WalletTransaction
+		{
+			get => Tezos?.WalletTransaction;
+		}
+
+		public IWalletContract WalletContract
+		{
+			get => Tezos?.WalletContract;
+		}
+
+		public IWalletEventProvider WalletEventProvider
+		{
+			get => Tezos?.WalletEventProvider;
 		}
 
 		protected void Awake()
@@ -80,8 +100,9 @@ namespace TezosSDK.Tezos
 			Logger.CurrentLogLevel = logLevel;
 			Logger.LogDebug("Tezos SDK initializing...");
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
-			BeaconConnector = BeaconConnectorFactory.CreateConnector(Application.platform, EventManager);
-			Tezos = new Tezos(config, EventManager, BeaconConnector);
+			WalletConnector = WalletConnectorFactory.CreateConnector(Application.platform, EventManager);
+			var walletProvider = new WalletProvider(EventManager, WalletConnector);
+			Tezos = new Tezos(config, walletProvider);
 		}
 
 		private void ValidateConfig()
