@@ -155,7 +155,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 					}
 
 					initContractPanel.GetComponent<InitiateContractController>()
-						.DrawContractToggles(contracts, _manager.Tezos.Wallet.GetWalletAddress());
+						.DrawContractToggles(contracts, _manager.Tezos.WalletAccount.GetWalletAddress());
 				}
 
 				AllowUIAccess(success);
@@ -200,7 +200,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample
 				}
 
 				initContractPanel.GetComponent<InitiateContractController>()
-					.DrawContractToggles(contracts, _manager.Tezos.Wallet.GetWalletAddress());
+					.DrawContractToggles(contracts, _manager.Tezos.WalletAccount.GetWalletAddress());
 			});
 		}
 

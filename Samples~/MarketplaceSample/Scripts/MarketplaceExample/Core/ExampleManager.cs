@@ -43,13 +43,13 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		public void Unpair()
 		{
-			Tezos.Wallet.Disconnect();
+			Tezos.WalletConnection.Disconnect();
 			CurrentUser = null;
 		}
 
 		public void FetchInventoryItems(Action<List<IItemModel>> callback)
 		{
-			var activeWalletAddress = Tezos.Wallet.GetWalletAddress(); // Address to the current active account
+			var activeWalletAddress = Tezos.WalletAccount.GetWalletAddress(); // Address to the current active account
 
 			const string entrypoint = "view_items_of";
 
@@ -112,7 +112,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			}.ToJson();
 
 			Logger.LogDebug(contractAddress + " " + entryPoint + parameter);
-			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
+			Tezos.WalletTransaction.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
 			Application.OpenURL("tezos://");
@@ -124,7 +124,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			const string entrypoint = "mint";
 			const string input = "{\"prim\": \"Unit\"}";
 
-			Tezos.Wallet.CallContract(contractAddress, entrypoint, input);
+			Tezos.WalletTransaction.CallContract(contractAddress, entrypoint, input);
 
 #if UNITY_IOS || UNITY_ANDROID
 			Application.OpenURL("tezos://");
@@ -137,7 +137,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			var randomInt = rnd.Next(1, int.MaxValue);
 			var randomAmount = rnd.Next(1, 1024);
 
-			var activeAccount = Tezos.Wallet.GetWalletAddress();
+			var activeAccount = Tezos.WalletAccount.GetWalletAddress();
 			const string imageAddress = "ipfs://QmX4t8ikQgjvLdqTtL51v6iVun9tNE7y7Txiw4piGQVNgK";
 
 			var metadata = new TokenMetadata
@@ -187,9 +187,10 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		public void TransferItem(int itemID, int amount, string address)
 		{
-			Logger.LogDebug($"Transfering item {itemID} from {Tezos.Wallet.GetWalletAddress()} to Address: {address}");
+			var sender = Tezos.WalletAccount.GetWalletAddress();
 
-			var sender = Tezos.Wallet.GetWalletAddress();
+			Logger.LogDebug($"Transfering item {itemID} from {sender} to Address: {address}");
+
 			const string entrypoint = "transfer";
 
 			var input = "[ { \"prim\": \"Pair\", \"args\": [ { \"string\": \"" + sender +
@@ -197,7 +198,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			            "\" }, { \"prim\": \"Pair\", \"args\": [ { \"int\": \"" + itemID + "\" }, { \"int\": \"" +
 			            amount + "\" } ] } ] } ] ] } ]";
 
-			Tezos.Wallet.CallContract(contractAddress, entrypoint, input);
+			Tezos.WalletTransaction.CallContract(contractAddress, entrypoint, input);
 
 #if UNITY_IOS || UNITY_ANDROID
 			Application.OpenURL("tezos://");
@@ -228,7 +229,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 				}
 			}.ToJson();
 
-			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
+			Tezos.WalletTransaction.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
 			Application.OpenURL("tezos://");
@@ -241,7 +242,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 			const string entryPoint = "removeFromMarket";
 
-			var sender = Tezos.Wallet.GetWalletAddress();
+			var sender = Tezos.WalletAccount.GetWalletAddress();
 
 			var parameter = new MichelinePrim
 			{
@@ -253,7 +254,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 				}
 			}.ToJson();
 
-			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
+			Tezos.WalletTransaction.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
 			Application.OpenURL("tezos://");
@@ -267,7 +268,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		public void ChangeContract(string activeContractAddress)
 		{
-			PlayerPrefs.SetString("CurrentContract:" + Tezos.Wallet.GetWalletAddress(), activeContractAddress);
+			PlayerPrefs.SetString("CurrentContract:" + Tezos.WalletAccount.GetWalletAddress(), activeContractAddress);
 			Tezos.TokenContract.Address = activeContractAddress;
 		}
 
@@ -276,7 +277,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 			const string entryPoint = "login";
 			const string parameter = "{\"prim\": \"Unit\"}";
 
-			Tezos.Wallet.CallContract(contractAddress, entryPoint, parameter);
+			Tezos.WalletTransaction.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
 			Application.OpenURL("tezos://");
@@ -308,7 +309,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		public void RequestSignPayload(SignPayloadType signingType, string payload)
 		{
-			Tezos.Wallet.RequestSignPayload(signingType, payload);
+			Tezos.WalletTransaction.RequestSignPayload(signingType, payload);
 
 #if UNITY_IOS || UNITY_ANDROID
 			Application.OpenURL("tezos://");
@@ -317,22 +318,22 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		public bool VerifyPayload(SignPayloadType signingType, string payload)
 		{
-			return Tezos.Wallet.VerifySignedPayload(signingType, payload);
+			return Tezos.WalletTransaction.VerifySignedPayload(signingType, payload);
 		}
 
 		public string GetActiveAccountAddress()
 		{
-			return Tezos.Wallet.GetWalletAddress();
+			return Tezos.WalletAccount.GetWalletAddress();
 		}
 
 		public void Login(WalletProviderType walletProvider)
 		{
-			Tezos.Wallet.Connect(walletProvider);
+			Tezos.WalletConnection.Connect(walletProvider);
 		}
 
 		public IWalletEventManager GetWalletMessageReceiver()
 		{
-			return Tezos.Wallet.EventManager;
+			return Tezos.WalletEventProvider.EventManager;
 		}
 
 		public void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback)
@@ -375,7 +376,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 		private void OnInventoryFetched(ContractInventoryViewResult[] inventory, Action<List<IItemModel>> callback)
 		{
 			var dummyItemList = new List<IItemModel>();
-			var owner = Tezos.Wallet.GetWalletAddress();
+			var owner = Tezos.WalletAccount.GetWalletAddress();
 
 			if (inventory != null)
 			{
@@ -425,7 +426,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 
 		private void GetSoftBalanceRoutine(Action<int> callback)
 		{
-			var caller = Tezos.Wallet.GetWalletAddress();
+			var caller = Tezos.WalletAccount.GetWalletAddress();
 
 			var input = new MichelinePrim
 			{
