@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using TezosSDK.Helpers;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
@@ -22,12 +22,11 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 		}
 
 		public event Action<WalletMessageType> OperationRequested;
-		
+
 		public void ConnectWallet()
 		{
-			
 			WalletProviderType? walletProviderType = WalletProviderType.beacon; // TODO: Fix this
-			
+
 			if (walletProviderType == null)
 			{
 				Logger.LogError("WalletProviderType is null");
@@ -58,12 +57,9 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 
 		public void RequestOperation(WalletOperationRequest operationRequest)
 		{
-			JsSendContractCall(
-				operationRequest.Destination,
-				operationRequest.Amount.ToString(),
-				operationRequest.EntryPoint,
-				operationRequest.Arg
-			);
+			JsSendContractCall(operationRequest.Destination, operationRequest.Amount.ToString(),
+				operationRequest.EntryPoint, operationRequest.Arg);
+
 			OperationRequested?.Invoke(WalletMessageType.OperationRequest);
 		}
 
@@ -87,7 +83,13 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 
 #if UNITY_WEBGL
 		[DllImport("__Internal")]
-		private static extern void JsInitWallet(string network, string rpc, string walletProvider, string appName, string appUrl, string iconUrl);
+		private static extern void JsInitWallet(
+			string network,
+			string rpc,
+			string walletProvider,
+			string appName,
+			string appUrl,
+			string iconUrl);
 
 		[DllImport("__Internal")]
 		private static extern void JsConnectAccount();
@@ -117,13 +119,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 		{
 		}
 
-		private void JsInitWallet(
-			string network,
-			string rpc,
-			string toString,
-			string metadataName,
-			string metadataUrl,
-			string metadataIcon)
+		private void JsInitWallet(string network, string rpc, string toString, string metadataName, string metadataUrl, string metadataIcon)
 		{
 		}
 

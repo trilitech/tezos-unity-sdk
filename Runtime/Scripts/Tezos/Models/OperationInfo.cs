@@ -44,4 +44,3 @@ namespace TezosSDK.Tezos.Models
 	}
 
 }
-

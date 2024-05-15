@@ -70,7 +70,10 @@ namespace TezosSDK.Tezos.Interfaces.API
 			uint tokenId);
 
 		// Gets the metadata associated with a given token.
-		public IEnumerator GetTokenMetadata(Action<HttpResult<JsonElement>> callback, string contractAddress, uint tokenId);
+		public IEnumerator GetTokenMetadata(
+			Action<HttpResult<JsonElement>> callback,
+			string contractAddress,
+			uint tokenId);
 
 		// Queries token high-level collection/contract level information.
 		public IEnumerator GetContractMetadata(Action<HttpResult<JsonElement>> callback, string contractAddress);

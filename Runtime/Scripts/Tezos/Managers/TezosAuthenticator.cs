@@ -3,7 +3,7 @@ using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Managers
 {
@@ -14,8 +14,13 @@ namespace TezosSDK.Tezos.Managers
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
+
+		// Platform flags to determine the current running platform
+		private bool _isMobile;
+		private bool _isWebGL;
 		
-		
+		private ITezos Tezos { get; set; }
+
 		private IWalletConnection WalletConnection
 		{
 			get => TezosManager.Instance.WalletConnection;
@@ -25,12 +30,6 @@ namespace TezosSDK.Tezos.Managers
 		{
 			get => TezosManager.Instance.WalletEventProvider;
 		}
-
-		// Platform flags to determine the current running platform
-		private bool _isMobile;
-		private bool _isWebGL;
-
-		private ITezos Tezos { get; set; }
 
 		private void Start()
 		{
@@ -69,7 +68,7 @@ namespace TezosSDK.Tezos.Managers
 
 		private void OnEnable()
 		{
-			if (TezosManager.Instance != null && !WalletConnection.IsConnected && 
+			if (TezosManager.Instance != null && !WalletConnection.IsConnected &&
 			    WalletConnection.HandshakeData != null)
 			{
 				qrCodeGenerator.SetQrCode(WalletConnection.HandshakeData);

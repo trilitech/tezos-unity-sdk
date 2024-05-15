@@ -6,7 +6,7 @@ using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Managers
 {
@@ -27,8 +27,6 @@ namespace TezosSDK.Tezos.Managers
 		[SerializeField] private Logger.LogLevel logLevel = Logger.LogLevel.Debug;
 		public static TezosManager Instance;
 
-		public IWalletConnector WalletConnector { get; private set; }
-
 		public TezosConfigSO Config
 		{
 			get => config;
@@ -40,20 +38,17 @@ namespace TezosSDK.Tezos.Managers
 
 		public ITezos Tezos { get; private set; }
 
-		public IWalletConnection WalletConnection
-		{
-			get => Tezos?.WalletConnection;
-		}
-
 		public IWalletAccount WalletAccount
 		{
 			get => Tezos?.WalletAccount;
 		}
 
-		public IWalletTransaction WalletTransaction
+		public IWalletConnection WalletConnection
 		{
-			get => Tezos?.WalletTransaction;
+			get => Tezos?.WalletConnection;
 		}
+
+		public IWalletConnector WalletConnector { get; private set; }
 
 		public IWalletContract WalletContract
 		{
@@ -63,6 +58,11 @@ namespace TezosSDK.Tezos.Managers
 		public IWalletEventProvider WalletEventProvider
 		{
 			get => Tezos?.WalletEventProvider;
+		}
+
+		public IWalletTransaction WalletTransaction
+		{
+			get => Tezos?.WalletTransaction;
 		}
 
 		protected void Awake()

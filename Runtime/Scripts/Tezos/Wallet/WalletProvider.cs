@@ -8,12 +8,13 @@ using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Wallet
 {
 
-	public class WalletProvider : IWalletConnection, IWalletAccount, IWalletTransaction, IWalletContract, IWalletEventProvider, IDisposable
+	public class WalletProvider : IWalletConnection, IWalletAccount, IWalletTransaction, IWalletContract,
+		IWalletEventProvider, IDisposable
 	{
 		private readonly IWalletConnector _walletConnector;
 		private string _pubKey;
@@ -67,6 +68,7 @@ namespace TezosSDK.Tezos.Wallet
 				SigningType = signingType,
 				Payload = payload
 			};
+
 			_walletConnector.RequestSignPayload(signRequest);
 		}
 
@@ -84,7 +86,7 @@ namespace TezosSDK.Tezos.Wallet
 				Arg = input,
 				Amount = amount
 			};
-			
+
 			_walletConnector.RequestOperation(operationRequest);
 		}
 
@@ -95,6 +97,7 @@ namespace TezosSDK.Tezos.Wallet
 				Script = script,
 				DelegateAddress = delegateAddress
 			};
+
 			_walletConnector.RequestContractOrigination(originationRequest);
 		}
 
@@ -104,7 +107,7 @@ namespace TezosSDK.Tezos.Wallet
 		private void OperationRequestedHandler(WalletMessageType messageType)
 		{
 			Logger.LogDebug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
-			
+
 			switch (messageType)
 			{
 				case WalletMessageType.ConnectionRequest:

@@ -7,7 +7,7 @@ using TezosSDK.Tezos.Filters;
 using TezosSDK.Tezos.Interfaces.API;
 using TezosSDK.Tezos.Models.Tokens;
 using TezosSDK.Tezos.ScriptableObjects;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.API
 {
@@ -126,7 +126,10 @@ namespace TezosSDK.Tezos.API
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetTokenMetadata(Action<HttpResult<JsonElement>> callback, string contractAddress, uint tokenId)
+		public IEnumerator GetTokenMetadata(
+			Action<HttpResult<JsonElement>> callback,
+			string contractAddress,
+			uint tokenId)
 		{
 			var url = $"tokens?contract={contractAddress}&tokenId={tokenId}&select=metadata";
 

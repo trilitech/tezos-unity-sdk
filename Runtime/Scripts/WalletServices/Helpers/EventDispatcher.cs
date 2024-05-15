@@ -8,7 +8,7 @@ using TezosSDK.Helpers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.WalletServices.Helpers
 {

@@ -7,7 +7,7 @@ using TezosSDK.FileUploaders.Interfaces;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.FileUploaders.IPFS
 {

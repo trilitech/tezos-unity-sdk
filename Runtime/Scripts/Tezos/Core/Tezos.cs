@@ -11,7 +11,7 @@ using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos
 {
@@ -22,12 +22,6 @@ namespace TezosSDK.Tezos
 	/// </summary>
 	public class Tezos : ITezos
 	{
-		public IWalletConnection WalletConnection { get; }
-		public IWalletAccount WalletAccount { get; }
-		public IWalletTransaction WalletTransaction { get; }
-		public IWalletContract WalletContract { get; }
-		public IWalletEventProvider WalletEventProvider { get; }
-		
 		public Tezos(TezosConfigSO config, WalletProvider walletProvider)
 		{
 			API = new TezosAPI(config);
@@ -41,6 +35,12 @@ namespace TezosSDK.Tezos
 			// Subscribe to wallet events
 			walletProvider.EventManager.WalletConnected += OnWalletConnected;
 		}
+
+		public IWalletConnection WalletConnection { get; }
+		public IWalletAccount WalletAccount { get; }
+		public IWalletTransaction WalletTransaction { get; }
+		public IWalletContract WalletContract { get; }
+		public IWalletEventProvider WalletEventProvider { get; }
 
 		public ITezosAPI API { get; }
 		public IFa2 TokenContract { get; set; }

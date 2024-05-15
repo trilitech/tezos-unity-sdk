@@ -4,7 +4,7 @@ using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos.Managers;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Wallet
 {

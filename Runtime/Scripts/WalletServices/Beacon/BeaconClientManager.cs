@@ -17,7 +17,7 @@ using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Helpers;
 using TezosSDK.WalletServices.Helpers.Loggers;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.WalletServices.Beacon
 {
@@ -103,7 +103,7 @@ namespace TezosSDK.WalletServices.Beacon
 				Logger.LogWarning("BeaconClientManager already initialized");
 				return;
 			}
-			
+
 			if (BeaconDappClient == null)
 			{
 				Logger.LogError("BeaconDappClient is null");
@@ -177,7 +177,8 @@ namespace TezosSDK.WalletServices.Beacon
 			var options = CreateBeaconOptions();
 
 			BeaconDappClient =
-				BeaconClientFactory.Create<IDappBeaconClient>(options, new ConnectorLoggerProvider()) as DappBeaconClient;
+				BeaconClientFactory.Create<IDappBeaconClient>(options, new ConnectorLoggerProvider()) as
+					DappBeaconClient;
 
 			if (BeaconDappClient == null)
 			{

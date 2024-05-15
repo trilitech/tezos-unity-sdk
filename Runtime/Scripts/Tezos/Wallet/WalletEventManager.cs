@@ -4,7 +4,7 @@ using TezosSDK.Patterns;
 using TezosSDK.Tezos.Models;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 // ReSharper disable InconsistentNaming
 

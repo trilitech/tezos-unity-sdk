@@ -1,7 +1,7 @@
 using System;
 using Beacon.Sdk.Beacon;
-using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Beacon;
@@ -23,6 +23,11 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 			_operationRequestHandler = new OperationRequestHandler();
 			_operationRequestHandler.MessageSent += OnBeaconMessageSent;
 			_beaconClientManager.Create();
+		}
+
+		public void Dispose()
+		{
+			_beaconClientManager.BeaconDappClient.Disconnect();
 		}
 
 		public event Action<WalletMessageType> OperationRequested;
@@ -48,33 +53,25 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 		{
 			// Adjust the method to accept the WalletOperationRequest parameter
 			Logger.LogDebug("RequestOperation");
-			
-			await _operationRequestHandler.RequestTezosOperation(
-				operationRequest.Destination,
-				operationRequest.EntryPoint,
-				operationRequest.Arg,
-				operationRequest.Amount,
-				_beaconClientManager.BeaconDappClient
-			);
+
+			await _operationRequestHandler.RequestTezosOperation(operationRequest.Destination,
+				operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
+				_beaconClientManager.BeaconDappClient);
 		}
 
 		public async void RequestContractOrigination(WalletOriginateContractRequest originationRequest)
 		{
 			Logger.LogDebug("RequestContractOrigination");
-			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress, _beaconClientManager.BeaconDappClient);
+
+			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script,
+				originationRequest.DelegateAddress, _beaconClientManager.BeaconDappClient);
 		}
 
 		public async void RequestSignPayload(WalletSignPayloadRequest signRequest)
 		{
 			await _beaconClientManager.BeaconDappClient.RequestSign(
 				NetezosExtensions.GetPayloadString(signRequest.SigningType, signRequest.Payload),
-				signRequest.SigningType
-			);
-		}
-
-		public void Dispose()
-		{
-			_beaconClientManager.BeaconDappClient.Disconnect();
+				signRequest.SigningType);
 		}
 
 		/// <summary>

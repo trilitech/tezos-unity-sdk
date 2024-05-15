@@ -11,8 +11,8 @@ using Beacon.Sdk.Core.Domain.Entities;
 using Beacon.Sdk.Core.Domain.Services;
 using Netezos.Keys;
 using Newtonsoft.Json.Linq;
-using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
 
 namespace TezosSDK.WalletServices.Helpers
@@ -46,7 +46,7 @@ namespace TezosSDK.WalletServices.Helpers
 				Logger.LogError("BeaconDappClient is null");
 				return;
 			}
-			
+
 			// Check for active peer and log error if not found
 			var activePeer = beaconDappClient.GetActivePeer();
 
@@ -58,7 +58,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 			var network = CreateNetwork();
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
-            Logger.LogInfo("Permission request: " + permissionRequest);
+			Logger.LogInfo("Permission request: " + permissionRequest);
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
 			Logger.LogInfo("Permission request sent");
 		}

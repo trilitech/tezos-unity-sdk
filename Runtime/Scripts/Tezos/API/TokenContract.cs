@@ -12,7 +12,7 @@ using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Models.Tokens;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.API
 {
@@ -21,15 +21,21 @@ namespace TezosSDK.Tezos.API
 	{
 		private readonly ITezosAPI _tezosAPI;
 		private readonly IWalletAccount _walletAccount;
-		private readonly IWalletTransaction _walletTransaction;
 		private readonly IWalletContract _walletContract;
 		private readonly IWalletEventProvider _walletEventProvider;
+		private readonly IWalletTransaction _walletTransaction;
 
 		private Action<string> _onDeployCompleted;
 		private Action<TokenBalance> _onMintCompleted;
 		private Action<string> _onTransferCompleted;
 
-		public TokenContract(string address, IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, IWalletEventProvider walletEventProvider, ITezosAPI tezosAPI)
+		public TokenContract(
+			string address,
+			IWalletAccount walletAccount,
+			IWalletTransaction walletTransaction,
+			IWalletContract walletContract,
+			IWalletEventProvider walletEventProvider,
+			ITezosAPI tezosAPI)
 		{
 			Address = address;
 			_walletAccount = walletAccount;
@@ -40,8 +46,13 @@ namespace TezosSDK.Tezos.API
 		}
 
 		// Constructor without address parameter
-		public TokenContract(IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, IWalletEventProvider walletEventProvider, ITezosAPI tezosAPI)
-			: this(null, walletAccount, walletTransaction, walletContract, walletEventProvider, tezosAPI)
+		public TokenContract(
+			IWalletAccount walletAccount,
+			IWalletTransaction walletTransaction,
+			IWalletContract walletContract,
+			IWalletEventProvider walletEventProvider,
+			ITezosAPI tezosAPI) : this(null, walletAccount, walletTransaction, walletContract, walletEventProvider,
+			tezosAPI)
 		{
 		}
 
@@ -84,7 +95,9 @@ namespace TezosSDK.Tezos.API
 						token_id = tokenId.ToString()
 					}).ToJson();
 
-					_walletEventProvider.EventManager.OperationCompleted += MintCompleted; // TODO: This is not removed FIX IT
+					_walletEventProvider.EventManager.OperationCompleted +=
+						MintCompleted; // TODO: This is not removed FIX IT
+
 					_walletTransaction.CallContract(Address, _entrypoint, mintParameters);
 				}
 				else
