@@ -1,0 +1,47 @@
+﻿using System;
+using Beacon.Sdk.Beacon;
+
+namespace TezosSDK.Tezos.Models
+{
+
+	/// <summary>
+	///     Contains the result of a blockchain operation, indicating its success and transaction details.
+	/// </summary>
+	[Serializable]
+	public class OperationInfo
+	{
+		/// <summary>
+		///     The hash of the transaction associated with the operation.
+		/// </summary>
+		public string TransactionHash;
+
+		/// <summary>
+		///     The ID of the operation.
+		/// </summary>
+		public string Id;
+
+		/// <summary>
+		///     The type of operation.
+		/// </summary>
+		public BeaconMessageType OperationType;
+
+		/// <summary>
+		///     Conveys the error message if the operation failed.
+		/// </summary>
+		public string ErrorMesssage;
+
+		public OperationInfo(
+			string transactionHash,
+			string id,
+			BeaconMessageType operationType,
+			string errorMessage = null)
+		{
+			TransactionHash = transactionHash;
+			Id = id;
+			OperationType = operationType;
+			ErrorMesssage = errorMessage;
+		}
+	}
+
+}
+

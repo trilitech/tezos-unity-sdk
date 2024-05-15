@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text.Json;
+using TezosSDK.FileUploaders.Interfaces;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;

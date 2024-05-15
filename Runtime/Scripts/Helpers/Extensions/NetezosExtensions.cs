@@ -8,8 +8,8 @@ using Netezos.Contracts;
 using Netezos.Encoding;
 using Netezos.Keys;
 using TezosSDK.Helpers.Coroutines;
-using TezosSDK.Tezos;
 using TezosSDK.Tezos.API;
+using TezosSDK.Tezos.Managers;
 
 namespace TezosSDK.Helpers.Extensions
 {

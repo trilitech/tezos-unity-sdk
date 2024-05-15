@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
 using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Tezos.API.Models.Filters;
-using TezosSDK.Tezos.API.Models.Tokens;
+using TezosSDK.Tezos.Filters;
+using TezosSDK.Tezos.Interfaces.API;
+using TezosSDK.Tezos.Models.Tokens;
+using TezosSDK.Tezos.ScriptableObjects;
 using Logger = TezosSDK.Helpers.Logger;
 
 namespace TezosSDK.Tezos.API
@@ -19,7 +21,7 @@ namespace TezosSDK.Tezos.API
 
 		private Rpc Rpc { get; }
 
-		public IEnumerator GetTezosBalance(Action<Result<ulong>> callback, string address)
+		public IEnumerator GetTezosBalance(Action<HttpResult<ulong>> callback, string address)
 		{
 			yield return Rpc.GetTzBalance(address, callback);
 		}
@@ -28,13 +30,13 @@ namespace TezosSDK.Tezos.API
 			string contractAddress,
 			string entrypoint,
 			string input,
-			Action<Result<JsonElement>> callback)
+			Action<HttpResult<JsonElement>> callback)
 		{
 			yield return Rpc.RunView(contractAddress, entrypoint, input, callback);
 		}
 
 		public IEnumerator GetTokensForOwner(
-			Action<Result<IEnumerable<TokenBalance>>> callback,
+			Action<HttpResult<IEnumerable<TokenBalance>>> callback,
 			string owner,
 			bool withMetadata,
 			long maxItems,
@@ -58,7 +60,7 @@ namespace TezosSDK.Tezos.API
 		}
 
 		public IEnumerator GetOwnersForToken(
-			Action<Result<IEnumerable<TokenBalance>>> callback,
+			Action<HttpResult<IEnumerable<TokenBalance>>> callback,
 			string contractAddress,
 			uint tokenId,
 			long maxItems,
@@ -83,7 +85,7 @@ namespace TezosSDK.Tezos.API
 		}
 
 		public IEnumerator GetOwnersForContract(
-			Action<Result<IEnumerable<TokenBalance>>> callback,
+			Action<HttpResult<IEnumerable<TokenBalance>>> callback,
 			string contractAddress,
 			long maxItems,
 			OwnersForContractOrder orderBy)
@@ -105,7 +107,7 @@ namespace TezosSDK.Tezos.API
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator IsHolderOfContract(Action<Result<bool>> callback, string wallet, string contractAddress)
+		public IEnumerator IsHolderOfContract(Action<HttpResult<bool>> callback, string wallet, string contractAddress)
 		{
 			var url = $"tokens/balances?account={wallet}&token.contract={contractAddress}&balance.ne=0&select=id";
 
@@ -113,7 +115,7 @@ namespace TezosSDK.Tezos.API
 		}
 
 		public IEnumerator IsHolderOfToken(
-			Action<Result<bool>> callback,
+			Action<HttpResult<bool>> callback,
 			string wallet,
 			string contractAddress,
 			uint tokenId)
@@ -124,14 +126,14 @@ namespace TezosSDK.Tezos.API
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetTokenMetadata(Action<Result<JsonElement>> callback, string contractAddress, uint tokenId)
+		public IEnumerator GetTokenMetadata(Action<HttpResult<JsonElement>> callback, string contractAddress, uint tokenId)
 		{
 			var url = $"tokens?contract={contractAddress}&tokenId={tokenId}&select=metadata";
 
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetContractMetadata(Action<Result<JsonElement>> callback, string contractAddress)
+		public IEnumerator GetContractMetadata(Action<HttpResult<JsonElement>> callback, string contractAddress)
 		{
 			var url = $"accounts/{contractAddress}?legacy=false";
 
@@ -139,7 +141,7 @@ namespace TezosSDK.Tezos.API
 		}
 
 		public IEnumerator GetTokensForContract(
-			Action<Result<IEnumerable<Token>>> callback,
+			Action<HttpResult<IEnumerable<Token>>> callback,
 			string contractAddress,
 			bool withMetadata,
 			long maxItems,
@@ -168,21 +170,21 @@ namespace TezosSDK.Tezos.API
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetOperationStatus(Action<Result<bool>> callback, string operationHash)
+		public IEnumerator GetOperationStatus(Action<HttpResult<bool>> callback, string operationHash)
 		{
 			var url = $"operations/{operationHash}/status";
 
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetLatestBlockLevel(Action<Result<int>> callback)
+		public IEnumerator GetLatestBlockLevel(Action<HttpResult<int>> callback)
 		{
 			var url = $"blocks/{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}/level";
 
 			yield return GetJsonCoroutine(url, callback);
 		}
 
-		public IEnumerator GetAccountCounter(Action<Result<int>> callback, string address)
+		public IEnumerator GetAccountCounter(Action<HttpResult<int>> callback, string address)
 		{
 			var url = $"accounts/{address}/counter";
 
@@ -190,7 +192,7 @@ namespace TezosSDK.Tezos.API
 		}
 
 		public IEnumerator GetOriginatedContractsForOwner(
-			Action<Result<IEnumerable<TokenContract>>> callback,
+			Action<HttpResult<IEnumerable<TokenContract>>> callback,
 			string creator,
 			string codeHash,
 			long maxItems,

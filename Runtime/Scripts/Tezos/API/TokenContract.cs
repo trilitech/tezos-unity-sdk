@@ -6,9 +6,11 @@ using Netezos.Encoding;
 using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Tezos.API.Models.Filters;
-using TezosSDK.Tezos.API.Models.Tokens;
-using TezosSDK.Tezos.Wallet;
+using TezosSDK.Tezos.Filters;
+using TezosSDK.Tezos.Interfaces.API;
+using TezosSDK.Tezos.Interfaces.Wallet;
+using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.Models.Tokens;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -64,7 +66,7 @@ namespace TezosSDK.Tezos.API
 
 			return;
 
-			void TokensReceived(Result<IEnumerable<Token>> result)
+			void TokensReceived(HttpResult<IEnumerable<Token>> result)
 			{
 				Logger.LogDebug("Got tokens for contract");
 
@@ -145,15 +147,15 @@ namespace TezosSDK.Tezos.API
 			CoroutineRunner.Instance.StartCoroutine(getOwnerTokensCoroutine);
 		}
 
-		private void GetTokensCallback(Result<IEnumerable<TokenBalance>> result)
+		private void GetTokensCallback(HttpResult<IEnumerable<TokenBalance>> httpResult)
 		{
-			if (result.Success)
+			if (httpResult.Success)
 			{
-				_onMintCompleted.Invoke(result.Data.Last());
+				_onMintCompleted.Invoke(httpResult.Data.Last());
 			}
 			else
 			{
-				Logger.LogError(result.ErrorMessage);
+				Logger.LogError(httpResult.ErrorMessage);
 			}
 		}
 
@@ -176,7 +178,7 @@ namespace TezosSDK.Tezos.API
 
 			return;
 
-			void OnGetContracts(Result<IEnumerable<TokenContract>> result)
+			void OnGetContracts(HttpResult<IEnumerable<TokenContract>> result)
 			{
 				Logger.LogDebug("Got contracts for owner");
 

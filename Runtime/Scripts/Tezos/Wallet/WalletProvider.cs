@@ -1,9 +1,12 @@
 ﻿using System;
-using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
-using TezosSDK.Beacon;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
+using TezosSDK.Tezos.Interfaces.Wallet;
+using TezosSDK.Tezos.Models;
+using TezosSDK.WalletServices.Data;
+using TezosSDK.WalletServices.Enums;
+using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 

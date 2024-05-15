@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine.TestTools;
 
-namespace Tests.Runtime
+namespace TezosSDK.Tests.Runtime
 {
 
 	public class TokenContractTests

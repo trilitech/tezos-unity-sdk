@@ -1,9 +1,11 @@
 using TezosSDK.Helpers;
-using TezosSDK.Tezos.Wallet;
+using TezosSDK.Tezos.Interfaces;
+using TezosSDK.Tezos.Interfaces.Wallet;
+using TezosSDK.Tezos.Models;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.Managers
 {
 
 	public class TezosAuthenticator : MonoBehaviour

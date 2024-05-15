@@ -1,7 +1,7 @@
 using System;
-using TezosSDK.Tezos.API.Models.Tokens;
+using TezosSDK.Tezos.Models.Tokens;
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.Interfaces.API
 {
 
 	public interface IFa2

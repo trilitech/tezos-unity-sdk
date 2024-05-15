@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using TezosSDK.FileUploaders.Interfaces;
 using UnityEditor;
 
 namespace TezosSDK.FileUploaders.OnChain

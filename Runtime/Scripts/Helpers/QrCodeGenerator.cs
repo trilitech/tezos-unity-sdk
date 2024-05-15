@@ -1,4 +1,4 @@
-using TezosSDK.Tezos;
+using TezosSDK.Tezos.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using ZXing;

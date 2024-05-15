@@ -1,10 +1,14 @@
 using Beacon.Sdk.Beacon.Permission;
-using TezosSDK.Beacon;
+using TezosSDK.Tezos.Interfaces;
+using TezosSDK.Tezos.Interfaces.Wallet;
+using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletServices.Connectors;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.Managers
 {
 
 	public class TezosManager : MonoBehaviour

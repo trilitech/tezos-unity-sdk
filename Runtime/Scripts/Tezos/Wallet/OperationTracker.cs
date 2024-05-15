@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Tezos.Managers;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
 
@@ -63,14 +64,14 @@ namespace TezosSDK.Tezos.Wallet
 			_onComplete?.Invoke(false, "Operation tracking timed out.");
 		}
 
-		private void OperationStatusCallback(Result<bool> result)
+		private void OperationStatusCallback(HttpResult<bool> httpResult)
 		{
-			if (!result.Success)
+			if (!httpResult.Success)
 			{
 				return;
 			}
 
-			if (!result.Data)
+			if (!httpResult.Data)
 			{
 				return;
 			}

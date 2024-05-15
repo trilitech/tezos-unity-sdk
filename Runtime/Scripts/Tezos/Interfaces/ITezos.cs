@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.Wallet;
+using TezosSDK.Tezos.Interfaces.API;
+using TezosSDK.Tezos.Interfaces.Wallet;
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.Interfaces
 {
 
 	public interface ITezos
@@ -48,12 +49,12 @@ namespace TezosSDK.Tezos
 		/// <summary>
 		/// Current wallet tz balance.
 		/// </summary>
-		IEnumerator GetCurrentWalletBalance(Action<Result<ulong>> callback);
+		IEnumerator GetCurrentWalletBalance(Action<HttpResult<ulong>> callback);
 
 		/// <summary>
 		/// Get all originated contracts by the account.
 		/// </summary>
-		IEnumerator GetOriginatedContracts(Action<Result<IEnumerable<TokenContract>>> callback);
+		IEnumerator GetOriginatedContracts(Action<HttpResult<IEnumerable<TokenContract>>> callback);
 	}
 
 }

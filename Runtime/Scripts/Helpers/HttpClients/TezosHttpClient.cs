@@ -3,32 +3,12 @@ using System.Collections;
 using System.Text;
 using System.Text.Json;
 using Dynamic.Json;
-using TezosSDK.Tezos;
+using TezosSDK.Helpers.Json;
+using TezosSDK.Tezos.ScriptableObjects;
 using UnityEngine.Networking;
 
 namespace TezosSDK.Helpers.HttpClients
 {
-
-	public class Result<T>
-	{
-		public Result(T data)
-		{
-			Data = data;
-			Success = true;
-			ErrorMessage = string.Empty;
-		}
-
-		public Result(string errorMessage)
-		{
-			Data = default;
-			Success = false;
-			ErrorMessage = errorMessage;
-		}
-
-		public T Data { get; private set; }
-		public bool Success { get; private set; }
-		public string ErrorMessage { get; private set; }
-	}
 
 	public class TezosHttpClient
 	{
@@ -62,14 +42,14 @@ namespace TezosSDK.Helpers.HttpClients
 			return url.EndsWith("/") ? url : $"{url}/";
 		}
 
-		private void HandleResponse<T>(UnityWebRequest request, Action<Result<T>> callback, out T result)
+		private void HandleResponse<T>(UnityWebRequest request, Action<HttpResult<T>> callback, out T result)
 		{
 			result = default;
 
 			if (request.result != UnityWebRequest.Result.Success)
 			{
 				Logger.LogError($"Request failed with error: {request.error}");
-				callback?.Invoke(new Result<T>(request.error));
+				callback?.Invoke(new HttpResult<T>(request.error));
 			}
 			else
 			{
@@ -78,16 +58,16 @@ namespace TezosSDK.Helpers.HttpClients
 				try
 				{
 					result = DeserializeJson<T>(downloadHandlerText);
-					callback?.Invoke(new Result<T>(result));
+					callback?.Invoke(new HttpResult<T>(result));
 				}
 				catch (Exception ex)
 				{
-					callback?.Invoke(new Result<T>(ex.Message));
+					callback?.Invoke(new HttpResult<T>(ex.Message));
 				}
 			}
 		}
 
-		protected IEnumerator GetJsonCoroutine<T>(string path, Action<Result<T>> callback = null)
+		protected IEnumerator GetJsonCoroutine<T>(string path, Action<HttpResult<T>> callback = null)
 		{
 			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
 			yield return request.SendWebRequest();
@@ -96,7 +76,7 @@ namespace TezosSDK.Helpers.HttpClients
 			yield return result;
 		}
 
-		protected IEnumerator PostJsonCoroutine<T>(string path, object data, Action<Result<T>> callback)
+		protected IEnumerator PostJsonCoroutine<T>(string path, object data, Action<HttpResult<T>> callback)
 		{
 			var serializedData = JsonSerializer.Serialize(data, JsonOptions.DefaultOptions);
 			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbPOST, path);

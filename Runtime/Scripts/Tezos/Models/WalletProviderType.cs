@@ -1,6 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.Models
 {
 
 	public enum WalletProviderType

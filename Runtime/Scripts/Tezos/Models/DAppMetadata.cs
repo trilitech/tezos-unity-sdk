@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.Models
 {
 
 	[Serializable]

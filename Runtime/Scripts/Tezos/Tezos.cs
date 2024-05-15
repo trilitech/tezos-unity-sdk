@@ -1,10 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TezosSDK.Beacon;
 using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.Filters;
+using TezosSDK.Tezos.Interfaces;
+using TezosSDK.Tezos.Interfaces.API;
+using TezosSDK.Tezos.Interfaces.Wallet;
+using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logger;
@@ -41,13 +45,13 @@ namespace TezosSDK.Tezos
 		public ITezosAPI API { get; }
 		public IFa2 TokenContract { get; set; }
 
-		public IEnumerator GetCurrentWalletBalance(Action<Result<ulong>> callback)
+		public IEnumerator GetCurrentWalletBalance(Action<HttpResult<ulong>> callback)
 		{
 			var address = WalletAccount.GetWalletAddress();
 			yield return API.GetTezosBalance(callback, address);
 		}
 
-		public IEnumerator GetOriginatedContracts(Action<Result<IEnumerable<TokenContract>>> callback)
+		public IEnumerator GetOriginatedContracts(Action<HttpResult<IEnumerable<TokenContract>>> callback)
 		{
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 

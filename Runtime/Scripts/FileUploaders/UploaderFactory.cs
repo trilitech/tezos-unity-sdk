@@ -1,3 +1,4 @@
+using TezosSDK.FileUploaders.Interfaces;
 using TezosSDK.FileUploaders.IPFS;
 using TezosSDK.FileUploaders.OnChain;
 using UnityEngine;
