@@ -25,7 +25,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 
 		public void ConnectWallet()
 		{
-			WalletProviderType? walletProviderType = WalletProviderType.beacon; // TODO: Fix this
+			WalletProviderType walletProviderType = WalletProviderType.beacon; // TODO: Fix this
 
 			if (walletProviderType == null)
 			{
@@ -48,11 +48,6 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 		public string GetWalletAddress()
 		{
 			return JsGetActiveAccountAddress();
-		}
-
-		public void RequestWalletConnection()
-		{
-			OperationRequested?.Invoke(WalletMessageType.ConnectionRequest);
 		}
 
 		public void RequestOperation(WalletOperationRequest operationRequest)

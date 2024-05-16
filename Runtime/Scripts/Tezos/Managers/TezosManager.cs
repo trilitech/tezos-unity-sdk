@@ -106,7 +106,7 @@ namespace TezosSDK.Tezos.Managers
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
 			WalletConnector = WalletConnectorFactory.CreateConnector(Application.platform, EventManager);
 			var walletProvider = new WalletProvider(EventManager, WalletConnector);
-			Tezos = new Tezos(config, walletProvider);
+			Tezos = new Core.Tezos(config, walletProvider);
 		}
 
 		private void ValidateConfig()

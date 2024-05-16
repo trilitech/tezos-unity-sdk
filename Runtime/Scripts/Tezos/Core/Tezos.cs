@@ -13,7 +13,7 @@ using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.Core
 {
 
 	/// <summary>

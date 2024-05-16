@@ -95,8 +95,7 @@ namespace TezosSDK.Tezos.API
 						token_id = tokenId.ToString()
 					}).ToJson();
 
-					_walletEventProvider.EventManager.OperationCompleted +=
-						MintCompleted; // TODO: This is not removed FIX IT
+					_walletEventProvider.EventManager.OperationCompleted += MintCompleted; 
 
 					_walletTransaction.CallContract(Address, _entrypoint, mintParameters);
 				}
@@ -143,14 +142,16 @@ namespace TezosSDK.Tezos.API
 			var address = _walletAccount.GetWalletAddress();
 			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
-			_walletEventProvider.EventManager.OperationCompleted += DeployCompleted; // TODO: This is not removed FIX IT
+			_walletEventProvider.EventManager.OperationCompleted += DeployCompleted;
 
 			_walletContract.OriginateContract(scriptWithAdmin);
 		}
 
 		private void MintCompleted(OperationInfo operationInfo)
 		{
-			_walletEventProvider.EventManager.OperationCompleted -= MintCompleted; // TODO: This is not removed FIX IT
+			Logger.LogDebug($"Mint completed with operation ID: {operationInfo.Id}");
+			
+			_walletEventProvider.EventManager.OperationCompleted -= MintCompleted;
 
 			var owner = _walletAccount.GetWalletAddress();
 
@@ -180,8 +181,9 @@ namespace TezosSDK.Tezos.API
 
 		private void DeployCompleted(OperationInfo operationInfo)
 		{
-			Logger.LogDebug("Deploy completed");
-			_walletEventProvider.EventManager.OperationCompleted -= DeployCompleted; // TODO: This is not removed FIX IT
+			Logger.LogDebug($"Deploy completed with operation ID: {operationInfo.Id}");
+			
+			_walletEventProvider.EventManager.OperationCompleted -= DeployCompleted;
 
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 			var creator = _walletAccount.GetWalletAddress();
