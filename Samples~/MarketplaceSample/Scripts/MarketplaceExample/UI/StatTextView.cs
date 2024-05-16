@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.UI
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI
 {
 
 	public class StatTextView : MonoBehaviour

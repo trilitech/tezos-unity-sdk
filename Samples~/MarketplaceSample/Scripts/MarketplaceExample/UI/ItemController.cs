@@ -1,9 +1,9 @@
-using TezosSDK.MarketplaceSample.MarketplaceExample.Core;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.UI
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI
 {
 
 	public class ItemController : MonoBehaviour

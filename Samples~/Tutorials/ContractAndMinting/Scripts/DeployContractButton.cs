@@ -1,10 +1,10 @@
-using TezosSDK.Tezos;
-using TezosSDK.Tutorials.Common;
+using TezosSDK.Samples.Tutorials.Common;
+using TezosSDK.Tezos.Managers;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.Tutorials.ContractAndMinting
+namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 {
 
 	public class DeployContractButton : MonoBehaviour

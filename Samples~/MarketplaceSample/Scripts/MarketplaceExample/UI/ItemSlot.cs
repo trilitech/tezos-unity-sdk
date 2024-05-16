@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.UI
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI
 {
 
 	[Obsolete]

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using TezosSDK.MarketplaceSample.MarketplaceExample.Core;
-using TezosSDK.MarketplaceSample.MarketplaceExample.UI;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI;
 using UnityEngine;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 {
 
 	public class MarketManager : MonoBehaviour

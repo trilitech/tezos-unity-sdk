@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Beacon.Sdk.Beacon.Sign;
-using TezosSDK.Tezos;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.API.Models.Tokens;
-using TezosSDK.Tezos.Wallet;
+using TezosSDK.Tezos.Interfaces;
+using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.Models.Tokens;
+using TezosSDK.WalletServices.Interfaces;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 {
 
 	public interface IExampleManager

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TezosSDK.MarketplaceSample
+namespace TezosSDK.Samples.MarketplaceSample.ScriptableObjects
 {
 
 	[CreateAssetMenu(fileName = "ItemResources", menuName = "ScriptableObjects/ItemResources", order = 1)]

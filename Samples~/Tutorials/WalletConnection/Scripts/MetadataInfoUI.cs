@@ -1,8 +1,8 @@
-using TezosSDK.Tezos;
+using TezosSDK.Tezos.Managers;
 using TMPro;
 using UnityEngine;
 
-namespace TezosSDK.Tutorials.WalletConnection
+namespace TezosSDK.Samples.Tutorials.WalletConnection
 {
 
 	public class MetadataInfoUI : MonoBehaviour

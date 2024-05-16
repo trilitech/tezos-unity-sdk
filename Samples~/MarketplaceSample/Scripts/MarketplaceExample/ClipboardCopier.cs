@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 {
 
 	public class ClipboardCopier : MonoBehaviour, IPointerClickHandler

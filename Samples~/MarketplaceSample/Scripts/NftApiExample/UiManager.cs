@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace TezosSDK.MarketplaceSample.NftApiExample
+namespace TezosSDK.Samples.MarketplaceSample.NftApiExample
 {
 
 	public class UiManager : MonoBehaviour

@@ -1,9 +1,10 @@
-using TezosSDK.Tezos;
+using TezosSDK.Tezos.Managers;
+using TezosSDK.Tezos.Models;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.Tutorials.WalletConnection
+namespace TezosSDK.Samples.Tutorials.WalletConnection
 {
 
 	public class WalletConnectionHandler : MonoBehaviour

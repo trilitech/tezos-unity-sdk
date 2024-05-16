@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Tezos;
-using TezosSDK.Tezos.API.Models.Filters;
-using TezosSDK.Tezos.API.Models.Tokens;
-using TezosSDK.Tutorials.Common;
+using TezosSDK.Samples.Tutorials.Common;
+using TezosSDK.Tezos.Filters;
+using TezosSDK.Tezos.Managers;
+using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.Models.Tokens;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.Tutorials.TransferToken
+namespace TezosSDK.Samples.Tutorials.TransferToken
 {
 
 	public class TransferTokenHandler : MonoBehaviour
@@ -76,7 +77,7 @@ namespace TezosSDK.Tutorials.TransferToken
 			StartCoroutine(tokensForContractCoroutine);
 			return;
 
-			void Callback(Result<IEnumerable<Token>> result)
+			void Callback(HttpResult<IEnumerable<Token>> result)
 			{
 				var tokens = result.Data.ToList();
 				Logger.LogDebug($"Received {tokens.Count()} tokens for contract: {contractAddress}");

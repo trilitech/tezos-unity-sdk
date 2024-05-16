@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TezosSDK.Tutorials.Common
+namespace TezosSDK.Samples.Tutorials.Common
 {
 
 	public class WebpageHandler : MonoBehaviour

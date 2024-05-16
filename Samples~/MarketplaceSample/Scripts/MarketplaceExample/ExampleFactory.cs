@@ -1,7 +1,7 @@
-using TezosSDK.MarketplaceSample.MarketplaceExample.Core;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
 using UnityEngine;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 {
 
 	public class ExampleFactory : MonoBehaviour

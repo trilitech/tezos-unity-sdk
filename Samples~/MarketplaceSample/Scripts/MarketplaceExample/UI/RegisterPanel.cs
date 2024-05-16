@@ -1,11 +1,11 @@
 using System.Collections;
 using Beacon.Sdk.Beacon.Sign;
-using TezosSDK.MarketplaceSample.MarketplaceExample.Core;
-using TezosSDK.Tezos;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
+using TezosSDK.Tezos.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.UI
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI
 {
 
 	public class RegisterPanel : PanelController

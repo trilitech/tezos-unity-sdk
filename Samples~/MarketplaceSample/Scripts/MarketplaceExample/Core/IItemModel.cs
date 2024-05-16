@@ -1,4 +1,4 @@
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 {
 
 	public interface IItemModel

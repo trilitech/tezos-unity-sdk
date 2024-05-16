@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Coroutines;
-using TezosSDK.MarketplaceSample.MarketplaceExample.Core;
-using TezosSDK.MarketplaceSample.MarketplaceExample.UI;
-using TezosSDK.Tezos;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI;
+using TezosSDK.Tezos.Models;
 using TMPro;
 using UnityEngine;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 {
 
 	public class UIManager : MonoBehaviour

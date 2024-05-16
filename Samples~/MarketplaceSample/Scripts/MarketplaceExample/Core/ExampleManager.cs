@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
-using TezosSDK.Helpers;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Tezos;
+using TezosSDK.Helpers.Json;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.API.Models.Tokens;
-using TezosSDK.Tezos.Wallet;
+using TezosSDK.Tezos.Interfaces;
+using TezosSDK.Tezos.Managers;
+using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.Models.Tokens;
+using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
 using Random = System.Random;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 {
 
 	public class ExampleManager : IExampleManager
@@ -355,7 +357,7 @@ namespace TezosSDK.MarketplaceSample.MarketplaceExample.Core
 		{
 		}
 
-		private void GetOriginatedContracts(Action<Result<IEnumerable<TokenContract>>> callback)
+		private void GetOriginatedContracts(Action<HttpResult<IEnumerable<TokenContract>>> callback)
 		{
 			var routine = Tezos.GetOriginatedContracts(callback);
 			CoroutineRunner.Instance.StartWrappedCoroutine(routine);

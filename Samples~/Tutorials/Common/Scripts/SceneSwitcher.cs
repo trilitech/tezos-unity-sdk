@@ -1,8 +1,8 @@
-using TezosSDK.Tezos;
+using TezosSDK.Tezos.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace TezosSDK.Tutorials.Common
+namespace TezosSDK.Samples.Tutorials.Common
 {
 
 	public class SceneSwitcher : MonoBehaviour

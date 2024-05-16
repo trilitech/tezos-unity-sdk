@@ -1,10 +1,10 @@
 using System.Linq;
-using TezosSDK.MarketplaceSample.MarketplaceExample.Core;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample.UI
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI
 {
 
 	[RequireComponent(typeof(Image))]

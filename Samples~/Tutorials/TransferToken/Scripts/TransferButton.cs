@@ -1,9 +1,10 @@
-using TezosSDK.Tezos;
+using TezosSDK.Tezos.Managers;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.Tutorials.TransferToken
+
+namespace TezosSDK.Samples.Tutorials.TransferToken
 {
 
 	public class TransferButton : MonoBehaviour

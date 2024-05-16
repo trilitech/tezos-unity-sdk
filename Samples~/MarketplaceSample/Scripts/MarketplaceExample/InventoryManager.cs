@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using TezosSDK.MarketplaceSample.MarketplaceExample.Core;
-using TezosSDK.MarketplaceSample.MarketplaceExample.UI;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
+using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI;
+using TezosSDK.Samples.MarketplaceSample.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Events;
-using Logger = TezosSDK.Helpers.Logger;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.MarketplaceSample.MarketplaceExample
+namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 {
 
 	[RequireComponent(typeof(SnapController))]

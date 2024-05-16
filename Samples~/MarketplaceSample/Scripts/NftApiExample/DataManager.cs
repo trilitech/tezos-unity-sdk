@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
-using TezosSDK.Tezos;
-using TezosSDK.Tezos.API.Models.Filters;
+using TezosSDK.Tezos.Filters;
+using TezosSDK.Tezos.Interfaces;
+using TezosSDK.Tezos.Managers;
+using TezosSDK.Tezos.Models;
 using UnityEngine;
 
-namespace TezosSDK.MarketplaceSample.NftApiExample
+namespace TezosSDK.Samples.MarketplaceSample.NftApiExample
 {
 
 	public class DataManager : MonoBehaviour

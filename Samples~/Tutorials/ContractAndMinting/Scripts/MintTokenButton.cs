@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Tezos;
+using TezosSDK.Samples.Tutorials.Common;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.API.Models.Filters;
-using TezosSDK.Tezos.API.Models.Tokens;
-using TezosSDK.Tutorials.Common;
+using TezosSDK.Tezos.Filters;
+using TezosSDK.Tezos.Managers;
+using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.Models.Tokens;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
 using Random = System.Random;
+using Logger = TezosSDK.Helpers.Logging.Logger;
 
-namespace TezosSDK.Tutorials.ContractAndMinting
+
+namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 {
 
 	public class MintTokenButton : MonoBehaviour
@@ -83,7 +85,7 @@ namespace TezosSDK.Tutorials.ContractAndMinting
 				: GetTokensForContractRoutine());
 		}
 
-		private void GetTokensForContractResult(Result<IEnumerable<Token>> result)
+		private void GetTokensForContractResult(HttpResult<IEnumerable<Token>> result)
 		{
 			if (result.Success)
 			{
@@ -104,7 +106,7 @@ namespace TezosSDK.Tutorials.ContractAndMinting
 				new TokensForContractOrder.Default(0));
 		}
 
-		private void OnContractsFetched(Result<IEnumerable<TokenContract>> result)
+		private void OnContractsFetched(HttpResult<IEnumerable<TokenContract>> result)
 		{
 			if (result.Success)
 			{

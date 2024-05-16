@@ -1,7 +1,7 @@
-using TezosSDK.Tezos;
+using TezosSDK.Tezos.Managers;
 using UnityEngine;
 
-namespace TezosSDK.Tutorials.ContractAndMinting
+namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 {
 
 	public class UIController : MonoBehaviour
