@@ -4,10 +4,10 @@ using System.Collections;
 using System.IO;
 using System.Text.Json;
 using TezosSDK.FileUploaders.Interfaces;
+using TezosSDK.Helpers.Logging;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.FileUploaders.IPFS
 {
@@ -38,7 +38,7 @@ namespace TezosSDK.FileUploaders.IPFS
 			}
 			else
 			{
-				Logger.LogError($"Error during upload to IPFS {request.downloadHandler.text}");
+				TezosLog.Error($"Error during upload to IPFS {request.downloadHandler.text}");
 			}
 		}
 

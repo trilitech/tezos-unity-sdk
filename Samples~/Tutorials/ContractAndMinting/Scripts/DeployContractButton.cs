@@ -1,8 +1,8 @@
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Samples.Tutorials.Common;
 using TezosSDK.Tezos.Managers;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 {
@@ -21,7 +21,7 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 
 		private void OnContractDeployed(string contractAddress)
 		{
-			Logger.LogDebug($"DeployContractButton - Contract deployed at address: {contractAddress}");
+			TezosLog.Debug($"DeployContractButton - Contract deployed at address: {contractAddress}");
 			contractInfoUI.SetAddress(contractAddress);
 			tokensCountText.text = "0";
 		}

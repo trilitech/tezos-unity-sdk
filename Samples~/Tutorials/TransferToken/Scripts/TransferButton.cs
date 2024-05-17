@@ -1,8 +1,7 @@
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
-
 
 namespace TezosSDK.Samples.Tutorials.TransferToken
 {
@@ -21,7 +20,7 @@ namespace TezosSDK.Samples.Tutorials.TransferToken
 
 		private void TransferCompleted(string txHash)
 		{
-			Logger.LogDebug($"Transfer complete with transaction hash {txHash}");
+			TezosLog.Debug($"Transfer complete with transaction hash {txHash}");
 		}
 	}
 

@@ -43,7 +43,7 @@ namespace TezosSDK.WalletServices.Helpers
 		{
 			if (beaconDappClient == null)
 			{
-				Logger.LogError("BeaconDappClient is null");
+				TezosLog.Error("BeaconDappClient is null");
 				return;
 			}
 
@@ -52,15 +52,15 @@ namespace TezosSDK.WalletServices.Helpers
 
 			if (activePeer == null)
 			{
-				Logger.LogError("No active peer found");
+				TezosLog.Error("No active peer found");
 				return;
 			}
 
 			var network = CreateNetwork();
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
-			Logger.LogInfo("Permission request: " + permissionRequest);
+			TezosLog.Info("Permission request: " + permissionRequest.PrettyPrint());
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
-			Logger.LogInfo("Permission request sent");
+			TezosLog.Info("Permission request sent");
 		}
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 			if (activeAccountPermissions == null)
 			{
-				Logger.LogError("No active peer found");
+				TezosLog.Error("No active peer found");
 				return Task.CompletedTask;
 			}
 
@@ -133,7 +133,7 @@ namespace TezosSDK.WalletServices.Helpers
 			var operationRequest = CreateOperationRequest(beaconDappClient, activeAccountPermissions, operationDetails,
 				messageType);
 
-			Logger.LogDebug("Requesting Operation: " + operationRequest.Print());
+			TezosLog.Debug("Requesting Operation: " + operationRequest.Print());
 
 			// Send the operation request
 			return SendBeaconClientResponseAsync(beaconDappClient, activeAccountPermissions.SenderId, operationRequest);

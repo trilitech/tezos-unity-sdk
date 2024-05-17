@@ -5,10 +5,10 @@ using Beacon.Sdk.BeaconClients;
 using Beacon.Sdk.Core.Domain.Entities;
 using Netezos.Keys;
 using TezosSDK.Helpers;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.WalletServices.Helpers
 {
@@ -30,7 +30,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 		public void DispatchWalletDisconnectedEvent(WalletInfo activeWallet)
 		{
-			Logger.Log($"Dispatching WalletDisconnectedEvent for {activeWallet?.PublicKey}");
+			TezosLog.Debug($"Dispatching WalletDisconnectedEvent for {activeWallet?.PublicKey}");
 
 			var walletDisconnectedEvent = new UnifiedEvent(WalletEventManager.EventTypeWalletDisconnected,
 				JsonUtility.ToJson(activeWallet));
@@ -44,7 +44,7 @@ namespace TezosSDK.WalletServices.Helpers
 		/// <param name="eventData"></param>
 		private void DispatchEvent(UnifiedEvent eventData)
 		{
-			Logger.Log($"Dispatching event: {eventData.GetEventType()}");
+			TezosLog.Debug($"Dispatching event: {eventData.GetEventType()}");
 			UnityMainThreadDispatcher.Enqueue(() => _eventManager.HandleEvent(eventData));
 		}
 
@@ -74,7 +74,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 		public void DispatchPairingCompletedEvent(DappBeaconClient beaconDappClient)
 		{
-			Logger.Log("Dispatching PairingCompletedEvent");
+			TezosLog.Debug("Dispatching PairingCompletedEvent");
 
 			var pairingDoneData = new PairingDoneData
 			{
@@ -114,7 +114,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 		public void DispatchHandshakeEvent(string pairingData)
 		{
-			Logger.Log("Dispatching HandshakeEvent");
+			TezosLog.Debug("Dispatching HandshakeEvent");
 
 			var handshakeData = new HandshakeData
 			{

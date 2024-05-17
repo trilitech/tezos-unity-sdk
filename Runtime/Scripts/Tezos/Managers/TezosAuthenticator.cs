@@ -1,9 +1,9 @@
 using TezosSDK.Helpers;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Managers
 {
@@ -23,12 +23,12 @@ namespace TezosSDK.Tezos.Managers
 
 		private IWalletConnection WalletConnection
 		{
-			get => TezosManager.Instance.WalletConnection;
+			get => TezosManager.Instance.Tezos.WalletConnection;
 		}
 
 		private IWalletEventProvider WalletEventProvider
 		{
-			get => TezosManager.Instance.WalletEventProvider;
+			get => TezosManager.Instance.Tezos.WalletEventProvider;
 		}
 
 		private void Start()
@@ -97,7 +97,7 @@ namespace TezosSDK.Tezos.Managers
 
 		private void OnWalletDisconnected(WalletInfo walletInfo)
 		{
-			Logger.LogDebug("TezosAuthenticator.OnWalletDisconnected");
+			TezosLog.Debug("TezosAuthenticator.OnWalletDisconnected");
 			ToggleUIElements(false);
 		}
 

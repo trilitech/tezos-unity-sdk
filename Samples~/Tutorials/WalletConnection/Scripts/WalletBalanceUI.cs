@@ -1,9 +1,9 @@
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Samples.Tutorials.WalletConnection
 {
@@ -45,7 +45,7 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 			}
 			else
 			{
-				Logger.LogError(result.ErrorMessage);
+				TezosLog.Error(result.ErrorMessage);
 			}
 		}
 	}

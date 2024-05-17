@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Filters;
 using TezosSDK.Tezos.Interfaces.API;
 using TezosSDK.Tezos.Models.Tokens;
 using TezosSDK.Tezos.ScriptableObjects;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.API
 {
@@ -150,7 +150,7 @@ namespace TezosSDK.Tezos.API
 			long maxItems,
 			TokensForContractOrder orderBy)
 		{
-			Logger.LogDebug($"Getting tokens for contract: {contractAddress}");
+			TezosLog.Debug($"Getting tokens for contract: {contractAddress}");
 
 			var sort = orderBy switch
 			{
@@ -201,7 +201,7 @@ namespace TezosSDK.Tezos.API
 			long maxItems,
 			OriginatedContractsForOwnerOrder orderBy)
 		{
-			Logger.LogDebug($"GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}");
+			TezosLog.Debug($"GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}");
 
 			var sort = orderBy switch
 			{

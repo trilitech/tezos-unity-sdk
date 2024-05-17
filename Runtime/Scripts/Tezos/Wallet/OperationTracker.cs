@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Wallet
 {
@@ -39,7 +39,7 @@ namespace TezosSDK.Tezos.Wallet
 		/// </summary>
 		public void BeginTracking()
 		{
-			Logger.LogDebug($"Begin tracking operation with hash: {_operationHash}");
+			TezosLog.Debug($"Begin tracking operation with hash: {_operationHash}");
 			_trackingCoroutine = CoroutineRunner.Instance.StartCoroutine(TrackOperationCoroutine());
 		}
 
@@ -49,18 +49,18 @@ namespace TezosSDK.Tezos.Wallet
 
 			while (Time.time - startTime < TIMEOUT)
 			{
-				Logger.LogDebug($"Checking operation status for hash {_operationHash}");
+				TezosLog.Debug($"Checking operation status for hash {_operationHash}");
 
 				yield return
 					TezosManager.Instance.Tezos.API.GetOperationStatus(OperationStatusCallback, _operationHash);
 
 				yield return new WaitForSecondsRealtime(WAIT_TIME);
 
-				Logger.LogDebug(
+				TezosLog.Debug(
 					$"Waiting {WAIT_TIME} seconds before next operation status check. Remaining time: {TIMEOUT - (Time.time - startTime)}");
 			}
 
-			Logger.LogError("Operation tracking timed out.");
+			TezosLog.Error("Operation tracking timed out.");
 			_onComplete?.Invoke(false, "Operation tracking timed out.");
 		}
 
@@ -76,7 +76,7 @@ namespace TezosSDK.Tezos.Wallet
 				return;
 			}
 
-			Logger.LogDebug("Operation is confirmed. Exiting polling loop.");
+			TezosLog.Debug("Operation is confirmed. Exiting polling loop.");
 			_onComplete?.Invoke(true, null);
 			CoroutineRunner.Instance.StopCoroutine(_trackingCoroutine);
 		}

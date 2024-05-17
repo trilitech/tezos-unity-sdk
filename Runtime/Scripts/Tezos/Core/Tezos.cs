@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.Filters;
 using TezosSDK.Tezos.Interfaces;
@@ -11,7 +12,6 @@ using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Core
 {
@@ -67,7 +67,7 @@ namespace TezosSDK.Tezos.Core
 
 			if (hasKey)
 			{
-				Logger.LogInfo("Found deployed contract address in player prefs: " + address);
+				TezosLog.Info("Found deployed contract address in player prefs: " + address);
 			}
 
 			if (TokenContract != null)

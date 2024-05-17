@@ -2,13 +2,13 @@
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Wallet
 {
@@ -106,7 +106,7 @@ namespace TezosSDK.Tezos.Wallet
 		/// </summary>
 		private void OperationRequestedHandler(WalletMessageType messageType)
 		{
-			Logger.LogDebug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
+			TezosLog.Debug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
 
 			switch (messageType)
 			{
@@ -136,7 +136,7 @@ namespace TezosSDK.Tezos.Wallet
 
 		private void OpenWallet()
 		{
-			Logger.LogDebug("WalletProvider.OpenWallet");
+			TezosLog.Debug("WalletProvider.OpenWallet");
 
 			// OpenURL can only be called from the main thread.
 			UnityMainThreadDispatcher.Enqueue(() => { Application.OpenURL("tezos://"); });
@@ -176,13 +176,13 @@ namespace TezosSDK.Tezos.Wallet
 					var completedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationCompleted,
 						JsonUtility.ToJson(operationResult));
 
-					Logger.LogDebug($"Operation completed: {operationHash}");
+					TezosLog.Debug($"Operation completed: {operationHash}");
 
 					EventManager.HandleEvent(completedEvent);
 				}
 				else
 				{
-					Logger.LogError($"Operation failed: {errorMessage}");
+					TezosLog.Error($"Operation failed: {errorMessage}");
 
 					var errorinfo = new OperationInfo(operationHash, transaction.Id, transaction.OperationType,
 						errorMessage);
@@ -213,7 +213,7 @@ namespace TezosSDK.Tezos.Wallet
 				return;
 			}
 
-			Logger.LogDebug("WalletProvider.OnHandshakeReceived");
+			TezosLog.Debug("WalletProvider.OnHandshakeReceived");
 
 			HandshakeData = handshake;
 

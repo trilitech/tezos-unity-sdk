@@ -52,7 +52,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 		public async void RequestOperation(WalletOperationRequest operationRequest)
 		{
 			// Adjust the method to accept the WalletOperationRequest parameter
-			Logger.LogDebug("RequestOperation");
+			TezosLog.Debug("RequestOperation");
 
 			await _operationRequestHandler.RequestTezosOperation(operationRequest.Destination,
 				operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
@@ -61,7 +61,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 
 		public async void RequestContractOrigination(WalletOriginateContractRequest originationRequest)
 		{
-			Logger.LogDebug("RequestContractOrigination");
+			TezosLog.Debug("RequestContractOrigination");
 
 			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script,
 				originationRequest.DelegateAddress, _beaconClientManager.BeaconDappClient);

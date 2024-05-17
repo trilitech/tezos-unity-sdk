@@ -49,7 +49,7 @@ namespace TezosSDK.Helpers.HttpClients
 
 			if (request.result != UnityWebRequest.Result.Success)
 			{
-				Logger.LogError($"Request failed with error: {request.error}");
+				TezosLog.Error($"Request failed with error: {request.error}");
 				callback?.Invoke(new HttpResult<T>(request.error));
 			}
 			else

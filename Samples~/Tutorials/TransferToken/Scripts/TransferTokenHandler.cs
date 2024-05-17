@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Samples.Tutorials.Common;
 using TezosSDK.Tezos.Filters;
 using TezosSDK.Tezos.Managers;
@@ -8,7 +9,6 @@ using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Models.Tokens;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Samples.Tutorials.TransferToken
 {
@@ -43,7 +43,7 @@ namespace TezosSDK.Samples.Tutorials.TransferToken
 			{
 				if (!result.Success)
 				{
-					Logger.LogError($"Failed to get originated contracts: {result.ErrorMessage}");
+					TezosLog.Error($"Failed to get originated contracts: {result.ErrorMessage}");
 					return;
 				}
 
@@ -69,7 +69,7 @@ namespace TezosSDK.Samples.Tutorials.TransferToken
 
 		private void GetContractTokenIds(string contractAddress)
 		{
-			Logger.LogDebug($"Getting token IDs for contract: {contractAddress}");
+			TezosLog.Debug($"Getting token IDs for contract: {contractAddress}");
 
 			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(Callback,
 				contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
@@ -80,7 +80,7 @@ namespace TezosSDK.Samples.Tutorials.TransferToken
 			void Callback(HttpResult<IEnumerable<Token>> result)
 			{
 				var tokens = result.Data.ToList();
-				Logger.LogDebug($"Received {tokens.Count()} tokens for contract: {contractAddress}");
+				TezosLog.Debug($"Received {tokens.Count()} tokens for contract: {contractAddress}");
 				// Join the token IDs with ", " as the separator
 				var idsResult = string.Join(", ", tokens.Select(token => token.TokenId));
 				availableTokensTMP.text = idsResult;

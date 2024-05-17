@@ -7,6 +7,7 @@ using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Helpers.Json;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.API;
 using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Managers;
@@ -15,7 +16,6 @@ using TezosSDK.Tezos.Models.Tokens;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 using Random = System.Random;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 {
@@ -65,14 +65,14 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				{
 					if (readViewResult.Success)
 					{
-						Logger.LogDebug("READING INVENTORY DATA");
+						TezosLog.Debug("READING INVENTORY DATA");
 						// Start another coroutine to process the result
 						ProcessInventoryResult(readViewResult.Data, callback);
 					}
 					else
 					{
 						// Handle errors
-						Logger.LogError("Error fetching inventory: " + readViewResult.ErrorMessage);
+						TezosLog.Error("Error fetching inventory: " + readViewResult.ErrorMessage);
 					}
 				}));
 		}
@@ -113,7 +113,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				}
 			}.ToJson();
 
-			Logger.LogDebug(contractAddress + " " + entryPoint + parameter);
+			TezosLog.Debug(contractAddress + " " + entryPoint + parameter);
 			Tezos.WalletTransaction.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
@@ -177,7 +177,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				else
 				{
 					// Handle the error case, update UI or log error
-					Logger.LogError(result.ErrorMessage);
+					TezosLog.Error(result.ErrorMessage);
 				}
 			}));
 		}
@@ -191,7 +191,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 		{
 			var sender = Tezos.WalletAccount.GetWalletAddress();
 
-			Logger.LogDebug($"Transfering item {itemID} from {sender} to Address: {address}");
+			TezosLog.Debug($"Transfering item {itemID} from {sender} to Address: {address}");
 
 			const string entrypoint = "transfer";
 
@@ -348,7 +348,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				}
 				else
 				{
-					Logger.LogError(result.ErrorMessage);
+					TezosLog.Error(result.ErrorMessage);
 				}
 			});
 		}

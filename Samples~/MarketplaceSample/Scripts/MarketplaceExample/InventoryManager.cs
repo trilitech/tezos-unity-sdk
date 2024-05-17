@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
 using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI;
 using TezosSDK.Samples.MarketplaceSample.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Events;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 {
@@ -133,7 +133,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 			}
 			else
 			{
-				Logger.LogError("Could find resource file for " + itemModel.ResourcePath);
+				TezosLog.Error("Could find resource file for " + itemModel.ResourcePath);
 			}
 
 			newItem.Item = itemModel;
@@ -148,7 +148,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 			}
 			else
 			{
-				Logger.LogError("Trying to add an item but Inventory is full!");
+				TezosLog.Error("Trying to add an item but Inventory is full!");
 			}
 		}
 
@@ -211,7 +211,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 				}
 			}
 
-			Logger.LogDebug("Inventory loaded.");
+			TezosLog.Debug("Inventory loaded.");
 		}
 
 		private void SaveInventoryLocally()
@@ -237,7 +237,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 				}
 			}
 
-			Logger.LogDebug("Inventory saved locally.");
+			TezosLog.Debug("Inventory saved locally.");
 		}
 
 		private void UpdateSnapController()

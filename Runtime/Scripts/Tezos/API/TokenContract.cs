@@ -6,13 +6,13 @@ using Netezos.Encoding;
 using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Filters;
 using TezosSDK.Tezos.Interfaces.API;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Models.Tokens;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.API
 {
@@ -68,7 +68,7 @@ namespace TezosSDK.Tezos.API
 		{
 			_onMintCompleted = completedCallback;
 
-			Logger.LogDebug($"Minting {amount} tokens to {destination} with metadata {tokenMetadata}");
+			TezosLog.Debug($"Minting {amount} tokens to {destination} with metadata {tokenMetadata}");
 
 			var getContractTokens = _tezosAPI.GetTokensForContract(TokensReceived, Address, false, 10_000,
 				new TokensForContractOrder.Default(0));
@@ -79,7 +79,7 @@ namespace TezosSDK.Tezos.API
 
 			void TokensReceived(HttpResult<IEnumerable<Token>> result)
 			{
-				Logger.LogDebug("Got tokens for contract");
+				TezosLog.Debug("Got tokens for contract");
 
 				if (result.Success)
 				{
@@ -101,7 +101,7 @@ namespace TezosSDK.Tezos.API
 				}
 				else
 				{
-					Logger.LogError(result.ErrorMessage);
+					TezosLog.Error(result.ErrorMessage);
 				}
 			}
 		}
@@ -135,7 +135,7 @@ namespace TezosSDK.Tezos.API
 
 		public void Deploy(Action<string> completedCallback)
 		{
-			Logger.LogDebug("Deploying contract...");
+			TezosLog.Debug("Deploying contract...");
 			_onDeployCompleted = completedCallback;
 
 			var stringScript = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
@@ -149,7 +149,7 @@ namespace TezosSDK.Tezos.API
 
 		private void MintCompleted(OperationInfo operationInfo)
 		{
-			Logger.LogDebug($"Mint completed with operation ID: {operationInfo.Id}");
+			TezosLog.Debug($"Mint completed with operation ID: {operationInfo.Id}");
 			
 			_walletEventProvider.EventManager.OperationCompleted -= MintCompleted;
 
@@ -169,7 +169,7 @@ namespace TezosSDK.Tezos.API
 			}
 			else
 			{
-				Logger.LogError(httpResult.ErrorMessage);
+				TezosLog.Error(httpResult.ErrorMessage);
 			}
 		}
 
@@ -181,7 +181,7 @@ namespace TezosSDK.Tezos.API
 
 		private void DeployCompleted(OperationInfo operationInfo)
 		{
-			Logger.LogDebug($"Deploy completed with operation ID: {operationInfo.Id}");
+			TezosLog.Debug($"Deploy completed with operation ID: {operationInfo.Id}");
 			
 			_walletEventProvider.EventManager.OperationCompleted -= DeployCompleted;
 
@@ -195,7 +195,7 @@ namespace TezosSDK.Tezos.API
 
 			void OnGetContracts(HttpResult<IEnumerable<TokenContract>> result)
 			{
-				Logger.LogDebug("Got contracts for owner");
+				TezosLog.Debug("Got contracts for owner");
 
 				if (result.Success)
 				{
@@ -213,7 +213,7 @@ namespace TezosSDK.Tezos.API
 				}
 				else
 				{
-					Logger.LogError(result.ErrorMessage);
+					TezosLog.Error(result.ErrorMessage);
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 using TezosSDK.FileUploaders;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Samples.Tutorials.IPFSUpload
 {
@@ -12,7 +12,7 @@ namespace TezosSDK.Samples.Tutorials.IPFSUpload
 		{
 			if (string.IsNullOrEmpty(TezosManager.Instance.Config.PinataApiKey))
 			{
-				Logger.LogError("Can not proceed without Pinata API key.");
+				TezosLog.Error("Can not proceed without Pinata API key.");
 				return;
 			}
 
@@ -20,7 +20,7 @@ namespace TezosSDK.Samples.Tutorials.IPFSUpload
 
 			var uploadCoroutine = uploader.UploadFile(ipfsUrl =>
 			{
-				Logger.LogDebug($"File uploaded, url is {ipfsUrl}");
+				TezosLog.Debug($"File uploaded, url is {ipfsUrl}");
 			});
 
 			StartCoroutine(uploadCoroutine);

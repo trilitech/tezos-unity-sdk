@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor of wallet and connector interfaces to improve modularity and flexibility, including:
   - New focused wallet interfaces (`IWalletConnection`, `IWalletAccount`, `IWalletTransaction`, `IWalletContract`, `IWalletEventProvider`) for better separation of concerns.
   - `WalletConnectorFactory` to replace `BeaconConnectorFactory`, reflecting a more generic wallet connection approach.
+- Introduced `TezosLog` class to replace `Logger.cs` for improved and cleaner logging.
+- Enable sourcemaps on WebGL for debugging.
 
 ### Changed
 - Refactored asynchronous callbacks throughout the SDK to use the `Result<T>` pattern for improved error handling and clarity.
@@ -24,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Event handling in connectors to ensure proper translation and dispatch according to the new event system structure.
 - Logging and error handling across the modified classes for better debugging and maintenance.
 - Connection and operation request flows in wallet connectors to enhance performance and user experience.
+- Namespace changes.
+- Samples have been updated to use the new namespaces and namings.
+- WebGL fixes and security improvements.
+- File structure, folder structure, and namespace changes.
 
 ### Fixed
 - Addressed a memory leak in `TokenContract` where event handlers were not being properly unsubscribed.

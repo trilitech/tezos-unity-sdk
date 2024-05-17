@@ -1,4 +1,5 @@
 using Beacon.Sdk.Beacon.Permission;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
@@ -6,7 +7,6 @@ using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 namespace TezosSDK.Tezos.Managers
 {
@@ -24,7 +24,8 @@ namespace TezosSDK.Tezos.Managers
 		[SerializeField] private TezosConfigSO config;
 
 		[Tooltip("Logs will be printed to the console if the log level is equal or higher than this value.")]
-		[SerializeField] private Logger.LogLevel logLevel = Logger.LogLevel.Debug;
+		[SerializeField] private TezosLog.LogLevel logLevel = TezosLog.LogLevel.Debug;
+
 		public static TezosManager Instance;
 
 		public TezosConfigSO Config
@@ -38,32 +39,7 @@ namespace TezosSDK.Tezos.Managers
 
 		public ITezos Tezos { get; private set; }
 
-		public IWalletAccount WalletAccount
-		{
-			get => Tezos?.WalletAccount;
-		}
-
-		public IWalletConnection WalletConnection
-		{
-			get => Tezos?.WalletConnection;
-		}
-
 		public IWalletConnector WalletConnector { get; private set; }
-
-		public IWalletContract WalletContract
-		{
-			get => Tezos?.WalletContract;
-		}
-
-		public IWalletEventProvider WalletEventProvider
-		{
-			get => Tezos?.WalletEventProvider;
-		}
-
-		public IWalletTransaction WalletTransaction
-		{
-			get => Tezos?.WalletTransaction;
-		}
 
 		protected void Awake()
 		{
@@ -83,7 +59,7 @@ namespace TezosSDK.Tezos.Managers
 
 		private void Start()
 		{
-			Logger.LogDebug("Tezos SDK initialized");
+			TezosLog.Debug("Tezos SDK initialized");
 			EventManager.DispatchSDKInitializedEvent();
 		}
 
@@ -101,8 +77,9 @@ namespace TezosSDK.Tezos.Managers
 
 		private void InitializeTezos()
 		{
-			Logger.CurrentLogLevel = logLevel;
-			Logger.LogDebug("Tezos SDK initializing...");
+			TezosLog.SetLogLevel(logLevel);
+			TezosLog.Info("Tezos SDK initializing...");
+			
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
 			WalletConnector = WalletConnectorFactory.CreateConnector(Application.platform, EventManager);
 			var walletProvider = new WalletProvider(EventManager, WalletConnector);

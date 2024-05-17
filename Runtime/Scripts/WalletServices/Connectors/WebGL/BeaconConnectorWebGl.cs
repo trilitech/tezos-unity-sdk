@@ -29,7 +29,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 
 			if (walletProviderType == null)
 			{
-				Logger.LogError("WalletProviderType is null");
+				TezosLog.Error("WalletProviderType is null");
 				return;
 			}
 

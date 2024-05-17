@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
+using TezosSDK.Helpers.Logging;
 using TezosSDK.Patterns;
 using TezosSDK.Tezos.Models;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logging.Logger;
 
 // ReSharper disable InconsistentNaming
 
@@ -106,7 +106,7 @@ namespace TezosSDK.Tezos.Wallet
 			add
 			{
 #if UNITY_WEBGL
-				Logger.LogWarning("PairingCompleted event is not supported in WebGL builds.");
+				TezosLog.Warning("PairingCompleted event is not supported in WebGL builds.");
 #endif
 
 				if (pairingCompleted == null || !pairingCompleted.GetInvocationList().Contains(value))
@@ -239,7 +239,7 @@ namespace TezosSDK.Tezos.Wallet
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError($"Error parsing event data: {ex.Message}\nData: {jsonEventData}");
+				TezosLog.Error($"Error parsing event data: {ex.Message}\nData: {jsonEventData}");
 			}
 		}
 
