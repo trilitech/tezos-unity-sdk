@@ -9,19 +9,20 @@ namespace TezosSDK.Editor.Windows
 
 	public class IssueReportFormWindow : EditorWindow
 	{
-		private readonly string[] issueTypes =
+		private readonly string[] _issueTypes =
 		{
 			"Select a issue type...", "Fix", "Critical Bug", "Bug", "Feature", "Other"
 		};
-		private string additionalContext = "";
-		private string email = "";
-		private string errorMessage = "";
-		private string issueDefinition = "";
-		private int issueTypeIndex;
-		private string sdkVersion = "";
-		private string stepsToReproduce = "";
-		private string successMessage = "";
-		private string unityVersion = "";
+		
+		private string _additionalContext = "";
+		private string _email = "";
+		private string _errorMessage = "";
+		private string _issueDefinition = "";
+		private int _issueTypeIndex;
+		private string _sdkVersion = "";
+		private string _stepsToReproduce = "";
+		private string _successMessage = "";
+		private string _unityVersion = "";
 
 		private void OnGUI()
 		{
@@ -29,49 +30,49 @@ namespace TezosSDK.Editor.Windows
 			EditorGUILayout.Space();
 
 			EditorGUILayout.LabelField("Issue Definition*", GUILayout.Width(100));
-			issueDefinition = EditorGUILayout.TextArea(issueDefinition, GUILayout.Height(60));
+			_issueDefinition = EditorGUILayout.TextArea(_issueDefinition, GUILayout.Height(60));
 			EditorGUILayout.Space();
 
 			EditorGUILayout.LabelField("Steps To Reproduce (Optional)", GUILayout.Width(200));
-			stepsToReproduce = EditorGUILayout.TextArea(stepsToReproduce, GUILayout.Height(60));
+			_stepsToReproduce = EditorGUILayout.TextArea(_stepsToReproduce, GUILayout.Height(60));
 			EditorGUILayout.Space();
 
 			EditorGUILayout.LabelField("Additional Context (Optional)", GUILayout.Width(200));
-			additionalContext = EditorGUILayout.TextArea(additionalContext, GUILayout.Height(60));
+			_additionalContext = EditorGUILayout.TextArea(_additionalContext, GUILayout.Height(60));
 			EditorGUILayout.Space();
 
-			if (string.IsNullOrEmpty(unityVersion))
+			if (string.IsNullOrEmpty(_unityVersion))
 			{
-				unityVersion = Application.unityVersion;
+				_unityVersion = Application.unityVersion;
 			}
 
-			unityVersion = EditorGUILayout.TextField("Unity Version*", unityVersion);
+			_unityVersion = EditorGUILayout.TextField("Unity Version*", _unityVersion);
 			EditorGUILayout.Space();
 
-			if (string.IsNullOrEmpty(sdkVersion))
+			if (string.IsNullOrEmpty(_sdkVersion))
 			{
-				sdkVersion = GetSDKVersion();
+				_sdkVersion = GetSDKVersion();
 			}
 
-			sdkVersion = EditorGUILayout.TextField("SDK Version*", sdkVersion);
+			_sdkVersion = EditorGUILayout.TextField("SDK Version*", _sdkVersion);
 			EditorGUILayout.Space();
 
-			email = EditorGUILayout.TextField("Email (Optional)", email);
+			_email = EditorGUILayout.TextField("Email (Optional)", _email);
 			EditorGUILayout.Space();
 
-			issueTypeIndex = EditorGUILayout.Popup("Issue Type*", issueTypeIndex, issueTypes);
+			_issueTypeIndex = EditorGUILayout.Popup("Issue Type*", _issueTypeIndex, _issueTypes);
 			EditorGUILayout.Space();
 
 			ValidateFields();
 
-			if (!string.IsNullOrEmpty(errorMessage))
+			if (!string.IsNullOrEmpty(_errorMessage))
 			{
-				EditorGUILayout.HelpBox(errorMessage, MessageType.Error);
+				EditorGUILayout.HelpBox(_errorMessage, MessageType.Error);
 			}
 
-			if (!string.IsNullOrEmpty(successMessage))
+			if (!string.IsNullOrEmpty(_successMessage))
 			{
-				EditorGUILayout.HelpBox(successMessage, MessageType.Info);
+				EditorGUILayout.HelpBox(_successMessage, MessageType.Info);
 			}
 
 			if (GUILayout.Button("Submit"))
@@ -117,11 +118,11 @@ namespace TezosSDK.Editor.Windows
 
 		private void SubmitReport()
 		{
-			successMessage = "";
+			_successMessage = "";
 
 			ValidateFields();
 
-			if (!string.IsNullOrEmpty(errorMessage))
+			if (!string.IsNullOrEmpty(_errorMessage))
 			{
 				return;
 			}
@@ -129,40 +130,40 @@ namespace TezosSDK.Editor.Windows
 			var url =
 				"https://docs.google.com/forms/d/e/1FAIpQLScUslljbVpQztjqB96D2c8dSlPpeYkM2sJdZlnOz7qyN3g4nw/formResponse?usp=pp_url";
 
-			url += "&entry.2052348936=" + UnityWebRequest.EscapeURL(issueDefinition);
-			url += "&entry.1859623235=" + UnityWebRequest.EscapeURL(stepsToReproduce);
-			url += "&entry.1214054480=" + UnityWebRequest.EscapeURL(additionalContext);
-			url += "&entry.1889569160=" + UnityWebRequest.EscapeURL(unityVersion);
-			url += "&entry.1546304813=" + UnityWebRequest.EscapeURL(sdkVersion);
-			url += "&entry.334812445=" + UnityWebRequest.EscapeURL(email);
-			url += "&entry.1713563215=" + UnityWebRequest.EscapeURL(issueTypes[issueTypeIndex]);
+			url += "&entry.2052348936=" + UnityWebRequest.EscapeURL(_issueDefinition);
+			url += "&entry.1859623235=" + UnityWebRequest.EscapeURL(_stepsToReproduce);
+			url += "&entry.1214054480=" + UnityWebRequest.EscapeURL(_additionalContext);
+			url += "&entry.1889569160=" + UnityWebRequest.EscapeURL(_unityVersion);
+			url += "&entry.1546304813=" + UnityWebRequest.EscapeURL(_sdkVersion);
+			url += "&entry.334812445=" + UnityWebRequest.EscapeURL(_email);
+			url += "&entry.1713563215=" + UnityWebRequest.EscapeURL(_issueTypes[_issueTypeIndex]);
 			url += "&submit=Submit";
 
 			Application.OpenURL(url);
-			successMessage = "Report submitted. Thanks!";
+			_successMessage = "Report submitted. Thanks!";
 		}
 
 		private void ValidateFields()
 		{
-			if (string.IsNullOrEmpty(issueDefinition))
+			if (string.IsNullOrEmpty(_issueDefinition))
 			{
-				errorMessage = "Issue Definition is required.";
+				_errorMessage = "Issue Definition is required.";
 			}
-			else if (string.IsNullOrEmpty(unityVersion))
+			else if (string.IsNullOrEmpty(_unityVersion))
 			{
-				errorMessage = "Unity Version is required.";
+				_errorMessage = "Unity Version is required.";
 			}
-			else if (string.IsNullOrEmpty(sdkVersion))
+			else if (string.IsNullOrEmpty(_sdkVersion))
 			{
-				errorMessage = "SDK Version is required.";
+				_errorMessage = "SDK Version is required.";
 			}
-			else if (issueTypeIndex == 0)
+			else if (_issueTypeIndex == 0)
 			{
-				errorMessage = "Issue Type is required.";
+				_errorMessage = "Issue Type is required.";
 			}
 			else
 			{
-				errorMessage = "";
+				_errorMessage = "";
 			}
 		}
 	}

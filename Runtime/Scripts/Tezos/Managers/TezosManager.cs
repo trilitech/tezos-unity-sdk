@@ -50,11 +50,11 @@ namespace TezosSDK.Tezos.Managers
 			}
 
 			Instance = this;
+			DontDestroyOnLoad(gameObject);
 
 			ValidateConfig();
 			CreateEventManager();
 			InitializeTezos();
-			DontDestroyOnLoad(gameObject);
 		}
 
 		private void Start()
@@ -65,14 +65,18 @@ namespace TezosSDK.Tezos.Managers
 
 		private void CreateEventManager()
 		{
-			// Create or get a WalletMessageReceiver Game object to receive callback messages
-			var eventManager = GameObject.Find("WalletEventManager");
-
-			EventManager = eventManager != null
-				? eventManager.GetComponent<WalletEventManager>()
-				: new GameObject("WalletEventManager").AddComponent<WalletEventManager>();
-
-			DontDestroyOnLoad(EventManager);
+			var eventManager = FindObjectOfType<WalletEventManager>();
+			
+			if (!eventManager)
+			{
+				var eventManagerGO = new GameObject("WalletEventManager");
+				EventManager = eventManagerGO.AddComponent<WalletEventManager>();
+				DontDestroyOnLoad(eventManagerGO);
+			}
+			else
+			{
+				EventManager = eventManager;
+			}
 		}
 
 		private void InitializeTezos()
