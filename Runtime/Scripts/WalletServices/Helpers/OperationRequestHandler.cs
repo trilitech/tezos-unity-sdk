@@ -58,7 +58,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 			var network = CreateNetwork();
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
-			TezosLog.Info("Permission request: " + permissionRequest.PrettyPrint());
+			TezosLog.Info("RequestTezosPermission - Sending permission request: " + permissionRequest.PrettyPrint());
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
 			TezosLog.Info("Permission request sent");
 		}
@@ -133,7 +133,7 @@ namespace TezosSDK.WalletServices.Helpers
 			var operationRequest = CreateOperationRequest(beaconDappClient, activeAccountPermissions, operationDetails,
 				messageType);
 
-			TezosLog.Debug("Requesting Operation: " + operationRequest.Print());
+			TezosLog.Debug("Requesting Operation: " + operationRequest.PrettyPrint());
 
 			// Send the operation request
 			return SendBeaconClientResponseAsync(beaconDappClient, activeAccountPermissions.SenderId, operationRequest);

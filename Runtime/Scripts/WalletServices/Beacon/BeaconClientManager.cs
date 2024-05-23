@@ -36,7 +36,6 @@ namespace TezosSDK.WalletServices.Beacon
 			_walletConnector = walletConnector;
 			eventManager.WalletConnected += OnWalletConnected;
 			eventManager.WalletDisconnected += OnWalletDisconnected;
-			_walletConnector.OperationRequested += OperationRequestedHandler;
 		}
 
 		public DappBeaconClient BeaconDappClient { get; private set; }
@@ -44,46 +43,6 @@ namespace TezosSDK.WalletServices.Beacon
 		public void Dispose()
 		{
 			BeaconDappClient?.Disconnect();
-		}
-
-		// private void OperationRequestedHandler(WalletMessageType messageType)
-		// {
-		// 	switch (messageType)
-		// 	{
-		// 		case WalletMessageType.ConnectionRequest:
-		// 			// Handle connection request logic
-		// 			break;
-		// 		case WalletMessageType.OperationRequest:
-		// 			// Handle operation request logic
-		// 			break;
-		// 		case WalletMessageType.SignPayloadRequest:
-		// 			// Handle sign payload request logic
-		// 			break;
-		// 		case WalletMessageType.DisconnectionRequest:
-		// 			// Handle disconnection request logic
-		// 			break;
-		// 	}
-		// }
-
-		private void OperationRequestedHandler(WalletMessageType messageType)
-		{
-			TezosLog.Debug($"OperationRequestedHandler - MessageType: {messageType}");
-
-			switch (messageType)
-			{
-				case WalletMessageType.ConnectionRequest:
-					// _walletConnector.ConnectWallet();
-					break;
-				case WalletMessageType.OperationRequest:
-					// _walletConnector.RequestOperation(operationDetails);
-					break;
-				case WalletMessageType.SignPayloadRequest:
-					// _walletConnector.RequestSignPayload(signPayloadDetails);
-					break;
-				case WalletMessageType.DisconnectionRequest:
-					// _walletConnector.DisconnectWallet();
-					break;
-			}
 		}
 
 		private void OnWalletDisconnected(WalletInfo obj)
@@ -164,7 +123,7 @@ namespace TezosSDK.WalletServices.Beacon
 				return false;
 			}
 
-			TezosLog.Info("We already have connection with wallet: " + activeAccountPermissions.Print());
+			TezosLog.Info("We already have connection with wallet: " + activeAccountPermissions.PrettyPrint());
 			return true;
 		}
 
@@ -270,7 +229,7 @@ namespace TezosSDK.WalletServices.Beacon
 				return;
 			}
 
-			TezosLog.Debug(permissionResponse.Print());
+			TezosLog.Debug(permissionResponse.PrettyPrint());
 		}
 
 		/// <summary>

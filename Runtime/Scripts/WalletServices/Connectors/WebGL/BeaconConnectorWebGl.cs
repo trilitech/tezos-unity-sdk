@@ -19,8 +19,11 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 		public BeaconConnectorWebGl(WalletEventManager walletEventManager)
 		{
 			walletEventManager.SDKInitialized += UnityReady;
+			ConnectorType = ConnectorType.BeaconWebGl;
 		}
 
+		public ConnectorType ConnectorType { get; }
+		
 		public event Action<WalletMessageType> OperationRequested;
 
 		public void ConnectWallet()

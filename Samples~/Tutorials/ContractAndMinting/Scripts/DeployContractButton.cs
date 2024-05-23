@@ -16,6 +16,7 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 		{
 			// Deploy the contract
 			// The contract will be deployed to the active address
+			TezosLog.Debug("DeployContractButton - Deploying contract...");
 			TezosManager.Instance.Tezos.TokenContract.Deploy(OnContractDeployed);
 		}
 

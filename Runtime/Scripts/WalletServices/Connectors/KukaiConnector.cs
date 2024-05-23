@@ -16,12 +16,14 @@ namespace TezosSDK.WalletServices.Connectors
         public KukaiConnector(WalletEventManager eventManager)
         {
             _eventManager = eventManager;
+            ConnectorType = ConnectorType.Kukai;
         }
         
         public void Dispose()
         {
         }
 
+        public ConnectorType ConnectorType { get; }
         public event Action<WalletMessageType> OperationRequested;
 
         public void ConnectWallet()

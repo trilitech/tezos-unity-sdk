@@ -23,6 +23,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 			_operationRequestHandler = new OperationRequestHandler();
 			_operationRequestHandler.MessageSent += OnBeaconMessageSent;
 			_beaconClientManager.Create();
+			ConnectorType = ConnectorType.BeaconDotNet;
 		}
 
 		public void Dispose()
@@ -30,6 +31,8 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 			_beaconClientManager.BeaconDappClient.Disconnect();
 		}
 
+		public ConnectorType ConnectorType { get; }
+		
 		public event Action<WalletMessageType> OperationRequested;
 
 		public async void ConnectWallet()
@@ -61,7 +64,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 
 		public async void RequestContractOrigination(WalletOriginateContractRequest originationRequest)
 		{
-			TezosLog.Debug("RequestContractOrigination");
+			TezosLog.Debug("RequestContractOrigination - BeaconDotNet");
 
 			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script,
 				originationRequest.DelegateAddress, _beaconClientManager.BeaconDappClient);

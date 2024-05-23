@@ -30,7 +30,6 @@ namespace TezosSDK.Tezos.Wallet
 			EventManager.WalletDisconnected += OnWalletDisconnected;
 			EventManager.PayloadSigned += OnPayloadSigned;
 			EventManager.OperationInjected += OnOperationInjected;
-
 			_walletConnector = walletConnector;
 			_walletConnector.OperationRequested += OperationRequestedHandler;
 		}
@@ -93,6 +92,8 @@ namespace TezosSDK.Tezos.Wallet
 
 		public void OriginateContract(string script, string delegateAddress)
 		{
+			TezosLog.Debug($"WalletProvider.OriginateContract (ConnectorType: {_walletConnector.ConnectorType})");
+			
 			var originationRequest = new WalletOriginateContractRequest
 			{
 				Script = script,
@@ -109,7 +110,22 @@ namespace TezosSDK.Tezos.Wallet
 		{
 			TezosLog.Debug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
 			// TODO: Should open the wallet here?
-			//OpenWallet();
+
+			if (messageType == WalletMessageType.ConnectionRequest)
+			{
+				TezosLog.Debug("WalletProvider.OperationRequestedHandler ConnectionRequest");
+				OpenWallet();
+			}
+			else if (messageType == WalletMessageType.OperationRequest)
+			{
+				TezosLog.Debug("WalletProvider.OperationRequestedHandler OperationRequest");
+			}
+			else if (messageType == WalletMessageType.SignPayloadRequest)
+			{
+				TezosLog.Debug("WalletProvider.OperationRequestedHandler SignPayloadRequest");
+			}
+				
+			
 		}
 
 		private void OpenWallet()
@@ -128,8 +144,7 @@ namespace TezosSDK.Tezos.Wallet
 
 		/// <summary>
 		///     An operation has been injected into the network (i.e. the transaction has been sent to the network).
-		///     Raised when an operation is injected into the network and the operation hash is received. (By the IBeaconConnector
-		///     implementation)
+		///     Raised when an operation is injected into the network and the operation hash is received. 
 		/// </summary>
 		/// <param name="transaction"></param>
 		private void OnOperationInjected(OperationInfo transaction)
