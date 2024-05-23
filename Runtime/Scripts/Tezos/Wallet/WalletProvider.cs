@@ -1,4 +1,5 @@
 ﻿using System;
+using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Sign;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
@@ -107,31 +108,8 @@ namespace TezosSDK.Tezos.Wallet
 		private void OperationRequestedHandler(WalletMessageType messageType)
 		{
 			TezosLog.Debug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
-
-			switch (messageType)
-			{
-				case WalletMessageType.ConnectionRequest:
-					// Handle connection request logic
-					break;
-				case WalletMessageType.OperationRequest:
-					// Handle operation request logic
-					break;
-				case WalletMessageType.SignPayloadRequest:
-					// Handle sign payload request logic
-					break;
-				case WalletMessageType.DisconnectionRequest:
-					// Handle disconnection request logic
-					break;
-			}
-
-#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
-			// The wallet will already be open for the pairing request during login
-			// We should ignore this message type
-			if (beaconMessageType != BeaconMessageType.permission_request)
-			{
-				OpenWallet();
-			}
-#endif
+			// TODO: Should open the wallet here?
+			//OpenWallet();
 		}
 
 		private void OpenWallet()
@@ -227,7 +205,7 @@ namespace TezosSDK.Tezos.Wallet
 		{
 			UnityMainThreadDispatcher.Enqueue(() =>
 			{
-				Logger.LogDebug("WalletProvider.PairWithWallet (OpenURL)");
+				TezosLog.Debug("WalletProvider.PairWithWallet (OpenURL)");
 				Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
 			});
 		}

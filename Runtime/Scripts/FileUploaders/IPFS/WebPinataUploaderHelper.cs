@@ -7,6 +7,8 @@ using UnityEngine;
 namespace TezosSDK.FileUploaders.IPFS
 {
 
+#if UNITY_WEBGL
+
 	public static class WebPinataUploaderHelper
 	{
 		private static Action<string> responseCallback;
@@ -58,5 +60,5 @@ namespace TezosSDK.FileUploaders.IPFS
 		[DllImport("__Internal")]
 		private static extern void JsRequestUserFile(string extensions);
 	}
-
+#endif
 }

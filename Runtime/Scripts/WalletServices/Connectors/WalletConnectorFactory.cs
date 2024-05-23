@@ -10,25 +10,19 @@ namespace TezosSDK.WalletServices.Connectors
 
 	public static class WalletConnectorFactory
 	{
-		public static IWalletConnector CreateConnector(RuntimePlatform platform, WalletEventManager eventManager)
+		public static IWalletConnector CreateConnector(ConnectorType connectorType, WalletEventManager eventManager)
 		{
-			switch (platform)
+			switch (connectorType)
 			{
-				case RuntimePlatform.WebGLPlayer:
+				case ConnectorType.BeaconWebGl:
 					return new BeaconConnectorWebGl(eventManager);
-				case RuntimePlatform.IPhonePlayer:
-				case RuntimePlatform.Android:
-				case RuntimePlatform.WindowsPlayer:
-				case RuntimePlatform.WindowsEditor:
-				case RuntimePlatform.LinuxPlayer:
-				case RuntimePlatform.LinuxEditor:
-				case RuntimePlatform.OSXPlayer:
-				case RuntimePlatform.OSXEditor:
+				case ConnectorType.BeaconDotNet:
 					return new BeaconConnectorDotNet(eventManager);
+				case ConnectorType.Kukai:
+					return new KukaiConnector(eventManager);
 				default:
-					throw new ArgumentException("Unsupported platform");
+					throw new ArgumentException("Unknown connector type");
 			}
 		}
 	}
-
 }

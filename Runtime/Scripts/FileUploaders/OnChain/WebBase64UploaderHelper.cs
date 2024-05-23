@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace TezosSDK.FileUploaders.OnChain
 {
+#if UNITY_WEBGL
 
 	public static class WebBase64UploaderHelper
 	{
@@ -49,5 +50,5 @@ namespace TezosSDK.FileUploaders.OnChain
 		[DllImport("__Internal")]
 		private static extern void JsRequestUserFile(string extensions);
 	}
-
+#endif
 }
