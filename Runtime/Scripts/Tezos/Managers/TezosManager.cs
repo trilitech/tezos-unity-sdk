@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Beacon.Sdk.Beacon.Permission;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces;
@@ -6,6 +7,7 @@ using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors;
+using TezosSDK.WalletServices.Connectors.DotNet;
 using UnityEngine;
 
 namespace TezosSDK.Tezos.Managers
@@ -24,7 +26,7 @@ namespace TezosSDK.Tezos.Managers
 		[SerializeField] private TezosConfigSO config;
 
 		[Tooltip("Logs will be printed to the console if the log level is equal or higher than this value.")]
-		[SerializeField] private TezosLog.LogLevel logLevel = TezosLog.LogLevel.Debug;
+		[SerializeField] private TezosLogger.LogLevel logLevel = TezosLogger.LogLevel.Debug;
 
 		public static TezosManager Instance;
 
@@ -40,8 +42,10 @@ namespace TezosSDK.Tezos.Managers
 		public ITezos Tezos { get; private set; }
 
 		public IWalletConnector WalletConnector { get; private set; }
+		
+		public bool IsInitialized { get; private set; }
 
-		protected void Awake()
+		protected async void Awake()
 		{
 			if (Instance != null)
 			{
@@ -53,41 +57,25 @@ namespace TezosSDK.Tezos.Managers
 			DontDestroyOnLoad(gameObject);
 
 			ValidateConfig();
-			CreateEventManager();
-			InitializeTezos();
+			EventManager = new WalletEventManager();
+			await InitializeTezosAsync();
 		}
 
-		private void Start()
+		private async Task InitializeTezosAsync()
 		{
-			TezosLog.Debug("Tezos SDK initialized");
-			EventManager.DispatchSDKInitializedEvent();
-		}
-
-		private void CreateEventManager()
-		{
-			var eventManager = FindObjectOfType<WalletEventManager>();
-			
-			if (!eventManager)
-			{
-				var eventManagerGO = new GameObject("WalletEventManager");
-				EventManager = eventManagerGO.AddComponent<WalletEventManager>();
-				DontDestroyOnLoad(eventManagerGO);
-			}
-			else
-			{
-				EventManager = eventManager;
-			}
-		}
-
-		private void InitializeTezos()
-		{
-			TezosLog.SetLogLevel(logLevel);
-			TezosLog.Info("Tezos SDK initializing...");
+			TezosLogger.SetLogLevel(logLevel);
+			TezosLogger.LogInfo("Tezos SDK initializing...");
 			
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
 			WalletConnector = WalletConnectorFactory.CreateConnector(ConnectorType.BeaconDotNet, EventManager);
 			var walletProvider = new WalletProvider(EventManager, WalletConnector);
 			Tezos = new Core.Tezos(config, walletProvider);
+			
+			await WalletConnector.InitializeAsync();
+			IsInitialized = true;
+
+			TezosLogger.LogInfo("Tezos SDK initialized.");
+			EventManager.DispatchSDKInitializedEvent();
 		}
 
 		private void ValidateConfig()

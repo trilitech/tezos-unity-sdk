@@ -38,7 +38,7 @@ namespace TezosSDK.FileUploaders.IPFS
 			}
 			else
 			{
-				TezosLog.Error($"Error during upload to IPFS {request.downloadHandler.text}");
+				TezosLogger.LogError($"Error during upload to IPFS {request.downloadHandler.text}");
 			}
 		}
 

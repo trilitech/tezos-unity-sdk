@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.Logging;
+using TezosSDK.Helpers.Logging;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -47,7 +48,7 @@ namespace TezosSDK.WalletServices.Helpers.Loggers
 				message += "\nException: " + exception;
 			}
 
-			Debug.Log(message);
+			TezosLogger.LogError("BEACON MESSAGE: " + message);
 		}
 	}
 

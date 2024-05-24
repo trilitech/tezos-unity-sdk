@@ -15,7 +15,7 @@ namespace TezosSDK.Tezos.Wallet
 	///     Manages event propagation within a Unity environment for wallet-related actions specific to the Tezos blockchain.
 	///     Handles incoming JSON event data and triggers corresponding C# events to handle these wallet actions.
 	/// </summary>
-	public class WalletEventManager : SingletonMonoBehaviour<WalletEventManager>, IWalletEventManager
+	public class WalletEventManager : IWalletEventManager
 	{
 		public const string EventTypeHandshakeReceived = "HandshakeReceived";
 		public const string EventTypeOperationCompleted = "OperationCompleted";
@@ -24,21 +24,9 @@ namespace TezosSDK.Tezos.Wallet
 		public const string EventTypePairingDone = "PairingDone";
 		public const string EventTypePayloadSigned = "PayloadSigned";
 		public const string EventTypeSDKInitialized = "SDKInitialized";
-		public const string EventTypeWalletConnected = "AccountConnected";
-		public const string EventTypeWalletConnectionFailed = "AccountConnectionFailed";
-		public const string EventTypeWalletDisconnected = "AccountDisconnected";
-
-		public event Action SDKInitialized
-		{
-			add
-			{
-				if (sdkInitialized == null || !sdkInitialized.GetInvocationList().Contains(value))
-				{
-					sdkInitialized += value;
-				}
-			}
-			remove => sdkInitialized -= value;
-		}
+		public const string EventTypeWalletConnected = "WalletConnected";
+		public const string EventTypeWalletConnectionFailed = "WalletConnectionFailed";
+		public const string EventTypeWalletDisconnected = "WalletDisconnected";
 
 		private event Action<HandshakeData> handshakeReceived;
 		private event Action<OperationInfo> operationCompleted;
@@ -129,6 +117,18 @@ namespace TezosSDK.Tezos.Wallet
 			remove => payloadSigned -= value;
 		}
 
+		public event Action SDKInitialized
+		{
+			add
+			{
+				if (sdkInitialized == null || !sdkInitialized.GetInvocationList().Contains(value))
+				{
+					sdkInitialized += value;
+				}
+			}
+			remove => sdkInitialized -= value;
+		}
+
 		public event Action<WalletInfo> WalletConnected
 		{
 			add
@@ -175,8 +175,8 @@ namespace TezosSDK.Tezos.Wallet
 
 		public void DispatchSDKInitializedEvent()
 		{
+			TezosLogger.LogDebug("Dispatching SDKInitialized event.");
 			var sdkInitializedEvent = new UnifiedEvent(EventTypeSDKInitialized);
-
 			HandleEvent(sdkInitializedEvent);
 		}
 
@@ -237,9 +237,9 @@ namespace TezosSDK.Tezos.Wallet
 						break;
 				}
 			}
-			catch (Exception ex)
+			catch (ArgumentException ex)
 			{
-				TezosLog.Error($"Error parsing event data: {ex.Message}\nData: {jsonEventData}");
+				TezosLogger.LogError($"Error parsing event data: {ex.Message}\nData: {jsonEventData} - {ex.StackTrace}");
 			}
 		}
 
@@ -260,17 +260,5 @@ namespace TezosSDK.Tezos.Wallet
 			eventAction?.Invoke(deserializedData);
 		}
 	}
-
-	// /// <summary>
-	// ///     Contains error information, primarily used when an operation or connection attempt fails.
-	// /// </summary>
-	// [Serializable]
-	// public class ErrorInfo
-	// {
-	// 	/// <summary>
-	// 	///     The error message providing details about the failure.
-	// 	/// </summary>
-	// 	public string Message;
-	// }
 
 }

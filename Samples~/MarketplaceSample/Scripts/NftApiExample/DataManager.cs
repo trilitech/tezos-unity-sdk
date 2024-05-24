@@ -23,7 +23,7 @@ namespace TezosSDK.Samples.MarketplaceSample.NftApiExample
 		private void Start()
 		{
 			_tezos = TezosManager.Instance.Tezos;
-			_tezos.WalletEventProvider.EventManager.WalletConnected += OnAccountConnected;
+			TezosManager.Instance.EventManager.WalletConnected += OnAccountConnected;
 		}
 
 		private void OnAccountConnected(WalletInfo walletInfo)

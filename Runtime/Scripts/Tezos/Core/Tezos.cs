@@ -11,6 +11,7 @@ using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 
 namespace TezosSDK.Tezos.Core
@@ -22,18 +23,24 @@ namespace TezosSDK.Tezos.Core
 	/// </summary>
 	public class Tezos : ITezos
 	{
+		
+		
 		public Tezos(TezosConfigSO config, WalletProvider walletProvider)
+			: this(config, walletProvider, walletProvider, walletProvider, walletProvider, walletProvider)
+		{
+		}
+
+		public Tezos(TezosConfigSO config, IWalletConnection walletConnection, IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, IWalletEventProvider eventProvider)
 		{
 			API = new TezosAPI(config);
 
-			WalletConnection = walletProvider;
-			WalletAccount = walletProvider;
-			WalletTransaction = walletProvider;
-			WalletContract = walletProvider;
-			WalletEventProvider = walletProvider;
-
+			WalletConnection = walletConnection;
+			WalletAccount = walletAccount;
+			WalletTransaction = walletTransaction;
+			WalletContract = walletContract;
+			WalletEventProvider = eventProvider;
 			// Subscribe to wallet events
-			walletProvider.EventManager.WalletConnected += OnWalletConnected;
+			WalletEventProvider.EventManager.WalletConnected += OnWalletConnected;
 		}
 
 		public IWalletConnection WalletConnection { get; }
@@ -41,7 +48,6 @@ namespace TezosSDK.Tezos.Core
 		public IWalletTransaction WalletTransaction { get; }
 		public IWalletContract WalletContract { get; }
 		public IWalletEventProvider WalletEventProvider { get; }
-
 		public ITezosAPI API { get; }
 		public IFa2 TokenContract { get; set; }
 
@@ -67,7 +73,7 @@ namespace TezosSDK.Tezos.Core
 
 			if (hasKey)
 			{
-				TezosLog.Info("Found deployed contract address in player prefs: " + address);
+				TezosLogger.LogInfo("Found deployed contract address in player prefs: " + address);
 			}
 
 			if (TokenContract != null)
@@ -76,8 +82,8 @@ namespace TezosSDK.Tezos.Core
 			}
 
 			TokenContract = !string.IsNullOrEmpty(address)
-				? new TokenContract(address, WalletAccount, WalletTransaction, WalletContract, WalletEventProvider, API)
-				: new TokenContract(WalletAccount, WalletTransaction, WalletContract, WalletEventProvider, API);
+				? new TokenContract(address, WalletAccount, WalletTransaction, WalletContract, API)
+				: new TokenContract(WalletAccount, WalletTransaction, WalletContract, API);
 		}
 	}
 

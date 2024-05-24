@@ -98,6 +98,11 @@ namespace TezosSDK.WalletServices.Interfaces
 		///     It is triggered in response to a successful disconnection action from the wallet.
 		/// </remarks>
 		event Action<WalletInfo> WalletDisconnected;
+
+		/// <summary>
+		///     Runs when the SDK is initialized.
+		/// </summary>
+		event Action SDKInitialized;
 	}
 
 }

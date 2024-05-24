@@ -1,6 +1,12 @@
+using System;
+using Microsoft.Extensions.Logging;
+using UnityEngine;
+using Object = UnityEngine.Object;
+
 namespace TezosSDK.Helpers.Logging
 {
-    public static class TezosLog
+    
+    public static class TezosLogger
     {
         public enum LogLevel
         {
@@ -70,22 +76,22 @@ namespace TezosSDK.Helpers.Logging
             return $"<color={color}><b>[TezosSDK]</b></color> {message}";
         }
 
-        public static void Debug(string message)
+        public static void LogDebug(string message)
         {
             Log(message, LogLevel.Debug);
         }
 
-        public static void Info(string message)
+        public static void LogInfo(string message)
         {
             Log(message);
         }
 
-        public static void Warning(string message)
+        public static void LogWarning(string message)
         {
             Log(message, LogLevel.Warning);
         }
 
-        public static void Error(string message)
+        public static void LogError(string message)
         {
             Log(message, LogLevel.Error);
         }

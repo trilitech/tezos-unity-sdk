@@ -12,7 +12,7 @@ namespace TezosSDK.Samples.Tutorials.IPFSUpload
 		{
 			if (string.IsNullOrEmpty(TezosManager.Instance.Config.PinataApiKey))
 			{
-				TezosLog.Error("Can not proceed without Pinata API key.");
+				TezosLogger.LogError("Can not proceed without Pinata API key.");
 				return;
 			}
 
@@ -20,7 +20,7 @@ namespace TezosSDK.Samples.Tutorials.IPFSUpload
 
 			var uploadCoroutine = uploader.UploadFile(ipfsUrl =>
 			{
-				TezosLog.Debug($"File uploaded, url is {ipfsUrl}");
+				TezosLogger.LogDebug($"File uploaded, url is {ipfsUrl}");
 			});
 
 			StartCoroutine(uploadCoroutine);

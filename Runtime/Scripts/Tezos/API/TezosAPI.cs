@@ -150,7 +150,7 @@ namespace TezosSDK.Tezos.API
 			long maxItems,
 			TokensForContractOrder orderBy)
 		{
-			TezosLog.Debug($"Getting tokens for contract: {contractAddress}");
+			TezosLogger.LogDebug($"Getting tokens for contract: {contractAddress}");
 
 			var sort = orderBy switch
 			{
@@ -201,7 +201,7 @@ namespace TezosSDK.Tezos.API
 			long maxItems,
 			OriginatedContractsForOwnerOrder orderBy)
 		{
-			TezosLog.Debug($"GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}");
+			TezosLogger.LogDebug($"API.GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}");
 
 			var sort = orderBy switch
 			{

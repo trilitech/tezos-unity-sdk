@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
@@ -26,14 +27,14 @@ namespace TezosSDK.WalletServices.Beacon
 	{
 		private readonly EventDispatcher _eventDispatcher;
 
-		private readonly IWalletConnector _walletConnector;
 		private WalletInfo _activeWallet; // Keep track of the active wallet
 		private bool _isInitialized;
+		private readonly OperationRequestHandler _operationRequestHandler;
 
-		public BeaconClientManager(WalletEventManager eventManager, IWalletConnector walletConnector)
+		public BeaconClientManager(WalletEventManager eventManager, OperationRequestHandler operationRequestHandler)
 		{
 			_eventDispatcher = new EventDispatcher(eventManager);
-			_walletConnector = walletConnector;
+			_operationRequestHandler = operationRequestHandler;
 			eventManager.WalletConnected += OnWalletConnected;
 			eventManager.WalletDisconnected += OnWalletDisconnected;
 		}
@@ -55,25 +56,23 @@ namespace TezosSDK.WalletServices.Beacon
 			_activeWallet = wallet; // Set active wallet
 		}
 
-		public async Task Initalize()
+		private async Task InitAsync()
 		{
 			if (_isInitialized)
 			{
-				TezosLog.Warning("BeaconClientManager already initialized");
+				TezosLogger.LogWarning("BeaconClientManager already initialized");
 				return;
 			}
 
 			if (BeaconDappClient == null)
 			{
-				TezosLog.Error("BeaconDappClient is null");
+				TezosLogger.LogError("BeaconDappClient is null");
 				return;
 			}
 
-			TezosLog.Info("Initializing BeaconDappClient");
-
+			TezosLogger.LogInfo("Initializing BeaconDappClient");
 			await BeaconDappClient.InitAsync();
-
-			TezosLog.Info("BeaconDappClient initialized");
+			TezosLogger.LogInfo("BeaconDappClient initialized");
 		}
 
 		public void Connect()
@@ -82,7 +81,7 @@ namespace TezosSDK.WalletServices.Beacon
 			{
 				if (BeaconDappClient == null)
 				{
-					TezosLog.Error("BeaconDappClient is null");
+					TezosLogger.LogError("BeaconDappClient is null");
 					return;
 				}
 
@@ -90,22 +89,24 @@ namespace TezosSDK.WalletServices.Beacon
 
 				var activePeer = BeaconDappClient.GetActivePeer();
 
-				TezosLog.Info($"BeaconDappClient initialized. Logged in: {BeaconDappClient.LoggedIn} - " +
+				TezosLogger.LogInfo($"BeaconDappClient: Logged in: {BeaconDappClient.LoggedIn} - " +
 				               $"Connected: {BeaconDappClient.Connected} - " + $"Active peer: {activePeer?.Name}");
 
-				if (HasExistingConnection())
+				if (HandleExistingConnection())
 				{
-					_eventDispatcher.DispatchWalletConnectedEvent(BeaconDappClient);
+					// We already have an active connection
+					return;
 				}
-				else
-				{
-					var pairingRequestInfo = BeaconDappClient.GetPairingRequestInfo();
-					_eventDispatcher.DispatchHandshakeEvent(pairingRequestInfo);
-				}
+
+				// We need to establish a new connection
+				var pairingRequestInfo = BeaconDappClient.GetPairingRequestInfo();
+				_eventDispatcher.DispatchHandshakeEvent(pairingRequestInfo);
+				_operationRequestHandler.RequestTezosPermission(BeaconDappClient);
 			}
 			catch (Exception e)
 			{
-				TezosLog.Error($"Error during dapp initialization: {e.Message}");
+				TezosLogger.LogError($"Error during dapp connection: {e.Message}");
+				throw;
 			}
 		}
 
@@ -113,28 +114,39 @@ namespace TezosSDK.WalletServices.Beacon
 		///     Checks if there is an existing connection with a wallet.
 		/// </summary>
 		/// <returns>Returns true if an active connection exists, otherwise false.</returns>
-		private bool HasExistingConnection()
+		private bool HandleExistingConnection()
 		{
 			var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
 
 			if (activeAccountPermissions == null)
 			{
-				TezosLog.Info("No already active wallet");
+				TezosLogger.LogInfo("No already active wallet");
 				return false;
 			}
+			
+			TezosLogger.LogDebug($"Active account permissions: {activeAccountPermissions.PrettyPrint()}");
+			TezosLogger.LogInfo($"We already have connection with wallet: {activeAccountPermissions.AppMetadata.Name}");
+			
+			_activeWallet = new WalletInfo
+			{
+				Address = activeAccountPermissions.Address,
+				PublicKey = activeAccountPermissions.PublicKey
+			};
 
-			TezosLog.Info("We already have connection with wallet: " + activeAccountPermissions.PrettyPrint());
+			_eventDispatcher.DispatchWalletConnectedEvent(_activeWallet);
+
 			return true;
 		}
 
 		/// <summary>
-		///     Creates the Beacon client.
+		///     Creates and initializes the Beacon client.
 		/// </summary>
-		public void Create()
+		public async Task CreateAsync()
 		{
-			TezosLog.Debug("Creating Beacon client");
+			TezosLogger.LogDebug("Creating Beacon client");
 			var options = CreateBeaconOptions();
 
+			
 			BeaconDappClient =
 				BeaconClientFactory.Create<IDappBeaconClient>(options, new ConnectorLoggerProvider()) as
 					DappBeaconClient;
@@ -146,34 +158,36 @@ namespace TezosSDK.WalletServices.Beacon
 
 			BeaconDappClient.OnBeaconMessageReceived += OnBeaconDappClientMessageReceived;
 			BeaconDappClient.OnDisconnected += OnBeaconDappClientDisconnected;
-			BeaconDappClient.OnConnectedClientsListChanged += OnConnectedClientsListChanged;
+			// BeaconDappClient.OnConnectedClientsListChanged += OnConnectedClientsListChanged;
+			
+			await InitAsync();
 		}
 
-		/// <summary>
-		///     Handles the event when the list of connected clients changes.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">Null when a client disconnects</param>
-		private void OnConnectedClientsListChanged(object sender, ConnectedClientsListChangedEventArgs e)
-		{
-			if (e != null)
-			{
-				TezosLog.Debug("OnConnectedClientsListChanged - Connected clients list changed");
-				_eventDispatcher.DispatchWalletConnectedEvent(BeaconDappClient);
-			}
-			else
-			{
-				TezosLog.Debug("OnConnectedClientsListChanged - Connected clients list is empty");
-				_eventDispatcher.DispatchWalletDisconnectedEvent(_activeWallet);
-			}
-		}
+		// /// <summary>
+		// ///     Handles the event when the list of connected clients changes.
+		// /// </summary>
+		// /// <param name="sender">The source of the event.</param>
+		// /// <param name="e">Null when a client disconnects</param>
+		// private void OnConnectedClientsListChanged(object sender, ConnectedClientsListChangedEventArgs e)
+		// {
+		// 	if (e != null)
+		// 	{
+		// 		TezosLogger.LogDebug("OnConnectedClientsListChanged - Connected clients list changed");
+		// 		_eventDispatcher.DispatchWalletConnectedEvent(BeaconDappClient);
+		// 	}
+		// 	else
+		// 	{
+		// 		TezosLogger.LogDebug("OnConnectedClientsListChanged - Connected clients list is empty");
+		// 		_eventDispatcher.DispatchWalletDisconnectedEvent(_activeWallet);
+		// 	}
+		// }
 
 		/// <summary>
 		///     Handles the event of the Beacon Dapp client getting disconnected.
 		/// </summary>
 		private void OnBeaconDappClientDisconnected()
 		{
-			TezosLog.Debug("OnBeaconDappClientDisconnected - Dapp disconnected");
+			TezosLogger.LogDebug("OnBeaconDappClientDisconnected - Dapp disconnected");
 			_eventDispatcher.DispatchWalletDisconnectedEvent(_activeWallet);
 		}
 
@@ -196,7 +210,7 @@ namespace TezosSDK.WalletServices.Beacon
 				return;
 			}
 
-			TezosLog.Debug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
+			TezosLogger.LogDebug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
 
 			switch (e.Request?.Type)
 			{
@@ -219,9 +233,6 @@ namespace TezosSDK.WalletServices.Beacon
 		///     Handles a permission response message.
 		/// </summary>
 		/// <param name="permissionResponse">The permission response message to handle.</param>
-		/// <remarks>
-		///     Simply logs the permission response message.
-		/// </remarks>
 		private void HandlePermissionResponse(PermissionResponse permissionResponse)
 		{
 			if (permissionResponse == null)
@@ -229,7 +240,9 @@ namespace TezosSDK.WalletServices.Beacon
 				return;
 			}
 
-			TezosLog.Debug(permissionResponse.PrettyPrint());
+			TezosLogger.LogDebug(permissionResponse.PrettyPrint());
+			TezosLogger.LogInfo($"Received permission response from {permissionResponse.AppMetadata.Name}!");
+			_eventDispatcher.DispatchWalletConnectedEvent(_activeWallet);
 		}
 
 		/// <summary>
@@ -295,11 +308,11 @@ namespace TezosSDK.WalletServices.Beacon
 		/// </remarks>
 		private void HandlePairingDone()
 		{
-			TezosLog.Debug("Received message of type Pairing done");
+			TezosLogger.LogDebug("Received message of type Pairing done");
 
 			if (_activeWallet != null)
 			{
-				TezosLog.Debug("Active wallet already exists, ignoring duplicate pairing done event");
+				TezosLogger.LogDebug("Active wallet already exists, ignoring duplicate pairing done event");
 				return;
 			}
 
@@ -349,11 +362,11 @@ namespace TezosSDK.WalletServices.Beacon
 		{
 			if (!BeaconDappClient.Connected)
 			{
-				TezosLog.Warning("Dapp is not connected - nothing to disconnect");
+				TezosLogger.LogWarning("Dapp is not connected - nothing to disconnect");
 				return;
 			}
 
-			TezosLog.Debug("Disconnecting wallet");
+			TezosLogger.LogDebug("Disconnecting wallet");
 			BeaconDappClient.RemoveActiveAccounts();
 			BeaconDappClient.Disconnect();
 		}

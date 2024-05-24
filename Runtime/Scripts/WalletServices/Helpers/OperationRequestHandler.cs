@@ -43,7 +43,7 @@ namespace TezosSDK.WalletServices.Helpers
 		{
 			if (beaconDappClient == null)
 			{
-				TezosLog.Error("BeaconDappClient is null");
+				TezosLogger.LogError("BeaconDappClient is null");
 				return;
 			}
 
@@ -52,15 +52,15 @@ namespace TezosSDK.WalletServices.Helpers
 
 			if (activePeer == null)
 			{
-				TezosLog.Error("No active peer found");
+				TezosLogger.LogError("No active peer found");
 				return;
 			}
 
 			var network = CreateNetwork();
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
-			TezosLog.Info("RequestTezosPermission - Sending permission request: " + permissionRequest.PrettyPrint());
+			TezosLogger.LogInfo("RequestTezosPermission - Sending permission request: " + permissionRequest.PrettyPrint());
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
-			TezosLog.Info("Permission request sent");
+			TezosLogger.LogInfo("Permission request sent");
 		}
 
 		/// <summary>
@@ -79,6 +79,8 @@ namespace TezosSDK.WalletServices.Helpers
 			ulong amount,
 			DappBeaconClient beaconDappClient)
 		{
+			TezosLogger.LogDebug("Requesting Tezos Operation");
+			
 			return RequestOperation(beaconDappClient,
 				() => CreateTransactionOperation(destination, entryPoint, input, amount),
 				BeaconMessageType.operation_request);
@@ -93,6 +95,8 @@ namespace TezosSDK.WalletServices.Helpers
 		/// <returns>A Task representing the asynchronous operation.</returns>
 		public Task RequestContractOrigination(string script, string delegateAddress, DappBeaconClient beaconDappClient)
 		{
+			TezosLogger.LogDebug("Requesting Contract Origination");
+			
 			return RequestOperation(beaconDappClient, () => CreateOriginationOperation(script, delegateAddress),
 				BeaconMessageType.operation_request);
 		}
@@ -122,7 +126,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 			if (activeAccountPermissions == null)
 			{
-				TezosLog.Error("No active peer found");
+				TezosLogger.LogError("No active peer found");
 				return Task.CompletedTask;
 			}
 
@@ -133,7 +137,7 @@ namespace TezosSDK.WalletServices.Helpers
 			var operationRequest = CreateOperationRequest(beaconDappClient, activeAccountPermissions, operationDetails,
 				messageType);
 
-			TezosLog.Debug("Requesting Operation: " + operationRequest.PrettyPrint());
+			TezosLogger.LogDebug("Sending to beacon client: " + operationRequest.PrettyPrint());
 
 			// Send the operation request
 			return SendBeaconClientResponseAsync(beaconDappClient, activeAccountPermissions.SenderId, operationRequest);

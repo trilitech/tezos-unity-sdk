@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Threading.Tasks;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Wallet;
@@ -29,30 +30,29 @@ namespace TezosSDK.WalletServices.Connectors
         public void ConnectWallet()
         {
             // Implement logic to redirect user to Kukai embed page
-            TezosLog.Debug("ConnectWallet");
-            string kukaiUrl = "https://embed-ghostnet.kukai.app?redirect=unitydl://main";
+            TezosLogger.LogDebug("ConnectWallet");
+            string kukaiUrl = "https://embed-ghostnet.kukai.app";
             Application.OpenURL(kukaiUrl);
         }
 
         public string GetWalletAddress()
         {
             // Implement logic to retrieve the wallet address from the deep link
-            TezosLog.Debug("GetWalletAddress");
-            return PlayerPrefs.GetString("KukaiWalletAddress");
+            TezosLogger.LogDebug("GetWalletAddress");
+            return "tz1...";
         }
 
         public void DisconnectWallet()
         {
             // Implement logic to handle wallet disconnection
-            TezosLog.Debug("DisconnectWallet");
-            PlayerPrefs.DeleteKey("KukaiWalletAddress");
+            TezosLogger.LogDebug("DisconnectWallet");
         }
 
         public void RequestOperation(WalletOperationRequest operationRequest)
         {
             string operationPayload = $"{{\"destination\":\"{operationRequest.Destination}\",\"amount\":\"{operationRequest.Amount}\",\"entrypoint\":\"{operationRequest.EntryPoint}\",\"arg\":\"{operationRequest.Arg}\"}}";
             string kukaiUrl = $"https://embed-ghostnet.kukai.app?operation={operationPayload}&redirect=unitydl://main";
-            TezosLog.Debug("RequestOperation");
+            TezosLogger.LogDebug("RequestOperation");
             //Application.OpenURL(kukaiUrl);
         }
 
@@ -60,7 +60,7 @@ namespace TezosSDK.WalletServices.Connectors
         {
             string payload = $"{{\"signType\":\"{signRequest.SigningType}\",\"payload\":\"{signRequest.Payload}\"}}";
             string kukaiUrl = $"https://embed-ghostnet.kukai.app?sign={payload}&redirect=unitydl://main";
-            TezosLog.Debug("RequestSignPayload");
+            TezosLogger.LogDebug("RequestSignPayload");
             //Application.OpenURL(kukaiUrl);
         }
 
@@ -68,9 +68,13 @@ namespace TezosSDK.WalletServices.Connectors
         {
             string originationPayload = $"{{\"script\":\"{originationRequest.Script}\",\"delegate\":\"{originationRequest.DelegateAddress}\"}}";
             string kukaiUrl = $"https://embed-ghostnet.kukai.app?originate={originationPayload}&redirect=unitydl://main";
-            TezosLog.Debug("RequestSignPayload");
+            TezosLogger.LogDebug("RequestSignPayload");
             //Application.OpenURL(kukaiUrl);
         }
 
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

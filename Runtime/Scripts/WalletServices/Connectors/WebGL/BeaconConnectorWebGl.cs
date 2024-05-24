@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Managers;
@@ -32,7 +33,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 
 			if (walletProviderType == null)
 			{
-				TezosLog.Error("WalletProviderType is null");
+				TezosLogger.LogError("WalletProviderType is null");
 				return;
 			}
 
@@ -72,6 +73,11 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 		{
 			JsRequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress);
 			OperationRequested?.Invoke(WalletMessageType.OperationRequest);
+		}
+
+		public Task InitializeAsync()
+		{
+			return Task.CompletedTask;
 		}
 
 		private void UnityReady()

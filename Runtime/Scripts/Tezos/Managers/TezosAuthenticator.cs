@@ -3,6 +3,7 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 
 namespace TezosSDK.Tezos.Managers
@@ -19,6 +20,8 @@ namespace TezosSDK.Tezos.Managers
 		private bool _isMobile;
 		private bool _isWebGL;
 		
+		private bool _isInitialized;
+
 		private ITezos Tezos { get; set; }
 
 		private IWalletConnection WalletConnection
@@ -26,31 +29,9 @@ namespace TezosSDK.Tezos.Managers
 			get => TezosManager.Instance.Tezos.WalletConnection;
 		}
 
-		private IWalletEventProvider WalletEventProvider
+		private WalletEventManager EventManager
 		{
-			get => TezosManager.Instance.Tezos.WalletEventProvider;
-		}
-
-		private void Start()
-		{
-			Tezos = TezosManager.Instance.Tezos;
-			SubscribeToEvents();
-			SetPlatformFlags();
-
-			if (WalletConnection.IsConnected)
-			{
-				ToggleUIElements(true);
-			}
-			else
-			{
-				ToggleUIElements(false);
-
-				// Call Connect() only when on standalone
-				if (!_isWebGL && !_isMobile)
-				{
-					WalletConnection.Connect(WalletProviderType.beacon);
-				}
-			}
+			get => TezosManager.Instance.EventManager;
 		}
 
 		// private void Update()
@@ -68,8 +49,22 @@ namespace TezosSDK.Tezos.Managers
 
 		private void OnEnable()
 		{
-			if (TezosManager.Instance != null && !WalletConnection.IsConnected &&
-			    WalletConnection.HandshakeData != null)
+			if (!TezosManager.Instance)
+			{
+				return;
+			}
+
+			if (!TezosManager.Instance.IsInitialized)
+			{
+				return;
+			}
+
+			if (WalletConnection.IsConnected)
+			{
+				return;
+			}
+
+			if (WalletConnection.HandshakeData != null)
 			{
 				qrCodeGenerator.SetQrCode(WalletConnection.HandshakeData);
 			}
@@ -90,14 +85,67 @@ namespace TezosSDK.Tezos.Managers
 			qrCodeGenerator.SetQrCode(handshakeData);
 		}
 
+		private void Start()
+		{
+			Initialize(); // When the scene is loaded, initialize the SDK. But SDK might not be initialized yet.
+			EventManager.SDKInitialized += OnSDKInitialized; // Subscribe to SDKInitialized event to initialize TezosAuthenticator if not yet initialized.
+			Tezos = TezosManager.Instance.Tezos;
+		}
+		
+		private void Initialize()
+		{
+			if (_isInitialized)
+			{
+				return;
+			}
+			
+			if (!TezosManager.Instance || !TezosManager.Instance.IsInitialized)
+			{
+				// TezosManager is not initialized yet. Wait for it to be initialized.
+				// We should be subscribed to SDKInitialized event to initialize TezosAuthenticator when TezosManager is initialized.
+				return;
+			}
+			
+			SubscribeToEvents();
+			SetPlatformFlags();
+
+			if (WalletConnection.IsConnected)
+			{
+				ToggleUIElements(true);
+			}
+			else
+			{
+				ToggleUIElements(false);
+
+				// Call Connect() only when on standalone
+				if (!_isWebGL && !_isMobile)
+				{
+					WalletConnection.Connect(WalletProviderType.beacon);
+				}
+			}
+			
+			_isInitialized = true;
+		}
+
+		private void OnSDKInitialized()
+		{
+			TezosLogger.LogDebug("TezosAuthenticator.OnSDKInitialized");
+
+			if (!_isInitialized)
+			{
+				Initialize();
+			}
+		}
+
 		private void OnWalletConnected(WalletInfo walletInfo)
 		{
+			TezosLogger.LogDebug("TezosAuthenticator.OnWalletConnected");
 			ToggleUIElements(true);
 		}
 
 		private void OnWalletDisconnected(WalletInfo walletInfo)
 		{
-			TezosLog.Debug("TezosAuthenticator.OnWalletDisconnected");
+			TezosLogger.LogDebug("TezosAuthenticator.OnWalletDisconnected");
 			ToggleUIElements(false);
 		}
 
@@ -127,9 +175,10 @@ namespace TezosSDK.Tezos.Managers
 		private void SubscribeToEvents()
 		{
 			// Subscribe to wallet events for handling user authentication.
-			WalletEventProvider.EventManager.HandshakeReceived += OnHandshakeReceived;
-			WalletEventProvider.EventManager.WalletConnected += OnWalletConnected;
-			WalletEventProvider.EventManager.WalletDisconnected += OnWalletDisconnected;
+			EventManager.HandshakeReceived += OnHandshakeReceived;
+			EventManager.WalletConnected += OnWalletConnected;
+			EventManager.WalletDisconnected += OnWalletDisconnected;
+			EventManager.SDKInitialized += OnSDKInitialized;
 		}
 
 		/// <summary>
@@ -161,9 +210,9 @@ namespace TezosSDK.Tezos.Managers
 
 		private void UnsubscribeFromEvents()
 		{
-			WalletEventProvider.EventManager.HandshakeReceived -= OnHandshakeReceived;
-			WalletEventProvider.EventManager.WalletConnected -= OnWalletConnected;
-			WalletEventProvider.EventManager.WalletDisconnected -= OnWalletDisconnected;
+			EventManager.HandshakeReceived -= OnHandshakeReceived;
+			EventManager.WalletConnected -= OnWalletConnected;
+			EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}
 	}
 

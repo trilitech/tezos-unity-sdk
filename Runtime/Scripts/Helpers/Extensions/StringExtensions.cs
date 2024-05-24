@@ -194,7 +194,7 @@ namespace TezosSDK.Helpers.Extensions
 
 		private static string PrettyPrint(this List<TezosBaseOperation> operations)
 		{
-			return operations.Aggregate("", (current, operation) => current + (operation.Kind + "\n"));
+			return string.Join(", ", operations.Select(operation => operation.Kind));
 		}
 	}
 

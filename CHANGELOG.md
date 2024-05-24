@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor of wallet and connector interfaces to improve modularity and flexibility, including:
   - New focused wallet interfaces (`IWalletConnection`, `IWalletAccount`, `IWalletTransaction`, `IWalletContract`, `IWalletEventProvider`) for better separation of concerns.
   - `WalletConnectorFactory` to replace `BeaconConnectorFactory`, reflecting a more generic wallet connection approach.
-- Introduced `TezosLog` class to replace `Logger.cs` for improved and cleaner logging.
-- Enable sourcemaps on WebGL for debugging.
+- Introduced `TezosLogger` class to replace `Logger.cs` for improved and cleaner logging and to avoid conflicts with Unity's `Logger` class.
+- Enabled sourcemaps on WebGL for debugging.
+- Introduced `InitializeTezosAsync` method in `TezosManager` to allow for asynchronous initialization of the SDK, so that listeners can wait for the SDK to be ready before proceeding.
+- `TezosManager` now has a `IsInitialized` property to check if the SDK has been initialized.
 
 ### Changed
 - Refactored asynchronous callbacks throughout the SDK to use the `Result<T>` pattern for improved error handling and clarity.
@@ -33,16 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Addressed a memory leak in `TokenContract` where event handlers were not being properly unsubscribed.
-- Handling of `SDKInitialized` event in `BeaconConnectorWebGl`.
+- Handling of `SDKInitialized` event in `BeaconConnectorWebGl` and `TezosAuthenticator` to ensure proper initialization.
 - WebGL persistent auth for Beacon wallet provider.
 
 ### Removed
 - Outdated debug logs to clean up codebase and improve maintainability.
 - Dark background UI element in `TezosAuthenticator` prefab.
 
+
 ### Documentation
 - Updated comments to reflect new callback signatures and their behaviors as well as the use of the `Result<T>` pattern.
 - Updated comments to describe the new wallet and connector interface structure and their benefits.
+
 
 
 

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Beacon.Sdk.Beacon;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
@@ -19,11 +20,15 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 
 		public BeaconConnectorDotNet(WalletEventManager eventManager)
 		{
-			_beaconClientManager = new BeaconClientManager(eventManager, this);
 			_operationRequestHandler = new OperationRequestHandler();
 			_operationRequestHandler.MessageSent += OnBeaconMessageSent;
-			_beaconClientManager.Create();
+			_beaconClientManager = new BeaconClientManager(eventManager, _operationRequestHandler);
 			ConnectorType = ConnectorType.BeaconDotNet;
+		}
+		
+		public async Task InitializeAsync()
+		{
+			await _beaconClientManager.CreateAsync();
 		}
 
 		public void Dispose()
@@ -35,10 +40,8 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 		
 		public event Action<WalletMessageType> OperationRequested;
 
-		public async void ConnectWallet()
+		public void ConnectWallet()
 		{
-			await _beaconClientManager.Initalize();
-			await _operationRequestHandler.RequestTezosPermission(_beaconClientManager.BeaconDappClient);
 			_beaconClientManager.Connect();
 		}
 
@@ -55,7 +58,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 		public async void RequestOperation(WalletOperationRequest operationRequest)
 		{
 			// Adjust the method to accept the WalletOperationRequest parameter
-			TezosLog.Debug("RequestOperation");
+			TezosLogger.LogDebug("RequestOperation");
 
 			await _operationRequestHandler.RequestTezosOperation(operationRequest.Destination,
 				operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
@@ -64,7 +67,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 
 		public async void RequestContractOrigination(WalletOriginateContractRequest originationRequest)
 		{
-			TezosLog.Debug("RequestContractOrigination - BeaconDotNet");
+			TezosLogger.LogDebug("RequestContractOrigination - BeaconDotNet");
 
 			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script,
 				originationRequest.DelegateAddress, _beaconClientManager.BeaconDappClient);

@@ -38,7 +38,7 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 
 		public void HandleMint()
 		{
-			TezosLog.Debug("Minting token...");
+			TezosLogger.LogDebug("Minting token...");
 
 			var tokenMetadata = CreateRandomTokenMetadata();
 			var destinationAddress = TezosManager.Instance.Tezos.WalletAccount.GetWalletAddress();
@@ -69,14 +69,14 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 
 		private IEnumerator GetContractsRoutine()
 		{
-			TezosLog.Debug("No contract address found. Check originated contracts...");
+			TezosLogger.LogDebug("No contract address found. Check originated contracts...");
 			return TezosManager.Instance.Tezos.GetOriginatedContracts(OnContractsFetched);
 		}
 
 		private void GetTokensCount()
 		{
-			TezosLog.Debug("Getting tokens count...");
-
+			TezosLogger.LogDebug("Getting tokens count...");
+			
 			StartCoroutine(string.IsNullOrEmpty(TezosManager.Instance.Tezos.TokenContract.Address)
 				// if we don't have a contract address, get the originated (deployed) contracts
 				? GetContractsRoutine()
@@ -92,13 +92,13 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 			}
 			else
 			{
-				TezosLog.Error(result.ErrorMessage);
+				TezosLogger.LogError(result.ErrorMessage);
 			}
 		}
 
 		private IEnumerator GetTokensForContractRoutine()
 		{
-			TezosLog.Debug("Has contract, get tokens for it...");
+			TezosLogger.LogDebug("Has contract, get tokens for it...");
 
 			return TezosManager.Instance.Tezos.API.GetTokensForContract(GetTokensForContractResult,
 				TezosManager.Instance.Tezos.TokenContract.Address, false, 10_000,
@@ -115,13 +115,13 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 
 				if (!allTokenContracts.Any())
 				{
-					TezosLog.Debug("No contracts found");
+					TezosLogger.LogDebug("No contracts found");
 					tokensCountText.text = "No contracts found.";
 					return;
 				}
 
 				var contract = allTokenContracts.First();
-				TezosLog.Debug($"Found {allTokenContracts.Count} contracts. Using {contract.Address}");
+				TezosLogger.LogDebug($"Found {allTokenContracts.Count} contracts. Using {contract.Address}");
 				TezosManager.Instance.Tezos.TokenContract = contract; // set the TokenContract on the Tezos instance
 
 				contractInfoUI.SetAddress(contract.Address);
@@ -129,23 +129,23 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 			}
 			else
 			{
-				TezosLog.Error(result.ErrorMessage);
+				TezosLogger.LogError(result.ErrorMessage);
 			}
 		}
 
 		private void OnTokenMinted(TokenBalance tokenBalance)
 		{
-			TezosLog.Debug($"Successfully minted token with Token ID {tokenBalance.TokenId}");
+			TezosLogger.LogDebug($"Successfully minted token with Token ID {tokenBalance.TokenId}");
 			GetTokensCount();
 		}
 
 		private void OnTokensFetched(IEnumerable<Token> tokens)
 		{
-			TezosLog.Debug("Tokens fetched");
+			TezosLogger.LogDebug("Tokens fetched");
 
 			var tokenList = tokens.ToList();
 
-			TezosLog.Debug($"Found {tokenList.Count} tokens");
+			TezosLogger.LogDebug($"Found {tokenList.Count} tokens");
 			tokensCountText.text = tokenList.Count.ToString();
 		}
 	}

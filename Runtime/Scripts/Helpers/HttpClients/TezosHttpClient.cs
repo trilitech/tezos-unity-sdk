@@ -49,7 +49,7 @@ namespace TezosSDK.Helpers.HttpClients
 
 			if (request.result != UnityWebRequest.Result.Success)
 			{
-				TezosLog.Error($"Request failed with error: {request.error}");
+				TezosLogger.LogError($"Request failed with error: {request.error}");
 				callback?.Invoke(new HttpResult<T>(request.error));
 			}
 			else
@@ -58,11 +58,13 @@ namespace TezosSDK.Helpers.HttpClients
 
 				try
 				{
+					TezosLogger.LogDebug($"Response: {downloadHandlerText}");
 					result = DeserializeJson<T>(downloadHandlerText);
 					callback?.Invoke(new HttpResult<T>(result));
 				}
 				catch (Exception ex)
 				{
+					TezosLogger.LogError($"Failed to deserialize JSON: {ex.Message}");
 					callback?.Invoke(new HttpResult<T>(ex.Message));
 				}
 			}
@@ -70,6 +72,7 @@ namespace TezosSDK.Helpers.HttpClients
 
 		protected IEnumerator GetJsonCoroutine<T>(string path, Action<HttpResult<T>> callback = null)
 		{
+			TezosLogger.LogDebug($"GET: {BaseAddress}{path}");
 			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
 			yield return request.SendWebRequest();
 

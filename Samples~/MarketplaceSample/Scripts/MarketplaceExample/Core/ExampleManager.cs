@@ -13,6 +13,7 @@ using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Models.Tokens;
+using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 using Random = System.Random;
@@ -65,14 +66,14 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				{
 					if (readViewResult.Success)
 					{
-						TezosLog.Debug("READING INVENTORY DATA");
+						TezosLogger.LogDebug("READING INVENTORY DATA");
 						// Start another coroutine to process the result
 						ProcessInventoryResult(readViewResult.Data, callback);
 					}
 					else
 					{
 						// Handle errors
-						TezosLog.Error("Error fetching inventory: " + readViewResult.ErrorMessage);
+						TezosLogger.LogError("Error fetching inventory: " + readViewResult.ErrorMessage);
 					}
 				}));
 		}
@@ -113,7 +114,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				}
 			}.ToJson();
 
-			TezosLog.Debug(contractAddress + " " + entryPoint + parameter);
+			TezosLogger.LogDebug(contractAddress + " " + entryPoint + parameter);
 			Tezos.WalletTransaction.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
@@ -177,7 +178,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				else
 				{
 					// Handle the error case, update UI or log error
-					TezosLog.Error(result.ErrorMessage);
+					TezosLogger.LogError(result.ErrorMessage);
 				}
 			}));
 		}
@@ -191,7 +192,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 		{
 			var sender = Tezos.WalletAccount.GetWalletAddress();
 
-			TezosLog.Debug($"Transfering item {itemID} from {sender} to Address: {address}");
+			TezosLogger.LogDebug($"Transfering item {itemID} from {sender} to Address: {address}");
 
 			const string entrypoint = "transfer";
 
@@ -335,7 +336,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 
 		public IWalletEventManager GetWalletMessageReceiver()
 		{
-			return Tezos.WalletEventProvider.EventManager;
+			return TezosManager.Instance.EventManager;
 		}
 
 		public void GetOriginatedContracts(Action<IEnumerable<TokenContract>> callback)
@@ -348,7 +349,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				}
 				else
 				{
-					TezosLog.Error(result.ErrorMessage);
+					TezosLogger.LogError(result.ErrorMessage);
 				}
 			});
 		}

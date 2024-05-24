@@ -45,7 +45,7 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 			}
 			else
 			{
-				TezosLog.Error(result.ErrorMessage);
+				TezosLogger.LogError(result.ErrorMessage);
 			}
 		}
 	}
