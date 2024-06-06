@@ -7,7 +7,7 @@ using TezosSDK.WalletServices.Enums;
 namespace TezosSDK.Tezos.Interfaces.Wallet
 {
 
-	public interface IWalletConnector
+	public interface IWalletConnector : IDisposable
 	{
 		ConnectorType ConnectorType { get; }
 		event Action<WalletMessageType> OperationRequested;

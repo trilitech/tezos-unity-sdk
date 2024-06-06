@@ -66,7 +66,6 @@ namespace TezosSDK.ReadMe.Scripts.Editor
 			}
 
 			return results;
-			;
 		}
 
 		public static void CopyGuidToClipboard()

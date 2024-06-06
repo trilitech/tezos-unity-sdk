@@ -33,7 +33,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 
 		public void Dispose()
 		{
-			_beaconClientManager.BeaconDappClient.Disconnect();
+			_beaconClientManager.Dispose();
 		}
 
 		public ConnectorType ConnectorType { get; }

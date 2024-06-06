@@ -35,25 +35,21 @@ namespace TezosSDK.WalletServices.Beacon
 		{
 			_eventDispatcher = new EventDispatcher(eventManager);
 			_operationRequestHandler = operationRequestHandler;
-			eventManager.WalletConnected += OnWalletConnected;
-			eventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
 		public DappBeaconClient BeaconDappClient { get; private set; }
 
 		public void Dispose()
 		{
+			// Dispose of the Beacon client and free up resources
+			BeaconDappClient.OnBeaconMessageReceived -= OnBeaconDappClientMessageReceived;
+			BeaconDappClient.OnDisconnected -= OnBeaconDappClientDisconnected;
 			BeaconDappClient?.Disconnect();
 		}
-
-		private void OnWalletDisconnected(WalletInfo obj)
+		
+		private async void RequestTezosPermission()
 		{
-			_activeWallet = null; // Reset active wallet
-		}
-
-		private void OnWalletConnected(WalletInfo wallet)
-		{
-			_activeWallet = wallet; // Set active wallet
+			await _operationRequestHandler.RequestTezosPermission(BeaconDappClient);
 		}
 
 		private async Task InitAsync()
@@ -101,7 +97,6 @@ namespace TezosSDK.WalletServices.Beacon
 				// We need to establish a new connection
 				var pairingRequestInfo = BeaconDappClient.GetPairingRequestInfo();
 				_eventDispatcher.DispatchHandshakeEvent(pairingRequestInfo);
-				_operationRequestHandler.RequestTezosPermission(BeaconDappClient);
 			}
 			catch (Exception e)
 			{
@@ -189,6 +184,7 @@ namespace TezosSDK.WalletServices.Beacon
 		{
 			TezosLogger.LogDebug("OnBeaconDappClientDisconnected - Dapp disconnected");
 			_eventDispatcher.DispatchWalletDisconnectedEvent(_activeWallet);
+			_activeWallet = null;
 		}
 
 		/// <summary>
@@ -210,7 +206,7 @@ namespace TezosSDK.WalletServices.Beacon
 				return;
 			}
 
-			TezosLogger.LogDebug($"Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
+			TezosLogger.LogDebug($"(2) Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
 
 			switch (e.Request?.Type)
 			{
@@ -235,6 +231,11 @@ namespace TezosSDK.WalletServices.Beacon
 		/// <param name="permissionResponse">The permission response message to handle.</param>
 		private void HandlePermissionResponse(PermissionResponse permissionResponse)
 		{
+			if (_activeWallet != null)
+			{
+				TezosLogger.LogError("Active wallet already exists!");
+			}
+			
 			if (permissionResponse == null)
 			{
 				return;
@@ -242,6 +243,13 @@ namespace TezosSDK.WalletServices.Beacon
 
 			TezosLogger.LogDebug(permissionResponse.PrettyPrint());
 			TezosLogger.LogInfo($"Received permission response from {permissionResponse.AppMetadata.Name}!");
+			
+			_activeWallet = new WalletInfo
+			{
+				Address = permissionResponse.PublicKey,
+				PublicKey = permissionResponse.PublicKey
+			};
+			
 			_eventDispatcher.DispatchWalletConnectedEvent(_activeWallet);
 		}
 
@@ -316,8 +324,8 @@ namespace TezosSDK.WalletServices.Beacon
 				return;
 			}
 
-			TezosManager.Instance.WalletConnector.ConnectWallet();
 			_eventDispatcher.DispatchPairingCompletedEvent(BeaconDappClient);
+			RequestTezosPermission();
 		}
 
 		/// <summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Beacon.Sdk.Beacon.Permission;
 using TezosSDK.Helpers.Logging;
@@ -76,6 +77,11 @@ namespace TezosSDK.Tezos.Managers
 
 			TezosLogger.LogInfo("Tezos SDK initialized.");
 			EventManager.DispatchSDKInitializedEvent();
+		}
+
+		private void OnDestroy()
+		{
+			WalletConnector?.Dispose();
 		}
 
 		private void ValidateConfig()

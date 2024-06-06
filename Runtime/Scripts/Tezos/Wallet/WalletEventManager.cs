@@ -94,7 +94,7 @@ namespace TezosSDK.Tezos.Wallet
 			add
 			{
 #if UNITY_WEBGL
-				TezosLog.Warning("PairingCompleted event is not supported in WebGL builds.");
+				TezosLogger.LogWarning("PairingCompleted event is not supported in WebGL builds.");
 #endif
 
 				if (pairingCompleted == null || !pairingCompleted.GetInvocationList().Contains(value))

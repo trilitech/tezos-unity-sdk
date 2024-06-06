@@ -31,11 +31,11 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 		{
 			WalletProviderType walletProviderType = WalletProviderType.beacon; // TODO: Fix this
 
-			if (walletProviderType == null)
-			{
-				TezosLogger.LogError("WalletProviderType is null");
-				return;
-			}
+			// if (walletProviderType == null)
+			// {
+			// 	TezosLogger.LogError("WalletProviderType is null");
+			// 	return;
+			// }
 
 			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc,
 				walletProviderType.ToString(), TezosManager.Instance.DAppMetadata.Name,
@@ -155,6 +155,10 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 		#endregion
 
 #endif
+		public void Dispose()
+		{
+			
+		}
 	}
 
 }

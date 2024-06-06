@@ -28,7 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Event handling in connectors to ensure proper translation and dispatch according to the new event system structure.
 - Logging and error handling across the modified classes for better debugging and maintenance.
 - Connection and operation request flows in wallet connectors to enhance performance and user experience.
-- Namespace changes.
 - Samples have been updated to use the new namespaces and namings.
 - WebGL fixes and security improvements.
 - File structure, folder structure, and namespace changes.
