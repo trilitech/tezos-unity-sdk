@@ -13,7 +13,7 @@ using TezosSDK.WalletServices.Helpers;
 namespace TezosSDK.WalletServices.Connectors.DotNet
 {
 
-	public class BeaconConnectorDotNet : IWalletConnector, IDisposable
+	public class BeaconConnectorDotNet : IWalletConnector
 	{
 		private readonly BeaconClientManager _beaconClientManager;
 		private readonly OperationRequestHandler _operationRequestHandler;

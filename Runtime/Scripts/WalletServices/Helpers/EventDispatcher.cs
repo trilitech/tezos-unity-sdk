@@ -26,12 +26,12 @@ namespace TezosSDK.WalletServices.Helpers
 			_eventManager = eventManager;
 		}
 
-		public void DispatchWalletDisconnectedEvent(WalletInfo activeWallet)
+		public void DispatchWalletDisconnectedEvent(WalletInfo disconnectedWallet)
 		{
-			TezosLogger.LogDebug($"Dispatching WalletDisconnectedEvent for {activeWallet?.PublicKey}");
+			TezosLogger.LogDebug($"Dispatching WalletDisconnectedEvent for {disconnectedWallet?.PublicKey}");
 
 			var walletDisconnectedEvent = new UnifiedEvent(WalletEventManager.EventTypeWalletDisconnected,
-				JsonUtility.ToJson(activeWallet));
+				JsonUtility.ToJson(disconnectedWallet));
 
 			DispatchEvent(walletDisconnectedEvent);
 		}
@@ -73,13 +73,10 @@ namespace TezosSDK.WalletServices.Helpers
 			DispatchEvent(pairingDoneEvent);
 		}
 
-		public void DispatchOperationInjectedEvent(OperationResponse operationResponse)
+		public void DispatchOperationInjectedEvent(OperationInfo operationResponse)
 		{
-			var operationResult = new OperationInfo(operationResponse.TransactionHash, operationResponse.Id,
-				operationResponse.Type);
-
 			var unifiedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationInjected,
-				JsonUtility.ToJson(operationResult));
+				JsonUtility.ToJson(operationResponse));
 
 			DispatchEvent(unifiedEvent);
 		}

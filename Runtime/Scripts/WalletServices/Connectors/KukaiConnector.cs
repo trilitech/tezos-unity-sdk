@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Beacon.Sdk.Beacon;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
+using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
+using TezosSDK.WalletServices.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -14,11 +17,28 @@ namespace TezosSDK.WalletServices.Connectors
 {
     public class KukaiConnector : IWalletConnector
     {
-        private readonly WalletEventManager _eventManager;
+	    private WalletInfo _activeWallet; // Keep track of the active wallet
+
+	    private class ParsedURLData
+	    {
+		    private readonly Dictionary<string, string> _parameters;
+
+		    public ParsedURLData(Dictionary<string, string> parameters)
+		    {
+			    _parameters = parameters;
+		    }
+
+		    public string GetParameter(string key)
+		    {
+			    return _parameters.TryGetValue(key, out var value) ? value : string.Empty;
+		    }
+	    }
+
+	    private readonly EventDispatcher _eventDispatcher;
 
         public KukaiConnector(WalletEventManager eventManager)
         {
-            _eventManager = eventManager;
+	        _eventDispatcher = new EventDispatcher(eventManager);
             ConnectorType = ConnectorType.Kukai;
             
             InitializeDeepLinking();
@@ -28,6 +48,53 @@ namespace TezosSDK.WalletServices.Connectors
 		{
 			// Parse the URL and extract the necessary info
 			var parsedData = ParseURL(url);
+			
+			if (parsedData == null)
+			{
+				TezosLogger.LogError($"Error parsing URL: {url}");
+				return;
+			}
+			
+			if (parsedData.GetParameter("type") == "login")
+			{
+				// Handle the login request
+				TezosLogger.LogDebug("Login");
+				
+				var wallet = new WalletInfo
+				{
+					Address = parsedData.GetParameter("address"),
+					PublicKey = parsedData.GetParameter("public_key")
+				};
+	
+				_activeWallet = wallet;
+				_eventDispatcher.DispatchWalletConnectedEvent(wallet);
+			}
+			else if (parsedData.GetParameter("type") == "operation_response")
+			{
+				// Handle the operation request
+				TezosLogger.LogDebug("Operation");
+
+				var operation = new OperationInfo(parsedData.GetParameter("operation_hash"), 
+					parsedData.GetParameter("operation_id"), 
+					BeaconMessageType.operation_response);
+				
+				_eventDispatcher.DispatchOperationInjectedEvent(operation);
+			}
+			else if (parsedData.GetParameter("type") == "sign")
+			{
+				// Handle the sign request
+				TezosLogger.LogDebug("Sign");
+			}
+			else if (parsedData.GetParameter("type") == "originate")
+			{
+				// Handle the contract origination request
+				TezosLogger.LogDebug("Contract origination");
+			}
+			else
+			{
+				TezosLogger.LogWarning($"Unknown request type: {parsedData.GetParameter("type")}");
+			}
+			
 		}
 
 		private void InitializeDeepLinking()
@@ -45,6 +112,11 @@ namespace TezosSDK.WalletServices.Connectors
 		{
 			var queryParameters = new Dictionary<string, string>();
 
+			if (string.IsNullOrEmpty(queryString))
+			{
+				return queryParameters;
+			}
+
 			// Remove the '?' character at the beginning of the query string if it exists
 			queryString = queryString.TrimStart('?');
 
@@ -55,31 +127,36 @@ namespace TezosSDK.WalletServices.Connectors
 			{
 				var keyValue = pair.Split('=');
 
-				if (keyValue.Length != 2)
+				if (keyValue.Length == 2)
 				{
-					continue;
-				}
+					// Use UnityWebRequest.UnEscapeURL to decode the key and value
+					var key = UnityWebRequest.UnEscapeURL(keyValue[0]);
+					var value = UnityWebRequest.UnEscapeURL(keyValue[1]);
 
-				// Use UnityWebRequest.UnEscapeURL to decode the key and value
-				var key = UnityWebRequest.UnEscapeURL(keyValue[0]);
-				var value = UnityWebRequest.UnEscapeURL(keyValue[1]);
-				queryParameters[key] = value;
+					// Check for duplicate keys
+					if (queryParameters.ContainsKey(key))
+					{
+						TezosLogger.LogWarning($"Duplicate key found: {key}. Overwriting the existing value.");
+					}
+
+					queryParameters[key] = value;
+				}
+				else if (keyValue.Length == 1)
+				{
+					// Handle cases where there is a key without a value
+					var key = UnityWebRequest.UnEscapeURL(keyValue[0]);
+					if (!queryParameters.ContainsKey(key))
+					{
+						queryParameters[key] = string.Empty;
+					}
+				}
 			}
 
 			return queryParameters;
 		}
 
-		private string ParseURL(string url)
+		private ParsedURLData ParseURL(string url)
 		{
-			// TODO: Process deep link data for authentication - (What are the fields we need to extract?)
-
-			/*
-			 From google docs:
-				This web-client will send a deep link back to the unity application.
-				The deep link contains information about the user (address, public key, social provider) and
-				it is of this form: unitydl://main/?address=<tezos_address>&provider=<social_provider>
-			 */
-
 			try
 			{
 				// Create a Uri instance from the URL string to safely parse it
@@ -88,15 +165,12 @@ namespace TezosSDK.WalletServices.Connectors
 				// Parse the query string
 				var queryDict = Parse(uri.Query);
 
-				var hasAddress = queryDict.TryGetValue("address", out var addess) ? addess : string.Empty;
-				var hasProvider = queryDict.TryGetValue("provider", out var provider) ? provider : string.Empty;
-
-				return string.Empty; // TODO: Return the parsed data or the dictionary
+				return new ParsedURLData(queryDict);
 			}
 			catch (Exception e)
 			{
-				Debug.LogError($"Error parsing URL: {url}. Error: {e.Message}");
-				return string.Empty;
+				TezosLogger.LogError($"Error parsing URL: {url}. Error: {e.Message}");
+				return null;
 			}
 		}
         
@@ -114,21 +188,21 @@ namespace TezosSDK.WalletServices.Connectors
         {
             // Implement logic to redirect user to Kukai embed page
             TezosLogger.LogDebug("ConnectWallet");
-            string kukaiUrl = "https://embed-ghostnet.kukai.app";
+            // string kukaiUrl = "https://embed-ghostnet.kukai.app";
+            string kukaiUrl = "http://192.168.0.74:3000";
             Application.OpenURL(kukaiUrl);
         }
 
         public string GetWalletAddress()
         {
-            // Implement logic to retrieve the wallet address from the deep link
-            TezosLogger.LogDebug("GetWalletAddress");
-            return "tz1...";
+            return _activeWallet?.Address;
         }
 
         public void DisconnectWallet()
         {
-            // Implement logic to handle wallet disconnection
-            TezosLogger.LogDebug("DisconnectWallet");
+	        var wallet = _activeWallet;
+	        _activeWallet = null;
+			_eventDispatcher.DispatchWalletDisconnectedEvent(wallet);
         }
 
         public void RequestOperation(WalletOperationRequest operationRequest)
@@ -159,5 +233,8 @@ namespace TezosSDK.WalletServices.Connectors
         {
             return Task.CompletedTask;
         }
+        
+        
     }
+    
 }

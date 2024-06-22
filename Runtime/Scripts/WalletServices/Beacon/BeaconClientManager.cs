@@ -183,8 +183,7 @@ namespace TezosSDK.WalletServices.Beacon
 		private void OnBeaconDappClientDisconnected()
 		{
 			TezosLogger.LogDebug("OnBeaconDappClientDisconnected - Dapp disconnected");
-			_eventDispatcher.DispatchWalletDisconnectedEvent(_activeWallet);
-			_activeWallet = null;
+			DoDisconnect();
 		}
 
 		/// <summary>
@@ -270,8 +269,11 @@ namespace TezosSDK.WalletServices.Beacon
 			{
 				return;
 			}
+			
+			var operation = new OperationInfo(operationResponse.TransactionHash, operationResponse.Id,
+				operationResponse.Type);
 
-			_eventDispatcher.DispatchOperationInjectedEvent(operationResponse);
+			_eventDispatcher.DispatchOperationInjectedEvent(operation);
 		}
 
 		/// <summary>
@@ -304,7 +306,16 @@ namespace TezosSDK.WalletServices.Beacon
 		/// </remarks>
 		private void HandleDisconnect()
 		{
-			_eventDispatcher.DispatchWalletDisconnectedEvent(_activeWallet);
+			TezosLogger.LogDebug("Handling disconnect message");
+			DoDisconnect();
+		}
+
+		private void DoDisconnect()
+		{
+			TezosLogger.LogDebug("Setting active wallet to null and dispatching wallet disconnected event");
+			var wallet = _activeWallet;
+			_activeWallet = null;
+			_eventDispatcher.DispatchWalletDisconnectedEvent(wallet);
 		}
 
 		/// <summary>
