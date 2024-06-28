@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Patterns;
 using TezosSDK.Tezos.Models;
@@ -167,7 +168,7 @@ namespace TezosSDK.Tezos.Wallet
 
 		public void HandleEvent(UnifiedEvent unifiedEvent)
 		{
-			var jsonEventData = JsonUtility.ToJson(unifiedEvent);
+			var jsonEventData = JsonConvert.SerializeObject(unifiedEvent);
 			HandleEvent(jsonEventData);
 		}
 
@@ -198,7 +199,7 @@ namespace TezosSDK.Tezos.Wallet
 		{
 			try
 			{
-				var eventData = JsonUtility.FromJson<UnifiedEvent>(jsonEventData);
+				var eventData = JsonConvert.DeserializeObject<UnifiedEvent>(jsonEventData);
 
 				switch (eventData.GetEventType())
 				{
@@ -256,7 +257,7 @@ namespace TezosSDK.Tezos.Wallet
 		/// </remarks>
 		private void HandleEvent<T>(object data, Action<T> eventAction)
 		{
-			var deserializedData = JsonUtility.FromJson<T>(data.ToString());
+			var deserializedData = JsonConvert.DeserializeObject<T>(data.ToString());
 			eventAction?.Invoke(deserializedData);
 		}
 	}

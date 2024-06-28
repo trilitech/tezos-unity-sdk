@@ -2,6 +2,7 @@ using System;
 using Beacon.Sdk.Beacon.Operation;
 using Beacon.Sdk.Beacon.Sign;
 using Beacon.Sdk.BeaconClients;
+using Newtonsoft.Json;
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Models;
@@ -31,7 +32,7 @@ namespace TezosSDK.WalletServices.Helpers
 			TezosLogger.LogDebug($"Dispatching WalletDisconnectedEvent for {disconnectedWallet?.PublicKey}");
 
 			var walletDisconnectedEvent = new UnifiedEvent(WalletEventManager.EventTypeWalletDisconnected,
-				JsonUtility.ToJson(disconnectedWallet));
+				JsonConvert.SerializeObject(disconnectedWallet));
 
 			DispatchEvent(walletDisconnectedEvent);
 		}
@@ -54,7 +55,7 @@ namespace TezosSDK.WalletServices.Helpers
 
 		private UnifiedEvent CreateWalletConnectedEvent(WalletInfo walletInfo)
 		{
-			return new UnifiedEvent(WalletEventManager.EventTypeWalletConnected, JsonUtility.ToJson(walletInfo));
+			return new UnifiedEvent(WalletEventManager.EventTypeWalletConnected, JsonConvert.SerializeObject(walletInfo));
 		}
 
 		public void DispatchPairingCompletedEvent(DappBeaconClient beaconDappClient)
@@ -68,15 +69,18 @@ namespace TezosSDK.WalletServices.Helpers
 			};
 
 			var pairingDoneEvent = new UnifiedEvent(WalletEventManager.EventTypePairingDone,
-				JsonUtility.ToJson(pairingDoneData));
+				JsonConvert.SerializeObject(pairingDoneData));
 
 			DispatchEvent(pairingDoneEvent);
 		}
 
 		public void DispatchOperationInjectedEvent(OperationInfo operationResponse)
 		{
-			var unifiedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationInjected,
-				JsonUtility.ToJson(operationResponse));
+			var eventType = WalletEventManager.EventTypeOperationInjected;
+			var data = JsonConvert.SerializeObject(operationResponse);
+
+
+			var unifiedEvent = new UnifiedEvent(eventType, data);
 
 			DispatchEvent(unifiedEvent);
 		}
@@ -89,7 +93,7 @@ namespace TezosSDK.WalletServices.Helpers
 			};
 
 			var signedEvent =
-				new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonUtility.ToJson(signResult));
+				new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonConvert.SerializeObject(signResult));
 
 			DispatchEvent(signedEvent);
 		}
@@ -104,7 +108,7 @@ namespace TezosSDK.WalletServices.Helpers
 			};
 
 			var handshakeEvent = new UnifiedEvent(WalletEventManager.EventTypeHandshakeReceived,
-				JsonUtility.ToJson(handshakeData));
+				JsonConvert.SerializeObject(handshakeData));
 
 			DispatchEvent(handshakeEvent);
 		}

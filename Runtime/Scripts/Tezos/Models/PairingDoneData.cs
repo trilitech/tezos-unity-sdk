@@ -6,7 +6,6 @@ namespace TezosSDK.Tezos.Models
 	/// <summary>
 	///     Contains information related to the successful completion of a pairing between the Tezos wallet and a DApp.
 	/// </summary>
-	[Serializable]
 	public class PairingDoneData
 	{
 		/// <summary>

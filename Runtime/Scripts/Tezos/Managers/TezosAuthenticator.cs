@@ -120,7 +120,7 @@ namespace TezosSDK.Tezos.Managers
 				// Call Connect() only when on standalone
 				if (!_isWebGL && !_isMobile)
 				{
-					WalletConnection.Connect(WalletProviderType.beacon);
+					WalletConnection.Connect();
 				}
 			}
 			
@@ -151,12 +151,12 @@ namespace TezosSDK.Tezos.Managers
 
 		public void ConnectByDeeplink()
 		{
-			WalletConnection.Connect(WalletProviderType.beacon);
+			WalletConnection.Connect();
 		}
 
 		public void ConnectWithSocial()
 		{
-			WalletConnection.Connect(WalletProviderType.kukai);
+			WalletConnection.Connect();
 		}
 
 		public void DisconnectWallet()

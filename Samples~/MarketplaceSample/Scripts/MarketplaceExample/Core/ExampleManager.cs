@@ -331,7 +331,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 
 		public void Login(WalletProviderType walletProvider)
 		{
-			Tezos.WalletConnection.Connect(walletProvider);
+			Tezos.WalletConnection.Connect();
 		}
 
 		public IWalletEventManager GetWalletMessageReceiver()

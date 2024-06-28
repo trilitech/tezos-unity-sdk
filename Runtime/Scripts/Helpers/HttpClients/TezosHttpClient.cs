@@ -58,7 +58,7 @@ namespace TezosSDK.Helpers.HttpClients
 
 				try
 				{
-					TezosLogger.LogDebug($"Response: {downloadHandlerText}");
+					TezosLogger.LogDebug($"HandleResponse<{typeof(T).Name}>: {downloadHandlerText}");
 					result = DeserializeJson<T>(downloadHandlerText);
 					callback?.Invoke(new HttpResult<T>(result));
 				}

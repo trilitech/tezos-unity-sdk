@@ -6,7 +6,6 @@ namespace TezosSDK.Tezos.Models
 	/// <summary>
 	///     Represents data required for the wallet to complete the pairing process with a decentralized application (DApp).
 	/// </summary>
-	[Serializable]
 	public class HandshakeData
 	{
 		/// <summary>

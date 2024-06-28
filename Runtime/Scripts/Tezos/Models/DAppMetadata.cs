@@ -3,7 +3,6 @@
 namespace TezosSDK.Tezos.Models
 {
 
-	[Serializable]
 	public class DAppMetadata
 	{
 		public DAppMetadata(string name, string url, string icon, string description)

@@ -5,6 +5,7 @@ using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
+using TezosSDK.WalletServices.Connectors;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Interfaces;
@@ -51,7 +52,7 @@ namespace TezosSDK.Tezos.Wallet
 		public bool IsConnected { get; private set; }
 		public HandshakeData HandshakeData { get; private set; }
 
-		public void Connect(WalletProviderType walletProvider)
+		public void Connect()
 		{
 			_walletConnector.ConnectWallet();
 		}
@@ -109,7 +110,6 @@ namespace TezosSDK.Tezos.Wallet
 		private void OperationRequestedHandler(WalletMessageType messageType)
 		{
 			TezosLogger.LogDebug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
-			// TODO: Should open the wallet here?
 
 			switch (messageType)
 			{
@@ -128,8 +128,10 @@ namespace TezosSDK.Tezos.Wallet
 		{
 			TezosLogger.LogDebug("WalletProvider.OpenWallet");
 
+			string url = "tezos://";
+			
 			// OpenURL can only be called from the main thread.
-			UnityMainThreadDispatcher.Enqueue(() => { Application.OpenURL("tezos://"); });
+			UnityMainThreadDispatcher.Enqueue(() => { Application.OpenURL(url); });
 		}
 
 		private void OnWalletDisconnected(WalletInfo obj)
@@ -145,12 +147,15 @@ namespace TezosSDK.Tezos.Wallet
 		/// <param name="transaction"></param>
 		private void OnOperationInjected(OperationInfo transaction)
 		{
+			TezosLogger.LogDebug($"WalletProvider: Handling OperationInjected event. Hash: {transaction.Hash}"); 
 			StartTrackingOperation(transaction);
 		}
 
 		private void StartTrackingOperation(OperationInfo transaction)
 		{
-			var operationHash = transaction.TransactionHash;
+			TezosLogger.LogDebug($"WalletProvider.StartTrackingOperation: {transaction.Hash}");
+			
+			var operationHash = transaction.Hash;
 			var tracker = new OperationTracker(operationHash, OnComplete);
 			tracker.BeginTracking();
 			return;

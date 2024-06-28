@@ -8,7 +8,7 @@ namespace TezosSDK.Tezos.Interfaces.Wallet
 		bool IsConnected { get; }
 		HandshakeData HandshakeData { get; }
 
-		void Connect(WalletProviderType walletProvider);
+		void Connect();
 		void Disconnect();
 	}
 

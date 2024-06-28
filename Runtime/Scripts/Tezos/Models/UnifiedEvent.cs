@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 
@@ -9,11 +10,13 @@ namespace TezosSDK.Tezos.Models
 	///     Represents a general structure for an event containing its type and associated data.
 	///     It is used to unify event messages for processing by event handlers.
 	/// </summary>
-	[Serializable]
 	public class UnifiedEvent
 	{
-		[SerializeField] private string EventType;
-		[SerializeField] private string Data;
+		[JsonProperty("EventType")]
+		private readonly string _eventType;
+		
+		[JsonProperty("Data")]
+		private readonly string _data;
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="UnifiedEvent" /> class.
@@ -37,18 +40,18 @@ namespace TezosSDK.Tezos.Models
 		{
 			data ??= "{}";
 
-			EventType = eventType;
-			Data = data;
+			_eventType = eventType;
+			_data = data;
 		}
 
 		public string GetData()
 		{
-			return Data;
+			return _data;
 		}
 
 		public string GetEventType()
 		{
-			return EventType;
+			return _eventType;
 		}
 	}
 

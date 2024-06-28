@@ -181,7 +181,7 @@ namespace TezosSDK.Tezos.API
 
 		private void TransferCompleted(OperationInfo operationInfo)
 		{
-			var transactionHash = operationInfo.TransactionHash;
+			var transactionHash = operationInfo.Hash;
 			_onTransferCompleted.Invoke(transactionHash);
 		}
 

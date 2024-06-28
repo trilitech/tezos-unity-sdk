@@ -49,7 +49,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 
 		private void OnContractCallCompleted(OperationInfo operationInfo)
 		{
-			DisplayPopup($"Transaction completed with hash {operationInfo.TransactionHash}");
+			DisplayPopup($"Transaction completed with hash {operationInfo.Hash}");
 		}
 
 		private void OnOperationFailed(OperationInfo info)
@@ -59,7 +59,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 
 		private void OnOperationInjected(OperationInfo operationInfo)
 		{
-			if (!string.IsNullOrEmpty(operationInfo.TransactionHash))
+			if (!string.IsNullOrEmpty(operationInfo.Hash))
 			{
 				_manager.FetchMarketItems(PopulateMarket);
 				_manager.FetchInventoryItems(PopulateInventory);
@@ -67,7 +67,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 				DisplayWalletData();
 			}
 
-			DisplayPopup("Call injected!\n \n" + "\n \nTransaction Hash:\n" + operationInfo.TransactionHash);
+			DisplayPopup("Call injected!\n \n" + "\n \nTransaction Hash:\n" + operationInfo.Hash);
 		}
 
 		private void OnPayloadSigned(SignResult signResult)
