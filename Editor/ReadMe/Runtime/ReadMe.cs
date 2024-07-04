@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace TezosSDK.ReadMe.Scripts.Runtime
+namespace TezosSDK.Editor.ReadMe
 {
 
 	/// <summary>
@@ -34,8 +34,7 @@ namespace TezosSDK.ReadMe.Scripts.Runtime
 			//Here are TEMPORARY defaults. Set to any value (or "") in the INSPECTOR as desired.
 			public string TextHeading = "Text Heading";
 			public string TextSubheading = "Text Subheading";
-			public string TextBody =
-				"Text Body which supports rich text including <b>bold</b>, line\nbreaks, <i>italics</i>, & <color='black'>colors</color>.";
+			public string TextBody = "Text Body which supports rich text including <b>bold</b>, line\nbreaks, <i>italics</i>, & <color='black'>colors</color>.";
 
 			//Set LinkName to "" to disable
 			public string LinkName = "Link Text";

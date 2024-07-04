@@ -30,19 +30,10 @@ namespace TezosSDK.Tezos.Interfaces.API
 		/// <param name="input">parameters called on the entry point</param>
 		/// <param name="callback">callback action that runs with the json data is fetched</param>
 		/// <returns></returns>
-		public IEnumerator ReadView(
-			string contractAddress,
-			string entrypoint,
-			string input,
-			Action<HttpResult<JsonElement>> callback);
+		public IEnumerator ReadView(string contractAddress, string entrypoint, string input, Action<HttpResult<JsonElement>> callback);
 
 		// Gets all tokens currently owned by a given address.
-		public IEnumerator GetTokensForOwner(
-			Action<HttpResult<IEnumerable<TokenBalance>>> callback,
-			string owner,
-			bool withMetadata,
-			long maxItems,
-			TokensForOwnerOrder orderBy);
+		public IEnumerator GetTokensForOwner(Action<HttpResult<IEnumerable<TokenBalance>>> callback, string owner, bool withMetadata, long maxItems, TokensForOwnerOrder orderBy);
 
 		// Get the owner(s) for a token.
 		public IEnumerator GetOwnersForToken(
@@ -53,27 +44,16 @@ namespace TezosSDK.Tezos.Interfaces.API
 			OwnersForTokenOrder orderBy);
 
 		// Gets all owners for a given token contract.
-		public IEnumerator GetOwnersForContract(
-			Action<HttpResult<IEnumerable<TokenBalance>>> callback,
-			string contractAddress,
-			long maxItems,
-			OwnersForContractOrder orderBy);
+		public IEnumerator GetOwnersForContract(Action<HttpResult<IEnumerable<TokenBalance>>> callback, string contractAddress, long maxItems, OwnersForContractOrder orderBy);
 
 		// Checks whether a wallet holds a token in a given contract.
 		public IEnumerator IsHolderOfContract(Action<HttpResult<bool>> callback, string wallet, string contractAddress);
 
 		// Checks whether a wallet holds a particular token.
-		public IEnumerator IsHolderOfToken(
-			Action<HttpResult<bool>> callback,
-			string wallet,
-			string contractAddress,
-			uint tokenId);
+		public IEnumerator IsHolderOfToken(Action<HttpResult<bool>> callback, string wallet, string contractAddress, uint tokenId);
 
 		// Gets the metadata associated with a given token.
-		public IEnumerator GetTokenMetadata(
-			Action<HttpResult<JsonElement>> callback,
-			string contractAddress,
-			uint tokenId);
+		public IEnumerator GetTokenMetadata(Action<HttpResult<JsonElement>> callback, string contractAddress, uint tokenId);
 
 		// Queries token high-level collection/contract level information.
 		public IEnumerator GetContractMetadata(Action<HttpResult<JsonElement>> callback, string contractAddress);

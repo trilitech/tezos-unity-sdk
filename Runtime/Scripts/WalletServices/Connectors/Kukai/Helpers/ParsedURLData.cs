@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TezosSDK.WalletServices.Helpers
+namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 {
 
 	/// <summary>

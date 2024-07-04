@@ -1,13 +1,11 @@
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
-using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
+using TezosSDK.WalletServices.Interfaces;
 
 namespace TezosSDK.WalletServices.Connectors.WebGL
 {
@@ -17,19 +15,19 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 	/// </summary>
 	public class BeaconConnectorWebGl : IWalletConnector
 	{
-		public BeaconConnectorWebGl(WalletEventManager walletEventManager)
+		public BeaconConnectorWebGl(IWalletEventManager walletEventManager)
 		{
 			walletEventManager.SDKInitialized += UnityReady;
 			ConnectorType = ConnectorType.BeaconWebGl;
 		}
 
 		public ConnectorType ConnectorType { get; }
-		
+		public PairingRequestData PairingRequestData { get; } = new();
 		public event Action<WalletMessageType> OperationRequested;
 
 		public void ConnectWallet()
 		{
-			WalletProviderType walletProviderType = WalletProviderType.beacon; // TODO: Fix this
+			var walletProviderType = WalletProviderType.beacon; // TODO: Fix this
 
 			// if (walletProviderType == null)
 			// {
@@ -37,8 +35,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 			// 	return;
 			// }
 
-			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc,
-				walletProviderType.ToString(), TezosManager.Instance.DAppMetadata.Name,
+			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc, walletProviderType.ToString(), TezosManager.Instance.DAppMetadata.Name,
 				TezosManager.Instance.DAppMetadata.Url, TezosManager.Instance.DAppMetadata.Icon);
 
 			JsConnectAccount();
@@ -56,8 +53,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 
 		public void RequestOperation(WalletOperationRequest operationRequest)
 		{
-			JsSendContractCall(operationRequest.Destination, operationRequest.Amount.ToString(),
-				operationRequest.EntryPoint, operationRequest.Arg);
+			JsSendContractCall(operationRequest.Destination, operationRequest.Amount.ToString(), operationRequest.EntryPoint, operationRequest.Arg);
 
 			OperationRequested?.Invoke(WalletMessageType.OperationRequest);
 		}
@@ -87,13 +83,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 
 #if UNITY_WEBGL
 		[DllImport("__Internal")]
-		private static extern void JsInitWallet(
-			string network,
-			string rpc,
-			string walletProvider,
-			string appName,
-			string appUrl,
-			string iconUrl);
+		private static extern void JsInitWallet(string network, string rpc, string walletProvider, string appName, string appUrl, string iconUrl);
 
 		[DllImport("__Internal")]
 		private static extern void JsConnectAccount();
@@ -157,7 +147,6 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 #endif
 		public void Dispose()
 		{
-			
 		}
 	}
 

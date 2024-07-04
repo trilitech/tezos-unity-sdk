@@ -5,6 +5,9 @@ using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor; // Include UnityEditor namespace only when in the Unity Editor
+#endif
 
 namespace TezosSDK.Tezos.Managers
 {
@@ -16,11 +19,16 @@ namespace TezosSDK.Tezos.Managers
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
 
+		private bool _isInitialized;
+
 		// Platform flags to determine the current running platform
 		private bool _isMobile;
 		private bool _isWebGL;
-		
-		private bool _isInitialized;
+
+		private WalletEventManager EventManager
+		{
+			get => TezosManager.Instance.EventManager;
+		}
 
 		private ITezos Tezos { get; set; }
 
@@ -29,9 +37,16 @@ namespace TezosSDK.Tezos.Managers
 			get => TezosManager.Instance.Tezos.WalletConnection;
 		}
 
-		private WalletEventManager EventManager
+		private IWalletConnector WalletConnector
 		{
-			get => TezosManager.Instance.EventManager;
+			get => TezosManager.Instance.WalletConnector;
+		}
+
+		private void Start()
+		{
+			Initialize(); // When the scene is loaded, initialize the SDK. But SDK might not be initialized yet.
+			EventManager.SDKInitialized += OnSDKInitialized; // Subscribe to SDKInitialized event to initialize TezosAuthenticator if not yet initialized.
+			Tezos = TezosManager.Instance.Tezos;
 		}
 
 		// private void Update()
@@ -64,9 +79,9 @@ namespace TezosSDK.Tezos.Managers
 				return;
 			}
 
-			if (WalletConnection.HandshakeData != null)
+			if (WalletConnector.PairingRequestData != null)
 			{
-				qrCodeGenerator.SetQrCode(WalletConnection.HandshakeData);
+				qrCodeGenerator.SetQrCode(WalletConnector.PairingRequestData);
 			}
 		}
 
@@ -80,51 +95,9 @@ namespace TezosSDK.Tezos.Managers
 			UnsubscribeFromEvents();
 		}
 
-		private void OnHandshakeReceived(HandshakeData handshakeData)
+		private void OnPairingRequested(PairingRequestData pairingRequestData)
 		{
-			qrCodeGenerator.SetQrCode(handshakeData);
-		}
-
-		private void Start()
-		{
-			Initialize(); // When the scene is loaded, initialize the SDK. But SDK might not be initialized yet.
-			EventManager.SDKInitialized += OnSDKInitialized; // Subscribe to SDKInitialized event to initialize TezosAuthenticator if not yet initialized.
-			Tezos = TezosManager.Instance.Tezos;
-		}
-		
-		private void Initialize()
-		{
-			if (_isInitialized)
-			{
-				return;
-			}
-			
-			if (!TezosManager.Instance || !TezosManager.Instance.IsInitialized)
-			{
-				// TezosManager is not initialized yet. Wait for it to be initialized.
-				// We should be subscribed to SDKInitialized event to initialize TezosAuthenticator when TezosManager is initialized.
-				return;
-			}
-			
-			SubscribeToEvents();
-			SetPlatformFlags();
-
-			if (WalletConnection.IsConnected)
-			{
-				ToggleUIElements(true);
-			}
-			else
-			{
-				ToggleUIElements(false);
-
-				// Call Connect() only when on standalone
-				if (!_isWebGL && !_isMobile)
-				{
-					WalletConnection.Connect();
-				}
-			}
-			
-			_isInitialized = true;
+			qrCodeGenerator.SetQrCode(pairingRequestData);
 		}
 
 		private void OnSDKInitialized()
@@ -164,18 +137,59 @@ namespace TezosSDK.Tezos.Managers
 			WalletConnection.Disconnect();
 		}
 
+		private void Initialize()
+		{
+			if (_isInitialized)
+			{
+				return;
+			}
+
+			if (!TezosManager.Instance || !TezosManager.Instance.IsInitialized)
+			{
+				// TezosManager is not initialized yet. Wait for it to be initialized.
+				// We should be subscribed to SDKInitialized event to initialize TezosAuthenticator when TezosManager is initialized.
+				return;
+			}
+
+			SubscribeToEvents();
+			SetPlatformFlags();
+
+			if (WalletConnection.IsConnected)
+			{
+				ToggleUIElements(true);
+			}
+			else
+			{
+				ToggleUIElements(false);
+
+				// // Call Connect() only when on standalone
+				// if (!_isWebGL && !_isMobile)
+				// {
+				// 	WalletConnection.Connect();
+				// }
+			}
+
+			_isInitialized = true;
+		}
+
 		private void SetPlatformFlags()
 		{
-			_isMobile = Application.platform == RuntimePlatform.IPhonePlayer ||
-			            Application.platform == RuntimePlatform.Android;
-
+#if UNITY_EDITOR
+			// When running in the Unity Editor, use the active build target to determine the platform
+			var buildTarget = EditorUserBuildSettings.activeBuildTarget;
+			_isMobile = buildTarget == BuildTarget.iOS || buildTarget == BuildTarget.Android;
+			_isWebGL = buildTarget == BuildTarget.WebGL;
+#else
+			// When running outside of the Unity Editor (i.e., in a built application), use the runtime platform
+			_isMobile = Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android;
 			_isWebGL = Application.platform == RuntimePlatform.WebGLPlayer;
+#endif
 		}
 
 		private void SubscribeToEvents()
 		{
 			// Subscribe to wallet events for handling user authentication.
-			EventManager.HandshakeReceived += OnHandshakeReceived;
+			EventManager.PairingRequested += OnPairingRequested;
 			EventManager.WalletConnected += OnWalletConnected;
 			EventManager.WalletDisconnected += OnWalletDisconnected;
 			EventManager.SDKInitialized += OnSDKInitialized;
@@ -199,7 +213,7 @@ namespace TezosSDK.Tezos.Managers
 				deepLinkButton.SetActive(_isMobile || _isWebGL);
 
 				// Activate socialLoginButton only when on WebGL and not authenticated
-				socialLoginButton.SetActive(_isWebGL);
+				socialLoginButton.SetActive(_isMobile || _isWebGL);
 
 				// Activate qrCodePanel only on standalone and not authenticated
 				qrCodeGenerator.gameObject.SetActive(!_isMobile && !_isWebGL);
@@ -210,7 +224,7 @@ namespace TezosSDK.Tezos.Managers
 
 		private void UnsubscribeFromEvents()
 		{
-			EventManager.HandshakeReceived -= OnHandshakeReceived;
+			EventManager.PairingRequested -= OnPairingRequested;
 			EventManager.WalletConnected -= OnWalletConnected;
 			EventManager.WalletDisconnected -= OnWalletDisconnected;
 		}

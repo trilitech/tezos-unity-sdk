@@ -13,7 +13,7 @@ namespace TezosSDK.Editor.Windows
 		{
 			"Select a issue type...", "Fix", "Critical Bug", "Bug", "Feature", "Other"
 		};
-		
+
 		private string _additionalContext = "";
 		private string _email = "";
 		private string _errorMessage = "";
@@ -127,8 +127,7 @@ namespace TezosSDK.Editor.Windows
 				return;
 			}
 
-			var url =
-				"https://docs.google.com/forms/d/e/1FAIpQLScUslljbVpQztjqB96D2c8dSlPpeYkM2sJdZlnOz7qyN3g4nw/formResponse?usp=pp_url";
+			var url = "https://docs.google.com/forms/d/e/1FAIpQLScUslljbVpQztjqB96D2c8dSlPpeYkM2sJdZlnOz7qyN3g4nw/formResponse?usp=pp_url";
 
 			url += "&entry.2052348936=" + UnityWebRequest.EscapeURL(_issueDefinition);
 			url += "&entry.1859623235=" + UnityWebRequest.EscapeURL(_stepsToReproduce);

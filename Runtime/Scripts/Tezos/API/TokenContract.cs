@@ -29,12 +29,7 @@ namespace TezosSDK.Tezos.API
 		private Action<TokenBalance> _onMintCompleted;
 		private Action<string> _onTransferCompleted;
 
-		public TokenContract(
-			string address,
-			IWalletAccount walletAccount,
-			IWalletTransaction walletTransaction,
-			IWalletContract walletContract,
-			ITezosAPI tezosAPI)
+		public TokenContract(string address, IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, ITezosAPI tezosAPI)
 		{
 			Address = address;
 			_walletAccount = walletAccount;
@@ -44,15 +39,11 @@ namespace TezosSDK.Tezos.API
 		}
 
 		// Constructor without address parameter
-		public TokenContract(
-			IWalletAccount walletAccount,
-			IWalletTransaction walletTransaction,
-			IWalletContract walletContract,
-			ITezosAPI tezosAPI) : this(null, walletAccount, walletTransaction, walletContract,
-			tezosAPI)
+		public TokenContract(IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, ITezosAPI tezosAPI) : this(null, walletAccount,
+			walletTransaction, walletContract, tezosAPI)
 		{
 		}
-		
+
 		// Parameterless constructor for serialization
 		public TokenContract()
 		{
@@ -66,18 +57,13 @@ namespace TezosSDK.Tezos.API
 		public int TokensCount { get; set; }
 		public DateTime LastActivityTime { get; set; }
 
-		public void Mint(
-			Action<TokenBalance> completedCallback,
-			TokenMetadata tokenMetadata,
-			string destination,
-			int amount)
+		public void Mint(Action<TokenBalance> completedCallback, TokenMetadata tokenMetadata, string destination, int amount)
 		{
 			_onMintCompleted = completedCallback;
 
 			TezosLogger.LogDebug($"Minting {amount} tokens to {destination} with metadata {tokenMetadata}");
 
-			var getContractTokens = _tezosAPI.GetTokensForContract(TokensReceived, Address, false, 10_000,
-				new TokensForContractOrder.Default(0));
+			var getContractTokens = _tezosAPI.GetTokensForContract(TokensReceived, Address, false, 10_000, new TokensForContractOrder.Default(0));
 
 			CoroutineRunner.Instance.StartCoroutine(getContractTokens);
 
@@ -101,7 +87,7 @@ namespace TezosSDK.Tezos.API
 						token_id = tokenId.ToString()
 					}).ToJson();
 
-					TezosManager.Instance.EventManager.OperationCompleted += MintCompleted; 
+					TezosManager.Instance.EventManager.OperationCompleted += MintCompleted;
 
 					_walletTransaction.CallContract(Address, _entrypoint, mintParameters);
 				}
@@ -156,13 +142,12 @@ namespace TezosSDK.Tezos.API
 		private void MintCompleted(OperationInfo operationInfo)
 		{
 			TezosLogger.LogDebug($"Mint completed with operation ID: {operationInfo.Id}");
-			
+
 			TezosManager.Instance.EventManager.OperationCompleted -= MintCompleted;
 
 			var owner = _walletAccount.GetWalletAddress();
 
-			var getOwnerTokensCoroutine = _tezosAPI.GetTokensForOwner(GetTokensCallback, owner, true, 10_000,
-				new TokensForOwnerOrder.Default(0));
+			var getOwnerTokensCoroutine = _tezosAPI.GetTokensForOwner(GetTokensCallback, owner, true, 10_000, new TokensForOwnerOrder.Default(0));
 
 			CoroutineRunner.Instance.StartCoroutine(getOwnerTokensCoroutine);
 		}
@@ -188,14 +173,14 @@ namespace TezosSDK.Tezos.API
 		private void DeployCompleted(OperationInfo operationInfo)
 		{
 			TezosLogger.LogDebug($"Deploy completed with operation ID: {operationInfo.Id}");
-			
+
 			TezosManager.Instance.EventManager.OperationCompleted -= DeployCompleted;
 
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 			var creator = _walletAccount.GetWalletAddress();
 
-			CoroutineRunner.Instance.StartCoroutine(_tezosAPI.GetOriginatedContractsForOwner(OnGetContracts, creator,
-				codeHash, 1000, new OriginatedContractsForOwnerOrder.Default(0)));
+			CoroutineRunner.Instance.StartCoroutine(_tezosAPI.GetOriginatedContractsForOwner(OnGetContracts, creator, codeHash, 1000,
+				new OriginatedContractsForOwnerOrder.Default(0)));
 
 			return;
 

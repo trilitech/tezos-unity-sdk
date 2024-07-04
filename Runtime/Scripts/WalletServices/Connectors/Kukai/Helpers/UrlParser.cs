@@ -4,7 +4,7 @@ using System.Linq;
 using TezosSDK.Helpers.Logging;
 using UnityEngine.Networking;
 
-namespace TezosSDK.WalletServices.Helpers
+namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 {
 
 	/// <summary>

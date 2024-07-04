@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TezosSDK.Tezos.Models
+﻿namespace TezosSDK.Tezos.Models
 {
 
 	/// <summary>

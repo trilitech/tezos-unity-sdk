@@ -48,11 +48,11 @@ namespace TezosSDK.WalletServices.Interfaces
 		///     Runs when a handshake with a user's wallet application is received. Provides the handshake details.
 		/// </summary>
 		/// <remarks>
-		///     Provides a <see cref="HandshakeData" /> object with the pairing information required for user completion.
+		///     Provides a <see cref="PairingRequestData" /> object with the pairing information required for user completion.
 		///     This event is triggered as part of the pairing process. The handshake data may include a QR code or other
 		///     information necessary to complete pairing with a DApp.
 		/// </remarks>
-		event Action<HandshakeData> HandshakeReceived;
+		event Action<PairingRequestData> PairingRequested;
 
 		/// <summary>
 		///     Runs when the user's wallet is connected but before the user has approved the connection in the wallet app.

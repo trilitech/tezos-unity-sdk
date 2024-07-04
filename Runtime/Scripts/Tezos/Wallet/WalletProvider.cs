@@ -1,21 +1,19 @@
 ﻿using System;
 using Beacon.Sdk.Beacon.Sign;
-using TezosSDK.Helpers;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
-using TezosSDK.WalletServices.Connectors;
 using TezosSDK.WalletServices.Data;
-using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
+// ReSharper disable once RedundantUsingDirective
+using TezosSDK.Helpers;
 
 namespace TezosSDK.Tezos.Wallet
 {
 
-	public class WalletProvider : IWalletConnection, IWalletAccount, IWalletTransaction, IWalletContract,
-		IWalletEventProvider, IDisposable
+	public class WalletProvider : IWalletConnection, IWalletAccount, IWalletTransaction, IWalletContract, IWalletEventProvider, IDisposable
 	{
 		private readonly IWalletConnector _walletConnector;
 		private string _pubKey;
@@ -25,16 +23,12 @@ namespace TezosSDK.Tezos.Wallet
 		public WalletProvider(IWalletEventManager eventManager, IWalletConnector walletConnector)
 		{
 			EventManager = eventManager;
-			EventManager.HandshakeReceived += OnHandshakeReceived;
 			EventManager.WalletConnected += OnWalletConnected;
 			EventManager.WalletDisconnected += OnWalletDisconnected;
 			EventManager.PayloadSigned += OnPayloadSigned;
 			EventManager.OperationInjected += OnOperationInjected;
 			_walletConnector = walletConnector;
-			_walletConnector.OperationRequested += OperationRequestedHandler;
 		}
-
-		public IWalletEventManager EventManager { get; }
 
 		public void Dispose()
 		{
@@ -50,7 +44,6 @@ namespace TezosSDK.Tezos.Wallet
 		}
 
 		public bool IsConnected { get; private set; }
-		public HandshakeData HandshakeData { get; private set; }
 
 		public void Connect()
 		{
@@ -74,6 +67,8 @@ namespace TezosSDK.Tezos.Wallet
 
 			_walletConnector.RequestContractOrigination(originationRequest);
 		}
+
+		public IWalletEventManager EventManager { get; }
 
 		public void RequestSignPayload(SignPayloadType signingType, string payload)
 		{
@@ -104,58 +99,26 @@ namespace TezosSDK.Tezos.Wallet
 			_walletConnector.RequestOperation(operationRequest);
 		}
 
-		/// <summary>
-		///     Raised when an operation requiring user interaction is requested by the IBeaconConnector implementation.
-		/// </summary>
-		private void OperationRequestedHandler(WalletMessageType messageType)
-		{
-			TezosLogger.LogDebug($"WalletProvider.OperationRequestedHandler messageType: {messageType}");
-
-			switch (messageType)
-			{
-				case WalletMessageType.ConnectionRequest:
-					OpenWallet();
-					break;
-				case WalletMessageType.OperationRequest:
-					OpenWallet();
-					break;
-				case WalletMessageType.SignPayloadRequest:
-					break;
-			}
-		}
-
-		private void OpenWallet()
-		{
-			TezosLogger.LogDebug("WalletProvider.OpenWallet");
-
-			string url = "tezos://";
-			
-			// OpenURL can only be called from the main thread.
-			UnityMainThreadDispatcher.Enqueue(() => { Application.OpenURL(url); });
-		}
-
 		private void OnWalletDisconnected(WalletInfo obj)
 		{
 			IsConnected = false;
-			HandshakeData = null;
 		}
 
 		/// <summary>
 		///     An operation has been injected into the network (i.e. the transaction has been sent to the network).
 		///     Raised when an operation is injected into the network and the operation hash is received.
 		/// </summary>
-		/// <param name="transaction"></param>
-		private void OnOperationInjected(OperationInfo transaction)
+		private void OnOperationInjected(OperationInfo operation)
 		{
-			TezosLogger.LogDebug($"WalletProvider: Handling OperationInjected event. Hash: {transaction.Hash}"); 
-			StartTrackingOperation(transaction);
+			TezosLogger.LogDebug($"WalletProvider: Handling OperationInjected event. Hash: {operation.Hash}");
+			StartTrackingOperation(operation);
 		}
 
-		private void StartTrackingOperation(OperationInfo transaction)
+		private void StartTrackingOperation(OperationInfo operation)
 		{
-			TezosLogger.LogDebug($"WalletProvider.StartTrackingOperation: {transaction.Hash}");
-			
-			var operationHash = transaction.Hash;
+			TezosLogger.LogDebug($"WalletProvider.StartTrackingOperation: {operation.Hash}");
+
+			var operationHash = operation.Hash;
 			var tracker = new OperationTracker(operationHash, OnComplete);
 			tracker.BeginTracking();
 			return;
@@ -165,10 +128,9 @@ namespace TezosSDK.Tezos.Wallet
 			{
 				if (isSuccess)
 				{
-					var operationResult = new OperationInfo(operationHash, transaction.Id, transaction.OperationType);
+					var operationResult = new OperationInfo(operationHash, operation.Id, operation.OperationType);
 
-					var completedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationCompleted,
-						JsonUtility.ToJson(operationResult));
+					var completedEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationCompleted, JsonUtility.ToJson(operationResult));
 
 					TezosLogger.LogDebug($"Operation completed: {operationHash}");
 
@@ -178,11 +140,9 @@ namespace TezosSDK.Tezos.Wallet
 				{
 					TezosLogger.LogError($"Operation failed: {errorMessage}");
 
-					var errorinfo = new OperationInfo(operationHash, transaction.Id, transaction.OperationType,
-						errorMessage);
+					var errorinfo = new OperationInfo(operationHash, operation.Id, operation.OperationType, errorMessage);
 
-					var failEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationFailed,
-						JsonUtility.ToJson(errorinfo));
+					var failEvent = new UnifiedEvent(WalletEventManager.EventTypeOperationFailed, JsonUtility.ToJson(errorinfo));
 
 					EventManager.HandleEvent(failEvent);
 				}
@@ -200,21 +160,21 @@ namespace TezosSDK.Tezos.Wallet
 			IsConnected = true;
 		}
 
-		private void OnHandshakeReceived(HandshakeData handshake)
-		{
-			if (HandshakeData != null)
-			{
-				return;
-			}
-
-			TezosLogger.LogDebug("WalletProvider.OnHandshakeReceived");
-
-			HandshakeData = handshake;
-
-#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
-			PairWithWallet();
-#endif
-		}
+// 		private void OnHandshakeReceived(PairingRequestData pairingRequest)
+// 		{
+// 			if (PairingRequestData != null)
+// 			{
+// 				return;
+// 			}
+//
+// 			TezosLogger.LogDebug("WalletProvider.OnHandshakeReceived");
+//
+// 			PairingRequestData = pairingRequest;
+//
+// #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+// 			PairWithWallet();
+// #endif
+// 		}
 
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 		private void PairWithWallet()
@@ -222,7 +182,7 @@ namespace TezosSDK.Tezos.Wallet
 			UnityMainThreadDispatcher.Enqueue(() =>
 			{
 				TezosLogger.LogDebug("WalletProvider.PairWithWallet (OpenURL)");
-				Application.OpenURL($"tezos://?type=tzip10&data={HandshakeData.PairingData}");
+				Application.OpenURL($"tezos://?type=tzip10&data={_walletConnector.PairingRequestData.Data}");
 			});
 		}
 #endif

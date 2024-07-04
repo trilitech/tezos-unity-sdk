@@ -1,9 +1,8 @@
 ﻿using System;
-using TezosSDK.ReadMe.Scripts.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace TezosSDK.ReadMe.Scripts.Editor
+namespace TezosSDK.Editor.ReadMe
 {
 
 	/// <summary>

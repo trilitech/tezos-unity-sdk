@@ -1,13 +1,13 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace TezosSDK.ReadMe.Scripts.Editor
+namespace TezosSDK.Editor.ReadMe
 {
 
 	/// <summary>
 	///     Editor to render <see cref="ReadMe" /> in the Unity Inspector
 	/// </summary>
-	[CustomEditor(typeof(Runtime.ReadMe))]
+	[CustomEditor(typeof(ReadMe))]
 	[InitializeOnLoad]
 	public class ReadMeEditor : UnityEditor.Editor
 	{
@@ -35,7 +35,7 @@ namespace TezosSDK.ReadMe.Scripts.Editor
 
 		public override void OnInspectorGUI()
 		{
-			var readMe = (Runtime.ReadMe)target;
+			var readMe = (ReadMe)target;
 
 			Initialize();
 
@@ -139,7 +139,7 @@ namespace TezosSDK.ReadMe.Scripts.Editor
 
 		protected override void OnHeaderGUI()
 		{
-			var readMe = (Runtime.ReadMe)target;
+			var readMe = (ReadMe)target;
 
 			Initialize();
 
@@ -156,8 +156,7 @@ namespace TezosSDK.ReadMe.Scripts.Editor
 				IconStyle.fixedHeight = iconWidth;
 				GUILayout.Box(readMe.Icon, IconStyle);
 
-				GUILayout.Label(ProcessText(readMe.Title), TitleStyle, GUILayout.MaxWidth(labelWidth),
-					GUILayout.MinWidth(labelMinWidth));
+				GUILayout.Label(ProcessText(readMe.Title), TitleStyle, GUILayout.MaxWidth(labelWidth), GUILayout.MinWidth(labelMinWidth));
 			}
 
 			GUILayout.EndHorizontal();

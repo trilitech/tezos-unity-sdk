@@ -24,14 +24,14 @@ namespace TezosSDK.Helpers
 			_texture.filterMode = FilterMode.Point;
 		}
 
-		public void SetQrCode(HandshakeData handshakeData)
+		public void SetQrCode(PairingRequestData pairingRequestData)
 		{
 			if (_encoded)
 			{
 				return;
 			}
 
-			var uri = "tezos://?type=tzip10&data=" + handshakeData.PairingData;
+			var uri = "tezos://?type=tzip10&data=" + pairingRequestData.Data;
 			EncodeTextToQrCode(uri);
 			_encoded = true;
 		}

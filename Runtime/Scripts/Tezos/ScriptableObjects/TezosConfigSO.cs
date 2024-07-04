@@ -1,7 +1,7 @@
 using Beacon.Sdk.Beacon.Permission;
 using UnityEngine;
 
-namespace TezosSDK.Tezos.ScriptableObjects
+namespace TezosSDK.Tezos
 {
 
 	[CreateAssetMenu(fileName = "TezosConfigSO", menuName = "Tezos/Configuration", order = 1)]
@@ -19,8 +19,7 @@ namespace TezosSDK.Tezos.ScriptableObjects
 		[Tooltip("Timeout for requests to the chain.")]
 		[SerializeField] private int requestTimeoutSeconds = 45;
 
-		[Tooltip("Create API key in Pinata service https://app.pinata.cloud/developers/api-keys and paste JWT value " +
-		         "here to be able to upload images to IPFS.")]
+		[Tooltip("Create API key in Pinata service https://app.pinata.cloud/developers/api-keys and paste JWT value " + "here to be able to upload images to IPFS.")]
 		[SerializeField] private string pinataApiKey;
 
 		[Tooltip("Data provider to use for querying data.")]
@@ -55,8 +54,7 @@ namespace TezosSDK.Tezos.ScriptableObjects
 		{
 			if (string.IsNullOrEmpty(pinataApiKey))
 			{
-				Debug.LogWarning(
-					"Pinata API key is not set in TezosConfigSO. You will not be able to upload images to IPFS.");
+				Debug.LogWarning("Pinata API key is not set in TezosConfigSO. You will not be able to upload images to IPFS.");
 			}
 
 			if (dataProviderConfig == null)

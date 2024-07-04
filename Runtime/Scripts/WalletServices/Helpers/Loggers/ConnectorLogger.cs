@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Extensions.Logging;
 using TezosSDK.Helpers.Logging;
-using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace TezosSDK.WalletServices.Helpers.Loggers
@@ -19,12 +18,7 @@ namespace TezosSDK.WalletServices.Helpers.Loggers
 			return true;
 		}
 
-		public void Log<TState>(
-			LogLevel logLevel,
-			EventId eventId,
-			TState state,
-			Exception exception,
-			Func<TState, Exception, string> formatter)
+		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
 			if (!IsEnabled(logLevel))
 			{

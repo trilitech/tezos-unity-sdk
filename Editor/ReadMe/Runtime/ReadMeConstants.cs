@@ -1,4 +1,4 @@
-﻿namespace TezosSDK.Editor.ReadMe.Scripts.Runtime
+﻿namespace TezosSDK.Editor.ReadMe
 {
 
 	/// <summary>

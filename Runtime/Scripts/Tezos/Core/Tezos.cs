@@ -9,9 +9,7 @@ using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.API;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
-using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
-using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 
 namespace TezosSDK.Tezos.Core
@@ -23,14 +21,17 @@ namespace TezosSDK.Tezos.Core
 	/// </summary>
 	public class Tezos : ITezos
 	{
-		
-		
-		public Tezos(TezosConfigSO config, WalletProvider walletProvider)
-			: this(config, walletProvider, walletProvider, walletProvider, walletProvider, walletProvider)
+		public Tezos(TezosConfigSO config, WalletProvider walletProvider) : this(config, walletProvider, walletProvider, walletProvider, walletProvider, walletProvider)
 		{
 		}
 
-		public Tezos(TezosConfigSO config, IWalletConnection walletConnection, IWalletAccount walletAccount, IWalletTransaction walletTransaction, IWalletContract walletContract, IWalletEventProvider eventProvider)
+		public Tezos(
+			TezosConfigSO config,
+			IWalletConnection walletConnection,
+			IWalletAccount walletAccount,
+			IWalletTransaction walletTransaction,
+			IWalletContract walletContract,
+			IWalletEventProvider eventProvider)
 		{
 			API = new TezosAPI(config);
 
@@ -61,8 +62,7 @@ namespace TezosSDK.Tezos.Core
 		{
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 
-			return API.GetOriginatedContractsForOwner(callback, WalletAccount.GetWalletAddress(), codeHash, 1000,
-				new OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc(0));
+			return API.GetOriginatedContractsForOwner(callback, WalletAccount.GetWalletAddress(), codeHash, 1000, new OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc(0));
 		}
 
 		private void OnWalletConnected(WalletInfo walletInfo)

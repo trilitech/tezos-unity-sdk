@@ -1,12 +1,7 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using TezosSDK.FileUploaders.Interfaces;
-using UnityEngine;
-
-namespace TezosSDK.FileUploaders.OnChain
+﻿namespace TezosSDK.FileUploaders.OnChain
 {
-#if UNITY_WEBGL
 
+#if UNITY_WEBGL
 	public static class WebBase64UploaderHelper
 	{
 		private static Action<string> responseCallback;
@@ -18,9 +13,7 @@ namespace TezosSDK.FileUploaders.OnChain
 
 			var webUploaderGameObject = GameObject.Find(nameof(WebBase64Uploader));
 
-			var uploader = webUploaderGameObject != null
-				? webUploaderGameObject.GetComponent<WebBase64Uploader>()
-				: new GameObject(nameof(WebBase64Uploader)).AddComponent<WebBase64Uploader>();
+			var uploader = webUploaderGameObject != null ? webUploaderGameObject.GetComponent<WebBase64Uploader>() : new GameObject(nameof(WebBase64Uploader)).AddComponent<WebBase64Uploader>();
 
 			JsInitBase64Uploader(_callback_object_name, _callback_method_name);
 
@@ -51,4 +44,5 @@ namespace TezosSDK.FileUploaders.OnChain
 		private static extern void JsRequestUserFile(string extensions);
 	}
 #endif
+
 }

@@ -473,7 +473,6 @@ MonoBehaviour:
   deepLinkButton: {fileID: 2221511952733773064}
   socialLoginButton: {fileID: 2221511952751916822}
   logoutButton: {fileID: 2221511952828651889}
-  darkBG: {fileID: 6675340471920486954}
 --- !u!1 &2221511952716474942
 GameObject:
   m_ObjectHideFlags: 0

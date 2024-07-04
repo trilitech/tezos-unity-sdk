@@ -1,99 +1,97 @@
-using System;
-using Microsoft.Extensions.Logging;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace TezosSDK.Helpers.Logging
 {
-    
-    public static class TezosLogger
-    {
-        public enum LogLevel
-        {
-            None,
-            Error,
-            Warning,
-            Info,
-            Debug
-        }
 
-        private static LogLevel currentLogLevel = LogLevel.Debug;
-        
-        public static void SetLogLevel(LogLevel logLevel)
-        {
-            currentLogLevel = logLevel;
-        }
+	public static class TezosLogger
+	{
+		public enum LogLevel
+		{
+			None,
+			Error,
+			Warning,
+			Info,
+			Debug
+		}
 
-        private static void Log(string message, LogLevel logLevel = LogLevel.Info)
-        {
-            if (logLevel > currentLogLevel)
-            {
-                return;
-            }
+		private static LogLevel currentLogLevel = LogLevel.Debug;
 
-            string formattedMessage = FormatMessage(message, logLevel);
+		public static void SetLogLevel(LogLevel logLevel)
+		{
+			currentLogLevel = logLevel;
+		}
 
-            switch (logLevel)
-            {
-                case LogLevel.Debug:
-                    UnityEngine.Debug.Log(formattedMessage);
-                    break;
-                case LogLevel.Info:
-                    UnityEngine.Debug.Log(formattedMessage);
-                    break;
-                case LogLevel.Warning:
-                    UnityEngine.Debug.LogWarning(formattedMessage);
-                    break;
-                case LogLevel.Error:
-                    UnityEngine.Debug.LogError(formattedMessage);
-                    break;
-            }
-        }
+		private static void Log(string message, LogLevel logLevel = LogLevel.Info)
+		{
+			if (logLevel > currentLogLevel)
+			{
+				return;
+			}
 
-        private static string FormatMessage(string message, LogLevel logLevel)
-        {
-            string color;
+			var formattedMessage = FormatMessage(message, logLevel);
 
-            switch (logLevel)
-            {
-                case LogLevel.Debug:
-                    color = "olive";
-                    break;
-                case LogLevel.Info:
-                    color = "white";
-                    break;
-                case LogLevel.Warning:
-                    color = "yellow";
-                    break;
-                case LogLevel.Error:
-                    color = "red";
-                    break;
-                default:
-                    color = "white";
-                    break;
-            }
+			switch (logLevel)
+			{
+				case LogLevel.Debug:
+					Debug.Log(formattedMessage);
+					break;
+				case LogLevel.Info:
+					Debug.Log(formattedMessage);
+					break;
+				case LogLevel.Warning:
+					Debug.LogWarning(formattedMessage);
+					break;
+				case LogLevel.Error:
+					Debug.LogError(formattedMessage);
+					break;
+			}
+		}
 
-            return $"<color={color}><b>[TezosSDK]</b></color> {message}";
-        }
+		private static string FormatMessage(string message, LogLevel logLevel)
+		{
+			string color;
 
-        public static void LogDebug(string message)
-        {
-            Log(message, LogLevel.Debug);
-        }
+			switch (logLevel)
+			{
+				case LogLevel.Debug:
+					color = "olive";
+					break;
+				case LogLevel.Info:
+					color = "white";
+					break;
+				case LogLevel.Warning:
+					color = "yellow";
+					break;
+				case LogLevel.Error:
+					color = "red";
+					break;
+				default:
+					color = "white";
+					break;
+			}
 
-        public static void LogInfo(string message)
-        {
-            Log(message);
-        }
+			return $"<color={color}><b>[TezosSDK]</b></color> {message}";
+		}
 
-        public static void LogWarning(string message)
-        {
-            Log(message, LogLevel.Warning);
-        }
+		public static void LogDebug(string message)
+		{
+			Log(message, LogLevel.Debug);
+		}
 
-        public static void LogError(string message)
-        {
-            Log(message, LogLevel.Error);
-        }
-    }
+		public static void LogInfo(string message)
+		{
+			Log(message);
+		}
+
+		public static void LogWarning(string message)
+		{
+			Log(message, LogLevel.Warning);
+		}
+
+		public static void LogError(string message)
+		{
+			Log(message, LogLevel.Error);
+		}
+	}
+
 }

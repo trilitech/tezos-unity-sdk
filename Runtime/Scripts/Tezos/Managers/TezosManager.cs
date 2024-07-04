@@ -1,14 +1,11 @@
-using System;
 using System.Threading.Tasks;
 using Beacon.Sdk.Beacon.Permission;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
-using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors;
-using TezosSDK.WalletServices.Connectors.DotNet;
 using UnityEngine;
 
 namespace TezosSDK.Tezos.Managers
@@ -40,11 +37,11 @@ namespace TezosSDK.Tezos.Managers
 
 		public WalletEventManager EventManager { get; private set; }
 
+		public bool IsInitialized { get; private set; }
+
 		public ITezos Tezos { get; private set; }
 
 		public IWalletConnector WalletConnector { get; private set; }
-		
-		public bool IsInitialized { get; private set; }
 
 		protected async void Awake()
 		{
@@ -62,26 +59,26 @@ namespace TezosSDK.Tezos.Managers
 			await InitializeTezosAsync();
 		}
 
+		private void OnDestroy()
+		{
+			WalletConnector?.Dispose();
+		}
+
 		private async Task InitializeTezosAsync()
 		{
 			TezosLogger.SetLogLevel(logLevel);
 			TezosLogger.LogInfo("Tezos SDK initializing...");
-			
+
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
 			WalletConnector = WalletConnectorFactory.CreateConnector(ConnectorType.Kukai, EventManager);
 			var walletProvider = new WalletProvider(EventManager, WalletConnector);
 			Tezos = new Core.Tezos(config, walletProvider);
-			
+
 			await WalletConnector.InitializeAsync();
 			IsInitialized = true;
 
 			TezosLogger.LogInfo("Tezos SDK initialized.");
 			EventManager.DispatchSDKInitializedEvent();
-		}
-
-		private void OnDestroy()
-		{
-			WalletConnector?.Dispose();
 		}
 
 		private void ValidateConfig()
@@ -98,8 +95,7 @@ namespace TezosSDK.Tezos.Managers
 
 			if (string.IsNullOrEmpty(Config.PinataApiKey))
 			{
-				Debug.LogWarning(
-					"Pinata API key is not set in TezosConfigSO. You will not be able to upload images to IPFS.");
+				Debug.LogWarning("Pinata API key is not set in TezosConfigSO. You will not be able to upload images to IPFS.");
 			}
 
 			if (Config.DataProvider == null)

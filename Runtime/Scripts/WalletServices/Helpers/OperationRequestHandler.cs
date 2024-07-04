@@ -72,18 +72,11 @@ namespace TezosSDK.WalletServices.Helpers
 		/// <param name="amount">The amount to be transferred.</param>
 		/// <param name="beaconDappClient">The Dapp Beacon client instance.</param>
 		/// <returns>A Task representing the asynchronous operation.</returns>
-		public Task RequestTezosOperation(
-			string destination,
-			string entryPoint,
-			string input,
-			ulong amount,
-			DappBeaconClient beaconDappClient)
+		public Task RequestTezosOperation(string destination, string entryPoint, string input, ulong amount, DappBeaconClient beaconDappClient)
 		{
 			TezosLogger.LogDebug("Requesting Tezos Operation");
-			
-			return RequestOperation(beaconDappClient,
-				() => CreateTransactionOperation(destination, entryPoint, input, amount),
-				BeaconMessageType.operation_request);
+
+			return RequestOperation(beaconDappClient, () => CreateTransactionOperation(destination, entryPoint, input, amount), BeaconMessageType.operation_request);
 		}
 
 		/// <summary>
@@ -96,9 +89,8 @@ namespace TezosSDK.WalletServices.Helpers
 		public Task RequestContractOrigination(string script, string delegateAddress, DappBeaconClient beaconDappClient)
 		{
 			TezosLogger.LogDebug("Requesting Contract Origination");
-			
-			return RequestOperation(beaconDappClient, () => CreateOriginationOperation(script, delegateAddress),
-				BeaconMessageType.operation_request);
+
+			return RequestOperation(beaconDappClient, () => CreateOriginationOperation(script, delegateAddress), BeaconMessageType.operation_request);
 		}
 
 		/// <summary>
@@ -116,10 +108,7 @@ namespace TezosSDK.WalletServices.Helpers
 		///     operationFactory function to generate a list of operations which are then used
 		///     to create and send an operation request.
 		/// </remarks>
-		private Task RequestOperation(
-			IDappBeaconClient beaconDappClient,
-			Func<List<TezosBaseOperation>> operationFactory,
-			BeaconMessageType messageType)
+		private Task RequestOperation(IDappBeaconClient beaconDappClient, Func<List<TezosBaseOperation>> operationFactory, BeaconMessageType messageType)
 		{
 			// Check for active account permissions and return if not found
 			var activeAccountPermissions = beaconDappClient.GetActiveAccount();
@@ -134,8 +123,7 @@ namespace TezosSDK.WalletServices.Helpers
 			var operationDetails = operationFactory.Invoke();
 
 			// Create and log the operation request
-			var operationRequest = CreateOperationRequest(beaconDappClient, activeAccountPermissions, operationDetails,
-				messageType);
+			var operationRequest = CreateOperationRequest(beaconDappClient, activeAccountPermissions, operationDetails, messageType);
 
 			TezosLogger.LogDebug("Sending to beacon client: " + operationRequest.PrettyPrint());
 
@@ -156,8 +144,7 @@ namespace TezosSDK.WalletServices.Helpers
 		{
 			var operationDetails = new List<TezosBaseOperation>();
 
-			var partialTezosOriginationOperation =
-				new PartialTezosOriginationOperation("0", JObject.Parse(script), delegateAddress);
+			var partialTezosOriginationOperation = new PartialTezosOriginationOperation("0", JObject.Parse(script), delegateAddress);
 
 			operationDetails.Add(partialTezosOriginationOperation);
 
@@ -176,21 +163,16 @@ namespace TezosSDK.WalletServices.Helpers
 		///     This method sets up a transaction operation with the provided parameters,
 		///     creating a partial transaction operation object and adding it to the list.
 		/// </remarks>
-		private List<TezosBaseOperation> CreateTransactionOperation(
-			string destination,
-			string entryPoint,
-			string input,
-			ulong amount)
+		private List<TezosBaseOperation> CreateTransactionOperation(string destination, string entryPoint, string input, ulong amount)
 		{
 			var operationDetails = new List<TezosBaseOperation>();
 
 			// Create partial Tezos transaction operation with provided details
-			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount.ToString(), destination,
-				new JObject
-				{
-					["entrypoint"] = entryPoint,
-					["value"] = JToken.Parse(input)
-				});
+			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount.ToString(), destination, new JObject
+			{
+				["entrypoint"] = entryPoint,
+				["value"] = JToken.Parse(input)
+			});
 
 			operationDetails.Add(partialTezosTransactionOperation);
 
@@ -217,9 +199,8 @@ namespace TezosSDK.WalletServices.Helpers
 		{
 			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
 
-			var operationRequest = new OperationRequest(messageType, Constants.BeaconVersion,
-				KeyPairService.CreateGuid(), beaconDappClient.SenderId, activeAccountPermissions.Network,
-				operationDetails, pubKey.Address);
+			var operationRequest = new OperationRequest(messageType, Constants.BeaconVersion, KeyPairService.CreateGuid(), beaconDappClient.SenderId,
+				activeAccountPermissions.Network, operationDetails, pubKey.Address);
 
 			return operationRequest;
 		}
@@ -248,18 +229,14 @@ namespace TezosSDK.WalletServices.Helpers
 				PermissionScope.sign
 			};
 
-			return new PermissionRequest(BeaconMessageType.permission_request, Constants.BeaconVersion,
-				KeyPairService.CreateGuid(), beaconDappClient.SenderId, beaconDappClient.Metadata, network,
-				permissionScopes);
+			return new PermissionRequest(BeaconMessageType.permission_request, Constants.BeaconVersion, KeyPairService.CreateGuid(), beaconDappClient.SenderId,
+				beaconDappClient.Metadata, network, permissionScopes);
 		}
 
 		/// <summary>
 		///     Sends a response asynchronously via the Beacon client.
 		/// </summary>
-		private async Task SendBeaconClientResponseAsync(
-			IBaseBeaconClient beaconDappClient,
-			string receiverId,
-			BaseBeaconMessage message)
+		private async Task SendBeaconClientResponseAsync(IBaseBeaconClient beaconDappClient, string receiverId, BaseBeaconMessage message)
 		{
 			await beaconDappClient.SendResponseAsync(receiverId, message);
 			MessageSent?.Invoke(message.Type);

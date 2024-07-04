@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using TezosSDK.FileUploaders.Interfaces;
-
 namespace TezosSDK.FileUploaders.IPFS
 {
 

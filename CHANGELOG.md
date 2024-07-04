@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- `KukaiConnector` class to handle Kukai wallet connections.
 - `OnWalletDisconnected` event handling in `TezosAuthenticator`.
 - Refactor of wallet and connector interfaces to improve modularity and flexibility, including:
   - New focused wallet interfaces (`IWalletConnection`, `IWalletAccount`, `IWalletTransaction`, `IWalletContract`, `IWalletEventProvider`) for better separation of concerns.

@@ -3,7 +3,6 @@ using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors.DotNet;
 using TezosSDK.WalletServices.Connectors.WebGL;
-using UnityEngine;
 
 namespace TezosSDK.WalletServices.Connectors
 {
@@ -25,4 +24,5 @@ namespace TezosSDK.WalletServices.Connectors
 			}
 		}
 	}
+
 }

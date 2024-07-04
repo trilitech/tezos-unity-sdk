@@ -1,5 +1,4 @@
-﻿using System;
-using Beacon.Sdk.Beacon;
+﻿using Beacon.Sdk.Beacon;
 
 namespace TezosSDK.Tezos.Models
 {
@@ -9,6 +8,10 @@ namespace TezosSDK.Tezos.Models
 	/// </summary>
 	public class OperationInfo
 	{
+		/// <summary>
+		///     Conveys the error message if the operation failed.
+		/// </summary>
+		public readonly string ErrorMesssage;
 		/// <summary>
 		///     The hash of the transaction associated with the operation.
 		/// </summary>
@@ -24,16 +27,7 @@ namespace TezosSDK.Tezos.Models
 		/// </summary>
 		public readonly BeaconMessageType OperationType;
 
-		/// <summary>
-		///     Conveys the error message if the operation failed.
-		/// </summary>
-		public readonly string ErrorMesssage;
-
-		public OperationInfo(
-			string hash,
-			string id,
-			BeaconMessageType operationType,
-			string errorMessage = null)
+		public OperationInfo(string hash, string id, BeaconMessageType operationType, string errorMessage = null)
 		{
 			Hash = hash;
 			Id = id;

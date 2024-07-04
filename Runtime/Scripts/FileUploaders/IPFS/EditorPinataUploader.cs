@@ -20,8 +20,7 @@ namespace TezosSDK.FileUploaders.IPFS
 		{
 			yield return null;
 
-			var path = EditorUtility.OpenFilePanel("Select image", string.Empty,
-				SupportedFileExtensions.Replace(".", string.Empty).Replace(" ", string.Empty));
+			var path = EditorUtility.OpenFilePanel("Select image", string.Empty, SupportedFileExtensions.Replace(".", string.Empty).Replace(" ", string.Empty));
 
 			var filename = Path.GetFileName(path);
 			var form = new WWWForm();

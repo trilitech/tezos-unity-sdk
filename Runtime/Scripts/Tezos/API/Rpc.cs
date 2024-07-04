@@ -3,7 +3,6 @@ using System.Collections;
 using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
 using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Tezos.ScriptableObjects;
 
 namespace TezosSDK.Tezos.API
 {
@@ -22,18 +21,17 @@ namespace TezosSDK.Tezos.API
 
 		public IEnumerator GetTzBalance(string address, Action<HttpResult<ulong>> callback)
 		{
-			yield return GetJsonCoroutine<ulong>($"chains/main/blocks/head/context/contracts/{address}/balance/",
-				result =>
+			yield return GetJsonCoroutine<ulong>($"chains/main/blocks/head/context/contracts/{address}/balance/", result =>
+			{
+				if (result.Success)
 				{
-					if (result.Success)
-					{
-						callback?.Invoke(new HttpResult<ulong>(result.Data));
-					}
-					else
-					{
-						callback?.Invoke(new HttpResult<ulong>(result.ErrorMessage));
-					}
-				});
+					callback?.Invoke(new HttpResult<ulong>(result.Data));
+				}
+				else
+				{
+					callback?.Invoke(new HttpResult<ulong>(result.ErrorMessage));
+				}
+			});
 		}
 
 		public IEnumerator GetContractCode<T>(string contract)

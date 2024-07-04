@@ -18,12 +18,7 @@ namespace TezosSDK.Helpers.Extensions
 	{
 		private static readonly Dictionary<string, ContractScript> Contracts = new();
 
-		public static IEnumerator HumanizeValue<T>(
-			JsonElement val,
-			string rpcUri,
-			string destination,
-			string humanizeEntrypoint,
-			Action<T> onComplete)
+		public static IEnumerator HumanizeValue<T>(JsonElement val, string rpcUri, string destination, string humanizeEntrypoint, Action<T> onComplete)
 		{
 			yield return FetchContractCode(rpcUri, destination);
 			var cs = Contracts[destination];
@@ -51,12 +46,7 @@ namespace TezosSDK.Helpers.Extensions
 			});
 		}
 
-		public static IEnumerator CompileToJsonMichelson(
-			string rpcUri,
-			string destination,
-			string entry,
-			object objArg,
-			Action<string> onComplete)
+		public static IEnumerator CompileToJsonMichelson(string rpcUri, string destination, string entry, object objArg, Action<string> onComplete)
 		{
 			yield return FetchContractCode(rpcUri, destination);
 			var cs = Contracts[destination];

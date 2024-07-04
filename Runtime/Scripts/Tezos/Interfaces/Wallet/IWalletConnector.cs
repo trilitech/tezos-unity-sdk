@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using TezosSDK.Tezos.Models;
 using TezosSDK.WalletServices.Connectors;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
@@ -10,6 +11,7 @@ namespace TezosSDK.Tezos.Interfaces.Wallet
 	public interface IWalletConnector : IDisposable
 	{
 		ConnectorType ConnectorType { get; }
+		PairingRequestData PairingRequestData { get; }
 		event Action<WalletMessageType> OperationRequested;
 		void ConnectWallet();
 		string GetWalletAddress();

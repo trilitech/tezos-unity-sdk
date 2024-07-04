@@ -1,7 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using TezosSDK.Tezos.Wallet;
-using UnityEngine;
 
 namespace TezosSDK.Tezos.Models
 {
@@ -12,11 +10,10 @@ namespace TezosSDK.Tezos.Models
 	/// </summary>
 	public class UnifiedEvent
 	{
-		[JsonProperty("EventType")]
-		private readonly string _eventType;
-		
 		[JsonProperty("Data")]
 		private readonly string _data;
+		[JsonProperty("EventType")]
+		private readonly string _eventType;
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="UnifiedEvent" /> class.

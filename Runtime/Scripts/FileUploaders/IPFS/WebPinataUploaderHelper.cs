@@ -1,14 +1,7 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Text.Json;
-using TezosSDK.FileUploaders.Interfaces;
-using UnityEngine;
-
-namespace TezosSDK.FileUploaders.IPFS
+﻿namespace TezosSDK.FileUploaders.IPFS
 {
 
 #if UNITY_WEBGL
-
 	public static class WebPinataUploaderHelper
 	{
 		private static Action<string> responseCallback;
@@ -20,14 +13,11 @@ namespace TezosSDK.FileUploaders.IPFS
 
 			var webUploaderGameObject = GameObject.Find(nameof(WebPinataUploader));
 
-			var webFileUploader = webUploaderGameObject != null
-				? webUploaderGameObject.GetComponent<WebPinataUploader>()
-				: new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
+			var webFileUploader = webUploaderGameObject != null ? webUploaderGameObject.GetComponent<WebPinataUploader>() : new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
 
 			webFileUploader.PinataCredentials = new PinataCredentials(apiKey);
 
-			JsInitPinataUploader(_callback_object_name, _callback_method_name, webFileUploader.PinataCredentials.ApiUrl,
-				webFileUploader.PinataCredentials.ApiKey);
+			JsInitPinataUploader(_callback_object_name, _callback_method_name, webFileUploader.PinataCredentials.ApiUrl, webFileUploader.PinataCredentials.ApiKey);
 
 			return webFileUploader;
 		}
@@ -51,14 +41,11 @@ namespace TezosSDK.FileUploaders.IPFS
 		}
 
 		[DllImport("__Internal")]
-		private static extern void JsInitPinataUploader(
-			string objectName,
-			string methodName,
-			string apiUrl,
-			string apiKey);
+		private static extern void JsInitPinataUploader(string objectName, string methodName, string apiUrl, string apiKey);
 
 		[DllImport("__Internal")]
 		private static extern void JsRequestUserFile(string extensions);
 	}
 #endif
+
 }

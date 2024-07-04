@@ -72,8 +72,7 @@ namespace TezosSDK.Helpers
 			lock (ExecutionQueue)
 			{
 				var coroutine = new CoroutineWrapper<object>(action, null,
-					exception => Debug.LogError($"Exception on MainThread Queue: {exception.Message} \n" +
-					                            $"StackTrace: {exception.StackTrace}"));
+					exception => Debug.LogError($"Exception on MainThread Queue: {exception.Message} \n" + $"StackTrace: {exception.StackTrace}"));
 
 				ExecutionQueue.Enqueue(() => { StartCoroutine(coroutine); });
 			}

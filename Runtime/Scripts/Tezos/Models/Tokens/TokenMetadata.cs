@@ -49,9 +49,8 @@ namespace TezosSDK.Tezos.Models.Tokens
 
 		public override string ToString()
 		{
-			return $"Name: {Name}, " + $"Description: {Description}, " + $"Symbol: {Symbol}, " +
-			       $"Decimals: {Decimals}, " + $"DisplayUri: {DisplayUri}, " + $"ArtifactUri: {ArtifactUri}, " +
-			       $"ThumbnailUri: {ThumbnailUri}";
+			return $"Name: {Name}, " + $"Description: {Description}, " + $"Symbol: {Symbol}, " + $"Decimals: {Decimals}, " + $"DisplayUri: {DisplayUri}, " +
+			       $"ArtifactUri: {ArtifactUri}, " + $"ThumbnailUri: {ThumbnailUri}";
 		}
 	}
 

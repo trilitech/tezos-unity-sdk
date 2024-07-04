@@ -6,11 +6,11 @@ using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.WalletServices.Data;
 
-namespace TezosSDK.WalletServices.Helpers
+namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 {
 
 	/// <summary>
-	/// Generates URLs for login and wallet operations.
+	///     Generates URLs for login and wallet operations.
 	/// </summary>
 	public class UrlGenerator
 	{
@@ -22,7 +22,7 @@ namespace TezosSDK.WalletServices.Helpers
 		}
 
 		/// <summary>
-		/// Generates a login URL.
+		///     Generates a login URL.
 		/// </summary>
 		/// <param name="nonce">The nonce for the login request.</param>
 		/// <param name="projectId">The project ID associated with the login request.</param>
@@ -31,13 +31,17 @@ namespace TezosSDK.WalletServices.Helpers
 		{
 			return BuildUrl("login", new Dictionary<string, string>
 			{
-				{ "nonce", nonce },
-				{ "projectId", projectId }
+				{
+					"nonce", nonce
+				},
+				{
+					"projectId", projectId
+				}
 			});
 		}
-		
+
 		/// <summary>
-		/// Builds a URL with the specified action and query parameters.
+		///     Builds a URL with the specified action and query parameters.
 		/// </summary>
 		/// <param name="action">The action to be included in the URL.</param>
 		/// <param name="queryParams">The query parameters to be included in the URL.</param>
@@ -58,7 +62,7 @@ namespace TezosSDK.WalletServices.Helpers
 		}
 
 		/// <summary>
-		/// Generates an operation URL.
+		///     Generates an operation URL.
 		/// </summary>
 		/// <param name="req">The wallet operation request.</param>
 		/// <param name="walletAddress">The wallet address.</param>
@@ -71,15 +75,20 @@ namespace TezosSDK.WalletServices.Helpers
 
 			var url = BuildUrl("operation", new Dictionary<string, string>
 			{
-				{ "typeOfLogin", typeOfLogin },
-				{ "operation", Uri.EscapeDataString(serializedRequest) }
+				{
+					"typeOfLogin", typeOfLogin
+				},
+				{
+					"operation", Uri.EscapeDataString(serializedRequest)
+				}
 			});
+
 			TezosLogger.LogDebug($"Generated URL: {url}");
 			return url;
 		}
 
 		/// <summary>
-		/// Serializes the wallet operation request to JSON format.
+		///     Serializes the wallet operation request to JSON format.
 		/// </summary>
 		/// <param name="request">The wallet operation request.</param>
 		/// <param name="walletAddress">The wallet address.</param>

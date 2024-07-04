@@ -16,8 +16,7 @@ namespace TezosSDK.FileUploaders.OnChain
 		{
 			yield return null;
 
-			var imagePath = EditorUtility.OpenFilePanel("Select image", string.Empty,
-				SupportedFileExtensions.Replace(".", string.Empty).Replace(" ", string.Empty));
+			var imagePath = EditorUtility.OpenFilePanel("Select image", string.Empty, SupportedFileExtensions.Replace(".", string.Empty).Replace(" ", string.Empty));
 
 			callback.Invoke(ConvertImageToBase64(imagePath));
 		}

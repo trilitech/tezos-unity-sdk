@@ -1,5 +1,4 @@
 using System;
-using Beacon.Sdk.Beacon.Operation;
 using Beacon.Sdk.Beacon.Sign;
 using Beacon.Sdk.BeaconClients;
 using Newtonsoft.Json;
@@ -7,7 +6,6 @@ using TezosSDK.Helpers;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
-using UnityEngine;
 
 namespace TezosSDK.WalletServices.Helpers
 {
@@ -31,9 +29,7 @@ namespace TezosSDK.WalletServices.Helpers
 		{
 			TezosLogger.LogDebug($"Dispatching WalletDisconnectedEvent for {disconnectedWallet?.PublicKey}");
 
-			var walletDisconnectedEvent = new UnifiedEvent(WalletEventManager.EventTypeWalletDisconnected,
-				JsonConvert.SerializeObject(disconnectedWallet));
-
+			var walletDisconnectedEvent = new UnifiedEvent(WalletEventManager.EventTypeWalletDisconnected, JsonConvert.SerializeObject(disconnectedWallet));
 			DispatchEvent(walletDisconnectedEvent);
 		}
 
@@ -68,9 +64,7 @@ namespace TezosSDK.WalletServices.Helpers
 				Timestamp = DateTime.UtcNow.ToString("o")
 			};
 
-			var pairingDoneEvent = new UnifiedEvent(WalletEventManager.EventTypePairingDone,
-				JsonConvert.SerializeObject(pairingDoneData));
-
+			var pairingDoneEvent = new UnifiedEvent(WalletEventManager.EventTypePairingDone, JsonConvert.SerializeObject(pairingDoneData));
 			DispatchEvent(pairingDoneEvent);
 		}
 
@@ -79,9 +73,7 @@ namespace TezosSDK.WalletServices.Helpers
 			var eventType = WalletEventManager.EventTypeOperationInjected;
 			var data = JsonConvert.SerializeObject(operationResponse);
 
-
 			var unifiedEvent = new UnifiedEvent(eventType, data);
-
 			DispatchEvent(unifiedEvent);
 		}
 
@@ -92,25 +84,21 @@ namespace TezosSDK.WalletServices.Helpers
 				Signature = signPayloadResponse.Signature
 			};
 
-			var signedEvent =
-				new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonConvert.SerializeObject(signResult));
-
+			var signedEvent = new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonConvert.SerializeObject(signResult));
 			DispatchEvent(signedEvent);
 		}
 
-		public void DispatchHandshakeEvent(string pairingData)
+		public void DispatchPairingRequestEvent(string pairingData)
 		{
-			TezosLogger.LogDebug("Dispatching HandshakeEvent");
+			TezosLogger.LogDebug("Dispatching PairingRequestEvent");
 
-			var handshakeData = new HandshakeData
+			var handshakeData = new PairingRequestData
 			{
-				PairingData = pairingData
+				Data = pairingData
 			};
 
-			var handshakeEvent = new UnifiedEvent(WalletEventManager.EventTypeHandshakeReceived,
-				JsonConvert.SerializeObject(handshakeData));
-
-			DispatchEvent(handshakeEvent);
+			var pairingReqEvent = new UnifiedEvent(WalletEventManager.EventTypePairingRequest, JsonConvert.SerializeObject(handshakeData));
+			DispatchEvent(pairingReqEvent);
 		}
 	}
 

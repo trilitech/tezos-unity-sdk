@@ -51,13 +51,11 @@ namespace TezosSDK.Tezos.Wallet
 			{
 				TezosLogger.LogDebug($"Checking operation status for hash {_operationHash}");
 
-				yield return
-					TezosManager.Instance.Tezos.API.GetOperationStatus(OperationStatusCallback, _operationHash);
+				yield return TezosManager.Instance.Tezos.API.GetOperationStatus(OperationStatusCallback, _operationHash);
 
 				yield return new WaitForSecondsRealtime(WAIT_TIME);
 
-				TezosLogger.LogDebug(
-					$"Waiting {WAIT_TIME} seconds before next operation status check. Remaining time: {TIMEOUT - (Time.time - startTime)}");
+				TezosLogger.LogDebug($"Waiting {WAIT_TIME} seconds before next operation status check. Remaining time: {TIMEOUT - (Time.time - startTime)}");
 			}
 
 			TezosLogger.LogError("Operation tracking timed out.");

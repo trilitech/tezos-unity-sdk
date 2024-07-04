@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
-using TezosSDK.ReadMe.Scripts.Runtime;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace TezosSDK.ReadMe.Scripts.Editor
+namespace TezosSDK.Editor.ReadMe
 {
 
 	/// <summary>

@@ -12,8 +12,7 @@ namespace TezosSDK.Helpers.Coroutines
 	{
 		public Coroutine StartWrappedCoroutine(IEnumerator coroutine)
 		{
-			return StartCoroutine(new CoroutineWrapper<object>(coroutine, null,
-				exception => Debug.LogError($"Exception on Coroutine: {exception.Message}")));
+			return StartCoroutine(new CoroutineWrapper<object>(coroutine, null, exception => Debug.LogError($"Exception on Coroutine: {exception.Message}")));
 		}
 	}
 

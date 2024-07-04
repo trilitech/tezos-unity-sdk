@@ -7,6 +7,7 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletServices.Connectors.Kukai.Helpers;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Helpers;
@@ -17,11 +18,10 @@ namespace TezosSDK.WalletServices.Connectors
 
 	public class KukaiConnector : IWalletConnector
 	{
-		private const string DEEP_LINK_URL = "http://192.168.0.74:3000";
-
+		private const string DEEP_LINK_URL = "http://10.5.12.198:3000";
 		private readonly EventDispatcher _eventDispatcher;
-		private readonly UrlParser _urlParser = new();
 		private readonly UrlGenerator _urlGenerator = new(DEEP_LINK_URL);
+		private readonly UrlParser _urlParser = new();
 		private WalletInfo _activeWallet; // Keep track of the active wallet
 		private string _typeOfLogin;
 
@@ -32,8 +32,7 @@ namespace TezosSDK.WalletServices.Connectors
 
 			InitializeDeepLinking();
 
-			OnDeepLinkActivated(
-				"unitydl001://kukai-embed/?type=operation_response&address=tz2NRuiGPR9FGJ6oBDzE6Uqxf3CVosHcHeem&name=can%20berk%20turakan&email=can.berk.turakan2@gmail.com&typeOfLogin=google&operation_hash=oo3hKEBwgawUNEwKPjEFeESaL9av52uo3dDRsssvXAxndd73jks");
+			// OnDeepLinkActivated("unitydl001://kukai-embed/?type=operation_response&address=tz2NRuiGPR9FGJ6oBDzE6Uqxf3CVosHcHeem&name=can%20berk%20turakan&email=can.berk.turakan2@gmail.com&typeOfLogin=google&operation_hash=oo3hKEBwgawUNEwKPjEFeESaL9av52uo3dDRsssvXAxndd73jks");
 		}
 
 		public void Dispose()
@@ -41,6 +40,11 @@ namespace TezosSDK.WalletServices.Connectors
 		}
 
 		public ConnectorType ConnectorType { get; }
+
+		public PairingRequestData PairingRequestData
+		{
+			get => null;
+		}
 
 		public event Action<WalletMessageType> OperationRequested;
 
