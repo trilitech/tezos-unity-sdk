@@ -7,6 +7,7 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletServices.Connectors.Enums;
 using TezosSDK.WalletServices.Connectors.Kukai.Helpers;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
@@ -18,12 +19,11 @@ namespace TezosSDK.WalletServices.Connectors
 
 	public class KukaiConnector : IWalletConnector
 	{
-		private const string DEEP_LINK_URL = "http://10.5.12.198:3000";
+		private const string DEEP_LINK_URL = "http://192.168.0.74:3000";
 		private readonly EventDispatcher _eventDispatcher;
 		private readonly UrlGenerator _urlGenerator = new(DEEP_LINK_URL);
 		private readonly UrlParser _urlParser = new();
 		private WalletInfo _activeWallet; // Keep track of the active wallet
-		private string _typeOfLogin;
 
 		public KukaiConnector(WalletEventManager eventManager)
 		{
@@ -34,6 +34,10 @@ namespace TezosSDK.WalletServices.Connectors
 
 			// OnDeepLinkActivated("unitydl001://kukai-embed/?type=operation_response&address=tz2NRuiGPR9FGJ6oBDzE6Uqxf3CVosHcHeem&name=can%20berk%20turakan&email=can.berk.turakan2@gmail.com&typeOfLogin=google&operation_hash=oo3hKEBwgawUNEwKPjEFeESaL9av52uo3dDRsssvXAxndd73jks");
 		}
+
+		public TypeOfLogin TypeOfLogin { get; private set; }
+
+		public AuthResponse AuthResponse { get; private set; }
 
 		public void Dispose()
 		{
@@ -52,6 +56,7 @@ namespace TezosSDK.WalletServices.Connectors
 		{
 			TezosLogger.LogDebug("Initiating wallet connection.");
 			OpenLoginLink();
+			// TestOperation();
 		}
 
 		public string GetWalletAddress()
@@ -89,6 +94,16 @@ namespace TezosSDK.WalletServices.Connectors
 			return Task.CompletedTask;
 		}
 
+		private static TypeOfLogin ParseTypeOfLogin(string loginType)
+		{
+			if (Enum.TryParse<TypeOfLogin>(loginType, true, out var result))
+			{
+				return result;
+			}
+
+			throw new ArgumentException($"Invalid login type: {loginType}");
+		}
+
 		private void HandleLogin(ParsedURLData parsedData)
 		{
 			TezosLogger.LogDebug("Handling login response.");
@@ -100,8 +115,15 @@ namespace TezosSDK.WalletServices.Connectors
 			};
 
 			_activeWallet = wallet;
+			TypeOfLogin = ParseTypeOfLogin(parsedData.GetParameter("typeOfLogin"));
+
+			AuthResponse = new AuthResponse
+			{
+				Message = parsedData.GetParameter("message"),
+				Signature = parsedData.GetParameter("signature")
+			};
+
 			_eventDispatcher.DispatchWalletConnectedEvent(wallet);
-			_typeOfLogin = parsedData.GetParameter("typeOfLogin");
 		}
 
 		private void HandleOperation(ParsedURLData parsedData)
@@ -264,13 +286,7 @@ namespace TezosSDK.WalletServices.Connectors
 				};
 			}
 
-			if (string.IsNullOrEmpty(_typeOfLogin))
-			{
-				TezosLogger.LogError("No type of login found");
-				_typeOfLogin = "google";
-			}
-
-			var operationLink = _urlGenerator.GenerateOperationLink(request, _activeWallet.Address, _typeOfLogin);
+			var operationLink = _urlGenerator.GenerateOperationLink(request, _activeWallet.Address, TypeOfLogin);
 			Application.OpenURL(operationLink);
 		}
 	}

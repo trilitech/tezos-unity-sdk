@@ -4,13 +4,14 @@ using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers.Logging;
+using TezosSDK.WalletServices.Connectors.Enums;
 using TezosSDK.WalletServices.Data;
 
 namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 {
 
 	/// <summary>
-	///     Generates URLs for login and wallet operations.
+	///     Generates URLs for login and wallet operations to be opened in system browsers to be sent to Kukai Embed.
 	/// </summary>
 	public class UrlGenerator
 	{
@@ -68,7 +69,7 @@ namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 		/// <param name="walletAddress">The wallet address.</param>
 		/// <param name="typeOfLogin">The type of login.</param>
 		/// <returns>An operation URL to be sent to Kukai Embed.</returns>
-		public string GenerateOperationLink(WalletOperationRequest req, string walletAddress, string typeOfLogin)
+		public string GenerateOperationLink(WalletOperationRequest req, string walletAddress, TypeOfLogin typeOfLogin)
 		{
 			var serializedRequest = SerializeWalletOperationRequest(req, walletAddress);
 			TezosLogger.LogDebug($"JSON Payload: {serializedRequest}");
@@ -76,7 +77,7 @@ namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 			var url = BuildUrl("operation", new Dictionary<string, string>
 			{
 				{
-					"typeOfLogin", typeOfLogin
+					"typeOfLogin", typeOfLogin.ToString().ToLower()
 				},
 				{
 					"operation", Uri.EscapeDataString(serializedRequest)

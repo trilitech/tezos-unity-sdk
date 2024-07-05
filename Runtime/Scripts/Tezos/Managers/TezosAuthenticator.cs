@@ -5,6 +5,7 @@ using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
+using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor; // Include UnityEditor namespace only when in the Unity Editor
 #endif
@@ -18,6 +19,8 @@ namespace TezosSDK.Tezos.Managers
 		[SerializeField] private GameObject deepLinkButton;
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
+		[SerializeField] private Image darkBackground;
+		
 
 		private bool _isInitialized;
 
@@ -47,6 +50,7 @@ namespace TezosSDK.Tezos.Managers
 			Initialize(); // When the scene is loaded, initialize the SDK. But SDK might not be initialized yet.
 			EventManager.SDKInitialized += OnSDKInitialized; // Subscribe to SDKInitialized event to initialize TezosAuthenticator if not yet initialized.
 			Tezos = TezosManager.Instance.Tezos;
+			darkBackground.gameObject.SetActive(true);
 		}
 
 		// private void Update()
@@ -206,17 +210,18 @@ namespace TezosSDK.Tezos.Managers
 				deepLinkButton.SetActive(false);
 				socialLoginButton.SetActive(false);
 				qrCodeGenerator.gameObject.SetActive(false);
+				darkBackground.gameObject.SetActive(false);
 			}
 			else
 			{
 				// Activate deepLinkButton when on mobile or WebGL, but not authenticated
-				deepLinkButton.SetActive(_isMobile || _isWebGL);
+				// deepLinkButton.SetActive(_isMobile || _isWebGL);
 
 				// Activate socialLoginButton only when on WebGL and not authenticated
 				socialLoginButton.SetActive(_isMobile || _isWebGL);
 
 				// Activate qrCodePanel only on standalone and not authenticated
-				qrCodeGenerator.gameObject.SetActive(!_isMobile && !_isWebGL);
+				// qrCodeGenerator.gameObject.SetActive(!_isMobile && !_isWebGL);
 			}
 
 			logoutButton.SetActive(isAuthenticated);
