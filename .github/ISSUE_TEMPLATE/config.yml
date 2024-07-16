@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Feature Request
+    url: https://tezosunitysdk.canny.io/feature-requests
+    about: Request a feature
+    about: Ask questions and discuss topics with other community members
+  - name: Join our Discord Server
+    url: https://discord.gg/tezos
+    about: The official Tezos Discord community

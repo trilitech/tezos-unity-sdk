@@ -1,0 +1,76 @@
+name: Bug Report
+description: File a bug report
+labels: [ "triage" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description of the issue.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: build-platform
+    attributes:
+      label: Unity Build Target
+      description: Which platform are you targeting with your Unity build?
+      options:
+          - iOS
+          - Android
+          - Windows
+          - MacOS
+          - WebGL
+          - Other (please specify in Additional Information)
+    validations:
+      required: true
+
+  - type: input
+    id: unity-version
+    attributes:
+      label: Unity Version
+      description: Which version of Unity are you using?
+      placeholder: "e.g. 2021.3.16f1"
+    validations:
+      required: true
+
+  - type: input
+    id: sdk-version
+    attributes:
+      label: Tezos Unity SDK Version
+      description: Which version of the Tezos Unity SDK are you using?
+      placeholder: "e.g. 1.2.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tezos-network
+    attributes:
+      label: Tezos Network
+      description: Which Tezos network are you interacting with?
+      options:
+        - Mainnet
+        - Ghostnet (testnet)
+        - Custom testnet (please specify in Additional Information)
+        - Local node
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Please provide detailed steps to reproduce the issue in a Unity project with the Tezos Unity SDK.
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: |
+        Please provide any additional information that might be helpful (e.g., screenshots, error logs, or related context).
