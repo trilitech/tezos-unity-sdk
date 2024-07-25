@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Beacon.Sdk.Beacon;
+using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
+using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors.Enums;
@@ -42,7 +44,7 @@ namespace TezosSDK.WalletServices.Connectors
 		public void Dispose()
 		{
 		}
-
+		
 		public ConnectorType ConnectorType { get; }
 
 		public PairingRequestData PairingRequestData
@@ -81,7 +83,9 @@ namespace TezosSDK.WalletServices.Connectors
 
 		public void RequestSignPayload(WalletSignPayloadRequest signRequest)
 		{
-			throw new NotImplementedException("Not yet implemented");
+			signRequest.SigningType = SignPayloadType.raw;
+			var signLink = _urlGenerator.GenerateSignLink(signRequest, TypeOfLogin);
+			Application.OpenURL(signLink);
 		}
 
 		public void RequestContractOrigination(WalletOriginateContractRequest originationRequest)
@@ -104,7 +108,7 @@ namespace TezosSDK.WalletServices.Connectors
 			throw new ArgumentException($"Invalid login type: {loginType}");
 		}
 
-		private void HandleLogin(ParsedURLData parsedData)
+		private void HandleLoginDeepLink(ParsedURLData parsedData)
 		{
 			TezosLogger.LogDebug("Handling login response.");
 
@@ -126,23 +130,33 @@ namespace TezosSDK.WalletServices.Connectors
 			_eventDispatcher.DispatchWalletConnectedEvent(wallet);
 		}
 
-		private void HandleOperation(ParsedURLData parsedData)
+		private void HandleOperationDeepLink(ParsedURLData parsedData)
 		{
 			TezosLogger.LogDebug("Handling operation response.");
 
-			var operation = new OperationInfo(parsedData.GetParameter("operation_hash"), parsedData.GetParameter("operation_hash"), BeaconMessageType.operation_response);
+			var operation = new OperationInfo(parsedData.GetParameter("operationHash"), parsedData.GetParameter("operationHash"), BeaconMessageType.operation_response);
 
 			TezosLogger.LogDebug($"Dispatching operation injected event with operation hash: {operation.Hash}");
 			_eventDispatcher.DispatchOperationInjectedEvent(operation);
 		}
 
-		private void HandleSign(ParsedURLData parsedData)
+		private void HandleSignExpressionDeepLink(ParsedURLData parsedData)
 		{
-			TezosLogger.LogDebug("Handling sign request.");
-			throw new NotImplementedException("Signing is not supported by Kukai wallet.");
+			TezosLogger.LogDebug("Handling sign expression request.");
+			
+			var signResult = new SignResult
+			{
+				Message = parsedData.GetParameter("expression"),
+				Signature = parsedData.GetParameter("signature")
+			};
+			
+			TezosLogger.LogDebug($"Dispatching payload signed event for expression: {signResult.Message} and signature: {signResult.Signature}");
+			_eventDispatcher.DispatchPayloadSignedEvent(signResult);
+			
+			var verification = TezosManager.Instance.Tezos.WalletTransaction.VerifySignedPayload(SignPayloadType.raw, signResult.Signature);
 		}
 
-		private void HandleOrigination(ParsedURLData parsedData)
+		private void HandleOriginationDeepLink(ParsedURLData parsedData)
 		{
 			TezosLogger.LogDebug("Handling contract origination request.");
 			throw new NotImplementedException("Contract origination is not supported by Kukai wallet.");
@@ -176,23 +190,58 @@ namespace TezosSDK.WalletServices.Connectors
 
 			var requestType = parsedData.GetParameter("type");
 			TezosLogger.LogDebug($"Request type: {requestType}");
+			
+			// Check for error parameters
+			var errorMessage = parsedData.GetParameter("errorMessage");
+			var errorId = parsedData.GetParameter("errorId");
+			
+			if (!string.IsNullOrEmpty(errorMessage))
+			{
+				HandleErrorDeepLink(errorMessage, requestType, errorId);
+				return;
+			}
 
 			switch (requestType)
 			{
-				case "login":
-					HandleLogin(parsedData);
+				case ActionTypes.LOGIN:
+					HandleLoginDeepLink(parsedData);
 					break;
-				case "operation_response":
-					HandleOperation(parsedData);
+				case ActionTypes.OPERATION:
+					HandleOperationDeepLink(parsedData);
 					break;
-				case "sign":
-					HandleSign(parsedData);
+				case ActionTypes.SIGN:
+					HandleSignExpressionDeepLink(parsedData);
 					break;
 				case "originate":
-					HandleOrigination(parsedData);
+					HandleOriginationDeepLink(parsedData);
 					break;
 				default:
 					TezosLogger.LogWarning($"Unknown request type: {parsedData.GetParameter("type")}");
+					break;
+			}
+		}
+		
+		private void HandleErrorDeepLink(string errorMessage, string action, string errorId)
+		{
+			TezosLogger.LogError($"Error received from Kukai: {errorMessage}, Action: {action}, Error ID: {errorId}");
+
+			switch (action)
+			{
+				case ActionTypes.LOGIN:
+					_eventDispatcher.DispatchOperationFailedEvent(new OperationInfo("", "", BeaconMessageType.permission_request, errorMessage));
+					break;
+				case ActionTypes.OPERATION:
+					_eventDispatcher.DispatchOperationFailedEvent(new OperationInfo("", "", BeaconMessageType.operation_request, errorMessage));
+					break;
+				case ActionTypes.SIGN:
+					_eventDispatcher.DispatchOperationFailedEvent(new OperationInfo("", "", BeaconMessageType.sign_payload_request, errorMessage));
+					break;
+				case "originate":
+					_eventDispatcher.DispatchOperationFailedEvent(new OperationInfo("", "", BeaconMessageType.operation_request, errorMessage));
+					break;
+				default:
+					TezosLogger.LogWarning($"Unknown action type: {action}");
+					_eventDispatcher.DispatchOperationFailedEvent(new OperationInfo("", "", BeaconMessageType.error, errorMessage));
 					break;
 			}
 		}

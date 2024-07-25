@@ -30,7 +30,7 @@ namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 		/// <returns>A login URL to be sent to Kukai Embed.</returns>
 		public string GenerateLoginLink(string nonce, string projectId)
 		{
-			return BuildUrl("login", new Dictionary<string, string>
+			return BuildUrl(ActionTypes.LOGIN, new Dictionary<string, string>
 			{
 				{
 					"nonce", nonce
@@ -74,7 +74,7 @@ namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 			var serializedRequest = SerializeWalletOperationRequest(req, walletAddress);
 			TezosLogger.LogDebug($"JSON Payload: {serializedRequest}");
 
-			var url = BuildUrl("operation", new Dictionary<string, string>
+			var url = BuildUrl(ActionTypes.OPERATION, new Dictionary<string, string>
 			{
 				{
 					"typeOfLogin", typeOfLogin.ToString().ToLower()
@@ -87,7 +87,7 @@ namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 			TezosLogger.LogDebug($"Generated URL: {url}");
 			return url;
 		}
-
+		
 		/// <summary>
 		///     Serializes the wallet operation request to JSON format.
 		/// </summary>
@@ -115,6 +115,19 @@ namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 			};
 
 			return jsonArray.ToString(Formatting.None);
+		}
+
+		public string GenerateSignLink(WalletSignPayloadRequest signRequest, TypeOfLogin typeOfLogin)
+		{
+			return BuildUrl(ActionTypes.SIGN, new Dictionary<string, string>
+			{
+				{
+					"typeOfLogin", typeOfLogin.ToString().ToLower()
+				},
+				{
+					"expression", Uri.EscapeDataString(signRequest.Payload)
+				}
+			});
 		}
 	}
 

@@ -33,6 +33,15 @@ namespace TezosSDK.WalletServices.Helpers
 			DispatchEvent(walletDisconnectedEvent);
 		}
 
+		public void DispatchOperationFailedEvent(OperationInfo operationResponse)
+		{
+			var eventType = WalletEventManager.EventTypeOperationFailed;
+			var data = JsonConvert.SerializeObject(operationResponse);
+
+			var unifiedEvent = new UnifiedEvent(eventType, data);
+			DispatchEvent(unifiedEvent);
+		}
+
 		/// <summary>
 		///     Dispatches an event to the Unity main thread.
 		/// </summary>
@@ -84,6 +93,12 @@ namespace TezosSDK.WalletServices.Helpers
 				Signature = signPayloadResponse.Signature
 			};
 
+			var signedEvent = new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonConvert.SerializeObject(signResult));
+			DispatchEvent(signedEvent);
+		}
+
+		public void DispatchPayloadSignedEvent(SignResult signResult)
+		{
 			var signedEvent = new UnifiedEvent(WalletEventManager.EventTypePayloadSigned, JsonConvert.SerializeObject(signResult));
 			DispatchEvent(signedEvent);
 		}
