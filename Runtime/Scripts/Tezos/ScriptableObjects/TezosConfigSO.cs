@@ -1,5 +1,7 @@
 using Beacon.Sdk.Beacon.Permission;
+using TezosSDK.WalletServices.Connectors;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TezosSDK.Tezos
 {
@@ -9,6 +11,12 @@ namespace TezosSDK.Tezos
 	{
 		[Tooltip("Select the network to use for chain interactions.")]
 		[SerializeField] private NetworkType network = NetworkType.ghostnet;
+		
+		[Tooltip("Select connector type to use for wallet interactions.")]
+		[SerializeField] private ConnectorType connectorType;
+		
+		[Tooltip("Web client address for Kukai Connector.")]
+		[SerializeField] private string kukaiWebClientAddress;
 
 		// The URL format string for the RPC endpoint. Use {network} as a placeholder for the network type.
 		// Example format: "https://{network}.tezos.marigold.dev"
@@ -48,6 +56,16 @@ namespace TezosSDK.Tezos
 		public string Rpc
 		{
 			get => rpcUrlFormat.Replace("{network}", network.ToString());
+		}
+
+		public ConnectorType ConnectorType
+		{
+			get => connectorType;
+		}
+
+		public string KukaiWebClientAddress
+		{
+			get => kukaiWebClientAddress;
 		}
 
 		private void OnValidate()

@@ -21,15 +21,16 @@ namespace TezosSDK.WalletServices.Connectors
 
 	public class KukaiConnector : IWalletConnector
 	{
-		private const string DEEP_LINK_URL = "http://192.168.0.74:3000";
 		private readonly EventDispatcher _eventDispatcher;
-		private readonly UrlGenerator _urlGenerator = new(DEEP_LINK_URL);
+		private readonly UrlGenerator _urlGenerator;
 		private readonly UrlParser _urlParser = new();
-		private WalletInfo _activeWallet; // Keep track of the active wallet
+		private WalletInfo _activeWallet;
+		private string _webClientAddress;
 
 		public KukaiConnector(WalletEventManager eventManager)
 		{
 			_eventDispatcher = new EventDispatcher(eventManager);
+			_urlGenerator = new UrlGenerator(TezosManager.Instance.Config.KukaiWebClientAddress);
 			ConnectorType = ConnectorType.Kukai;
 
 			InitializeDeepLinking();
