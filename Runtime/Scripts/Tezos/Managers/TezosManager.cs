@@ -4,6 +4,7 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors;
 using UnityEngine;

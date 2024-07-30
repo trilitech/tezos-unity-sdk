@@ -1,5 +1,6 @@
-﻿namespace TezosSDK.WalletServices.Connectors.Enums
+﻿namespace TezosSDK.WalletServices.Connectors.Kukai.Types
 {
+
 	public enum TypeOfLogin
 	{
 		Google,

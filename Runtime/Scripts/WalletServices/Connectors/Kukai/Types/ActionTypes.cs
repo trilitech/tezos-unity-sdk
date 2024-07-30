@@ -1,4 +1,4 @@
-namespace TezosSDK.WalletServices.Connectors
+namespace TezosSDK.WalletServices.Connectors.Kukai.Types
 {
 
 	public static class ActionTypes

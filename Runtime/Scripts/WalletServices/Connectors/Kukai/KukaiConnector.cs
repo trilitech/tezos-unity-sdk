@@ -9,14 +9,14 @@ using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
-using TezosSDK.WalletServices.Connectors.Enums;
 using TezosSDK.WalletServices.Connectors.Kukai.Helpers;
+using TezosSDK.WalletServices.Connectors.Kukai.Types;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Helpers;
 using UnityEngine;
 
-namespace TezosSDK.WalletServices.Connectors
+namespace TezosSDK.WalletServices.Connectors.Kukai
 {
 
 	public class KukaiConnector : IWalletConnector
@@ -45,7 +45,7 @@ namespace TezosSDK.WalletServices.Connectors
 		public void Dispose()
 		{
 		}
-		
+
 		public ConnectorType ConnectorType { get; }
 
 		public PairingRequestData PairingRequestData
@@ -144,16 +144,16 @@ namespace TezosSDK.WalletServices.Connectors
 		private void HandleSignExpressionDeepLink(ParsedURLData parsedData)
 		{
 			TezosLogger.LogDebug("Handling sign expression request.");
-			
+
 			var signResult = new SignResult
 			{
 				Message = parsedData.GetParameter("expression"),
 				Signature = parsedData.GetParameter("signature")
 			};
-			
+
 			TezosLogger.LogDebug($"Dispatching payload signed event for expression: {signResult.Message} and signature: {signResult.Signature}");
 			_eventDispatcher.DispatchPayloadSignedEvent(signResult);
-			
+
 			var verification = TezosManager.Instance.Tezos.WalletTransaction.VerifySignedPayload(SignPayloadType.raw, signResult.Signature);
 		}
 
@@ -191,11 +191,11 @@ namespace TezosSDK.WalletServices.Connectors
 
 			var requestType = parsedData.GetParameter("type");
 			TezosLogger.LogDebug($"Request type: {requestType}");
-			
+
 			// Check for error parameters
 			var errorMessage = parsedData.GetParameter("errorMessage");
 			var errorId = parsedData.GetParameter("errorId");
-			
+
 			if (!string.IsNullOrEmpty(errorMessage))
 			{
 				HandleErrorDeepLink(errorMessage, requestType, errorId);
@@ -221,7 +221,7 @@ namespace TezosSDK.WalletServices.Connectors
 					break;
 			}
 		}
-		
+
 		private void HandleErrorDeepLink(string errorMessage, string action, string errorId)
 		{
 			TezosLogger.LogError($"Error received from Kukai: {errorMessage}, Action: {action}, Error ID: {errorId}");

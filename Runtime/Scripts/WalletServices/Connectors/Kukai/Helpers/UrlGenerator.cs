@@ -4,7 +4,7 @@ using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers.Logging;
-using TezosSDK.WalletServices.Connectors.Enums;
+using TezosSDK.WalletServices.Connectors.Kukai.Types;
 using TezosSDK.WalletServices.Data;
 
 namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
@@ -87,7 +87,7 @@ namespace TezosSDK.WalletServices.Connectors.Kukai.Helpers
 			TezosLogger.LogDebug($"Generated URL: {url}");
 			return url;
 		}
-		
+
 		/// <summary>
 		///     Serializes the wallet operation request to JSON format.
 		/// </summary>

@@ -2,6 +2,7 @@ using System;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors.DotNet;
+using TezosSDK.WalletServices.Connectors.Kukai;
 using TezosSDK.WalletServices.Connectors.WebGL;
 
 namespace TezosSDK.WalletServices.Connectors

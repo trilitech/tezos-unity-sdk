@@ -1,4 +1,4 @@
-namespace TezosSDK.WalletServices.Connectors.Enums
+namespace TezosSDK.WalletServices.Connectors.Kukai.Types
 {
 
 	public class AuthResponse

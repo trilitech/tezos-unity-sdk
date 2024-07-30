@@ -9,6 +9,7 @@ using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.API;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
+using TezosSDK.Tezos.ScriptableObjects;
 using TezosSDK.Tezos.Wallet;
 using UnityEngine;
 

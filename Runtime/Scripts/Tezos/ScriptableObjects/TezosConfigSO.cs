@@ -1,9 +1,8 @@
 using Beacon.Sdk.Beacon.Permission;
 using TezosSDK.WalletServices.Connectors;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace TezosSDK.Tezos
+namespace TezosSDK.Tezos.ScriptableObjects
 {
 
 	[CreateAssetMenu(fileName = "TezosConfigSO", menuName = "Tezos/Configuration", order = 1)]
@@ -11,10 +10,10 @@ namespace TezosSDK.Tezos
 	{
 		[Tooltip("Select the network to use for chain interactions.")]
 		[SerializeField] private NetworkType network = NetworkType.ghostnet;
-		
+
 		[Tooltip("Select connector type to use for wallet interactions.")]
 		[SerializeField] private ConnectorType connectorType;
-		
+
 		[Tooltip("Web client address for Kukai Connector.")]
 		[SerializeField] private string kukaiWebClientAddress;
 
@@ -33,9 +32,19 @@ namespace TezosSDK.Tezos
 		[Tooltip("Data provider to use for querying data.")]
 		[SerializeField] private DataProviderConfigSO dataProviderConfig;
 
+		public ConnectorType ConnectorType
+		{
+			get => connectorType;
+		}
+
 		public DataProviderConfigSO DataProvider
 		{
 			get => dataProviderConfig;
+		}
+
+		public string KukaiWebClientAddress
+		{
+			get => kukaiWebClientAddress;
 		}
 
 		public NetworkType Network
@@ -56,16 +65,6 @@ namespace TezosSDK.Tezos
 		public string Rpc
 		{
 			get => rpcUrlFormat.Replace("{network}", network.ToString());
-		}
-
-		public ConnectorType ConnectorType
-		{
-			get => connectorType;
-		}
-
-		public string KukaiWebClientAddress
-		{
-			get => kukaiWebClientAddress;
 		}
 
 		private void OnValidate()

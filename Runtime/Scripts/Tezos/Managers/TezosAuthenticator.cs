@@ -20,7 +20,6 @@ namespace TezosSDK.Tezos.Managers
 		[SerializeField] private GameObject socialLoginButton;
 		[SerializeField] private GameObject logoutButton;
 		[SerializeField] private Image darkBackground;
-		
 
 		private bool _isInitialized;
 

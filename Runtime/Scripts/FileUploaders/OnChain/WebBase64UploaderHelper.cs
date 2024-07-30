@@ -1,4 +1,5 @@
 ﻿// ReSharper disable once RedundantUsingDirective
+
 using System;
 // ReSharper disable once RedundantUsingDirective
 using System.Runtime.InteropServices;

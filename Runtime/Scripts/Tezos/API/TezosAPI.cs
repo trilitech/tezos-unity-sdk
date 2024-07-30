@@ -7,6 +7,7 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Filters;
 using TezosSDK.Tezos.Interfaces.API;
 using TezosSDK.Tezos.Models.Tokens;
+using TezosSDK.Tezos.ScriptableObjects;
 
 namespace TezosSDK.Tezos.API
 {

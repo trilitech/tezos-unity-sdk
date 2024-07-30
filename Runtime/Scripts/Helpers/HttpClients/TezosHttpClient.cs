@@ -5,7 +5,7 @@ using System.Text.Json;
 using Dynamic.Json;
 using TezosSDK.Helpers.Json;
 using TezosSDK.Helpers.Logging;
-using TezosSDK.Tezos;
+using TezosSDK.Tezos.ScriptableObjects;
 using UnityEngine.Networking;
 
 namespace TezosSDK.Helpers.HttpClients

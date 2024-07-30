@@ -1,15 +1,16 @@
 // ReSharper disable once RedundantUsingDirective
+
 using System.Collections;
 // ReSharper disable once RedundantUsingDirective
 using System;
 // ReSharper disable once RedundantUsingDirective
-using TezosSDK.FileUploaders.Interfaces; 
+using TezosSDK.FileUploaders.Interfaces;
 
 // ReSharper disable once EmptyNamespace
 namespace TezosSDK.FileUploaders.OnChain
 {
 
-#if UNITY_WEBGL  && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
 	public class WebBase64Uploader : BaseUploader, IBaseUploader
 	{
 		#region IBaseUploader Implementation

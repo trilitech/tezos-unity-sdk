@@ -1,4 +1,5 @@
 ﻿// ReSharper disable once RedundantUsingDirective
+
 using System;
 // ReSharper disable once RedundantUsingDirective
 using System.Runtime.InteropServices;
@@ -25,7 +26,9 @@ namespace TezosSDK.FileUploaders.IPFS
 
 			var webUploaderGameObject = GameObject.Find(nameof(WebPinataUploader));
 
-			var webFileUploader = webUploaderGameObject != null ? webUploaderGameObject.GetComponent<WebPinataUploader>() : new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
+			var webFileUploader = webUploaderGameObject != null
+				? webUploaderGameObject.GetComponent<WebPinataUploader>()
+				: new GameObject(nameof(WebPinataUploader)).AddComponent<WebPinataUploader>();
 
 			webFileUploader.PinataCredentials = new PinataCredentials(apiKey);
 

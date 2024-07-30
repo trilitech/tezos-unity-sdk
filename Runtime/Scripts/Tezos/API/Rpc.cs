@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
 using TezosSDK.Helpers.HttpClients;
+using TezosSDK.Tezos.ScriptableObjects;
 
 namespace TezosSDK.Tezos.API
 {
