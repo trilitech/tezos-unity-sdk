@@ -1,7 +1,17 @@
-﻿namespace TezosSDK.FileUploaders.OnChain
+﻿// ReSharper disable once RedundantUsingDirective
+using System;
+// ReSharper disable once RedundantUsingDirective
+using System.Runtime.InteropServices;
+// ReSharper disable once RedundantUsingDirective
+using TezosSDK.FileUploaders.Interfaces;
+// ReSharper disable once RedundantUsingDirective
+using UnityEngine;
+
+// ReSharper disable once EmptyNamespace
+namespace TezosSDK.FileUploaders.OnChain
 {
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
 	public static class WebBase64UploaderHelper
 	{
 		private static Action<string> responseCallback;

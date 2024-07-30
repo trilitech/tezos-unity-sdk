@@ -32,7 +32,7 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
 		}
 
-		// Check if the wallet is Kukai and disable objects on the scene that are only for Kukai
+		// Check if the wallet is Kukai and disable objects on the scene that are only for Kukai if it's not
 		private void CheckKukaiOnlyObjects()
 		{
 			if (TezosManager.Instance.WalletConnector.ConnectorType == ConnectorType.Kukai)

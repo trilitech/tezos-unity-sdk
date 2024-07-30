@@ -180,7 +180,7 @@ namespace TezosSDK.Tezos.Wallet
 		{
 			add
 			{
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
 				TezosLogger.LogWarning("PairingCompleted event is not supported in WebGL builds.");
 #endif
 

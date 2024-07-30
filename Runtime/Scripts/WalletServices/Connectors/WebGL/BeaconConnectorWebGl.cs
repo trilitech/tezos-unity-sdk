@@ -1,4 +1,6 @@
 using System;
+// ReSharper disable once RedundantUsingDirective
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Managers;
@@ -81,7 +83,7 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 			JsUnityReadyEvent();
 		}
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL  && !UNITY_EDITOR
 		[DllImport("__Internal")]
 		private static extern void JsInitWallet(string network, string rpc, string walletProvider, string appName, string appUrl, string iconUrl);
 

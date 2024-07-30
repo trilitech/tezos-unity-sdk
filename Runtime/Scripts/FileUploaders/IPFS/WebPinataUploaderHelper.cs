@@ -1,7 +1,19 @@
-﻿namespace TezosSDK.FileUploaders.IPFS
+﻿// ReSharper disable once RedundantUsingDirective
+using System;
+// ReSharper disable once RedundantUsingDirective
+using System.Runtime.InteropServices;
+// ReSharper disable once RedundantUsingDirective
+using System.Text.Json;
+// ReSharper disable once RedundantUsingDirective
+using TezosSDK.FileUploaders.Interfaces;
+// ReSharper disable once RedundantUsingDirective
+using UnityEngine;
+
+// ReSharper disable once EmptyNamespace
+namespace TezosSDK.FileUploaders.IPFS
 {
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
 	public static class WebPinataUploaderHelper
 	{
 		private static Action<string> responseCallback;
