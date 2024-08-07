@@ -17,9 +17,8 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 	/// </summary>
 	public class BeaconConnectorWebGl : IWalletConnector
 	{
-		public BeaconConnectorWebGl(IWalletEventManager walletEventManager)
+		public BeaconConnectorWebGl()
 		{
-			walletEventManager.SDKInitialized += UnityReady;
 			ConnectorType = ConnectorType.BeaconWebGl;
 		}
 
@@ -73,8 +72,9 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 			OperationRequested?.Invoke(WalletMessageType.OperationRequest);
 		}
 
-		public Task InitializeAsync()
+		public Task InitializeAsync(IWalletEventManager walletEventManager)
 		{
+			walletEventManager.SDKInitialized += UnityReady;
 			return Task.CompletedTask;
 		}
 

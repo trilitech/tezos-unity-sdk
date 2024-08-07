@@ -1,6 +1,5 @@
 using TezosSDK.Helpers;
 using TezosSDK.Helpers.Logging;
-using TezosSDK.Tezos.Interfaces;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
@@ -27,28 +26,14 @@ namespace TezosSDK.Tezos.Managers
 		private bool _isMobile;
 		private bool _isWebGL;
 
-		private WalletEventManager EventManager
-		{
-			get => TezosManager.Instance.EventManager;
-		}
+		private WalletEventManager EventManager => TezosManager.Instance.EventManager;
 
-		private ITezos Tezos { get; set; }
-
-		private IWalletConnection WalletConnection
-		{
-			get => TezosManager.Instance.Tezos.WalletConnection;
-		}
-
-		private IWalletConnector WalletConnector
-		{
-			get => TezosManager.Instance.WalletConnector;
-		}
+		private IWalletConnection WalletConnection => TezosManager.Instance.Tezos.WalletConnection;
 
 		private void Start()
 		{
 			Initialize(); // When the scene is loaded, initialize the SDK. But SDK might not be initialized yet.
 			EventManager.SDKInitialized += OnSDKInitialized; // Subscribe to SDKInitialized event to initialize TezosAuthenticator if not yet initialized.
-			Tezos = TezosManager.Instance.Tezos;
 			darkBackground.gameObject.SetActive(true);
 		}
 
@@ -82,9 +67,9 @@ namespace TezosSDK.Tezos.Managers
 				return;
 			}
 
-			if (WalletConnector.PairingRequestData != null)
+			if (TezosManager.Instance.WalletConnection.PairingRequestData != null)
 			{
-				qrCodeGenerator.SetQrCode(WalletConnector.PairingRequestData);
+				qrCodeGenerator.SetQrCode(TezosManager.Instance.WalletConnection.PairingRequestData);
 			}
 		}
 
@@ -125,15 +110,9 @@ namespace TezosSDK.Tezos.Managers
 			ToggleUIElements(false);
 		}
 
-		public void ConnectByDeeplink()
-		{
-			WalletConnection.Connect();
-		}
+		public void ConnectByDeeplink() => WalletConnection.Connect(TezosManager.Instance.WalletConnection.ConnectorType);
 
-		public void ConnectWithSocial()
-		{
-			WalletConnection.Connect();
-		}
+		public void ConnectWithSocial() => WalletConnection.Connect(TezosManager.Instance.WalletConnection.ConnectorType);
 
 		public void DisconnectWallet()
 		{

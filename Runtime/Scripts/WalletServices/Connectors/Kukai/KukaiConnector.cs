@@ -8,12 +8,12 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
-using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors.Kukai.Helpers;
 using TezosSDK.WalletServices.Connectors.Kukai.Types;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Helpers;
+using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 
 namespace TezosSDK.WalletServices.Connectors.Kukai
@@ -21,15 +21,15 @@ namespace TezosSDK.WalletServices.Connectors.Kukai
 
 	public class KukaiConnector : IWalletConnector
 	{
-		private readonly EventDispatcher _eventDispatcher;
 		private readonly UrlGenerator _urlGenerator;
-		private readonly UrlParser _urlParser = new();
-		private WalletInfo _activeWallet;
-		private string _webClientAddress;
+		private readonly UrlParser    _urlParser = new();
+		
+		private EventDispatcher _eventDispatcher;
+		private WalletInfo      _activeWallet;
+		private string          _webClientAddress;
 
-		public KukaiConnector(WalletEventManager eventManager)
+		public KukaiConnector()
 		{
-			_eventDispatcher = new EventDispatcher(eventManager);
 			_urlGenerator = new UrlGenerator(TezosManager.Instance.Config.KukaiWebClientAddress);
 			ConnectorType = ConnectorType.Kukai;
 
@@ -94,8 +94,9 @@ namespace TezosSDK.WalletServices.Connectors.Kukai
 			throw new NotSupportedException("Contract origination is not supported by Kukai wallet.");
 		}
 
-		public Task InitializeAsync()
+		public Task InitializeAsync(IWalletEventManager eventManager)
 		{
+			_eventDispatcher = new EventDispatcher(eventManager);
 			return Task.CompletedTask;
 		}
 
@@ -115,8 +116,9 @@ namespace TezosSDK.WalletServices.Connectors.Kukai
 
 			var wallet = new WalletInfo
 			{
-				Address = parsedData.GetParameter("address"),
-				PublicKey = parsedData.GetParameter("public_key")
+				ConnectorType = ConnectorType.Kukai,
+				Address       = parsedData.GetParameter("address"),
+				PublicKey     = parsedData.GetParameter("public_key")
 			};
 
 			_activeWallet = wallet;
@@ -332,7 +334,8 @@ namespace TezosSDK.WalletServices.Connectors.Kukai
 
 				_activeWallet = new WalletInfo
 				{
-					Address = "tz2NRuiGPR9FGJ6oBDzE6Uqxf3CVosHcHeem"
+					ConnectorType = ConnectorType.Kukai,
+					Address       = "tz2NRuiGPR9FGJ6oBDzE6Uqxf3CVosHcHeem"
 				};
 			}
 

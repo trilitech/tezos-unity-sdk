@@ -40,9 +40,8 @@ namespace TezosSDK.Tezos.Managers
 
 		public bool IsInitialized { get; private set; }
 
-		public ITezos Tezos { get; private set; }
-
-		public IWalletConnector WalletConnector { get; private set; }
+		public   ITezos            Tezos            { get; private set; }
+		public   IWalletConnection WalletConnection => Tezos.WalletConnection;
 
 		protected async void Awake()
 		{
@@ -56,30 +55,32 @@ namespace TezosSDK.Tezos.Managers
 			DontDestroyOnLoad(gameObject);
 
 			ValidateConfig();
-			EventManager = new WalletEventManager();
-			await InitializeTezosAsync();
+			InitializeTezos();
 		}
 
-		private void OnDestroy()
-		{
-			WalletConnector?.Dispose();
-		}
-
-		private async Task InitializeTezosAsync()
+		private async void InitializeTezos()
 		{
 			TezosLogger.SetLogLevel(logLevel);
 			TezosLogger.LogInfo("Tezos SDK initializing...");
 
+			EventManager = new WalletEventManager();
 			DAppMetadata = new DAppMetadata(appName, appUrl, appIcon, appDescription);
-			WalletConnector = WalletConnectorFactory.CreateConnector(config.ConnectorType, EventManager);
-			var walletProvider = new WalletProvider(EventManager, WalletConnector);
+			var walletProvider = new WalletProvider(EventManager);
 			Tezos = new Core.Tezos(config, walletProvider);
-
-			await WalletConnector.InitializeAsync();
+			await InitializeConnectors();
 			IsInitialized = true;
 
 			TezosLogger.LogInfo("Tezos SDK initialized.");
 			EventManager.DispatchSDKInitializedEvent();
+		}
+
+		private async Task InitializeConnectors()
+		{
+			Task webGLTask = WalletConnectorFactory.GetConnector(ConnectorType.BeaconWebGl).InitializeAsync(EventManager);
+			Task dotNetTask = WalletConnectorFactory.GetConnector(ConnectorType.BeaconDotNet).InitializeAsync(EventManager);
+			Task kukaiTask = WalletConnectorFactory.GetConnector(ConnectorType.Kukai).InitializeAsync(EventManager);
+
+			await Task.WhenAll(webGLTask, dotNetTask, kukaiTask);
 		}
 
 		private void ValidateConfig()

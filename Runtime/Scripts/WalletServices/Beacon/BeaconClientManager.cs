@@ -13,8 +13,10 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletServices.Connectors;
 using TezosSDK.WalletServices.Helpers;
 using TezosSDK.WalletServices.Helpers.Loggers;
+using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 
 namespace TezosSDK.WalletServices.Beacon
@@ -28,7 +30,7 @@ namespace TezosSDK.WalletServices.Beacon
 		private WalletInfo _activeWallet; // Keep track of the active wallet
 		private bool _isInitialized;
 
-		public BeaconClientManager(WalletEventManager eventManager, OperationRequestHandler operationRequestHandler)
+		public BeaconClientManager(IWalletEventManager eventManager, OperationRequestHandler operationRequestHandler)
 		{
 			_eventDispatcher = new EventDispatcher(eventManager);
 			_operationRequestHandler = operationRequestHandler;
@@ -108,6 +110,7 @@ namespace TezosSDK.WalletServices.Beacon
 		/// <returns>Returns true if an active connection exists, otherwise false.</returns>
 		private bool HandleExistingConnection()
 		{
+			var AsD = "asd";
 			var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
 
 			if (activeAccountPermissions == null)
@@ -121,8 +124,9 @@ namespace TezosSDK.WalletServices.Beacon
 
 			_activeWallet = new WalletInfo
 			{
-				Address = activeAccountPermissions.Address,
-				PublicKey = activeAccountPermissions.PublicKey
+				ConnectorType = ConnectorType.BeaconDotNet,
+				Address       = activeAccountPermissions.Address,
+				PublicKey     = activeAccountPermissions.PublicKey
 			};
 
 			_eventDispatcher.DispatchWalletConnectedEvent(_activeWallet);
@@ -239,8 +243,9 @@ namespace TezosSDK.WalletServices.Beacon
 
 			_activeWallet = new WalletInfo
 			{
-				Address = permissionResponse.PublicKey,
-				PublicKey = permissionResponse.PublicKey
+				ConnectorType = ConnectorType.BeaconDotNet,
+				Address       = permissionResponse.PublicKey,
+				PublicKey     = permissionResponse.PublicKey
 			};
 
 			_eventDispatcher.DispatchWalletConnectedEvent(_activeWallet);

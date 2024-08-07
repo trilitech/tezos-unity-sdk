@@ -5,13 +5,13 @@ using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
-using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Beacon;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
 using TezosSDK.WalletServices.Helpers;
 // ReSharper disable once RedundantUsingDirective
 using TezosSDK.Helpers;
+using TezosSDK.WalletServices.Interfaces;
 // ReSharper disable once RedundantUsingDirective
 using UnityEngine;
 
@@ -20,24 +20,24 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 
 	public class BeaconConnectorDotNet : IWalletConnector
 	{
-		private readonly BeaconClientManager _beaconClientManager;
-		private readonly WalletEventManager _eventManager;
 		private readonly OperationRequestHandler _operationRequestHandler;
+	
+		private BeaconClientManager _beaconClientManager;
+		private IWalletEventManager  _eventManager;
 
-		public BeaconConnectorDotNet(WalletEventManager eventManager)
+		public BeaconConnectorDotNet()
 		{
-			_eventManager = eventManager;
-			_eventManager.PairingRequested += OnPairingRequested;
-			_eventManager.WalletDisconnected += OnWalletDisconnected;
-
-			_operationRequestHandler = new OperationRequestHandler();
+			_operationRequestHandler             =  new OperationRequestHandler();
 			_operationRequestHandler.MessageSent += OnBeaconMessageSent;
-			_beaconClientManager = new BeaconClientManager(eventManager, _operationRequestHandler);
-			ConnectorType = ConnectorType.BeaconDotNet;
+			ConnectorType                        =  ConnectorType.BeaconDotNet;
 		}
 
-		public async Task InitializeAsync()
+		public async Task InitializeAsync(IWalletEventManager eventManager)
 		{
+			_eventManager                    =  eventManager;
+			_eventManager.PairingRequested   += OnPairingRequested;
+			_eventManager.WalletDisconnected += OnWalletDisconnected;
+			_beaconClientManager             =  new BeaconClientManager(eventManager, _operationRequestHandler);
 			await _beaconClientManager.CreateAsync();
 		}
 

@@ -1,4 +1,6 @@
-﻿namespace TezosSDK.Tezos.Models
+﻿using TezosSDK.WalletServices.Connectors;
+
+namespace TezosSDK.Tezos.Models
 {
 
 	/// <summary>
@@ -6,6 +8,8 @@
 	/// </summary>
 	public class WalletInfo
 	{
+		public ConnectorType ConnectorType;
+		
 		/// <summary>
 		///     The Tezos wallet address.
 		/// </summary>

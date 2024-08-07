@@ -6,6 +6,7 @@ using TezosSDK.Helpers;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletServices.Interfaces;
 
 namespace TezosSDK.WalletServices.Helpers
 {
@@ -18,9 +19,9 @@ namespace TezosSDK.WalletServices.Helpers
 	/// </summary>
 	public class EventDispatcher
 	{
-		private readonly WalletEventManager _eventManager;
+		private readonly IWalletEventManager _eventManager;
 
-		public EventDispatcher(WalletEventManager eventManager)
+		public EventDispatcher(IWalletEventManager eventManager)
 		{
 			_eventManager = eventManager;
 		}
