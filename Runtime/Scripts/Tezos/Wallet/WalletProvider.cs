@@ -164,7 +164,7 @@ namespace TezosSDK.Tezos.Wallet
 			UnityMainThreadDispatcher.Enqueue(() =>
 			{
 				TezosLogger.LogDebug("WalletProvider.PairWithWallet (OpenURL)");
-				Application.OpenURL($"tezos://?type=tzip10&data={_walletConnectors.PairingRequestData.Data}");
+				Application.OpenURL($"tezos://?type=tzip10&data={WalletConnectorFactory.GetConnector(ConnectorType).PairingRequestData.Data}");
 			});
 		}
 #endif
