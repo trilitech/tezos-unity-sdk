@@ -97,6 +97,7 @@ namespace TezosSDK.WalletServices.Connectors.Kukai
 		public Task InitializeAsync(IWalletEventManager eventManager)
 		{
 			_eventDispatcher = new EventDispatcher(eventManager);
+			_activeWallet    = TezosManager.Instance.WalletConnection.WalletInfo;
 			return Task.CompletedTask;
 		}
 
@@ -331,15 +332,11 @@ namespace TezosSDK.WalletServices.Connectors.Kukai
 			if (_activeWallet == null || string.IsNullOrEmpty(_activeWallet.Address))
 			{
 				TezosLogger.LogError("No active wallet found");
-
-				_activeWallet = new WalletInfo
-				{
-					ConnectorType = ConnectorType.Kukai,
-					Address       = "tz2NRuiGPR9FGJ6oBDzE6Uqxf3CVosHcHeem"
-				};
+				return;
 			}
 
 			var operationLink = _urlGenerator.GenerateOperationLink(request, _activeWallet.Address, TypeOfLogin);
+			Debug.Log($"operationLink:{operationLink}");
 			Application.OpenURL(operationLink);
 		}
 	}

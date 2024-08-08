@@ -1,4 +1,5 @@
 ﻿using Beacon.Sdk.Beacon.Sign;
+using Newtonsoft.Json;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
@@ -8,6 +9,7 @@ using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 // ReSharper disable once RedundantUsingDirective
 using TezosSDK.Helpers;
+using TezosSDK.Tezos.Managers;
 using TezosSDK.WalletServices.Connectors;
 
 namespace TezosSDK.Tezos.Wallet
@@ -15,9 +17,13 @@ namespace TezosSDK.Tezos.Wallet
 
 	public class WalletProvider : IWalletConnection, IWalletAccount, IWalletTransaction, IWalletContract, IWalletEventProvider
 	{
+		private const string _WALLET_INFO_KEY = "wallet-info-key";
+		
 		private string _pubKey;
 		private string _signature;
 		private string _transactionHash;
+		
+		public WalletInfo WalletInfo { get; private set; }
 
 		public WalletProvider(IWalletEventManager eventManager)
 		{
@@ -26,22 +32,42 @@ namespace TezosSDK.Tezos.Wallet
 			EventManager.WalletDisconnected += OnWalletDisconnected;
 			EventManager.PayloadSigned += OnPayloadSigned;
 			EventManager.OperationInjected += OnOperationInjected;
+
+			WalletInfo = JsonConvert.DeserializeObject<WalletInfo>(PlayerPrefs.GetString(_WALLET_INFO_KEY, null));
 		}
 
-		public ConnectorType      ConnectorType      { get; private set; }
-		public bool               IsConnected        { get; private set; }
-		public PairingRequestData PairingRequestData => WalletConnectorFactory.GetConnector(ConnectorType).PairingRequestData;
+		public bool               IsConnected        => WalletInfo != null;
+		public PairingRequestData PairingRequestData => WalletInfo != null ? WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).PairingRequestData : null;
 
-		public void   Connect(ConnectorType connectorType)                                          => WalletConnectorFactory.GetConnector(connectorType).ConnectWallet();
-		public string GetWalletAddress()                                                            => WalletConnectorFactory.GetConnector(ConnectorType).GetWalletAddress();
-		public void   Disconnect()                                                                  => WalletConnectorFactory.GetConnector(ConnectorType).DisconnectWallet();
-		public void   RequestOperation(WalletOperationRequest                   operationRequest)   => WalletConnectorFactory.GetConnector(ConnectorType).RequestOperation(operationRequest);
-		public void   RequestSignPayload(WalletSignPayloadRequest               signRequest)        => WalletConnectorFactory.GetConnector(ConnectorType).RequestSignPayload(signRequest);
-		public void   RequestContractOrigination(WalletOriginateContractRequest originationRequest) => WalletConnectorFactory.GetConnector(ConnectorType).RequestContractOrigination(originationRequest);
+		public void Connect(ConnectorType connectorType)
+		{
+			if (IsConnected)
+			{
+				TezosLogger.LogWarning("Wallet is already connected, use GetWalletAddress() to retrieve the address");
+				OnWalletConnected(WalletInfo);
+				return;
+			}
+			WalletConnectorFactory.GetConnector(connectorType).ConnectWallet();
+		}
+
+		public string GetWalletAddress()
+		{
+			if (!IsConnected)
+			{
+				TezosLogger.LogWarning("Wallet is NOT connected.");
+				return null;
+			}
+
+			return WalletInfo.Address;
+		}
+		public void Disconnect()                                                                  => WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).DisconnectWallet();
+		public void RequestOperation(WalletOperationRequest                   operationRequest)   => WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).RequestOperation(operationRequest);
+		public void RequestSignPayload(WalletSignPayloadRequest               signRequest)        => WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).RequestSignPayload(signRequest);
+		public void RequestContractOrigination(WalletOriginateContractRequest originationRequest) => WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).RequestContractOrigination(originationRequest);
 
 		public void OriginateContract(string script, string delegateAddress)
 		{
-			TezosLogger.LogDebug($"WalletProvider.OriginateContract (ConnectorType: {ConnectorType})");
+			TezosLogger.LogDebug($"WalletProvider.OriginateContract (ConnectorType: {WalletInfo.ConnectorType})");
 
 			var originationRequest = new WalletOriginateContractRequest
 			{
@@ -49,7 +75,7 @@ namespace TezosSDK.Tezos.Wallet
 				DelegateAddress = delegateAddress
 			};
 
-			WalletConnectorFactory.GetConnector(ConnectorType).RequestContractOrigination(originationRequest);
+			WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).RequestContractOrigination(originationRequest);
 		}
 
 		public IWalletEventManager EventManager { get; }
@@ -62,7 +88,7 @@ namespace TezosSDK.Tezos.Wallet
 				Payload = payload
 			};
 
-			WalletConnectorFactory.GetConnector(ConnectorType).RequestSignPayload(signRequest);
+			WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).RequestSignPayload(signRequest);
 		}
 
 		public bool VerifySignedPayload(SignPayloadType signingType, string payload)
@@ -80,10 +106,14 @@ namespace TezosSDK.Tezos.Wallet
 				Amount = amount
 			};
 
-			WalletConnectorFactory.GetConnector(ConnectorType).RequestOperation(operationRequest);
+			WalletConnectorFactory.GetConnector(WalletInfo.ConnectorType).RequestOperation(operationRequest);
 		}
 
-		private void OnWalletDisconnected(WalletInfo _) => IsConnected = false;
+		private void OnWalletDisconnected(WalletInfo _)
+		{
+			WalletInfo = null;
+			PlayerPrefs.SetString(_WALLET_INFO_KEY, JsonConvert.SerializeObject(WalletInfo));
+		}
 
 		/// <summary>
 		///     An operation has been injected into the network (i.e. the transaction has been sent to the network).
@@ -137,9 +167,8 @@ namespace TezosSDK.Tezos.Wallet
 
 		private void OnWalletConnected(WalletInfo wallet)
 		{
-			_pubKey       = wallet.PublicKey;
-			ConnectorType = wallet.ConnectorType;
-			IsConnected   = true;
+			WalletInfo = wallet;
+			PlayerPrefs.SetString(_WALLET_INFO_KEY, JsonConvert.SerializeObject(wallet));
 		}
 
 // 		private void OnHandshakeReceived(PairingRequestData pairingRequest)
@@ -164,10 +193,9 @@ namespace TezosSDK.Tezos.Wallet
 			UnityMainThreadDispatcher.Enqueue(() =>
 			{
 				TezosLogger.LogDebug("WalletProvider.PairWithWallet (OpenURL)");
-				Application.OpenURL($"tezos://?type=tzip10&data={WalletConnectorFactory.GetConnector(ConnectorType).PairingRequestData.Data}");
+				Application.OpenURL($"tezos://?type=tzip10&data={TezosManager.Instance.WalletConnection.PairingRequestData.Data}");
 			});
 		}
 #endif
 	}
-
 }

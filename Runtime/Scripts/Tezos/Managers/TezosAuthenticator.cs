@@ -3,6 +3,7 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Interfaces.Wallet;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletServices.Connectors;
 using UnityEngine;
 using UnityEngine.UI;
 #if UNITY_EDITOR
@@ -110,9 +111,9 @@ namespace TezosSDK.Tezos.Managers
 			ToggleUIElements(false);
 		}
 
-		public void ConnectByDeeplink() => WalletConnection.Connect(TezosManager.Instance.WalletConnection.ConnectorType);
+		public void ConnectByDeeplink() => WalletConnection.Connect(ConnectorType.Kukai);
 
-		public void ConnectWithSocial() => WalletConnection.Connect(TezosManager.Instance.WalletConnection.ConnectorType);
+		public void ConnectWithSocial() => WalletConnection.Connect(ConnectorType.Kukai);
 
 		public void DisconnectWallet()
 		{

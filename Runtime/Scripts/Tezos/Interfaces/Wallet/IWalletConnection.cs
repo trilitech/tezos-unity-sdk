@@ -7,9 +7,9 @@ namespace TezosSDK.Tezos.Interfaces.Wallet
 {
 	public interface IWalletConnection
 	{
-		ConnectorType      ConnectorType      { get; }
 		bool               IsConnected        { get; }
 		PairingRequestData PairingRequestData { get; }
+		WalletInfo         WalletInfo         { get; }
 		string             GetWalletAddress();
 		void               Connect(ConnectorType connectorType);
 		void               Disconnect();

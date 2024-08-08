@@ -71,6 +71,7 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 			// Adjust the method to accept the WalletOperationRequest parameter
 			TezosLogger.LogDebug("RequestOperation");
 
+			Application.OpenURL("tezos://");
 			await _operationRequestHandler.RequestTezosOperation(operationRequest.Destination, operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
 				_beaconClientManager.BeaconDappClient);
 		}
