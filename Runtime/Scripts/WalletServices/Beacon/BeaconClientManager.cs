@@ -8,6 +8,7 @@ using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
 using Beacon.Sdk.BeaconClients;
 using Beacon.Sdk.BeaconClients.Abstract;
+using Netezos.Keys;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
@@ -244,7 +245,7 @@ namespace TezosSDK.WalletServices.Beacon
 			_activeWallet = new WalletInfo
 			{
 				ConnectorType = ConnectorType.BeaconDotNet,
-				Address       = permissionResponse.PublicKey,
+				Address       = PubKey.FromBase58(permissionResponse.PublicKey).Address,
 				PublicKey     = permissionResponse.PublicKey
 			};
 
