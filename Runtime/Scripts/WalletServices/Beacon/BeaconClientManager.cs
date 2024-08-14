@@ -68,6 +68,7 @@ namespace TezosSDK.WalletServices.Beacon
 
 			TezosLogger.LogInfo("Initializing BeaconDappClient");
 			await BeaconDappClient.InitAsync();
+			BeaconDappClient.Connect();
 			TezosLogger.LogInfo("BeaconDappClient initialized");
 		}
 
