@@ -95,11 +95,6 @@ namespace TezosSDK.WalletServices.Connectors.DotNet
 
 		private void OnPairingRequested(PairingRequestData obj)
 		{
-			if (PairingRequestData != null)
-			{
-				return;
-			}
-
 			TezosLogger.LogDebug("WalletProvider.OnHandshakeReceived");
 
 			PairingRequestData = obj;

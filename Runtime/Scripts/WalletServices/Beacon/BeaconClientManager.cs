@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
+using Beacon.Sdk.Beacon.Error;
 using Beacon.Sdk.Beacon.Operation;
 using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
@@ -68,7 +69,7 @@ namespace TezosSDK.WalletServices.Beacon
 
 			TezosLogger.LogInfo("Initializing BeaconDappClient");
 			await BeaconDappClient.InitAsync();
-			if (TezosManager.Instance.WalletConnection.IsConnected) BeaconDappClient.Connect();
+			BeaconDappClient.Connect();
 			TezosLogger.LogInfo("BeaconDappClient initialized");
 		}
 
@@ -81,8 +82,6 @@ namespace TezosSDK.WalletServices.Beacon
 					TezosLogger.LogError("BeaconDappClient is null");
 					return;
 				}
-
-				BeaconDappClient.Connect();
 
 				var activePeer = BeaconDappClient.GetActivePeer();
 
@@ -205,7 +204,7 @@ namespace TezosSDK.WalletServices.Beacon
 				return;
 			}
 
-			TezosLogger.LogDebug($"(2) Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id}");
+			TezosLogger.LogDebug($"(2) Received beacon message of type: {e.Request?.Type} - ID: {e.Request?.Id} - Request: {e.Request}");
 
 			switch (e.Request?.Type)
 			{
@@ -217,6 +216,9 @@ namespace TezosSDK.WalletServices.Beacon
 					break;
 				case BeaconMessageType.sign_payload_response:
 					await HandleSignPayloadResponse(e.Request as SignPayloadResponse);
+					break;
+				case BeaconMessageType.error:
+					HandleOperationError(e.Request as BaseBeaconError);
 					break;
 				case BeaconMessageType.disconnect:
 					HandleDisconnect();
@@ -295,6 +297,12 @@ namespace TezosSDK.WalletServices.Beacon
 			}
 
 			_eventDispatcher.DispatchPayloadSignedEvent(signPayloadResponse);
+		}
+
+		private void HandleOperationError(BaseBeaconError baseBeaconError)
+		{
+			TezosLogger.LogWarning($"Operation failed, user might have rejected.");
+			_eventDispatcher.DispatchOperationFailedEvent(new OperationInfo(String.Empty, baseBeaconError.Id, BeaconMessageType.error, baseBeaconError.ErrorType.ToString()));
 		}
 
 		/// <summary>
