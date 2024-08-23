@@ -14,7 +14,7 @@ namespace TezosSDK.Tezos.API
 
 	public class TezosAPI : TezosHttpClient, ITezosAPI
 	{
-		public TezosAPI(TezosConfigSO config) : base(config.DataProvider)
+		public TezosAPI(TezosConfig config) : base(config.DataProvider)
 		{
 			Rpc = new Rpc(config);
 		}

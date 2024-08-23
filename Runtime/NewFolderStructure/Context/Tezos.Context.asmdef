@@ -1,0 +1,16 @@
+{
+    "name": "Tezos.Context",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1e0e7f81c816746efa3d2034b066b144"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

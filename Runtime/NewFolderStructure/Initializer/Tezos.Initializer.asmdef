@@ -1,0 +1,24 @@
+{
+    "name": "Tezos.Initializer",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4afb67e7a9fc643bb85e0dd7998d542e",
+        "GUID:3ab1d7df9cbaa4bdc917f69884d6565a",
+        "GUID:ea4cbc5ec1a4d4b6f95db73b5972acf1",
+        "GUID:c1653c7c12da84853bcb836bb7fd9960",
+        "GUID:3ab1d7df9cbaa4bdc917f69884d6565a",
+        "GUID:7198d896ea7bc354697770531cec156e",
+        "GUID:c4f74bc9e829c4f048905f612502f3af",
+        "GUID:b60df1cfa722f47e59ced3e589b14c36",
+        "GUID:1e0e7f81c816746efa3d2034b066b144"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

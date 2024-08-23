@@ -13,7 +13,7 @@ namespace TezosSDK.Helpers.HttpClients
 
 	public class TezosHttpClient
 	{
-		protected TezosHttpClient(TezosConfigSO rpcConfig)
+		protected TezosHttpClient(TezosConfig rpcConfig)
 		{
 			BaseAddress = AddSlashIfNeeded(rpcConfig.Rpc);
 			RequestTimeout = rpcConfig.RequestTimeoutSeconds;

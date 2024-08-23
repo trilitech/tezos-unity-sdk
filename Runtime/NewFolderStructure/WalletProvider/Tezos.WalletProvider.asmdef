@@ -1,0 +1,19 @@
+{
+    "name": "Tezos.WalletProvider",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4afb67e7a9fc643bb85e0dd7998d542e",
+        "GUID:c5d9872faca374b12b8a5feb12c32f17",
+        "GUID:c1653c7c12da84853bcb836bb7fd9960",
+        "GUID:1e0e7f81c816746efa3d2034b066b144"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

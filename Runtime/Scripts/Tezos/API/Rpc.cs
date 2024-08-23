@@ -16,7 +16,7 @@ namespace TezosSDK.Tezos.API
 		{
 		}
 
-		public Rpc(TezosConfigSO rpcConfig) : base(rpcConfig)
+		public Rpc(TezosConfig rpcConfig) : base(rpcConfig)
 		{
 		}
 
