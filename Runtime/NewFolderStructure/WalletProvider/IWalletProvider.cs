@@ -9,5 +9,8 @@ namespace TezosSDK.WalletProvider
 		public event Action<WalletProviderData> WalletDisconnected;
 
 		Task Init(WalletProviderController walletProviderController);
+
+		Task Connect();
+		Task Disconnect();
 	}
 }

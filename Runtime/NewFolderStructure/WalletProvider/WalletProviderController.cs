@@ -25,18 +25,30 @@ namespace TezosSDK.WalletProvider
 				walletProvider.WalletDisconnected += OnWalletDisconnected;
 				initTasks.Add(walletProvider.Init(this));
 			}
+			
+			_context.MessageSystem.AddListener<WalletConnectionRequestCommand>(OnWalletConnectionRequest);
+			_context.MessageSystem.AddListener<WalletDisconnectionRequestCommand>(OnWalletDisconnectionRequest);
 
 			await Task.WhenAll(initTasks);
 		}
 
-		private void OnWalletConnected(WalletProviderData data)
+		private void OnWalletConnectionRequest(WalletConnectionRequestCommand _)
 		{
-			_context.MessageSystem.InvokeMessage(new WalletConnectedCommand(data));
+			foreach (IWalletProvider walletProvider in _walletProviders)
+			{
+				walletProvider.Connect();
+			}
+		}
+		
+		private void OnWalletDisconnectionRequest(WalletDisconnectionRequestCommand _)
+		{
+			foreach (IWalletProvider walletProvider in _walletProviders)
+			{
+				walletProvider.Disconnect();
+			}
 		}
 
-		private void OnWalletDisconnected(WalletProviderData data)
-		{
-			
-		}
+		private void OnWalletConnected(WalletProviderData    data) => _context.MessageSystem.InvokeMessage(new WalletConnectedCommand(data));
+		private void OnWalletDisconnected(WalletProviderData data) => _context.MessageSystem.InvokeMessage(new WalletDisconnectedCommand(data));
 	}
 }

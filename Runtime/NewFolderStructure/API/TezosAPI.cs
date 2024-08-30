@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using TezosSDK.MessageSystem;
 using TezosSDK.SocialLoginProvider;
 using TezosSDK.WalletProvider;
 
@@ -12,9 +13,10 @@ namespace TezosSDK.API
 		public static event Action<SocialProviderData> SocialLoginConnected;
 		public static event Action<SocialProviderData> SocialLoginDisconnected;
 
-		public static async Task<WalletProviderData> ConnectWallet()
+		public static async Task<WalletProviderData> ConnectWallet(IContext context)
 		{
 			//todo: start wallet connection flow
+			context.MessageSystem.InvokeMessage(new WalletConnectionRequestCommand());
 
 			return new WalletProviderData
 			{

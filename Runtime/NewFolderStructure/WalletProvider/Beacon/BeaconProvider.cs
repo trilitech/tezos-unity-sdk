@@ -12,5 +12,15 @@ namespace TezosSDK.WalletProvider
 		{
 			return Task.CompletedTask;
 		}
+
+		public Task Connect()
+		{
+			return Task.CompletedTask;
+		}
+
+		public Task Disconnect()
+		{
+			return Task.CompletedTask;
+		}
 	}
 }
