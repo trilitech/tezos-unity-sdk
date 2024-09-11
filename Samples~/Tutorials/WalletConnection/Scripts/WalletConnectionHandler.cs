@@ -66,7 +66,7 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 				else
 				{
 					// Handle the error case, update UI or log error
-					TezosLogger.LogError(result.ErrorMessage);
+					//TezosLogger.LogError(result.ErrorMessage);
 				}
 			}));
 		}

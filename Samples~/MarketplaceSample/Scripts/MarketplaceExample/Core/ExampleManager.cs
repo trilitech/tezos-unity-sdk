@@ -66,14 +66,14 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				{
 					if (readViewResult.Success)
 					{
-						TezosLogger.LogDebug("READING INVENTORY DATA");
+						//TezosLogger.LogDebug("READING INVENTORY DATA");
 						// Start another coroutine to process the result
 						ProcessInventoryResult(readViewResult.Data, callback);
 					}
 					else
 					{
 						// Handle errors
-						TezosLogger.LogError("Error fetching inventory: " + readViewResult.ErrorMessage);
+						//TezosLogger.LogError("Error fetching inventory: " + readViewResult.ErrorMessage);
 					}
 				}));
 		}
@@ -114,7 +114,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				}
 			}.ToJson();
 
-			TezosLogger.LogDebug(contractAddress + " " + entryPoint + parameter);
+			//TezosLogger.LogDebug(contractAddress + " " + entryPoint + parameter);
 			Tezos.WalletTransaction.CallContract(contractAddress, entryPoint, parameter);
 
 #if UNITY_IOS || UNITY_ANDROID
@@ -178,7 +178,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				else
 				{
 					// Handle the error case, update UI or log error
-					TezosLogger.LogError(result.ErrorMessage);
+					//TezosLogger.LogError(result.ErrorMessage);
 				}
 			}));
 		}
@@ -192,7 +192,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 		{
 			var sender = Tezos.WalletAccount.GetWalletAddress();
 
-			TezosLogger.LogDebug($"Transfering item {itemID} from {sender} to Address: {address}");
+			//TezosLogger.LogDebug($"Transfering item {itemID} from {sender} to Address: {address}");
 
 			const string entrypoint = "transfer";
 
@@ -349,7 +349,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 				}
 				else
 				{
-					TezosLogger.LogError(result.ErrorMessage);
+					//TezosLogger.LogError(result.ErrorMessage);
 				}
 			});
 		}

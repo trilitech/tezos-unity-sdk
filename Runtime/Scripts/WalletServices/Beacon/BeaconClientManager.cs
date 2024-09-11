@@ -12,7 +12,6 @@ using Beacon.Sdk.BeaconClients.Abstract;
 using Netezos.Keys;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
-using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Wallet;
 using TezosSDK.WalletServices.Connectors;
@@ -354,9 +353,9 @@ namespace TezosSDK.WalletServices.Beacon
 		{
 			return new BeaconOptions
 			{
-				AppName = TezosManager.Instance.DAppMetadata.Name,
-				AppUrl = TezosManager.Instance.DAppMetadata.Url,
-				IconUrl = TezosManager.Instance.DAppMetadata.Icon,
+				// AppName = TezosManager.Instance.DAppMetadata.Name,
+				// AppUrl = TezosManager.Instance.DAppMetadata.Url,
+				// IconUrl = TezosManager.Instance.DAppMetadata.Icon,
 				KnownRelayServers = Constants.KnownRelayServers,
 				DatabaseConnectionString = BuildDatabaseConnectionString()
 			};

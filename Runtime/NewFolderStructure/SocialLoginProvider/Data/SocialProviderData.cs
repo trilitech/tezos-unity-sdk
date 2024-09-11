@@ -1,4 +1,4 @@
-﻿namespace TezosSDK.SocialLoginProvider
+﻿namespace TezosSDK.WalletProvider
 {
 	public class SocialProviderData
 	{

@@ -2,8 +2,10 @@
 
 namespace TezosSDK.WalletProvider
 {
-	public class WalletConnectionRequestCommand : ICommandMessage<bool>
+	public class WalletConnectionRequestCommand : ICommandMessage<WalletProviderData>
 	{
-		public bool GetData() => true;
+		private WalletProviderData _walletProviderData;
+		public WalletConnectionRequestCommand(WalletProviderData walletProviderData) => _walletProviderData = walletProviderData;
+		public WalletProviderData GetData() => _walletProviderData;
 	}
 }

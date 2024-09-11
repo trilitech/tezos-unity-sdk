@@ -10,7 +10,7 @@ using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Filters;
 using TezosSDK.Tezos.Interfaces.API;
 using TezosSDK.Tezos.Interfaces.Wallet;
-using TezosSDK.Tezos.Managers;
+// using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Models.Tokens;
 using UnityEngine;
@@ -47,10 +47,10 @@ namespace TezosSDK.Tezos.API
 		// Parameterless constructor for serialization
 		public TokenContract()
 		{
-			_walletAccount = TezosManager.Instance.Tezos.WalletAccount;
-			_walletTransaction = TezosManager.Instance.Tezos.WalletTransaction;
-			_walletContract = TezosManager.Instance.Tezos.WalletContract;
-			_tezosAPI = TezosManager.Instance.Tezos.API;
+			// _walletAccount = TezosManager.Instance.Tezos.WalletAccount;
+			// _walletTransaction = TezosManager.Instance.Tezos.WalletTransaction;
+			// _walletContract = TezosManager.Instance.Tezos.WalletContract;
+			// _tezosAPI = TezosManager.Instance.Tezos.API;
 		}
 
 		public string Address { get; set; }
@@ -87,7 +87,7 @@ namespace TezosSDK.Tezos.API
 						token_id = tokenId.ToString()
 					}).ToJson();
 
-					TezosManager.Instance.EventManager.OperationCompleted += MintCompleted;
+					// TezosManager.Instance.EventManager.OperationCompleted += MintCompleted;
 
 					_walletTransaction.CallContract(Address, _entrypoint, mintParameters);
 				}
@@ -121,7 +121,7 @@ namespace TezosSDK.Tezos.API
 				}
 			}).ToJson();
 
-			TezosManager.Instance.EventManager.OperationCompleted += TransferCompleted;
+			// TezosManager.Instance.EventManager.OperationCompleted += TransferCompleted;
 			_walletTransaction.CallContract(Address, _entry_point, param);
 		}
 
@@ -134,7 +134,7 @@ namespace TezosSDK.Tezos.API
 			var address = _walletAccount.GetWalletAddress();
 			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
-			TezosManager.Instance.EventManager.OperationCompleted += DeployCompleted;
+			// TezosManager.Instance.EventManager.OperationCompleted += DeployCompleted;
 
 			_walletContract.OriginateContract(scriptWithAdmin);
 		}
@@ -143,7 +143,7 @@ namespace TezosSDK.Tezos.API
 		{
 			TezosLogger.LogDebug($"Mint completed with operation ID: {operationInfo.Id}");
 
-			TezosManager.Instance.EventManager.OperationCompleted -= MintCompleted;
+			// TezosManager.Instance.EventManager.OperationCompleted -= MintCompleted;
 
 			var owner = _walletAccount.GetWalletAddress();
 
@@ -174,7 +174,7 @@ namespace TezosSDK.Tezos.API
 		{
 			TezosLogger.LogDebug($"Deploy completed with operation ID: {operationInfo.Id}");
 
-			TezosManager.Instance.EventManager.OperationCompleted -= DeployCompleted;
+			// TezosManager.Instance.EventManager.OperationCompleted -= DeployCompleted;
 
 			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
 			var creator = _walletAccount.GetWalletAddress();

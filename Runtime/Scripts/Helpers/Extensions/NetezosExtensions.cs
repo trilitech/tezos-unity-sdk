@@ -9,7 +9,6 @@ using Netezos.Encoding;
 using Netezos.Keys;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Tezos.API;
-using TezosSDK.Tezos.Managers;
 
 namespace TezosSDK.Helpers.Extensions
 {
@@ -35,15 +34,15 @@ namespace TezosSDK.Helpers.Extensions
 				yield break;
 			}
 
-			var rpc = new Rpc(TezosManager.Instance.Config.DataProvider);
-			var scriptOp = rpc.GetContractCode<JsonElement>(contract);
-
-			yield return new CoroutineWrapper<JsonElement>(scriptOp, script =>
-			{
-				var codeElement = script.GetProperty("code").GetRawText();
-				var code = Micheline.FromJson(codeElement);
-				Contracts[contract] = new ContractScript(code);
-			});
+			// var rpc = new Rpc(TezosManager.Instance.Config.DataProvider);
+			// var scriptOp = rpc.GetContractCode<JsonElement>(contract);
+			//
+			// yield return new CoroutineWrapper<JsonElement>(scriptOp, script =>
+			// {
+			// 	var codeElement = script.GetProperty("code").GetRawText();
+			// 	var code = Micheline.FromJson(codeElement);
+			// 	Contracts[contract] = new ContractScript(code);
+			// });
 		}
 
 		public static IEnumerator CompileToJsonMichelson(string rpcUri, string destination, string entry, object objArg, Action<string> onComplete)

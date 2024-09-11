@@ -13,7 +13,7 @@ using Netezos.Keys;
 using Newtonsoft.Json.Linq;
 using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.Logging;
-using TezosSDK.Tezos.Managers;
+// using TezosSDK.Tezos.Managers;
 
 namespace TezosSDK.WalletServices.Helpers
 {
@@ -209,9 +209,9 @@ namespace TezosSDK.WalletServices.Helpers
 		{
 			return new Network
 			{
-				Type = TezosManager.Instance.Config.Network,
-				Name = TezosManager.Instance.Config.Network.ToString(),
-				RpcUrl = TezosManager.Instance.Config.Rpc
+				// Type = TezosManager.Instance.Config.Network,
+				// Name = TezosManager.Instance.Config.Network.ToString(),
+				// RpcUrl = TezosManager.Instance.Config.Rpc
 			};
 		}
 

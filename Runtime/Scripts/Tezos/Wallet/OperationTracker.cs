@@ -3,7 +3,6 @@ using System.Collections;
 using TezosSDK.Helpers.Coroutines;
 using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Helpers.Logging;
-using TezosSDK.Tezos.Managers;
 using UnityEngine;
 
 namespace TezosSDK.Tezos.Wallet
@@ -51,7 +50,7 @@ namespace TezosSDK.Tezos.Wallet
 			{
 				TezosLogger.LogDebug($"Checking operation status for hash {_operationHash}");
 
-				yield return TezosManager.Instance.Tezos.API.GetOperationStatus(OperationStatusCallback, _operationHash);
+				// yield return TezosManager.Instance.Tezos.API.GetOperationStatus(OperationStatusCallback, _operationHash);
 
 				yield return new WaitForSecondsRealtime(WAIT_TIME);
 

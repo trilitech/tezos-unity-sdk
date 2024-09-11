@@ -1,13 +1,14 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TezosSDK.Configs
 {
 	[CreateAssetMenu(fileName = "AppConfig", menuName = "Tezos/Configuration/AppConfig", order = 1)]
 	public class AppConfig: ScriptableObject
 	{
-		public string appName        = "Default App Name";
-		public string appUrl         = "https://tezos.com";
-		public string appIcon        = "https://tezos.com/favicon.ico";
-		public string appDescription = "App Description";
+		public string AppName        = "Default App Name";
+		public string AppUrl         = "https://tezos.com";
+		public string AppIcon        = "https://tezos.com/favicon.ico";
+		public string AppDescription = "App Description";
 	}
 }

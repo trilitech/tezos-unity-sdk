@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using TezosSDK.Tezos.Interfaces.Wallet;
-using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.WalletServices.Data;
 using TezosSDK.WalletServices.Enums;
@@ -36,8 +35,8 @@ namespace TezosSDK.WalletServices.Connectors.WebGL
 			// 	return;
 			// }
 
-			JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc, walletProviderType.ToString(), TezosManager.Instance.DAppMetadata.Name,
-				TezosManager.Instance.DAppMetadata.Url, TezosManager.Instance.DAppMetadata.Icon);
+			// JsInitWallet(TezosManager.Instance.Config.Network.ToString(), TezosManager.Instance.Config.Rpc, walletProviderType.ToString(), TezosManager.Instance.DAppMetadata.Name,
+			// 	TezosManager.Instance.DAppMetadata.Url, TezosManager.Instance.DAppMetadata.Icon);
 
 			JsConnectAccount();
 		}

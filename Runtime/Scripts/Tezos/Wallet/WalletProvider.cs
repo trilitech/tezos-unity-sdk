@@ -9,7 +9,7 @@ using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
 // ReSharper disable once RedundantUsingDirective
 using TezosSDK.Helpers;
-using TezosSDK.Tezos.Managers;
+// using TezosSDK.Tezos.Managers;
 using TezosSDK.WalletServices.Connectors;
 
 namespace TezosSDK.Tezos.Wallet

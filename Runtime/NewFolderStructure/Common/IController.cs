@@ -5,8 +5,7 @@ namespace TezosSDK.Common
 {
 	public interface IController
 	{
-		public bool     IsInitialized { get; }
-		public IContext Context       { get; }
+		public bool IsInitialized { get; }
 
 		public Task Initialize(IContext context);
 	}

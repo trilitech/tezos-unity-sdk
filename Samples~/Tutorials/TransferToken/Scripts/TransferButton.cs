@@ -20,7 +20,7 @@ namespace TezosSDK.Samples.Tutorials.TransferToken
 
 		private void TransferCompleted(string txHash)
 		{
-			TezosLogger.LogDebug($"Transfer complete with transaction hash {txHash}");
+			//TezosLogger.LogDebug($"Transfer complete with transaction hash {txHash}");
 		}
 	}
 

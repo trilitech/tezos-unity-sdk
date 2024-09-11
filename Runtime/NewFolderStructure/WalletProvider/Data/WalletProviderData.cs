@@ -1,8 +1,18 @@
 ﻿namespace TezosSDK.WalletProvider
 {
+	public enum WalletType
+	{
+		BEACON,
+		WALLETCONNECT
+	}
+	
 	public class WalletProviderData
 	{
-		public string WalletAddress { get; set; }
-		public string Network       { get; set; }
+		public WalletType WalletType { get; set; }
+		public string WalletAddress  { get; set; }
+		public string PublicKey      { get; set; }
+		public string Network        { get; set; }
+		public string PairingUri     { get; set; }
+		public string Error          { get; set; }
 	}
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -8,12 +9,12 @@ namespace TezosSDK.MessageSystem
 {
 	public static class ConfigGetter
 	{
-		private const           string                               CONFIG_PATH = "Tezos";
+		private const           string                               CONFIG_PATH = "TezosConfigs";
 		private static readonly Dictionary<string, ScriptableObject> _cache      = new();
 
 		public static T GetOrCreateConfig<T>() where T: ScriptableObject
 		{
-			string key = nameof(T);
+			string key = typeof(T).Name;
 
 			// Check if the config is already in cache
 			if (_cache.TryGetValue(key, out ScriptableObject cachedConfig))
@@ -22,7 +23,7 @@ namespace TezosSDK.MessageSystem
 			}
 
 			// Try to load the ScriptableObject from resources
-			T config = Resources.Load<T>(CONFIG_PATH);
+			T config = Resources.Load<T>(Path.Combine(CONFIG_PATH, key));
 
 			// If not found, create it
 			if (config == null)
@@ -31,7 +32,7 @@ namespace TezosSDK.MessageSystem
 
 #if UNITY_EDITOR
 				// Ensure the directory exists
-				string assetPath     = $"Assets/Resources/{CONFIG_PATH}/{nameof(T)}.asset";
+				string assetPath     = $"Assets/Resources/{CONFIG_PATH}/{typeof(T).Name}.asset";
 				string directoryPath = System.IO.Path.GetDirectoryName(assetPath);
 
 				if (!System.IO.Directory.Exists(directoryPath))

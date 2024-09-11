@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TezosSDK.Configs
 {
-	[CreateAssetMenu(fileName = "TezosConfigSO", menuName = "Tezos/Configuration", order = 1)]
+	[CreateAssetMenu(fileName = "TezosConfigSO", menuName = "Tezos/Configuration/TezosConfigSO", order = 1)]
 	public class TezosConfig: ScriptableObject
 	{
 		[Tooltip("Select the network to use for chain interactions.")]

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace TezosSDK.SocialLoginProvider
+namespace TezosSDK.WalletProvider
 {
 	public interface ISocialLoginProvider
 	{
@@ -9,5 +9,7 @@ namespace TezosSDK.SocialLoginProvider
 		public event Action<SocialProviderData> SocialDisconnected;
 
 		Task Init(SocialLoginController socialLoginController);
+		Task LogIn();
+		Task LogOut();
 	}
 }
