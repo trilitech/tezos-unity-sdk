@@ -2,50 +2,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TezosSDK.Common;
+using TezosSDK.Logger;
 using TezosSDK.MessageSystem;
 using TezosSDK.Reflection;
+using UnityEngine;
 
 namespace TezosSDK.WalletProvider
 {
 	public class WalletProviderController: IController
 	{
-		private IEnumerable<IWalletProvider> _walletProviders;
+		private List<IWalletProvider> _walletProviders;
 		private IContext                     _context;
+		private WalletProviderData           _connectedWalletData;
 
 		public bool IsInitialized { get; private set; }
 
 		public async Task Initialize(IContext context)
 		{
 			_context = context;
-			_walletProviders = ReflectionHelper.CreateInstancesOfType<IWalletProvider>();
+			_walletProviders = ReflectionHelper.CreateInstancesOfType<IWalletProvider>().ToList();
 			List<Task> initTasks = new();
 			foreach (IWalletProvider walletProvider in _walletProviders)
 			{
-				walletProvider.WalletConnected    += OnWalletConnected;
-				walletProvider.WalletDisconnected += OnWalletDisconnected;
+				// walletProvider.WalletConnected    += OnWalletConnected;
+				// walletProvider.WalletDisconnected += OnWalletDisconnected;
 				initTasks.Add(walletProvider.Init(_context));
 			}
 			
-			_context.MessageSystem.AddListener<WalletConnectionRequestCommand>(OnWalletConnectionRequest);
-			_context.MessageSystem.AddListener<WalletDisconnectionRequestCommand>(OnWalletDisconnectionRequest);
-			_context.MessageSystem.AddListener<WalletAlreadyConnectedRequestCommand>(OnWalletAlreadyConnectedRequest);
-
 			await Task.WhenAll(initTasks);
 			
 			IsInitialized = true;
 		}
 
-		private void OnWalletAlreadyConnectedRequest(WalletAlreadyConnectedRequestCommand requestCommand)
+		public bool IsWalletConnected() => !string.IsNullOrEmpty(_connectedWalletData.WalletAddress);
+
+		public async Task<WalletProviderData> Connect(WalletProviderData walletProviderData)
 		{
-			// checking if there is any connection exists
-			bool connected = _walletProviders.Any(wp=> wp.IsAlreadyConnected());
-			_context.MessageSystem.InvokeMessage(new WalletAlreadyConnectedResultCommand(connected));
+			_connectedWalletData = await _walletProviders.First(wp => wp.WalletType == walletProviderData.WalletType).Connect(walletProviderData);
+			return _connectedWalletData;
 		}
 
-		private void OnWalletConnectionRequest(WalletConnectionRequestCommand command)       => _walletProviders.First(wp => wp.WalletType == command.GetData().WalletType).Connect(command.GetData());
-		private void OnWalletDisconnectionRequest(WalletDisconnectionRequestCommand command) => _walletProviders.First(wp => wp.WalletType == command.GetData().WalletType).Disconnect();
+		public async Task<bool> Disconnect()
+		{
+			 bool result = await _walletProviders.First(wp => wp.WalletType == _connectedWalletData.WalletType).Disconnect();
+			 _connectedWalletData = null;
+			 return result;
+		}
+		
+		public Task RequestOperation(WalletOperationRequest walletOperationRequest)                          => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).RequestOperation(walletOperationRequest); 
+		public Task RequestSignPayload(WalletSignPayloadRequest walletSignPayloadRequest)                    => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).RequestSignPayload(walletSignPayloadRequest);
+		public Task RequestOriginateContract(WalletOriginateContractRequest walletOriginateContractRequest)  => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).RequestContractOrigination(walletOriginateContractRequest);
 
-		private void OnWalletConnected(WalletProviderData    data) => _context.MessageSystem.InvokeMessage(new WalletConnectedCommand(data));
-		private void OnWalletDisconnected(WalletProviderData data) => _context.MessageSystem.InvokeMessage(new WalletDisconnectedCommand(data));
+		// private void OnWalletConnected(WalletProviderData data)
+		// {
+		// 	_connectedWalletProvider = data;
+		// 	_context.MessageSystem.InvokeMessage(new WalletConnectedCommand(data));
+		// }
+		//
+		// private void OnWalletDisconnected(WalletProviderData data)
+		// {
+		// 	_connectedWalletProvider = null;
+		// 	_context.MessageSystem.InvokeMessage(new WalletDisconnectedCommand(data));
+		// }
 	}
 }

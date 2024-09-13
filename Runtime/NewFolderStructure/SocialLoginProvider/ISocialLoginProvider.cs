@@ -1,15 +1,12 @@
-using System;
 using System.Threading.Tasks;
 
 namespace TezosSDK.WalletProvider
 {
 	public interface ISocialLoginProvider
 	{
-		public event Action<SocialProviderData> SocialConnected;
-		public event Action<SocialProviderData> SocialDisconnected;
-
+		public SocialLoginType SocialLoginType { get; }
 		Task Init(SocialLoginController socialLoginController);
-		Task LogIn();
-		Task LogOut();
+		Task<SocialProviderData> LogIn(SocialProviderData socialLoginData);
+		Task<bool> LogOut();
 	}
 }

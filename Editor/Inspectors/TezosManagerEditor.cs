@@ -1,11 +1,11 @@
-using TezosSDK.Tezos.Managers;
+// using TezosSDK.Tezos.Managers;
 using UnityEditor;
 using UnityEngine;
 
 namespace TezosSDK.Editor.Inspectors
 {
 
-	[CustomEditor(typeof(TezosManager))]
+	// [CustomEditor(typeof(TezosManager))]
 	public class TezosManagerEditor : UnityEditor.Editor
 	{
 		private Texture2D logo;

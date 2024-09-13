@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Beacon.Sdk;
@@ -10,27 +9,82 @@ using Beacon.Sdk.Beacon.Permission;
 using Beacon.Sdk.Beacon.Sign;
 using Beacon.Sdk.BeaconClients;
 using Beacon.Sdk.BeaconClients.Abstract;
-using Beacon.Sdk.Core.Domain.Entities;
-using Beacon.Sdk.Core.Domain.Services;
+using Microsoft.Extensions.Logging;
 using Netezos.Keys;
 using TezosSDK.Configs;
 using TezosSDK.Logger;
 using TezosSDK.MessageSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Network = Beacon.Sdk.Beacon.Permission.Network;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace TezosSDK.WalletProvider
 {
+	#region DummyLogger
+
+	public class DummyLoggerProvider : ILoggerProvider
+	{
+		public void Dispose()
+		{
+			
+		}
+
+		public ILogger CreateLogger(string categoryName)
+		{
+			return new Logger();
+		}
+	}
+
+	public class Logger : ILogger
+	{
+		public IDisposable BeginScope<TState>(TState state)
+		{
+			return null;
+		}
+
+		public bool IsEnabled(LogLevel logLevel)
+		{
+			return true;
+		}
+
+		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+		{
+			if (!IsEnabled(logLevel))
+			{
+				return;
+			}
+
+			if (formatter == null)
+			{
+				throw new ArgumentNullException(nameof(formatter));
+			}
+
+			var message = formatter(state, exception);
+
+			if (string.IsNullOrEmpty(message))
+			{
+				return;
+			}
+
+			if (exception != null)
+			{
+				message += "\nException: " + exception;
+			}
+
+			TezosLogger.LogError("BEACON MESSAGE: " + message);
+		}
+	}
+
+	#endregion
+	
 	public class BeaconProvider : IWalletProvider
 	{
-		public event Action<WalletProviderData> WalletConnected;
-		public event Action<WalletProviderData> WalletDisconnected;
-
 		public WalletType WalletType => WalletType.BEACON;
 
-		private BeaconConnector _connector;
+		private BeaconConnector         _connector;
 		private OperationRequestHandler _operationRequestHandler;
+		private TaskCompletionSource<WalletProviderData> _walletConnectionTcs;
+		private TaskCompletionSource<bool> _walletDisconnectionTcs;
 
 		public Task Init(IContext context)
 		{
@@ -40,37 +94,72 @@ namespace TezosSDK.WalletProvider
 			return CreateAsync();
 		}
 
-		public Task Connect(WalletProviderData data)
+		public Task<WalletProviderData> Connect(WalletProviderData data)
 		{
+			if(_walletConnectionTcs != null && _walletConnectionTcs.Task.Status == TaskStatus.Running)
+				return _walletConnectionTcs.Task;
+			
+			_walletConnectionTcs = new();
+			TezosLogger.LogWarning($"Connect method entered");
 			try
 			{
 				if (BeaconDappClient == null)
 				{
-					return Task.CompletedTask;
+					TezosLogger.LogWarning($"BeaconDappClient is null");
+					return Task.FromResult<WalletProviderData>(null);
 				}
 
 				if (HandleExistingConnection())
 				{
 					// We already have an active connection
-					return Task.CompletedTask;
+					return _walletConnectionTcs.Task;
 				}
 
 				// We need to establish a new connection
 				var pairingRequestInfo = BeaconDappClient.GetPairingRequestInfo();
 				data.PairingUri = pairingRequestInfo;
+				_connector.PairingRequested(pairingRequestInfo);
+				TezosLogger.LogDebug($"pairingRequestInfo: {pairingRequestInfo}");
 			}
 			catch (Exception e)
 			{
 				TezosLogger.LogError($"Error during dapp connection: {e.Message}");
 				throw;
 			}
-			return Task.CompletedTask;
+			return _walletConnectionTcs.Task;
 		}
 
-		public Task Disconnect()
+		public Task<bool> Disconnect()
 		{
+			if(_walletDisconnectionTcs != null && _walletDisconnectionTcs.Task.Status == TaskStatus.Running)
+				return _walletDisconnectionTcs.Task;
+
+			_walletDisconnectionTcs = new();
+			if (!BeaconDappClient.Connected)
+			{
+				TezosLogger.LogWarning("Dapp is not connected - nothing to disconnect");
+				return Task.FromResult(false);
+			}
+
+			TezosLogger.LogDebug("Disconnecting wallet");
+			BeaconDappClient.RemoveActiveAccounts();
 			BeaconDappClient.Disconnect();
-			return Task.CompletedTask;
+			return Task.FromResult(true);
+		}
+
+		public Task RequestOperation(WalletOperationRequest operationRequest)
+		{
+			return _connector.RequestOperation(operationRequest);
+		}
+
+		public Task RequestSignPayload(WalletSignPayloadRequest signRequest)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task RequestContractOrigination(WalletOriginateContractRequest originationRequest)
+		{
+			throw new NotImplementedException();
 		}
 
 		public bool IsAlreadyConnected() => BeaconDappClient.Connected;
@@ -96,7 +185,7 @@ namespace TezosSDK.WalletProvider
 
 			if (BeaconDappClient == null)
 			{
-				TezosLogger.LogError("BeaconDappClient is null");
+				TezosLogger.LogError("BeaconDappClient is null here");
 				return;
 			}
 
@@ -112,6 +201,8 @@ namespace TezosSDK.WalletProvider
 		/// <returns>Returns true if an active connection exists, otherwise false.</returns>
 		private bool HandleExistingConnection()
 		{
+			TezosLogger.LogWarning($"HandleExistingConnection entered");
+			
 			var activeAccountPermissions = BeaconDappClient.GetActiveAccount();
 
 			if (activeAccountPermissions == null)
@@ -129,21 +220,20 @@ namespace TezosSDK.WalletProvider
 				PublicKey     = activeAccountPermissions.PublicKey
 			};
 
-			// do we know if we are signed here ? probably not
-			WalletConnected?.Invoke(_walletData);
-
+			_walletConnectionTcs.SetResult(_walletData);
 			return true;
 		}
 
 		/// <summary>
 		///     Creates and initializes the Beacon client.
 		/// </summary>
-		public async Task CreateAsync()
+		private async Task CreateAsync()
 		{
 			TezosLogger.LogDebug("Creating Beacon client");
 			var options = CreateBeaconOptions();
 
-			BeaconDappClient = BeaconClientFactory.Create<IDappBeaconClient>(options) as DappBeaconClient;
+			BeaconDappClient = BeaconClientFactory.Create<IDappBeaconClient>(options, new DummyLoggerProvider()) as DappBeaconClient;
+			TezosLogger.LogDebug($"BeaconDappClient is null:{BeaconDappClient is null}");
 
 			if (BeaconDappClient == null)
 			{
@@ -173,13 +263,17 @@ namespace TezosSDK.WalletProvider
 		/// <remarks>The event is raised on a background thread and must be marshalled to the UI thread.</remarks>
 		private async void OnBeaconDappClientMessageReceived(object sender, BeaconMessageEventArgs e)
 		{
+			TezosLogger.LogDebug($"OnBeaconDappClientMessageReceived entered");
+			
 			if (e == null)
 			{
+				TezosLogger.LogError($"BeaconMessageEventArgs is null");
 				return;
 			}
 
 			if (e.PairingDone)
 			{
+				TezosLogger.LogDebug($"OnBeaconDappClientMessageReceived PairingDone");
 				HandlePairingDone();
 				return;
 			}
@@ -212,9 +306,9 @@ namespace TezosSDK.WalletProvider
 		/// <param name="permissionResponse">The permission response message to handle.</param>
 		private void HandlePermissionResponse(PermissionResponse permissionResponse)
 		{
-			if (_walletData != null)
+			if (!string.IsNullOrEmpty(_walletData.WalletAddress))
 			{
-				TezosLogger.LogError("Active wallet already exists!");
+				TezosLogger.LogWarning("Active wallet already exists!");
 			}
 
 			if (permissionResponse == null)
@@ -222,7 +316,6 @@ namespace TezosSDK.WalletProvider
 				return;
 			}
 
-			// TezosLogger.LogDebug(permissionResponse.PrettyPrint());
 			TezosLogger.LogInfo($"Received permission response from {permissionResponse.AppMetadata.Name}!");
 
 			_walletData = new WalletProviderData
@@ -232,7 +325,7 @@ namespace TezosSDK.WalletProvider
 				PublicKey     = permissionResponse.PublicKey
 			};
 			
-			WalletConnected?.Invoke(_walletData);
+			_walletConnectionTcs.SetResult(_walletData);
 		}
 
 		/// <summary>
@@ -276,7 +369,7 @@ namespace TezosSDK.WalletProvider
 				return;
 			}
 			
-			WalletConnected?.Invoke(_walletData);
+			_walletConnectionTcs.SetResult(_walletData);
 		}
 
 		private void HandleOperationError(BaseBeaconError baseBeaconError)
@@ -301,7 +394,7 @@ namespace TezosSDK.WalletProvider
 		private void DoDisconnect()
 		{
 			TezosLogger.LogDebug("Setting active wallet to null and dispatching wallet disconnected event");
-			WalletDisconnected?.Invoke(_walletData);
+			_walletDisconnectionTcs.SetResult(true);
 			_walletData = null;
 		}
 
@@ -316,7 +409,7 @@ namespace TezosSDK.WalletProvider
 		{
 			TezosLogger.LogDebug("Received message of type Pairing done");
 
-			if (_walletData != null)
+			if (!string.IsNullOrEmpty(_walletData.WalletAddress))
 			{
 				TezosLogger.LogDebug("Active wallet already exists, ignoring duplicate pairing done event");
 				return;
@@ -359,22 +452,6 @@ namespace TezosSDK.WalletProvider
 		private string GetDbPath()
 		{
 			return Path.Combine(Application.persistentDataPath, "beacon.db");
-		}
-
-		/// <summary>
-		///     Disconnects the wallet from the Beacon Dapp client.
-		/// </summary>
-		public void DisconnectWallet()
-		{
-			if (!BeaconDappClient.Connected)
-			{
-				TezosLogger.LogWarning("Dapp is not connected - nothing to disconnect");
-				return;
-			}
-
-			TezosLogger.LogDebug("Disconnecting wallet");
-			BeaconDappClient.RemoveActiveAccounts();
-			BeaconDappClient.Disconnect();
 		}
 
 		/// <summary>

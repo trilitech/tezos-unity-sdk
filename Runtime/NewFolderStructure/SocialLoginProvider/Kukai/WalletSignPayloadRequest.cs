@@ -1,9 +1,9 @@
 using Beacon.Sdk.Beacon.Sign;
 
-namespace TezosSDK.WalletProvider
+namespace TezosSDK.SocialLoginProvider
 {
 
-	public struct WalletSignPayloadRequest
+	public struct SocialSignPayloadRequest
 	{
 		public SignPayloadType SigningType;
 		public string Payload;

@@ -8,117 +8,48 @@ namespace TezosSDK.API
 {
 	public class TezosAPI
 	{
-		private static TaskCompletionSource<bool>               _alreadyConnectedOrLoggedInTcs    = new();
-		private static TaskCompletionSource<WalletProviderData> _walletConnectedTcs    = new();
-		private static TaskCompletionSource<WalletProviderData> _walletDisconnectedTcs = new();
-		private static TaskCompletionSource<SocialProviderData> _socialLoggedInTcs     = new();
-		private static TaskCompletionSource<SocialProviderData> _socialLoggedOutTcs    = new();
+		private static TaskCompletionSource<bool>               _alreadyConnectedOrLoggedInTcs = new();
+		
+		private static TaskCompletionSource<WalletProviderData> _walletConnectedTcs            = new();
+		private static TaskCompletionSource<WalletProviderData> _walletDisconnectedTcs         = new();
 		
 		public static event Action<WalletProviderData> WalletConnected;
 		public static event Action<WalletProviderData> WalletDisconnected;
 		public static event Action<SocialProviderData> SocialLoggedIn;
 		public static event Action<SocialProviderData> SocialLoggedOut;
 
-		private static IContext _context;
-		
-		public static void Init(IContext context)
-		{
-			_context = context;
-			_context.MessageSystem.AddListener<WalletConnectedCommand>(OnWalletConnected);
-			_context.MessageSystem.AddListener<WalletDisconnectedCommand>(OnWalletDisconnected);
-			_context.MessageSystem.AddListener<SocialLoggedInCommand>(OnSocialLoggedIn);
-			_context.MessageSystem.AddListener<SocialLoggedOutCommand>(OnSocialLoggedOut);
-			_context.MessageSystem.AddListener<WalletAlreadyConnectedResultCommand>(OnWalletAlreadyConnected);
-			_context.MessageSystem.AddListener<SocialAlreadyLoggedInResultCommand>(OnSocialAlreadyLoggedIn);
-		}
+		private static IContext                  _context;
+		private static WalletProviderController  _walletProviderController;
+		private static SocialLoginController     _socialLoginController;
 
-		private static void OnWalletAlreadyConnected(WalletAlreadyConnectedResultCommand command) => _alreadyConnectedOrLoggedInTcs.TrySetResult(command.GetData());
-		private static void OnSocialAlreadyLoggedIn(SocialAlreadyLoggedInResultCommand command)   => _alreadyConnectedOrLoggedInTcs.TrySetResult(command.GetData());
-
-		private static void OnWalletConnected(WalletConnectedCommand walletConnectedCommand)
+		public static void Init(IContext context, WalletProviderController walletProviderController, SocialLoginController socialLoginController)
 		{
-			WalletConnected?.Invoke(walletConnectedCommand.GetData());
-			_walletConnectedTcs.TrySetResult(walletConnectedCommand.GetData());
-		}
-
-		private static void OnWalletDisconnected(WalletDisconnectedCommand walletDisconnectedCommand)
-		{
-			WalletDisconnected?.Invoke(walletDisconnectedCommand.GetData());
-			_walletDisconnectedTcs.TrySetResult(walletDisconnectedCommand.GetData());
-		}
-		
-		private static void OnSocialLoggedIn(SocialLoggedInCommand socialLoggedInCommand)
-		{
-			SocialLoggedIn?.Invoke(socialLoggedInCommand.GetData());
-			_socialLoggedInTcs.TrySetResult(socialLoggedInCommand.GetData());
-		}
-
-		private static void OnSocialLoggedOut(SocialLoggedOutCommand socialLoggedOutCommand)
-		{
-			SocialLoggedOut?.Invoke(socialLoggedOutCommand.GetData());
-			_socialLoggedOutTcs.TrySetResult(socialLoggedOutCommand.GetData());
+			TezosLogger.LogDebug($"TezosAPI starting to initialize");
+			
+			_context                  = context;
+			_walletProviderController = walletProviderController;
+			_socialLoginController    = socialLoginController;
+			
+			TezosLogger.LogDebug($"TezosAPI initialized");
 		}
 		
 #region APIs
-		public static async Task<bool> IsConnected()
-		{
-			_context.MessageSystem.InvokeMessage(new WalletAlreadyConnectedRequestCommand());
-			_context.MessageSystem.InvokeMessage(new SocialAlreadyLoggedInRequestCommand());
-			return await _alreadyConnectedOrLoggedInTcs.Task;
-		}
+		public static bool IsWalletConnected() => _walletProviderController.IsWalletConnected();
 
-		public static async Task<WalletProviderData> ConnectWallet(WalletProviderData walletProviderData)
-		{
-			if (_walletConnectedTcs != null && !_walletConnectedTcs.Task.IsCompleted)
-			{
-				TezosLogger.LogWarning("Wallet connection already in progress");
-				return await _walletConnectedTcs.Task;
-			}
-			
-			_walletConnectedTcs = new();
-			_context.MessageSystem.InvokeMessage(new WalletConnectionRequestCommand(walletProviderData));
-			return await _walletConnectedTcs.Task;
-		}
-		
-		public static async Task<WalletProviderData> DisconnectWallet(WalletProviderData walletProviderData = null)
-		{
-			if (_walletDisconnectedTcs != null && !_walletDisconnectedTcs.Task.IsCompleted)
-			{
-				TezosLogger.LogWarning("Wallet disconnection already in progress");
-				return await _walletDisconnectedTcs.Task;
-			}
-			
-			_walletDisconnectedTcs = new();
-			_context.MessageSystem.InvokeMessage(new WalletDisconnectionRequestCommand(walletProviderData));
-			return await _walletDisconnectedTcs.Task;
-		}
+		public static Task<WalletProviderData> ConnectWallet(WalletProviderData walletProviderData) => _walletProviderController.Connect(walletProviderData);
 
-		public static async Task<SocialProviderData> SocialLogIn(SocialProviderData socialProviderData)
-		{
-			if (_socialLoggedInTcs != null && !_socialLoggedInTcs.Task.IsCompleted)
-			{
-				TezosLogger.LogWarning("Social login already in progress");
-				return await _socialLoggedInTcs.Task;
-			}
-			
-			_socialLoggedInTcs = new();
-			_context.MessageSystem.InvokeMessage(new SocialLogInRequestCommand(socialProviderData));
-			return await _socialLoggedInTcs.Task;
-		}
-		
-		public static async Task<SocialProviderData> SocialLogOut(SocialProviderData socialProviderData)
-		{
-			if (_socialLoggedOutTcs != null && !_socialLoggedOutTcs.Task.IsCompleted)
-			{
-				TezosLogger.LogWarning("Social logout already in progress");
-				return await _socialLoggedOutTcs.Task;
-			}
-			
-			_socialLoggedOutTcs = new();
-			_context.MessageSystem.InvokeMessage(new SocialLogInRequestCommand(socialProviderData));
-			return await _socialLoggedOutTcs.Task;
-		}
-		
+		public static Task<bool> DisconnectWallet() => _walletProviderController.Disconnect();
+
+		public static Task<SocialProviderData> SocialLogIn(SocialProviderData socialProviderData) => _socialLoginController.LogIn(socialProviderData);
+
+		public static Task<bool> SocialLogOut() => _socialLoginController.LogOut();
+
+		public static Task RequestOperation(WalletOperationRequest walletOperationRequest) => _walletProviderController.RequestOperation(walletOperationRequest);
+
+		public static Task RequestSignPayload(WalletSignPayloadRequest walletOperationRequest) => _walletProviderController.RequestSignPayload(walletOperationRequest);
+
+		public static Task RequestOriginateContract(WalletOriginateContractRequest walletOriginateContractRequest) => _walletProviderController.RequestOriginateContract(walletOriginateContractRequest);
+
 		// public TezosAPI(TezosConfig config) : base(config.DataProvider)
 		// {
 		// 	Rpc = new Rpc(config);
@@ -288,6 +219,7 @@ namespace TezosSDK.API
 		//
 		// 	yield return GetJsonCoroutine(url, callback);
 		// }
-#endregion
+
+		#endregion
 	}
 }

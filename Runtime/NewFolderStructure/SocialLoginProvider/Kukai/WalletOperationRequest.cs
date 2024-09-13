@@ -1,7 +1,6 @@
-namespace TezosSDK.WalletProvider
+namespace TezosSDK.SocialLoginProvider
 {
-
-	public struct WalletOperationRequest
+	public struct SocialOperationRequest
 	{
 		public string Destination;
 		public string EntryPoint;

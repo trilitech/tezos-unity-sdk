@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using TezosSDK.Common;
 using TezosSDK.Logger;
 using UnityEngine;
 
@@ -11,9 +13,8 @@ namespace TezosSDK.WalletProvider
 
 		public BeaconConnector(OperationRequestHandler operationRequestHandler) => _operationRequestHandler = operationRequestHandler;
 
-		public async void RequestOperation(WalletOperationRequest operationRequest)
+		public async Task RequestOperation(WalletOperationRequest operationRequest)
 		{
-			// Adjust the method to accept the WalletOperationRequest parameter
 			TezosLogger.LogDebug("RequestOperation");
 
 			Application.OpenURL("tezos://");
@@ -21,70 +22,42 @@ namespace TezosSDK.WalletProvider
 				_beaconProvider.BeaconDappClient);
 		}
 
-		public async void RequestContractOrigination(WalletOriginateContractRequest originationRequest)
+		public async Task RequestContractOrigination(WalletOriginateContractRequest originationRequest)
 		{
 			TezosLogger.LogDebug("RequestContractOrigination - BeaconDotNet");
 
 			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress, _beaconProvider.BeaconDappClient);
 		}
 
-		public async void RequestSignPayload(WalletSignPayloadRequest signRequest)
+		public async Task RequestSignPayload(WalletSignPayloadRequest signRequest)
 		{
+			TezosLogger.LogDebug("RequestSignPayload");
+			Application.OpenURL("tezos://");
 			await _beaconProvider.BeaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signRequest.SigningType, signRequest.Payload), signRequest.SigningType);
 		}
 
-		// private void OnWalletDisconnected(WalletInfo obj)
-		// {
-		// 	PairingRequestData = null;
-		// }
-
-		private void OnPairingRequested(string data)
+		public void PairingRequested(string data)
 		{
 			TezosLogger.LogDebug("WalletProvider.OnHandshakeReceived");
 
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
-			PairWithWallet();
+			PairWithWallet(data);
 #endif
 		}
 
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
-		private void PairWithWallet()
+		private void PairWithWallet(string data)
 		{
-			//TezosLogger.LogDebug("Pairing with wallet...");
+			TezosLogger.LogDebug("Pairing with wallet...");
 
 			UnityMainThreadDispatcher.Instance().Enqueue(() =>
 			{
 				var url = $"tezos://?type=tzip10&data={data}";
-				//TezosLogger.LogDebug("Opening URL: " + url);
+				TezosLogger.LogDebug("Opening URL: " + url);
 				Application.OpenURL(url);
 			});
-		}
+		}	
 #endif
-
-		/// <summary>
-		///     Triggered when a message/operation is sent to the wallet.
-		///     We simply forward the event to any listeners.
-		/// </summary>
-		// private void OnBeaconMessageSent(BeaconMessageType beaconMessageType)
-		// {
-		// 	switch (beaconMessageType)
-		// 	{
-		// 		case BeaconMessageType.permission_request:
-		// 			OperationRequested?.Invoke(WalletMessageType.ConnectionRequest);
-		// 			break;
-		// 		case BeaconMessageType.operation_request:
-		// 			OperationRequested?.Invoke(WalletMessageType.OperationRequest);
-		// 			break;
-		// 		case BeaconMessageType.sign_payload_request:
-		// 			OperationRequested?.Invoke(WalletMessageType.SignPayloadRequest);
-		// 			break;
-		// 		case BeaconMessageType.disconnect:
-		// 			OperationRequested?.Invoke(WalletMessageType.DisconnectionRequest);
-		// 			break;
-		// 		default:
-		// 			throw new ArgumentOutOfRangeException(nameof(beaconMessageType), beaconMessageType, null);
-		// 	}
-		// }
 	}
 
 }

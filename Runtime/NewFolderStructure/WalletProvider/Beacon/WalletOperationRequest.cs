@@ -8,5 +8,4 @@ namespace TezosSDK.WalletProvider
 		public string Arg;
 		public ulong Amount;
 	}
-
 }

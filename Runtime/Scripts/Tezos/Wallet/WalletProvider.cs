@@ -188,12 +188,12 @@ namespace TezosSDK.Tezos.Wallet
 // 		}
 
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
-		private void PairWithWallet()
+		private void PairWithWallet(string data)
 		{
 			UnityMainThreadDispatcher.Enqueue(() =>
 			{
 				TezosLogger.LogDebug("WalletProvider.PairWithWallet (OpenURL)");
-				Application.OpenURL($"tezos://?type=tzip10&data={TezosManager.Instance.WalletConnection.PairingRequestData.Data}");
+				Application.OpenURL($"tezos://?type=tzip10&data={data}");
 			});
 		}
 #endif

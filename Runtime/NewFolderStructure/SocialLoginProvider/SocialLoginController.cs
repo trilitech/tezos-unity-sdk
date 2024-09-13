@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TezosSDK.Reflection;
 using TezosSDK.Common;
@@ -8,48 +9,38 @@ namespace TezosSDK.WalletProvider
 {
 	public class SocialLoginController: IController
 	{
-		private IEnumerable<ISocialLoginProvider> _socialLoginProviders;
-		private IContext                          _context;
+		private List<ISocialLoginProvider> _socialLoginProviders;
+		private IContext                   _context;
+		private SocialProviderData         _socialProviderData;
 
 		public bool IsInitialized { get; private set; }
 
 		public async Task Initialize(IContext context)
 		{
 			_context = context;
-			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<ISocialLoginProvider>();
+			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<ISocialLoginProvider>().ToList();
 			List<Task> initTasks = new();
 			foreach (ISocialLoginProvider socialLoginProvider in _socialLoginProviders)
 			{
-				socialLoginProvider.SocialConnected    += OnSocialConnected;
-				socialLoginProvider.SocialDisconnected += OnSocialDisconnected;
 				initTasks.Add(socialLoginProvider.Init(this));
 			}
 			
-			_context.MessageSystem.AddListener<SocialLogInRequestCommand>(OnSocialLogInRequested);
-			_context.MessageSystem.AddListener<SocialLogOutRequestCommand>(OnSocialLogOutRequested);
-
 			await Task.WhenAll(initTasks);
 			
 			IsInitialized = true;
 		}
 
-		private void OnSocialLogInRequested(SocialLogInRequestCommand socialLogInRequestCommand)
+		public async Task<SocialProviderData> LogIn(SocialProviderData socialProviderData)
 		{
-			foreach (var socialLoginProvider in _socialLoginProviders)
-			{
-				socialLoginProvider.LogIn();
-			}
+			_socialProviderData = await _socialLoginProviders.Find(sp=>sp.SocialLoginType == socialProviderData.SocialLoginType).LogIn(socialProviderData);
+			return _socialProviderData;
 		}
 
-		private void OnSocialLogOutRequested(SocialLogOutRequestCommand socialLogOutRequestCommand)
+		public async Task<bool> LogOut()
 		{
-			foreach (var socialLoginProvider in _socialLoginProviders)
-			{
-				socialLoginProvider.LogOut();
-			}
+			bool result = await _socialLoginProviders.Find(sp=>sp.SocialLoginType == _socialProviderData.SocialLoginType).LogOut();
+			_socialProviderData = null;
+			return result;
 		}
-
-		private void OnSocialConnected(SocialProviderData socialProviderData)    => _context.MessageSystem.InvokeMessage(new SocialLoggedInCommand(socialProviderData));
-		private void OnSocialDisconnected(SocialProviderData socialProviderData) => _context.MessageSystem.InvokeMessage(new SocialLoggedOutCommand(socialProviderData));
 	}
 }

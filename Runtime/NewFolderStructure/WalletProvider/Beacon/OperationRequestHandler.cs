@@ -11,7 +11,9 @@ using Beacon.Sdk.Core.Domain.Entities;
 using Beacon.Sdk.Core.Domain.Services;
 using Netezos.Keys;
 using Newtonsoft.Json.Linq;
+using TezosSDK.Configs;
 using TezosSDK.Logger;
+using TezosSDK.MessageSystem;
 
 namespace TezosSDK.WalletProvider
 {
@@ -54,8 +56,12 @@ namespace TezosSDK.WalletProvider
 				return;
 			}
 
+			TezosLogger.LogInfo("Before CreateNetwork");
 			var network = CreateNetwork();
+			TezosLogger.LogInfo("After CreateNetwork");
+			TezosLogger.LogInfo("Before CreatePermissionRequest");
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
+			TezosLogger.LogInfo("After CreatePermissionRequest");
 			TezosLogger.LogInfo("RequestTezosPermission - permissionRequest.Network: " + permissionRequest.Network);
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
 			TezosLogger.LogInfo("Permission request sent");
@@ -205,13 +211,14 @@ namespace TezosSDK.WalletProvider
 
 		private Network CreateNetwork()
 		{
-			return null;
-			// return new Network
-			// {
-			// 	Type = TezosManager.Instance.Config.Network,
-			// 	Name = TezosManager.Instance.Config.Network.ToString(),
-			// 	RpcUrl = TezosManager.Instance.Config.Rpc
-			// };
+			TezosConfig tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			
+			return new Network
+			{
+				Type = tezosConfig.Network,
+				Name = tezosConfig.Network.ToString(),
+				RpcUrl = tezosConfig.Rpc
+			};
 		}
 
 		/// <summary>

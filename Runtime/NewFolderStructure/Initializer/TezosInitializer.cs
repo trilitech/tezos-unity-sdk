@@ -1,28 +1,35 @@
 using Beacon.Sdk.Beacon.Permission;
 using TezosSDK.API;
+using TezosSDK.Common;
 using TezosSDK.MessageSystem;
 using TezosSDK.Configs;
+using TezosSDK.Logger;
 using TezosSDK.WalletProvider;
 using UnityEngine;
 
 namespace Tezos.Initializer
 {
-	public static class TezosInitializer
+	public class TezosInitializer
 	{
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		private static async void Initialize()
 		{
-			Context                  context                  = new();
-			SocialLoginController    socialLoginController    = new();
-			WalletProviderController walletProviderController = new();
+			TezosLogger.LogDebug($"Tezos SDK starting to initialize");
+			
+			UnityMainThreadDispatcher unityMainThreadDispatcher = new GameObject().AddComponent<UnityMainThreadDispatcher>();
+			Context                  context                    = new();
+			SocialLoginController    socialLoginController      = new();
+			WalletProviderController walletProviderController   = new();
 
 			ValidateConfig();
 			
-			TezosAPI.Init(context);
+			TezosAPI.Init(context, walletProviderController, socialLoginController);
 			await socialLoginController.Initialize(context);
 			await walletProviderController.Initialize(context);
 
 			context.MessageSystem.InvokeMessage(new SdkInitializedCommand());
+			
+			TezosLogger.LogDebug($"Tezos SDK initialized");
 		}
 
 		private static void ValidateConfig()
