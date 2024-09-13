@@ -18,7 +18,7 @@ namespace Tezos.Initializer
 		{
 			TezosLogger.LogDebug($"Tezos SDK starting to initialize");
 			
-			UnityMainThreadDispatcher unityMainThreadDispatcher = new GameObject().AddComponent<UnityMainThreadDispatcher>();
+			UnityMainThreadDispatcher unityMainThreadDispatcher = new GameObject("UnityMainThreadDispatcher").AddComponent<UnityMainThreadDispatcher>();
 			Context                  context                    = new();
 			SocialLoginController    socialLoginController      = new();
 			WalletProviderController walletProviderController   = new();
