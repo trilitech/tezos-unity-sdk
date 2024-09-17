@@ -1,0 +1,19 @@
+{
+    "name": "TezosSDK.RefactorExample",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ea4cbc5ec1a4d4b6f95db73b5972acf1",
+        "GUID:b60df1cfa722f47e59ced3e589b14c36",
+        "GUID:c4f74bc9e829c4f048905f612502f3af",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

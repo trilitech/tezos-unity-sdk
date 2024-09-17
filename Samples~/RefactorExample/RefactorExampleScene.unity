@@ -1371,7 +1371,7 @@ GameObject:
   - component: {fileID: 1540002263}
   - component: {fileID: 1540002262}
   - component: {fileID: 1540002261}
-  - component: {fileID: 1540002260}
+  - component: {fileID: 1540002266}
   - component: {fileID: 1540002265}
   m_Layer: 5
   m_Name: Canvas
@@ -1380,24 +1380,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1540002260
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540002259}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ce48b0e3460e4b598d97ec5304b70df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _informationText: {fileID: 592178591}
-  _connectButton: {fileID: 2021376459}
-  _disconnectButton: {fileID: 247281337}
-  _logInButton: {fileID: 714797721}
-  _logOutButton: {fileID: 1078683213}
-  _fetchBalanceButton: {fileID: 802619646}
 --- !u!114 &1540002261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1494,6 +1476,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deepLinkURL: unitydl001://kukai-embed/?type=login&address=tz2Br3myzfDe1L3W4xZoaxVv3CkXzn5ryZyA&public_key=sppk7bLPzXaC1EteF9m1gcCavpJXyHrG8HtcE7tf77ZXZ37srHT5RRU&name=Talha%20%C3%87a%C4%9Fatay%20I%C5%9Fik&email=talha.isik@trili.tech&message=Tezos%20Signed%20Message:%20%7B%22requestId%22:%22sample-id%22,%22purpose%22:%22authentication%22,%22currentTime%22:%221726225807%22,%22nonce%22:%22my_nonce%22,%22network%22:%22ghostnet%22,%22publicKey%22:%22sppk7bLPzXaC1EteF9m1gcCavpJXyHrG8HtcE7tf77ZXZ37srHT5RRU%22,%22address%22:%22tz2Br3myzfDe1L3W4xZoaxVv3CkXzn5ryZyA%22,%22domain%22:%22http://localhost:3000%22%7D&signature=spsig1FE2k1BARDdXDKxYCaNMcduwprkasgQSp2Xm3Be83eedAH6RrskFASyXPxbnByJdHk4eYuHFuxTP9c9sNg2ysPC8M8oAtG&typeOfLogin=google
+--- !u!114 &1540002266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540002259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc7318514a02484bb4b619834321a694, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _informationText: {fileID: 592178591}
+  _connectButton: {fileID: 2021376459}
+  _disconnectButton: {fileID: 247281337}
+  _logInButton: {fileID: 714797721}
+  _logOutButton: {fileID: 1078683213}
+  _fetchBalanceButton: {fileID: 802619646}
 --- !u!1 &1723813478
 GameObject:
   m_ObjectHideFlags: 0
