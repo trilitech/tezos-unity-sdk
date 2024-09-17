@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using TezosSDK.Configs;
-using TezosSDK.MessageSystem;
+using Tezos.Configs;
+using Tezos.MessageSystem;
 using UnityEditor;
 using UnityEngine;
 

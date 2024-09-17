@@ -1,4 +1,4 @@
-namespace TezosSDK.SocialLoginProvider
+namespace Tezos.SocialLoginProvider
 {
     public class SocialSignData
     {

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using TezosSDK.MessageSystem;
+using Tezos.MessageSystem;
 
-namespace TezosSDK.Common
+namespace Tezos.Common
 {
 	public interface IController
 	{

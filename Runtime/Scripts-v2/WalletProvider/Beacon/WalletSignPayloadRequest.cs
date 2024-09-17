@@ -1,6 +1,6 @@
 using Beacon.Sdk.Beacon.Sign;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 
 	public struct WalletSignPayloadRequest

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
-using TezosSDK.Configs;
-using TezosSDK.Logger;
-using TezosSDK.MessageSystem;
-using TezosSDK.WalletProvider;
-using TezosSDK.WalletProvider.Types;
+using Tezos.Configs;
+using Tezos.Logger;
+using Tezos.MessageSystem;
+using Tezos.WalletProvider;
+using Tezos.WalletProvider.Types;
 using UnityEngine;
 
-namespace TezosSDK.SocialLoginProvider
+namespace Tezos.SocialLoginProvider
 {
 	public class KukaiProvider : ISocialLoginProvider
 	{

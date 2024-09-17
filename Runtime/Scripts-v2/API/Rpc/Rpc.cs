@@ -3,9 +3,9 @@ using System.Collections;
 using System.IO;
 using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
-using TezosSDK.Helpers.HttpClients;
+using Tezos.Helpers.HttpClients;
 
-namespace TezosSDK.API
+namespace Tezos.API
 {
 
 	public class Rpc : TezosHttpClient

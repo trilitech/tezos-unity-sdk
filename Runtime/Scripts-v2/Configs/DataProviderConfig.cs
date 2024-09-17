@@ -1,7 +1,7 @@
 using Beacon.Sdk.Beacon.Permission;
 using UnityEngine;
 
-namespace TezosSDK.Configs
+namespace Tezos.Configs
 {
 	[CreateAssetMenu(fileName = "DataProviderConfigSO", menuName = "Tezos/Data Provider Configuration", order = 2)]
 	public class DataProviderConfig: ScriptableObject

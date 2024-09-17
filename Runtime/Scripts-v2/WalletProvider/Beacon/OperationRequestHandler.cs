@@ -11,11 +11,11 @@ using Beacon.Sdk.Core.Domain.Entities;
 using Beacon.Sdk.Core.Domain.Services;
 using Netezos.Keys;
 using Newtonsoft.Json.Linq;
-using TezosSDK.Configs;
-using TezosSDK.Logger;
-using TezosSDK.MessageSystem;
+using Tezos.Configs;
+using Tezos.Logger;
+using Tezos.MessageSystem;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 
 	/// <summary>

@@ -1,10 +1,10 @@
 using Beacon.Sdk.Beacon.Permission;
-using TezosSDK.API;
-using TezosSDK.Common;
-using TezosSDK.MessageSystem;
-using TezosSDK.Configs;
-using TezosSDK.Logger;
-using TezosSDK.WalletProvider;
+using Tezos.API;
+using Tezos.Common;
+using Tezos.MessageSystem;
+using Tezos.Configs;
+using Tezos.Logger;
+using Tezos.WalletProvider;
 using UnityEngine;
 using UnityEngine.Scripting;
 

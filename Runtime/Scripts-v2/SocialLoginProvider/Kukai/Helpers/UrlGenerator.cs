@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using TezosSDK.Logger;
-using TezosSDK.WalletProvider.Types;
+using Tezos.Logger;
+using Tezos.WalletProvider.Types;
 
-namespace TezosSDK.SocialLoginProvider
+namespace Tezos.SocialLoginProvider
 {
 
 	/// <summary>

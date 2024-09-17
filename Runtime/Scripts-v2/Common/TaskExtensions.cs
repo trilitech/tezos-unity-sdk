@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TezosSDK.Common
+namespace Tezos.Common
 {
     public static class TaskExtensions
     {

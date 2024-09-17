@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TezosSDK.Logger
+namespace Tezos.Logger
 {
 	public static class TezosLogger
 	{

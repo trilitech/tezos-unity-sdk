@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TezosSDK.Common;
-using TezosSDK.Logger;
-using TezosSDK.MessageSystem;
-using TezosSDK.Reflection;
+using Tezos.Common;
+using Tezos.MessageSystem;
+using Tezos.Reflection;
+using Tezos.Logger;
 using UnityEngine;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 	public class WalletProviderController: IController
 	{
@@ -35,7 +35,7 @@ namespace TezosSDK.WalletProvider
 		}
 
 		public bool IsWalletConnected() => !string.IsNullOrEmpty(_connectedWalletData.WalletAddress);
-		public string GetWalletAddress() => _connectedWalletData.WalletAddress;
+		public WalletProviderData GetWalletProviderData() => _connectedWalletData;
 
 		public async Task<WalletProviderData> Connect(WalletProviderData walletProviderData)
 		{

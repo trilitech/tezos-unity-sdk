@@ -8,7 +8,7 @@ using Netezos.Contracts;
 using Netezos.Encoding;
 using Netezos.Keys;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 
 	public static class NetezosExtensions

@@ -6,12 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Dynamic.Json;
 using Newtonsoft.Json;
-using TezosSDK.API;
-using TezosSDK.Logger;
+using Tezos.API;
+using Tezos.Logger;
 using UnityEngine.Networking;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace TezosSDK.Helpers.HttpClients
+namespace Tezos.Helpers.HttpClients
 {
 
 	public class TezosHttpClient

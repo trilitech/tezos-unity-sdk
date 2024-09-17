@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 	public interface ISocialLoginProvider
 	{

@@ -1,4 +1,4 @@
-namespace TezosSDK.MessageSystem
+namespace Tezos.MessageSystem
 {
 	public class Context: IContext
 	{

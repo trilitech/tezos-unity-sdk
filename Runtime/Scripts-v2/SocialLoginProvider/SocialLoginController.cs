@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TezosSDK.Reflection;
-using TezosSDK.Common;
-using TezosSDK.MessageSystem;
+using Tezos.Common;
+using Tezos.MessageSystem;
+using Tezos.Reflection;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 	public class SocialLoginController: IController
 	{

@@ -5,7 +5,7 @@ using System.IO;
 using UnityEditor;
 #endif
 
-namespace TezosSDK.MessageSystem
+namespace Tezos.MessageSystem
 {
 	public static class ConfigGetter
 	{

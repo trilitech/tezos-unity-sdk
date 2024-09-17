@@ -1,10 +1,10 @@
-using TezosSDK.WalletProvider;
+using Tezos.WalletProvider;
 using UnityEngine;
 using UnityEngine.UI;
 using ZXing;
 using ZXing.QrCode;
 
-namespace TezosSDK.Helpers
+namespace Tezos.Helpers
 {
 
 	public class QrCodeGenerator : MonoBehaviour

@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using TezosSDK.Common;
-using TezosSDK.Logger;
+using Tezos.Logger;
+using Tezos.Common;
 using UnityEngine;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 
 	public class BeaconConnector

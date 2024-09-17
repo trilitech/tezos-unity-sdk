@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TezosSDK.MessageSystem
+namespace Tezos.MessageSystem
 {
 	public class MessageSystem: IMessageSystem
 	{

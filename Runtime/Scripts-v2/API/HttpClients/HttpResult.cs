@@ -1,4 +1,4 @@
-namespace TezosSDK.API
+namespace Tezos.API
 {
 
 	public class HttpResult<T>

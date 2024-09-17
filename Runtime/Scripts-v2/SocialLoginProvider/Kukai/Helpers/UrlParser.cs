@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TezosSDK.Logger;
+using Tezos.Logger;
 using UnityEngine.Networking;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 
 	/// <summary>

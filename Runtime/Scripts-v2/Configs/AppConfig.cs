@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace TezosSDK.Configs
+namespace Tezos.Configs
 {
 	[CreateAssetMenu(fileName = "AppConfig", menuName = "Tezos/Configuration/AppConfig", order = 1)]
 	public class AppConfig: ScriptableObject

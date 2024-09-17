@@ -1,4 +1,4 @@
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 
 	public struct WalletOriginateContractRequest

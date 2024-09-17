@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using TezosSDK.MessageSystem;
+using Tezos.MessageSystem;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 	public interface IWalletProvider
 	{

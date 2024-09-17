@@ -1,7 +1,7 @@
 using Beacon.Sdk.Beacon.Permission;
 using UnityEngine;
 
-namespace TezosSDK.Configs
+namespace Tezos.Configs
 {
 	[CreateAssetMenu(fileName = "TezosConfigSO", menuName = "Tezos/Configuration/TezosConfigSO", order = 1)]
 	public class TezosConfig: ScriptableObject

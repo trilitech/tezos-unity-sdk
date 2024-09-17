@@ -1,6 +1,6 @@
 using Beacon.Sdk.Beacon.Sign;
 
-namespace TezosSDK.SocialLoginProvider
+namespace Tezos.SocialLoginProvider
 {
 	public struct SocialSignPayloadRequest
 	{

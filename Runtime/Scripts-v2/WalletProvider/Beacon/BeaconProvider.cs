@@ -11,14 +11,14 @@ using Beacon.Sdk.BeaconClients;
 using Beacon.Sdk.BeaconClients.Abstract;
 using Microsoft.Extensions.Logging;
 using Netezos.Keys;
-using TezosSDK.Configs;
-using TezosSDK.Logger;
-using TezosSDK.MessageSystem;
+using Tezos.Configs;
+using Tezos.Logger;
+using Tezos.MessageSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace TezosSDK.WalletProvider
+namespace Tezos.WalletProvider
 {
 	#region DummyLogger
 

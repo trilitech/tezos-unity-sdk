@@ -6,14 +6,14 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TezosSDK.Common;
-using TezosSDK.Configs;
-using TezosSDK.Logger;
-using TezosSDK.MessageSystem;
-using TezosSDK.WalletProvider;
+using Tezos.Configs;
+using Tezos.Logger;
+using Tezos.MessageSystem;
+using Tezos.WalletProvider;
+using Tezos.Common;
 using UnityEngine.Networking;
 
-namespace TezosSDK.API
+namespace Tezos.API
 {
 	public class TezosAPI
 	{
@@ -47,7 +47,7 @@ namespace TezosSDK.API
 		
 #region APIs
 		public static bool IsWalletConnected() => _walletProviderController.IsWalletConnected();
-		public static string GetWalletAddress() => _walletProviderController.GetWalletAddress();
+		public static WalletProviderData GetWalletConnectionData() => _walletProviderController.GetWalletProviderData();
 
 		public static Task<WalletProviderData> ConnectWallet(WalletProviderData walletProviderData) => _walletProviderController.Connect(walletProviderData);
 
@@ -73,10 +73,10 @@ namespace TezosSDK.API
 		public static async Task<ulong> GetXTZBalance()
 		{
 			// Validate input
-			if (string.IsNullOrWhiteSpace(GetWalletAddress()))
-				throw new ArgumentException("Wallet address cannot be null or empty", nameof(GetWalletAddress));
+			if (string.IsNullOrWhiteSpace(GetWalletConnectionData().WalletAddress))
+				throw new ArgumentException("Wallet address cannot be null or empty", nameof(GetWalletConnectionData));
 
-			string path = Path.Combine("accounts", GetWalletAddress(), "balance");
+			string path = Path.Combine("accounts", GetWalletConnectionData().WalletAddress, "balance");
 			
 			return await _rpc.GetRequest<ulong>(path);
 		}

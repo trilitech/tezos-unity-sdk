@@ -1,4 +1,4 @@
-﻿using TezosSDK.MessageSystem;
+﻿using Tezos.MessageSystem;
 
 namespace Tezos.Initializer
 {

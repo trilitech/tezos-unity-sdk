@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 
-namespace TezosSDK.Common {
+namespace Tezos.Common {
 	/// Author: Pim de Witte (pimdewitte.com) and contributors, https://github.com/PimDeWitte/UnityMainThreadDispatcher
 	/// <summary>
 	/// A thread-safe class which holds a queue with actions to execute on the next Update() method. It can be used to make calls to the main thread for
