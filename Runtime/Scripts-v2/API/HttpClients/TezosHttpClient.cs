@@ -16,13 +16,11 @@ namespace Tezos.Helpers.HttpClients
 
 	public class TezosHttpClient
 	{
-		protected TezosHttpClient(string rpc, int timeOut)
+		protected TezosHttpClient(int timeOut)
 		{
-			BaseAddress = rpc;
 			RequestTimeout = timeOut;
 		}
 
-		private string BaseAddress { get; }
 		private int RequestTimeout { get; }
 
 		private T DeserializeJson<T>(string json)
@@ -67,41 +65,8 @@ namespace Tezos.Helpers.HttpClients
 			}
 		}
 
-		protected IEnumerator GetJsonCoroutine<T>(string path, Action<HttpResult<T>> callback = null)
+		public async Task<T> GetRequest<T>(string endpoint)
 		{
-			TezosLogger.LogDebug($"GET: {BaseAddress}{path}");
-			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbGET, path);
-			yield return request.SendWebRequest();
-
-			HandleResponse(request, callback, out var result);
-			yield return result;
-		}
-
-		protected IEnumerator PostJsonCoroutine<T>(string path, object data, Action<HttpResult<T>> callback)
-		{
-			var serializedData = JsonSerializer.Serialize(data, JsonOptions.DefaultOptions);
-			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbPOST, path);
-			request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(serializedData));
-			request.SetRequestHeader(HttpHeaders.ContentType.Key, HttpHeaders.ContentType.Value);
-			yield return request.SendWebRequest();
-
-			HandleResponse(request, callback, out var result);
-			yield return result;
-		}
-
-		private UnityWebRequest GetUnityWebRequest(string method, string path)
-		{
-			var request = new UnityWebRequest(Path.Combine(BaseAddress, path), method);
-			request.downloadHandler = new DownloadHandlerBuffer();
-			request.SetRequestHeader(HttpHeaders.Accept.Key, HttpHeaders.Accept.Value);
-			request.SetRequestHeader(HttpHeaders.UserAgent.Key, HttpHeaders.UserAgent.Value);
-			request.timeout = RequestTimeout;
-			return request;
-		}
-
-		public async Task<T> GetRequest<T>(string path)
-		{
-			string endpoint = Path.Combine(BaseAddress, path);
 			TezosLogger.LogDebug($"GET: {endpoint}");
 			
 			using HttpClient client = new HttpClient();
@@ -118,16 +83,23 @@ namespace Tezos.Helpers.HttpClients
 			return JsonConvert.DeserializeObject<T>(responseBody);
 		}
 
-		public IEnumerator PostRequest<T>(string path, object data, Action<HttpResult<T>> callback)
+		public async Task<T> PostRequest<T>(string endpoint, object data)
 		{
-			var serializedData = JsonConvert.SerializeObject(data);
-			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbPOST, path);
-			request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(serializedData));
-			request.SetRequestHeader(HttpHeaders.ContentType.Key, HttpHeaders.ContentType.Value);
-			yield return request.SendWebRequest();
+			TezosLogger.LogDebug($"POST: {endpoint}");
+			
+			using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Add(HttpHeaders.Accept.Key, HttpHeaders.Accept.Value);
+			client.DefaultRequestHeaders.Add(HttpHeaders.UserAgent.Key, HttpHeaders.UserAgent.Value);
+			client.DefaultRequestHeaders.Add(HttpHeaders.ContentType.Key, HttpHeaders.ContentType.Value);
 
-			HandleResponse(request, callback, out var result);
-			yield return result;
+			HttpResponseMessage response = await client.PostAsync(endpoint, new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json"));
+
+			// Ensure we received a successful response
+			response.EnsureSuccessStatusCode();
+
+			// Parse the response as JSON and extract the balance
+			string responseBody = await response.Content.ReadAsStringAsync();
+			return JsonConvert.DeserializeObject<T>(responseBody);
 		}
 	}
 
