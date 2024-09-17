@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
 using TezosSDK.Helpers.HttpClients;
@@ -17,7 +18,9 @@ namespace TezosSDK.API
 
 		public IEnumerator GetTzBalance(string address, Action<HttpResult<long>> callback)
 		{
-			yield return GetJsonCoroutine<long>($"chains/main/blocks/head/context/contracts/{address}/balance/", result =>
+			string path = Path.Combine("accounts", address, "balance");
+			// string path = $"/chains/main/blocks/0/context/contracts/{address}/full_balance";
+			yield return GetJsonCoroutine<long>(path, result =>
 			{
 				if (result.Success)
 				{

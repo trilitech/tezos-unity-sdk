@@ -4,7 +4,6 @@ using System.Text.Json;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using TezosSDK.Helpers.Coroutines;
-using TezosSDK.Helpers.Extensions;
 using TezosSDK.Helpers.HttpClients;
 using TezosSDK.Helpers.Json;
 using TezosSDK.Helpers.Logging;
@@ -14,9 +13,12 @@ using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
 using TezosSDK.Tezos.Models.Tokens;
 using TezosSDK.Tezos.Wallet;
+using TezosSDK.WalletProvider;
 using TezosSDK.WalletServices.Interfaces;
 using UnityEngine;
+using NetezosExtensions = TezosSDK.Helpers.Extensions.NetezosExtensions;
 using Random = System.Random;
+using TezosAPI = TezosSDK.API.TezosAPI;
 
 namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 {
@@ -331,7 +333,17 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core
 
 		public void Login(WalletProviderType walletProvider)
 		{
-			Tezos.WalletConnection.Connect();
+			switch (walletProvider)
+			{
+				case WalletProviderType.beacon:
+					TezosAPI.ConnectWallet(new WalletProviderData{WalletType = WalletType.BEACON});
+					break;
+				case WalletProviderType.kukai:
+					TezosAPI.SocialLogIn(new SocialProviderData{SocialLoginType = SocialLoginType.Kukai});
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(walletProvider), walletProvider, null);
+			}
 		}
 
 		public IWalletEventManager GetWalletMessageReceiver()

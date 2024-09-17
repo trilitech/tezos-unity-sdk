@@ -1,4 +1,4 @@
-using TezosSDK.Tezos.Managers;
+using TezosSDK.API;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,10 +11,7 @@ namespace TezosSDK.Samples.Tutorials.Common
 
 		public void ChangeToScene()
 		{
-			if (TezosManager.Instance)
-			{
-				TezosManager.Instance.WalletConnector.DisconnectWallet();
-			}
+			TezosAPI.DisconnectWallet();
 
 			SceneManager.LoadScene(sceneNameToLoad);
 		}

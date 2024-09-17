@@ -3,7 +3,10 @@
     "rootNamespace": "",
     "references": [
         "TezosSDK",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Tezos.API",
+        "Tezos.WalletProvider",
+        "Tezos.SocialLoginProvider"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -31,7 +31,7 @@ namespace TezosSDK.WalletProvider
 		}
 
 		public bool IsSocialLoggedIn() => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData.SocialLoginType).IsLoggedIn();
-		public string GetWalletAddress() => _socialProviderData.WalletAddress;
+		public SocialProviderData GetSocialProviderData() => _socialProviderData;
 
 		public async Task<SocialProviderData> LogIn(SocialProviderData socialProviderData)
 		{

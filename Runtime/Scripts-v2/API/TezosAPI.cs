@@ -53,7 +53,7 @@ namespace TezosSDK.API
 
 		public static Task<bool> DisconnectWallet() => _walletProviderController.Disconnect();
 		public static bool IsSocialLoggedIn() => _socialLoginController.IsSocialLoggedIn();
-		public static string GetSocialAddress() => _socialLoginController.GetWalletAddress();
+		public static SocialProviderData GetSocialLoginData() => _socialLoginController.GetSocialProviderData();
 
 		public static Task<SocialProviderData> SocialLogIn(SocialProviderData socialProviderData) => _socialLoginController.LogIn(socialProviderData);
 
@@ -65,21 +65,20 @@ namespace TezosSDK.API
 
 		public static Task RequestOriginateContract(WalletOriginateContractRequest walletOriginateContractRequest) => _walletProviderController.RequestOriginateContract(walletOriginateContractRequest);
 
-		public static void GetXTZBalance(Action<long> callback)
+		/// <summary>
+		/// Fetches the XTZ balance of a given wallet address asynchronously.
+		/// </summary>
+		/// <param name="walletAddress">The wallet address to fetch the balance for.</param>
+		/// <returns>Returns the balance of the wallet as a ulong.</returns>
+		public static async Task<ulong> GetXTZBalance()
 		{
-			UnityMainThreadDispatcher.Instance().StartCoroutine(_rpc.GetTzBalance(GetWalletAddress(), result =>
-			{
-				if (result.Success)
-				{
-					TezosLogger.LogDebug($"GetTzBalance result: {result.Data}");
-					callback?.Invoke(result.Data);
-				}
-				else
-				{
-					TezosLogger.LogError($"GetTzBalance error: {result.ErrorMessage}");
-					callback?.Invoke(0);
-				}
-			}));
+			// Validate input
+			if (string.IsNullOrWhiteSpace(GetWalletAddress()))
+				throw new ArgumentException("Wallet address cannot be null or empty", nameof(GetWalletAddress));
+
+			string path = Path.Combine("accounts", GetWalletAddress(), "balance");
+			
+			return await _rpc.GetRequest<ulong>(path);
 		}
 		
 		public IEnumerator ReadView(string contractAddress, string entrypoint, string input, Action<HttpResult<JsonElement>> callback) => _rpc.RunView(contractAddress, entrypoint, input, callback);

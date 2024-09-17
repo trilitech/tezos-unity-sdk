@@ -56,12 +56,8 @@ namespace TezosSDK.WalletProvider
 				return;
 			}
 
-			TezosLogger.LogInfo("Before CreateNetwork");
 			var network = CreateNetwork();
-			TezosLogger.LogInfo("After CreateNetwork");
-			TezosLogger.LogInfo("Before CreatePermissionRequest");
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
-			TezosLogger.LogInfo("After CreatePermissionRequest");
 			TezosLogger.LogInfo("RequestTezosPermission - permissionRequest.Network: " + permissionRequest.Network);
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
 			TezosLogger.LogInfo("Permission request sent");

@@ -22,6 +22,8 @@ namespace Tezos.Initializer
 			Context                  context                    = new();
 			SocialLoginController    socialLoginController      = new();
 			WalletProviderController walletProviderController   = new();
+			
+			unityMainThreadDispatcher.gameObject.hideFlags = HideFlags.HideAndDontSave;
 
 			ValidateConfig();
 			

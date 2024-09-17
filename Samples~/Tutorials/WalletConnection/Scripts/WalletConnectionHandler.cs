@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using TezosSDK.API;
 using TezosSDK.Helpers.Logging;
 using TezosSDK.Tezos.Managers;
 using TezosSDK.Tezos.Models;
+using TezosSDK.WalletProvider;
 using TezosSDK.WalletServices.Connectors;
 using TMPro;
 using UnityEngine;
@@ -35,7 +37,7 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 		// Check if the wallet is Kukai and disable objects on the scene that are only for Kukai if it's not
 		private void CheckKukaiOnlyObjects()
 		{
-			if (TezosManager.Instance.WalletConnector.ConnectorType == ConnectorType.Kukai)
+			if (TezosAPI.IsSocialLoggedIn())
 			{
 				return;
 			}
@@ -74,14 +76,14 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 		// If the wallet is Kukai, display additional information
 		private void HandleKukaiOnlyObjects()
 		{
-			if (TezosManager.Instance.WalletConnector.ConnectorType != ConnectorType.Kukai)
+			if (!TezosAPI.IsSocialLoggedIn())
 			{
 				return;
 			}
 
-			KukaiConnector kukaiConnector = (KukaiConnector)TezosManager.Instance.WalletConnector;
-			kukaiTypeOfLoginText.text = kukaiConnector.TypeOfLogin.ToString();
-			kukaiSignedMessageText.text = kukaiConnector.AuthResponse.Message;
+			SocialProviderData socialProviderData = TezosAPI.GetSocialLoginData();
+			kukaiTypeOfLoginText.text = socialProviderData.LoginType;
+			// kukaiSignedMessageText.text = kukaiConnector.AuthResponse.Message; todo: auth response not exists
 		}
 
 		private void OnWalletDisconnected(WalletInfo _)

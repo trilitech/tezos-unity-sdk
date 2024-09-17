@@ -1,11 +1,15 @@
 using System;
 using System.Collections;
+using System.IO;
+using System.Net.Http;
 using System.Text;
-using System.Text.Json;
+using System.Threading.Tasks;
 using Dynamic.Json;
+using Newtonsoft.Json;
 using TezosSDK.API;
 using TezosSDK.Logger;
 using UnityEngine.Networking;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace TezosSDK.Helpers.HttpClients
 {
@@ -14,7 +18,7 @@ namespace TezosSDK.Helpers.HttpClients
 	{
 		protected TezosHttpClient(string rpc, int timeOut)
 		{
-			BaseAddress = AddSlashIfNeeded(rpc);
+			BaseAddress = rpc;
 			RequestTimeout = timeOut;
 		}
 
@@ -31,10 +35,10 @@ namespace TezosSDK.Helpers.HttpClients
 			return JsonSerializer.Deserialize<T>(json, JsonOptions.DefaultOptions);
 		}
 
-		private string AddSlashIfNeeded(string url)
-		{
-			return url.EndsWith("/") ? url : $"{url}/";
-		}
+		// private string AddSlashIfNeeded(string url)
+		// {
+		// 	return url.EndsWith("/") ? url : $"{url}/";
+		// }
 
 		private void HandleResponse<T>(UnityWebRequest request, Action<HttpResult<T>> callback, out T result)
 		{
@@ -87,12 +91,43 @@ namespace TezosSDK.Helpers.HttpClients
 
 		private UnityWebRequest GetUnityWebRequest(string method, string path)
 		{
-			var request = new UnityWebRequest($"{BaseAddress}{path}", method);
+			var request = new UnityWebRequest(Path.Combine(BaseAddress, path), method);
 			request.downloadHandler = new DownloadHandlerBuffer();
 			request.SetRequestHeader(HttpHeaders.Accept.Key, HttpHeaders.Accept.Value);
 			request.SetRequestHeader(HttpHeaders.UserAgent.Key, HttpHeaders.UserAgent.Value);
 			request.timeout = RequestTimeout;
 			return request;
+		}
+
+		public async Task<T> GetRequest<T>(string path)
+		{
+			string endpoint = Path.Combine(BaseAddress, path);
+			TezosLogger.LogDebug($"GET: {endpoint}");
+			
+			using HttpClient client = new HttpClient();
+			client.DefaultRequestHeaders.Add(HttpHeaders.Accept.Key, HttpHeaders.Accept.Value);
+			client.DefaultRequestHeaders.Add(HttpHeaders.UserAgent.Key, HttpHeaders.UserAgent.Value);
+
+			HttpResponseMessage response = await client.GetAsync(endpoint);
+
+			// Ensure we received a successful response
+			response.EnsureSuccessStatusCode();
+
+			// Parse the response as JSON and extract the balance
+			string responseBody = await response.Content.ReadAsStringAsync();
+			return JsonConvert.DeserializeObject<T>(responseBody);
+		}
+
+		public IEnumerator PostRequest<T>(string path, object data, Action<HttpResult<T>> callback)
+		{
+			var serializedData = JsonConvert.SerializeObject(data);
+			using var request = GetUnityWebRequest(UnityWebRequest.kHttpVerbPOST, path);
+			request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(serializedData));
+			request.SetRequestHeader(HttpHeaders.ContentType.Key, HttpHeaders.ContentType.Value);
+			yield return request.SendWebRequest();
+
+			HandleResponse(request, callback, out var result);
+			yield return result;
 		}
 	}
 
