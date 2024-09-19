@@ -1,3 +1,14 @@
 {
-	"name": "Tezos.Configs"
+    "name": "Tezos.Configs",
+    "rootNamespace": "",
+    "references": ["GUID:0c0f402fc1cb344ef87d37f5a81f2739","GUID:8ab761d2f11d425386f1620f777f3f98"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

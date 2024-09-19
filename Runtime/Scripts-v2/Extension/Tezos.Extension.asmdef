@@ -1,3 +1,4 @@
 {
-  "name": "Tezos.Extension"
+  "name": "Tezos.Extension",
+  "references":[ "GUID:8ab761d2f11d425386f1620f777f3f98" ]
 }

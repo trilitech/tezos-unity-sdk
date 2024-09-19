@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Tezos.Common;
+using Tezos.Cysharp.Threading.Tasks;
+using Tezos.Logger;
 using Tezos.MessageSystem;
 using Tezos.Reflection;
 
@@ -15,17 +16,17 @@ namespace Tezos.WalletProvider
 
 		public bool IsInitialized { get; private set; }
 
-		public async Task Initialize(IContext context)
+		public async UniTask Initialize(IContext context)
 		{
 			_context = context;
 			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<ISocialLoginProvider>().ToList();
-			List<Task> initTasks = new();
+			List<UniTask> initTasks = new();
 			foreach (ISocialLoginProvider socialLoginProvider in _socialLoginProviders)
 			{
 				initTasks.Add(socialLoginProvider.Init(this));
 			}
 			
-			await Task.WhenAll(initTasks);
+			await UniTask.WhenAll(initTasks);
 			
 			IsInitialized = true;
 		}
@@ -33,13 +34,14 @@ namespace Tezos.WalletProvider
 		public bool IsSocialLoggedIn() => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData.SocialLoginType).IsLoggedIn();
 		public SocialProviderData GetSocialProviderData() => _socialProviderData;
 
-		public async Task<SocialProviderData> LogIn(SocialProviderData socialProviderData)
+		public async UniTask<SocialProviderData> LogIn(SocialProviderData socialProviderData)
 		{
+			TezosLogger.LogInfo($"SocialLoginController::LogIn, provider count:{_socialLoginProviders.Count}");
 			_socialProviderData = await _socialLoginProviders.Find(sp=>sp.SocialLoginType == socialProviderData.SocialLoginType).LogIn(socialProviderData);
 			return _socialProviderData;
 		}
 
-		public async Task<bool> LogOut()
+		public async UniTask<bool> LogOut()
 		{
 			bool result = await _socialLoginProviders.Find(sp=>sp.SocialLoginType == _socialProviderData.SocialLoginType).LogOut();
 			_socialProviderData = null;

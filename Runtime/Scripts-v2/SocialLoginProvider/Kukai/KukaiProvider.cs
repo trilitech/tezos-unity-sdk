@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using Tezos.Configs;
+using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
 using Tezos.WalletProvider;
@@ -19,43 +19,45 @@ namespace Tezos.SocialLoginProvider
 		
 		private readonly UrlParser    _urlParser = new();
 		
-		private UrlGenerator                             _urlGenerator;
-		private SocialProviderData                       _socialProviderData;
-		private TaskCompletionSource<SocialProviderData> _logInTcs;
-		private TaskCompletionSource<bool>               _logOutTcs;
-		private TypeOfLogin                              _typeOfLogin;
-		private string                                   _webClientAddress;
+		private UrlGenerator                                _urlGenerator;
+		private SocialProviderData                          _socialProviderData;
+		private UniTaskCompletionSource<SocialProviderData> _logInTcs;
+		private UniTaskCompletionSource<bool>               _logOutTcs;
+		private TypeOfLogin                                 _typeOfLogin;
+		private string                                      _webClientAddress;
 
-		public Task Init(SocialLoginController socialLoginController)
+		public UniTask Init(SocialLoginController socialLoginController)
 		{
 			_urlGenerator = new UrlGenerator(ConfigGetter.GetOrCreateConfig<TezosConfig>().KukaiWebClientAddress);
 			InitializeDeepLinking();
 			
-			return Task.CompletedTask;
+			return UniTask.CompletedTask;
 		}
 
-		public Task<SocialProviderData> LogIn(SocialProviderData socialProviderData)
+		public UniTask<SocialProviderData> LogIn(SocialProviderData socialProviderData)
 		{
-			if(_logInTcs != null && _logInTcs.Task.Status == TaskStatus.Running)
+			TezosLogger.LogDebug("Login entered");
+			if(_logInTcs != null && _logInTcs.Task.Status == UniTaskStatus.Pending)
 				return _logInTcs.Task;
 			
 			TezosLogger.LogDebug("Initiating wallet connection.");
 			_logInTcs = new();
 			OpenLoginLink();
+			OnDeepLinkActivated("unitydl001://kukai-embed/?type=login&address=tz2Br3myzfDe1L3W4xZoaxVv3CkXzn5ryZyA&public_key=sppk7bLPzXaC1EteF9m1gcCavpJXyHrG8HtcE7tf77ZXZ37srHT5RRU&name=Talha%20%C3%87a%C4%9Fatay%20I%C5%9Fik&email=talha.isik@trili.tech&message=Tezos%20Signed%20Message:%20%7B%22requestId%22:%22sample-id%22,%22purpose%22:%22authentication%22,%22currentTime%22:%221726225807%22,%22nonce%22:%22my_nonce%22,%22network%22:%22ghostnet%22,%22publicKey%22:%22sppk7bLPzXaC1EteF9m1gcCavpJXyHrG8HtcE7tf77ZXZ37srHT5RRU%22,%22address%22:%22tz2Br3myzfDe1L3W4xZoaxVv3CkXzn5ryZyA%22,%22domain%22:%22http://localhost:3000%22%7D&signature=spsig1FE2k1BARDdXDKxYCaNMcduwprkasgQSp2Xm3Be83eedAH6RrskFASyXPxbnByJdHk4eYuHFuxTP9c9sNg2ysPC8M8oAtG&typeOfLogin=google");
 			return _logInTcs.Task;
 		}
 
 		public string GetWalletAddress() => _socialProviderData?.WalletAddress;
 
-		public Task<bool> LogOut()
+		public UniTask<bool> LogOut()
 		{
-			if(_logOutTcs != null && _logOutTcs.Task.Status == TaskStatus.Running)
+			if(_logOutTcs != null && _logOutTcs.Task.Status == UniTaskStatus.Pending)
 				return _logOutTcs.Task;
 			
 			TezosLogger.LogDebug("Wallet disconnected.");
 			_logOutTcs = new();
 			_socialProviderData = null;
-			_logOutTcs.SetResult(true);
+			_logOutTcs.TrySetResult(true);
 			return _logOutTcs.Task;
 		}
 
@@ -103,7 +105,7 @@ namespace Tezos.SocialLoginProvider
 				Signature = parsedData.GetParameter("signature")
 			};
 
-			_logInTcs.SetResult(_socialProviderData);
+			_logInTcs.TrySetResult(_socialProviderData);
 		}
 
 		private void HandleOperationDeepLink(ParsedURLData parsedData)

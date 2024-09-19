@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using Tezos.Cysharp.Threading.Tasks;
 using Tezos.MessageSystem;
 
 namespace Tezos.Common
@@ -7,6 +7,6 @@ namespace Tezos.Common
 	{
 		public bool IsInitialized { get; }
 
-		public Task Initialize(IContext context);
+		public UniTask Initialize(IContext context);
 	}
 }

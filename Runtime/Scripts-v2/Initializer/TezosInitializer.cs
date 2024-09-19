@@ -10,36 +10,31 @@ using UnityEngine.Scripting;
 
 namespace Tezos.Initializer
 {
-	public class TezosInitializer
+	[Preserve]
+	public class TezosInitializer : MonoBehaviour
+
 	{
 		[Preserve]
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
 		private static async void Initialize()
 		{
 			TezosLogger.LogDebug($"Tezos SDK starting to initialize");
-			
 			UnityMainThreadDispatcher unityMainThreadDispatcher = new GameObject("UnityMainThreadDispatcher").AddComponent<UnityMainThreadDispatcher>();
-			Context                  context                    = new();
-			SocialLoginController    socialLoginController      = new();
-			WalletProviderController walletProviderController   = new();
-			
+			Context                   context                   = new();
+			SocialLoginController     socialLoginController     = new();
+			WalletProviderController  walletProviderController  = new();
 			unityMainThreadDispatcher.gameObject.hideFlags = HideFlags.HideAndDontSave;
-
 			ValidateConfig();
-			
 			TezosAPI.Init(context, walletProviderController, socialLoginController);
 			await socialLoginController.Initialize(context);
 			await walletProviderController.Initialize(context);
-
 			context.MessageSystem.InvokeMessage(new SdkInitializedCommand());
-			
 			TezosLogger.LogDebug($"Tezos SDK initialized");
 		}
 
 		private static void ValidateConfig()
 		{
 			TezosConfig config = ConfigGetter.GetOrCreateConfig<TezosConfig>();
-
 			if (config.Network == NetworkType.mainnet)
 			{
 				Debug.LogWarning("You are using Mainnet. Make sure you are not using Mainnet for testing purposes.");

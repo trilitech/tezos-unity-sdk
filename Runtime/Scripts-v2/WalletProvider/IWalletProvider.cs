@@ -1,18 +1,20 @@
 using System;
-using System.Threading.Tasks;
+using Beacon.Sdk.Beacon.Operation;
+using Tezos.Cysharp.Threading.Tasks;
 using Tezos.MessageSystem;
 
 namespace Tezos.WalletProvider
 {
 	public interface IWalletProvider
 	{
-		public WalletType WalletType { get; }
-		Task Init(IContext context);
-		Task<WalletProviderData> Connect(WalletProviderData data);
-		Task<bool> Disconnect();
-		Task RequestOperation(WalletOperationRequest operationRequest);
-		Task RequestSignPayload(WalletSignPayloadRequest signRequest);
-		Task RequestContractOrigination(WalletOriginateContractRequest originationRequest);
-		bool IsAlreadyConnected();
+		public event Action<string> PairingRequested;
+		public WalletType           WalletType { get; }
+		UniTask                     Init(IContext              context);
+		UniTask<WalletProviderData> Connect(WalletProviderData data);
+		UniTask<bool>               Disconnect();
+		UniTask<OperationResponse>  RequestOperation(WalletOperationRequest                   operationRequest);
+		UniTask<WalletProviderData> RequestSignPayload(WalletSignPayloadRequest               signRequest);
+		UniTask                     RequestContractOrigination(WalletOriginateContractRequest originationRequest);
+		bool                        IsAlreadyConnected();
 	}
 }

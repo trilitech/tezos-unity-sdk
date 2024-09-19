@@ -1,13 +1,13 @@
-using System.Threading.Tasks;
+using Tezos.Cysharp.Threading.Tasks;
 
 namespace Tezos.WalletProvider
 {
 	public interface ISocialLoginProvider
 	{
 		public SocialLoginType SocialLoginType { get; }
-		Task Init(SocialLoginController socialLoginController);
-		Task<SocialProviderData> LogIn(SocialProviderData socialLoginData);
-		Task<bool> LogOut();
+		UniTask Init(SocialLoginController socialLoginController);
+		UniTask<SocialProviderData> LogIn(SocialProviderData socialLoginData);
+		UniTask<bool> LogOut();
 		bool IsLoggedIn();
 	}
 }

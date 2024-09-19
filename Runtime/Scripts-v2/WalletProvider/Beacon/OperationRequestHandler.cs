@@ -17,7 +17,6 @@ using Tezos.MessageSystem;
 
 namespace Tezos.WalletProvider
 {
-
 	/// <summary>
 	///     A helper class to handle operation requests for the Tezos blockchain via the Dapp Beacon client.
 	/// </summary>
@@ -49,14 +48,13 @@ namespace Tezos.WalletProvider
 
 			// Check for active peer and log error if not found
 			var activePeer = beaconDappClient.GetActivePeer();
-
 			if (activePeer == null)
 			{
 				TezosLogger.LogError("No active peer found");
 				return;
 			}
 
-			var network = CreateNetwork();
+			var network           = CreateNetwork();
 			var permissionRequest = CreatePermissionRequest(beaconDappClient, network);
 			TezosLogger.LogInfo("RequestTezosPermission - permissionRequest.Network: " + permissionRequest.Network);
 			await SendBeaconClientResponseAsync(beaconDappClient, activePeer.SenderId, permissionRequest);
@@ -75,7 +73,6 @@ namespace Tezos.WalletProvider
 		public Task RequestTezosOperation(string destination, string entryPoint, string input, ulong amount, DappBeaconClient beaconDappClient)
 		{
 			TezosLogger.LogDebug("Requesting Tezos Operation");
-
 			return RequestOperation(beaconDappClient, () => CreateTransactionOperation(destination, entryPoint, input, amount), BeaconMessageType.operation_request);
 		}
 
@@ -89,7 +86,6 @@ namespace Tezos.WalletProvider
 		public Task RequestContractOrigination(string script, string delegateAddress, DappBeaconClient beaconDappClient)
 		{
 			TezosLogger.LogDebug("Requesting Contract Origination");
-
 			return RequestOperation(beaconDappClient, () => CreateOriginationOperation(script, delegateAddress), BeaconMessageType.operation_request);
 		}
 
@@ -112,7 +108,6 @@ namespace Tezos.WalletProvider
 		{
 			// Check for active account permissions and return if not found
 			var activeAccountPermissions = beaconDappClient.GetActiveAccount();
-
 			if (activeAccountPermissions == null)
 			{
 				TezosLogger.LogError("No active peer found");
@@ -124,7 +119,6 @@ namespace Tezos.WalletProvider
 
 			// Create and log the operation request
 			var operationRequest = CreateOperationRequest(beaconDappClient, activeAccountPermissions, operationDetails, messageType);
-
 			TezosLogger.LogDebug("Sending to beacon client: " + operationRequest.Network);
 
 			// Send the operation request
@@ -142,12 +136,9 @@ namespace Tezos.WalletProvider
 		/// </remarks>
 		private List<TezosBaseOperation> CreateOriginationOperation(string script, string delegateAddress)
 		{
-			var operationDetails = new List<TezosBaseOperation>();
-
+			var operationDetails                 = new List<TezosBaseOperation>();
 			var partialTezosOriginationOperation = new PartialTezosOriginationOperation("0", JObject.Parse(script), delegateAddress);
-
 			operationDetails.Add(partialTezosOriginationOperation);
-
 			return operationDetails;
 		}
 
@@ -168,14 +159,8 @@ namespace Tezos.WalletProvider
 			var operationDetails = new List<TezosBaseOperation>();
 
 			// Create partial Tezos transaction operation with provided details
-			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount.ToString(), destination, new JObject
-			{
-				["entrypoint"] = entryPoint,
-				["value"] = JToken.Parse(input)
-			});
-
+			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount.ToString(), destination, new JObject { ["entrypoint"] = entryPoint, ["value"] = JToken.Parse(input) });
 			operationDetails.Add(partialTezosTransactionOperation);
-
 			return operationDetails;
 		}
 
@@ -192,29 +177,24 @@ namespace Tezos.WalletProvider
 		///     and the details of the operation to be performed.
 		/// </remarks>
 		private OperationRequest CreateOperationRequest(
-			IBaseBeaconClient beaconDappClient,
-			PermissionInfo activeAccountPermissions,
+			IBaseBeaconClient        beaconDappClient,
+			PermissionInfo           activeAccountPermissions,
 			List<TezosBaseOperation> operationDetails,
-			BeaconMessageType messageType)
+			BeaconMessageType        messageType
+			)
 		{
 			var pubKey = PubKey.FromBase58(activeAccountPermissions.PublicKey);
-
-			var operationRequest = new OperationRequest(messageType, Constants.BeaconVersion, KeyPairService.CreateGuid(), beaconDappClient.SenderId,
-				activeAccountPermissions.Network, operationDetails, pubKey.Address);
-
+			var operationRequest = new OperationRequest(
+			                                            messageType, Constants.BeaconVersion, KeyPairService.CreateGuid(), beaconDappClient.SenderId,
+			                                            activeAccountPermissions.Network, operationDetails, pubKey.Address
+			                                           );
 			return operationRequest;
 		}
 
 		private Network CreateNetwork()
 		{
 			TezosConfig tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
-			
-			return new Network
-			{
-				Type = tezosConfig.Network,
-				Name = tezosConfig.Network.ToString(),
-				RpcUrl = tezosConfig.Rpc
-			};
+			return new Network { Type = tezosConfig.Network, Name = tezosConfig.Network.ToString(), RpcUrl = tezosConfig.Rpc };
 		}
 
 		/// <summary>
@@ -225,14 +205,11 @@ namespace Tezos.WalletProvider
 		/// <returns>A PermissionRequest object configured with the provided details.</returns>
 		private PermissionRequest CreatePermissionRequest(IBaseBeaconClient beaconDappClient, Network network)
 		{
-			var permissionScopes = new List<PermissionScope>
-			{
-				PermissionScope.operation_request,
-				PermissionScope.sign
-			};
-
-			return new PermissionRequest(BeaconMessageType.permission_request, Constants.BeaconVersion, KeyPairService.CreateGuid(), beaconDappClient.SenderId,
-				beaconDappClient.Metadata, network, permissionScopes);
+			var permissionScopes = new List<PermissionScope> { PermissionScope.operation_request, PermissionScope.sign };
+			return new PermissionRequest(
+			                             BeaconMessageType.permission_request, Constants.BeaconVersion, KeyPairService.CreateGuid(), beaconDappClient.SenderId,
+			                             beaconDappClient.Metadata, network, permissionScopes
+			                            );
 		}
 
 		/// <summary>
@@ -244,5 +221,4 @@ namespace Tezos.WalletProvider
 			MessageSent?.Invoke(message.Type);
 		}
 	}
-
 }

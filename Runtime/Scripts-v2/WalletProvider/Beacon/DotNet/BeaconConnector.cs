@@ -1,35 +1,38 @@
-using System.Threading.Tasks;
-using Tezos.Logger;
 using Tezos.Common;
+using Tezos.Cysharp.Threading.Tasks;
+using Tezos.Logger;
 using UnityEngine;
 
 namespace Tezos.WalletProvider
 {
-
 	public class BeaconConnector
 	{
 		private OperationRequestHandler _operationRequestHandler;
-		private BeaconProvider _beaconProvider;
+		private BeaconProvider          _beaconProvider;
 
-		public BeaconConnector(OperationRequestHandler operationRequestHandler) => _operationRequestHandler = operationRequestHandler;
-
-		public async Task RequestOperation(WalletOperationRequest operationRequest)
+		public BeaconConnector(OperationRequestHandler operationRequestHandler, BeaconProvider beaconProvider)
 		{
-			TezosLogger.LogDebug("RequestOperation");
-
-			Application.OpenURL("tezos://");
-			await _operationRequestHandler.RequestTezosOperation(operationRequest.Destination, operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
-				_beaconProvider.BeaconDappClient);
+			_beaconProvider          = beaconProvider;
+			_operationRequestHandler = operationRequestHandler;
 		}
 
-		public async Task RequestContractOrigination(WalletOriginateContractRequest originationRequest)
+		public async UniTask RequestOperation(WalletOperationRequest operationRequest)
+		{
+			TezosLogger.LogDebug($"RequestOperation, _operationRequestHandler is null:{_operationRequestHandler is null}");
+			Application.OpenURL("tezos://");
+			await _operationRequestHandler.RequestTezosOperation(
+			                                                     operationRequest.Destination, operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
+			                                                     _beaconProvider.BeaconDappClient
+			                                                    );
+		}
+
+		public async UniTask RequestContractOrigination(WalletOriginateContractRequest originationRequest)
 		{
 			TezosLogger.LogDebug("RequestContractOrigination - BeaconDotNet");
-
 			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress, _beaconProvider.BeaconDappClient);
 		}
 
-		public async Task RequestSignPayload(WalletSignPayloadRequest signRequest)
+		public async UniTask RequestSignPayload(WalletSignPayloadRequest signRequest)
 		{
 			TezosLogger.LogDebug("RequestSignPayload");
 			Application.OpenURL("tezos://");
@@ -39,7 +42,6 @@ namespace Tezos.WalletProvider
 		public void PairingRequested(string data)
 		{
 			TezosLogger.LogDebug("WalletProvider.OnHandshakeReceived");
-
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 			PairWithWallet(data);
 #endif
@@ -56,8 +58,7 @@ namespace Tezos.WalletProvider
 				TezosLogger.LogDebug("Opening URL: " + url);
 				Application.OpenURL(url);
 			});
-		}	
+		}
 #endif
 	}
-
 }

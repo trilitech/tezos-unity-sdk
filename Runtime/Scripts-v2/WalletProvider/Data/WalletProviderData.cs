@@ -5,14 +5,15 @@
 		BEACON,
 		WALLETCONNECT
 	}
-	
+
 	public class WalletProviderData
 	{
-		public WalletType WalletType { get; set; }
-		public string WalletAddress  { get; set; }
-		public string PublicKey      { get; set; }
-		public string Network        { get; set; }
-		public string PairingUri     { get; set; }
-		public string Error          { get; set; }
+		public WalletType WalletType    { get; set; }
+		public string     WalletAddress { get; set; }
+		public string     PublicKey     { get; set; }
+		public string     Network       { get; set; }
+		public string     Signature     { get; set; }
+		public string     PairingUri    { get; set; }
+		public string     Error         { get; set; }
 	}
 }

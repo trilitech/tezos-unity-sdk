@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.IO;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Netezos.Rpc.Queries.Post;
-using Tezos.Helpers.HttpClients;
+using Tezos.Cysharp.Threading.Tasks;
 
 namespace Tezos.API
 {
-
-	public class Rpc : TezosHttpClient
+	public class Rpc : TezosClient
 	{
 		private const string CHAIN_ID = "NetXdQprcVkpaWU";
 
@@ -17,9 +12,9 @@ namespace Tezos.API
 		{
 		}
 
-		public Task<T> GetContractCode<T>(string contract) => GetRequest<T>($"chains/main/blocks/head/context/contracts/{contract}/script/");
+		public UniTask<T> GetContractCode<T>(string contract) => GetRequest<T>($"chains/main/blocks/head/context/contracts/{contract}/script/");
 
-		public Task<T> RunView<T>(
+		public UniTask<T> RunView<T>(
 			string contract,
 			string view,
 			string input,
@@ -49,5 +44,4 @@ namespace Tezos.API
 			return PostRequest<T>("chains/main/blocks/head/helpers/scripts/run_script_view/", data);
 		}
 	}
-
 }
