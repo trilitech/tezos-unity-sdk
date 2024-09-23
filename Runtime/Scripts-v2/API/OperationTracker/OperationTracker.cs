@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using Tezos.Configs;
+using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
 using UnityEngine;
@@ -49,7 +49,7 @@ namespace Tezos.API
 		/// <summary>
 		///     Asynchronously tracks the operation status.
 		/// </summary>
-		private async Task TrackOperationAsync()
+		private async UniTask TrackOperationAsync()
 		{
 			float startTime = Time.time;
 			while (_isTracking && Time.time - startTime < TIMEOUT)
@@ -75,7 +75,7 @@ namespace Tezos.API
 				}
 
 				TezosLogger.LogDebug($"Waiting {WAIT_TIME / 1000} seconds before next operation status check. Remaining time: {TIMEOUT - (Time.time - startTime)}");
-				await Task.Delay((int)WAIT_TIME); // Wait before checking again
+				await UniTask.Delay((int)WAIT_TIME); // Wait before checking again
 			}
 
 			TezosLogger.LogError("Operation tracking timed out.");
@@ -85,7 +85,7 @@ namespace Tezos.API
 		/// <summary>
 		///     Asynchronously retrieves the status of the operation.
 		/// </summary>
-		private async Task<bool?> GetOperationStatusAsync(string operationHash)
+		private async UniTask<bool?> GetOperationStatusAsync(string operationHash)
 		{
 			string                url     = Path.Combine(_baseUrl, $"operations/{operationHash}/status");
 			using UnityWebRequest request = UnityWebRequest.Get(url);
@@ -94,7 +94,7 @@ namespace Tezos.API
 			var operation = request.SendWebRequest();
 			while (!operation.isDone)
 			{
-				await Task.Yield();
+				await UniTask.Yield();
 			}
 
 			if (request.result != UnityWebRequest.Result.Success)

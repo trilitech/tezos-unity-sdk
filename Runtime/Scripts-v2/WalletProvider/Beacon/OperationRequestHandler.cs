@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
 using Beacon.Sdk.Beacon.Operation;
@@ -12,6 +11,7 @@ using Beacon.Sdk.Core.Domain.Services;
 using Netezos.Keys;
 using Newtonsoft.Json.Linq;
 using Tezos.Configs;
+using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
 
@@ -38,7 +38,7 @@ namespace Tezos.WalletProvider
 		///     This method attempts to get the active peer from the beacon client. If found,
 		///     it creates a permission request and sends it to the active peer.
 		/// </remarks>
-		public async Task RequestTezosPermission(DappBeaconClient beaconDappClient)
+		public async UniTask RequestTezosPermission(DappBeaconClient beaconDappClient)
 		{
 			if (beaconDappClient == null)
 			{
@@ -70,7 +70,7 @@ namespace Tezos.WalletProvider
 		/// <param name="amount">The amount to be transferred.</param>
 		/// <param name="beaconDappClient">The Dapp Beacon client instance.</param>
 		/// <returns>A Task representing the asynchronous operation.</returns>
-		public Task RequestTezosOperation(string destination, string entryPoint, string input, ulong amount, DappBeaconClient beaconDappClient)
+		public UniTask RequestTezosOperation(string destination, string entryPoint, string input, ulong amount, DappBeaconClient beaconDappClient)
 		{
 			TezosLogger.LogDebug("Requesting Tezos Operation");
 			return RequestOperation(beaconDappClient, () => CreateTransactionOperation(destination, entryPoint, input, amount), BeaconMessageType.operation_request);
@@ -83,7 +83,7 @@ namespace Tezos.WalletProvider
 		/// <param name="delegateAddress">The delegate address for the contract.</param>
 		/// <param name="beaconDappClient">The Dapp Beacon client instance.</param>
 		/// <returns>A Task representing the asynchronous operation.</returns>
-		public Task RequestContractOrigination(string script, string delegateAddress, DappBeaconClient beaconDappClient)
+		public UniTask RequestContractOrigination(string script, string delegateAddress, DappBeaconClient beaconDappClient)
 		{
 			TezosLogger.LogDebug("Requesting Contract Origination");
 			return RequestOperation(beaconDappClient, () => CreateOriginationOperation(script, delegateAddress), BeaconMessageType.operation_request);
@@ -104,14 +104,14 @@ namespace Tezos.WalletProvider
 		///     operationFactory function to generate a list of operations which are then used
 		///     to create and send an operation request.
 		/// </remarks>
-		private Task RequestOperation(IDappBeaconClient beaconDappClient, Func<List<TezosBaseOperation>> operationFactory, BeaconMessageType messageType)
+		private UniTask RequestOperation(IDappBeaconClient beaconDappClient, Func<List<TezosBaseOperation>> operationFactory, BeaconMessageType messageType)
 		{
 			// Check for active account permissions and return if not found
 			var activeAccountPermissions = beaconDappClient.GetActiveAccount();
 			if (activeAccountPermissions == null)
 			{
 				TezosLogger.LogError("No active peer found");
-				return Task.CompletedTask;
+				return UniTask.CompletedTask;
 			}
 
 			// Invoke the operation factory to create operation details
@@ -215,7 +215,7 @@ namespace Tezos.WalletProvider
 		/// <summary>
 		/// Sends a response asynchronously via the Beacon client.
 		/// </summary>
-		private async Task SendBeaconClientResponseAsync(IBaseBeaconClient beaconDappClient, string receiverId, BaseBeaconMessage message)
+		private async UniTask SendBeaconClientResponseAsync(IBaseBeaconClient beaconDappClient, string receiverId, BaseBeaconMessage message)
 		{
 			await beaconDappClient.SendResponseAsync(receiverId, message);
 			MessageSent?.Invoke(message.Type);

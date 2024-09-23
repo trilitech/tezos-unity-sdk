@@ -30,6 +30,7 @@ namespace Tezos.Configs
 		public DataProviderConfig DataProvider
 		{
 			get => dataProviderConfig;
+			set => dataProviderConfig = value;
 		}
 
 		public string KukaiWebClientAddress

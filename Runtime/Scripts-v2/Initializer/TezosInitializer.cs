@@ -4,32 +4,42 @@ using Tezos.Common;
 using Tezos.MessageSystem;
 using Tezos.Configs;
 using Tezos.Logger;
+using Tezos.SaveSystem;
 using Tezos.WalletProvider;
 using UnityEngine;
-using UnityEngine.Scripting;
 
 namespace Tezos.Initializer
 {
-	[Preserve]
 	public class TezosInitializer : MonoBehaviour
-
 	{
-		[Preserve]
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		private static async void Initialize()
 		{
 			TezosLogger.LogDebug($"Tezos SDK starting to initialize");
 			UnityMainThreadDispatcher unityMainThreadDispatcher = new GameObject("UnityMainThreadDispatcher").AddComponent<UnityMainThreadDispatcher>();
-			Context                   context                   = new();
-			SocialLoginController     socialLoginController     = new();
-			WalletProviderController  walletProviderController  = new();
+
+			Context                  context                  = new();
+			SaveController           saveController           = new();
+			SocialLoginController    socialLoginController    = new(saveController);
+			WalletProviderController walletProviderController = new(saveController);
+
 			unityMainThreadDispatcher.gameObject.hideFlags = HideFlags.HideAndDontSave;
+
 			ValidateConfig();
+
+			TezosLogger.LogInfo($"Initializing TezosAPI");
 			TezosAPI.Init(context, walletProviderController, socialLoginController);
+			TezosLogger.LogInfo($"TezosAPI Initialized");
+			TezosLogger.LogInfo($"Initializing SocialLoginController");
 			await socialLoginController.Initialize(context);
+			TezosLogger.LogInfo($"SocialLoginController Initialized");
+			TezosLogger.LogInfo($"Initializing WalletProviderController");
 			await walletProviderController.Initialize(context);
+			TezosLogger.LogInfo($"WalletProviderController Initialized");
+
 			context.MessageSystem.InvokeMessage(new SdkInitializedCommand());
-			TezosLogger.LogDebug($"Tezos SDK initialized");
+
+			TezosLogger.LogInfo($"Tezos SDK initialized");
 		}
 
 		private static void ValidateConfig()

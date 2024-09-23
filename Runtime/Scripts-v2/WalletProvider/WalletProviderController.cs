@@ -5,18 +5,24 @@ using Tezos.Common;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.MessageSystem;
 using Tezos.Reflection;
+using Tezos.SaveSystem;
 
 namespace Tezos.WalletProvider
 {
 	public class WalletProviderController : IController
 	{
-		public event Action<string> PairingRequested; 
-		
+		public event Action<string> PairingRequested;
+
+		private const string KEY_WALLET = "key-wallet-provider";
+
 		private List<IWalletProvider> _walletProviders;
 		private IContext              _context;
 		private WalletProviderData    _connectedWalletData;
+		private SaveController        _saveController;
 
 		public bool IsInitialized { get; private set; }
+
+		public WalletProviderController(SaveController saveController) => _saveController = saveController;
 
 		public async UniTask Initialize(IContext context)
 		{
@@ -30,7 +36,8 @@ namespace Tezos.WalletProvider
 			}
 
 			await UniTask.WhenAll(initTasks);
-			IsInitialized = true;
+			_connectedWalletData = await _saveController.Load<WalletProviderData>(KEY_WALLET);
+			IsInitialized        = true;
 		}
 
 		private void OnPairingRequested(string pairingData) => PairingRequested?.Invoke(pairingData);
@@ -41,6 +48,7 @@ namespace Tezos.WalletProvider
 		public async UniTask<WalletProviderData> Connect(WalletProviderData walletProviderData)
 		{
 			_connectedWalletData = await _walletProviders.Find(wp => wp.WalletType == walletProviderData.WalletType).Connect(walletProviderData);
+			_saveController.Save(KEY_WALLET, _connectedWalletData);
 			return _connectedWalletData;
 		}
 
@@ -48,6 +56,7 @@ namespace Tezos.WalletProvider
 		{
 			bool result = await _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).Disconnect();
 			_connectedWalletData = null;
+			_saveController.Delete(KEY_WALLET);
 			return result;
 		}
 

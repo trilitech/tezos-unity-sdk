@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -207,4 +207,4 @@ namespace Tezos.Cysharp.Threading.Tasks.Editor
         #endregion
     }
 }
-
+#endif

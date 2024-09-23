@@ -33,24 +33,16 @@ namespace Tezos.API
 			SocialLoginController    socialLoginController
 			)
 		{
-			TezosLogger.LogDebug($"TezosAPI starting to initialize");
 			context.MessageSystem.AddListener<SdkInitializedCommand>(OnSDKInitialized);
 			_rpc                                       =  new(5);
 			_walletProviderController                  =  walletProviderController;
 			_socialLoginController                     =  socialLoginController;
 			_walletProviderController.PairingRequested += OnPairingRequested;
-			
-			_sdkInitializedTcs = new();
-			TezosLogger.LogDebug($"TezosAPI initialized");
+			_sdkInitializedTcs                         =  new();
 		}
 
-		private static void OnSDKInitialized(SdkInitializedCommand command)
-		{
-			TezosLogger.LogDebug($"OnSDKInitialized");
-			_sdkInitializedTcs.TrySetResult(command.GetData());
-		}
-
-		private static void OnPairingRequested(string pairingData) => PairingRequested?.Invoke(pairingData);
+		private static void OnSDKInitialized(SdkInitializedCommand command)     => _sdkInitializedTcs.TrySetResult(command.GetData());
+		private static void OnPairingRequested(string              pairingData) => PairingRequested?.Invoke(pairingData);
 
 #region APIs
 
@@ -59,6 +51,7 @@ namespace Tezos.API
 			TezosLogger.LogDebug($"WaitUntilSDKInitialized");
 			return _sdkInitializedTcs.Task;
 		}
+
 		public static bool               IsWalletConnected()       => _walletProviderController.IsWalletConnected();
 		public static WalletProviderData GetWalletConnectionData() => _walletProviderController.GetWalletProviderData();
 
@@ -69,7 +62,8 @@ namespace Tezos.API
 			                                                        () =>
 			                                                        {
 				                                                        WalletConnected?.Invoke(result);
-			                                                        });
+			                                                        }
+			                                                       );
 			return result;
 		}
 
@@ -80,7 +74,8 @@ namespace Tezos.API
 			                                                        () =>
 			                                                        {
 				                                                        WalletDisconnected?.Invoke();
-			                                                        });
+			                                                        }
+			                                                       );
 			return result;
 		}
 
@@ -108,7 +103,8 @@ namespace Tezos.API
 			                                                        () =>
 			                                                        {
 				                                                        OperationResulted?.Invoke(result);
-			                                                        });
+			                                                        }
+			                                                       );
 			return result;
 		}
 
@@ -119,7 +115,8 @@ namespace Tezos.API
 			                                                        () =>
 			                                                        {
 				                                                        SigningResulted?.Invoke(result);
-			                                                        });
+			                                                        }
+			                                                       );
 			return result;
 		}
 
@@ -130,8 +127,8 @@ namespace Tezos.API
 		/// </summary>
 		public static async UniTask<ulong> GetXTZBalance()
 		{
-			if (string.IsNullOrWhiteSpace(GetSocialLoginData().WalletAddress)) throw new ArgumentException("Wallet address cannot be null or empty", nameof(GetSocialLoginData));
-			return await _rpc.GetRequest<ulong>(EndPoints.GetBalanceEndPoint(GetSocialLoginData().WalletAddress));
+			if (string.IsNullOrWhiteSpace(GetWalletConnectionData().WalletAddress)) throw new ArgumentException("Wallet address cannot be null or empty", nameof(GetSocialLoginData));
+			return await _rpc.GetRequest<ulong>(EndPoints.GetBalanceEndPoint(GetWalletConnectionData().WalletAddress));
 		}
 
 		public static UniTask<T> ReadView<T>(string contractAddress, string entrypoint, string input) => _rpc.RunView<T>(contractAddress, entrypoint, input);

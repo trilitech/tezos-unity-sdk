@@ -18,7 +18,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using System.Threading.Tasks;
+using Tezos.Cysharp.Threading.Tasks;
 
 namespace Tezos.Common {
 	/// Author: Pim de Witte (pimdewitte.com) and contributors, https://github.com/PimDeWitte/UnityMainThreadDispatcher
@@ -64,9 +64,9 @@ namespace Tezos.Common {
 		/// </summary>
 		/// <param name="action">function that will be executed from the main thread.</param>
 		/// <returns>A Task that can be awaited until the action completes</returns>
-		public Task EnqueueAsync(Action action)
+		public UniTask EnqueueAsync(Action action)
 		{
-			var tcs = new TaskCompletionSource<bool>();
+			var tcs = new UniTaskCompletionSource<bool>();
 
 			void WrappedAction() {
 				try 
