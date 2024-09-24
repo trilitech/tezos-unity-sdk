@@ -1,9 +1,9 @@
 using Beacon.Sdk.Beacon.Permission;
 using Tezos.API;
-using Tezos.Common;
 using Tezos.MessageSystem;
 using Tezos.Configs;
 using Tezos.Logger;
+using Tezos.MainThreadDispatcher;
 using Tezos.SaveSystem;
 using Tezos.WalletProvider;
 using UnityEngine;

@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using Beacon.Sdk.Beacon.Operation;
-using Tezos.Common; // todo: We shouldn't use beacon here. Its better to create our own classes and mimic same data
+using Beacon.Sdk.Beacon.Operation; // todo: We shouldn't use beacon here. Its better to create our own classes and mimic same data
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
+using Tezos.MainThreadDispatcher;
 using Tezos.MessageSystem;
 using Tezos.WalletProvider;
 using Tezos.Token;
 
 namespace Tezos.API
 {
-	public static class TezosAPI
+	public static partial class TezosAPI
 	{
 		public static event Action<WalletProviderData> WalletConnected;
 		public static event Action                     WalletDisconnected;
@@ -27,6 +27,8 @@ namespace Tezos.API
 		private static SocialLoginController    _socialLoginController;
 		private static Rpc                      _rpc;
 
+		static TezosAPI() => _sdkInitializedTcs = new();
+
 		public static void Init(
 			IContext                 context,
 			WalletProviderController walletProviderController,
@@ -38,7 +40,6 @@ namespace Tezos.API
 			_walletProviderController                  =  walletProviderController;
 			_socialLoginController                     =  socialLoginController;
 			_walletProviderController.PairingRequested += OnPairingRequested;
-			_sdkInitializedTcs                         =  new();
 		}
 
 		private static void OnSDKInitialized(SdkInitializedCommand command)     => _sdkInitializedTcs.TrySetResult(command.GetData());
@@ -120,7 +121,7 @@ namespace Tezos.API
 			return result;
 		}
 
-		public static UniTask RequestOriginateContract(WalletOriginateContractRequest walletOriginateContractRequest) => _walletProviderController.RequestOriginateContract(walletOriginateContractRequest);
+		public static UniTask RequestContractOrigination(WalletOriginateContractRequest walletOriginateContractRequest) => _walletProviderController.RequestOriginateContract(walletOriginateContractRequest);
 
 		/// <summary>
 		/// Fetches the XTZ balance of a given wallet address asynchronously.
@@ -187,10 +188,9 @@ namespace Tezos.API
 		}
 
 		public static UniTask<IEnumerable<TokenBalance>> GetOwnersForContract(
-			Action<HttpResult<IEnumerable<TokenBalance>>> callback,
-			string                                        contractAddress,
-			long                                          maxItems,
-			OwnersForContractOrder                        orderBy
+			string                 contractAddress,
+			long                   maxItems,
+			OwnersForContractOrder orderBy
 			)
 		{
 			var sort = orderBy switch
@@ -215,14 +215,12 @@ namespace Tezos.API
 		public static UniTask<bool> IsHolderOfToken(string wallet, string contractAddress, uint tokenId) => _rpc.GetRequest<bool>(EndPoints.GetIsHolderOfTokenEndPoint(wallet, contractAddress, tokenId));
 
 		public static UniTask<JsonElement> GetTokenMetadata(
-			Action<HttpResult<JsonElement>> callback,
-			string                          contractAddress,
-			uint                            tokenId
+			string contractAddress,
+			uint   tokenId
 			) => _rpc.GetRequest<JsonElement>(EndPoints.GetTokenMetadataEndPoint(contractAddress, tokenId));
 
 		public static UniTask<JsonElement> GetContractMetadata(
-			Action<HttpResult<JsonElement>> callback,
-			string                          contractAddress
+			string contractAddress
 			) => _rpc.GetRequest<JsonElement>(EndPoints.GetContractMetadataEndPoint(contractAddress));
 
 		public static UniTask<IEnumerable<TokenData>> GetTokensForContract(
@@ -261,28 +259,29 @@ namespace Tezos.API
 
 		public static UniTask<int> GetAccountCounter(string address) => _rpc.GetRequest<int>(EndPoints.GetAccountCounterEndPoint(address));
 
-		// public static IEnumerator GetOriginatedContractsForOwner(
-		// 	Action<HttpResult<IEnumerable<TokenContract>>> callback,
-		// 	string creator,
-		// 	string codeHash,
-		// 	long maxItems,
-		// 	OriginatedContractsForOwnerOrder orderBy)
-		// {
-		// 	TezosLogger.LogDebug($"API.GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}");
-		//
-		// 	var sort = orderBy switch
-		// 	{
-		// 		OriginatedContractsForOwnerOrder.Default byDefault => $"sort.asc=id&offset.cr={byDefault.lastId}",
-		// 		OriginatedContractsForOwnerOrder.ByLastActivityTimeAsc byLastTimeAsc => $"sort.asc=lastActivity&offset.pg={byLastTimeAsc.page}",
-		// 		OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc byLastTimeDesc => $"sort.desc=lastActivity&offset.pg={byLastTimeDesc.page}",
-		// 		_ => string.Empty
-		// 	};
-		//
-		// 	var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&" +
-		// 	          "select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time" + $",id&{sort}&limit={maxItems}";
-		//
-		// 	yield return GetJsonCoroutine(url, callback);
-		// }
+		private static UniTask<IEnumerable<string>> GetOriginatedContractsForOwner(
+			string                           creator,
+			string                           codeHash,
+			long                             maxItems,
+			OriginatedContractsForOwnerOrder orderBy
+			)
+		{
+			TezosLogger.LogDebug($"API.GetOriginatedContractsForOwner: creator={creator}, codeHash={codeHash}");
+
+			var sort = orderBy switch
+			           {
+				           OriginatedContractsForOwnerOrder.Default byDefault                     => $"sort.asc=id&offset.cr={byDefault.lastId}",
+				           OriginatedContractsForOwnerOrder.ByLastActivityTimeAsc byLastTimeAsc   => $"sort.asc=lastActivity&offset.pg={byLastTimeAsc.page}",
+				           OriginatedContractsForOwnerOrder.ByLastActivityTimeDesc byLastTimeDesc => $"sort.desc=lastActivity&offset.pg={byLastTimeDesc.page}",
+				           _                                                                      => string.Empty
+			           };
+
+			var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&"                                +
+			          "select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time" +
+			          $",id&{sort}&limit={maxItems}";
+
+			return _rpc.GetRequest<IEnumerable<string>>(url);
+		}
 
 #endregion
 	}

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Tezos.Common;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
+using Tezos.MainThreadDispatcher;
 using Tezos.MessageSystem;
 using UnityEngine;
 

@@ -24,31 +24,6 @@ namespace Tezos.API
 			return JsonConvert.DeserializeObject<T>(json);
 		}
 
-		private void HandleResponse<T>(UnityWebRequest request, Action<HttpResult<T>> callback, out T result)
-		{
-			result = default;
-			if (request.result != UnityWebRequest.Result.Success)
-			{
-				TezosLogger.LogError($"Request failed with error: {request.error}");
-				callback?.Invoke(new HttpResult<T>(request.error));
-			}
-			else
-			{
-				var downloadHandlerText = request.downloadHandler.text;
-				try
-				{
-					TezosLogger.LogDebug($"HandleResponse<{typeof(T).Name}>: {downloadHandlerText}");
-					result = DeserializeJson<T>(downloadHandlerText);
-					callback?.Invoke(new HttpResult<T>(result));
-				}
-				catch (Exception ex)
-				{
-					TezosLogger.LogError($"Failed to deserialize JSON: {ex.Message}");
-					callback?.Invoke(new HttpResult<T>(ex.Message));
-				}
-			}
-		}
-
 		public async UniTask<T> GetRequest<T>(string endpoint)
 		{
 			TezosLogger.LogDebug($"GET: {endpoint}");
