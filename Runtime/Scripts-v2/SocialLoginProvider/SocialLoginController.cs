@@ -4,15 +4,16 @@ using Tezos.Common;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
+using Tezos.Operation;
 using Tezos.Reflection;
 using Tezos.SaveSystem;
 
-namespace Tezos.WalletProvider
+namespace Tezos.SocialLoginProvider
 {
 	public class SocialLoginController : IController
 	{
 		private const string KEY_SOCIAL = "key-social-provider";
-		
+
 		private List<ISocialLoginProvider> _socialLoginProviders;
 		private IContext                   _context;
 		private SocialProviderData         _socialProviderData;
@@ -21,7 +22,7 @@ namespace Tezos.WalletProvider
 		public bool IsInitialized { get; private set; }
 
 		public SocialLoginController(SaveController saveController) => _saveController = saveController;
-		
+
 		public async UniTask Initialize(IContext context)
 		{
 			_context              = context;
@@ -34,10 +35,10 @@ namespace Tezos.WalletProvider
 
 			await UniTask.WhenAll(initTasks);
 			_socialProviderData = await _saveController.Load<SocialProviderData>(KEY_SOCIAL);
-			IsInitialized = true;
+			IsInitialized       = true;
 		}
 
-		public bool               IsSocialLoggedIn()      => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData.SocialLoginType).IsLoggedIn();
+		public bool               IsSocialLoggedIn()      => !string.IsNullOrEmpty(_socialProviderData?.WalletAddress);
 		public SocialProviderData GetSocialProviderData() => _socialProviderData;
 
 		public async UniTask<SocialProviderData> LogIn(SocialProviderData socialProviderData)
@@ -55,5 +56,9 @@ namespace Tezos.WalletProvider
 			_saveController.Delete(KEY_SOCIAL);
 			return result;
 		}
+
+		public UniTask<OperationResponse>   RequestOperation(OperationRequest                 walletOperationRequest)   => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestOperation(walletOperationRequest);
+		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest             signPayloadRequest)       => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestSignPayload(signPayloadRequest);
+		public UniTask                      RequestOriginateContract(OriginateContractRequest originateContractRequest) => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestContractOrigination(originateContractRequest);
 	}
 }

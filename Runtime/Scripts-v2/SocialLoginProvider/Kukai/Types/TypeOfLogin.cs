@@ -1,6 +1,5 @@
-﻿namespace Tezos.WalletProvider.Types
+﻿namespace Tezos.SocialLoginProvider
 {
-
 	public enum TypeOfLogin
 	{
 		Google,

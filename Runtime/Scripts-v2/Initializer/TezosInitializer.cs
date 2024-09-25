@@ -5,6 +5,7 @@ using Tezos.Configs;
 using Tezos.Logger;
 using Tezos.MainThreadDispatcher;
 using Tezos.SaveSystem;
+using Tezos.SocialLoginProvider;
 using Tezos.WalletProvider;
 using UnityEngine;
 

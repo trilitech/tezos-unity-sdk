@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using Beacon.Sdk.Beacon.Sign;
 using Netezos.Encoding;
 using Tezos.Configs;
+using Tezos.Cysharp;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
-using Tezos.WalletProvider;
-using Tezos.WalletProvider.Types;
+using Tezos.Operation;
 using UnityEngine;
+using SignPayloadType = Tezos.Operation.SignPayloadType;
 
 namespace Tezos.SocialLoginProvider
 {
 	public class KukaiProvider : ISocialLoginProvider
 	{
-		public AuthResponse AuthResponse { get; private set; }
+		public AuthResponse    AuthResponse    { get; private set; }
 		public SocialLoginType SocialLoginType => SocialLoginType.Kukai;
-		
-		private readonly UrlParser    _urlParser = new();
-		
+
+		private readonly UrlParser _urlParser = new();
+
+		private UniTaskCompletionSource<OperationResponse>   _operationTcs;
+		private UniTaskCompletionSource<SignPayloadResponse> _signPayloadTcs;
+
 		private UrlGenerator                                _urlGenerator;
 		private SocialProviderData                          _socialProviderData;
 		private UniTaskCompletionSource<SocialProviderData> _logInTcs;
@@ -30,51 +33,35 @@ namespace Tezos.SocialLoginProvider
 		{
 			_urlGenerator = new UrlGenerator(ConfigGetter.GetOrCreateConfig<TezosConfig>().KukaiWebClientAddress);
 			InitializeDeepLinking();
-			
+
 			return UniTask.CompletedTask;
 		}
 
 		public UniTask<SocialProviderData> LogIn(SocialProviderData socialProviderData)
 		{
 			TezosLogger.LogDebug("Login entered");
-			if(_logInTcs != null && _logInTcs.Task.Status == UniTaskStatus.Pending)
-				return _logInTcs.Task;
-			
+			if (_logInTcs != null && _logInTcs.Task.Status == UniTaskStatus.Pending) return _logInTcs.Task;
+
 			TezosLogger.LogDebug("Initiating wallet connection.");
 			_logInTcs = new();
 			OpenLoginLink();
-			OnDeepLinkActivated("unitydl001://kukai-embed/?type=login&address=tz2Br3myzfDe1L3W4xZoaxVv3CkXzn5ryZyA&public_key=sppk7bLPzXaC1EteF9m1gcCavpJXyHrG8HtcE7tf77ZXZ37srHT5RRU&name=Talha%20%C3%87a%C4%9Fatay%20I%C5%9Fik&email=talha.isik@trili.tech&message=Tezos%20Signed%20Message:%20%7B%22requestId%22:%22sample-id%22,%22purpose%22:%22authentication%22,%22currentTime%22:%221726225807%22,%22nonce%22:%22my_nonce%22,%22network%22:%22ghostnet%22,%22publicKey%22:%22sppk7bLPzXaC1EteF9m1gcCavpJXyHrG8HtcE7tf77ZXZ37srHT5RRU%22,%22address%22:%22tz2Br3myzfDe1L3W4xZoaxVv3CkXzn5ryZyA%22,%22domain%22:%22http://localhost:3000%22%7D&signature=spsig1FE2k1BARDdXDKxYCaNMcduwprkasgQSp2Xm3Be83eedAH6RrskFASyXPxbnByJdHk4eYuHFuxTP9c9sNg2ysPC8M8oAtG&typeOfLogin=google");
-			return _logInTcs.Task;
+			return _logInTcs.WithTimeout(30 * 1000, "Kukai login timed out.");
 		}
 
 		public string GetWalletAddress() => _socialProviderData?.WalletAddress;
 
 		public UniTask<bool> LogOut()
 		{
-			if(_logOutTcs != null && _logOutTcs.Task.Status == UniTaskStatus.Pending)
-				return _logOutTcs.Task;
-			
+			if (_logOutTcs != null && _logOutTcs.Task.Status == UniTaskStatus.Pending) return _logOutTcs.Task;
+
 			TezosLogger.LogDebug("Wallet disconnected.");
-			_logOutTcs = new();
+			_logOutTcs          = new();
 			_socialProviderData = null;
 			_logOutTcs.TrySetResult(true);
-			return _logOutTcs.Task;
+			return _logOutTcs.WithTimeout(10 * 1000);
 		}
 
 		public bool IsLoggedIn() => !string.IsNullOrEmpty(_socialProviderData?.WalletAddress);
-
-		public void RequestOperation(SocialOperationRequest operationRequest)
-		{
-			TezosLogger.LogDebug("Requesting operation.");
-			OpenOperationLink(operationRequest);
-		}
-
-		public void RequestSignPayload(SocialSignPayloadRequest signRequest)
-		{
-			signRequest.SigningType = SignPayloadType.raw;
-			var signLink = _urlGenerator.GenerateSignLink(signRequest, _typeOfLogin);
-			Application.OpenURL(signLink);
-		}
 
 		private static TypeOfLogin ParseTypeOfLogin(string loginType)
 		{
@@ -88,48 +75,69 @@ namespace Tezos.SocialLoginProvider
 
 		private void HandleLoginDeepLink(ParsedURLData parsedData)
 		{
+			if (_logInTcs.Task.Status == UniTaskStatus.Faulted)
+			{
+				TezosLogger.LogWarning("Deeplink received but probably task is timed out.");
+				return;
+			}
+			
 			TezosLogger.LogDebug("Handling login response.");
 			_typeOfLogin = ParseTypeOfLogin(parsedData.GetParameter("typeOfLogin"));
 
 			_socialProviderData = new SocialProviderData
-			{
-				SocialLoginType = SocialLoginType.Kukai,
-				WalletAddress   = parsedData.GetParameter("address"),
-				PublicKey       = parsedData.GetParameter("public_key"),
-				LoginType       = _typeOfLogin.ToString()
-			};
+			                      {
+				                      SocialLoginType = SocialLoginType.Kukai,
+				                      WalletAddress   = parsedData.GetParameter("address"),
+				                      PublicKey       = parsedData.GetParameter("public_key"),
+				                      LoginType       = _typeOfLogin.ToString(),
+				                      LoginDetails    = parsedData.GetParameter("login_details"),
+			                      };
 
 			AuthResponse = new AuthResponse
-			{
-				Message = parsedData.GetParameter("message"),
-				Signature = parsedData.GetParameter("signature")
-			};
+			               {
+				               Message   = parsedData.GetParameter("message"),
+				               Signature = parsedData.GetParameter("signature")
+			               };
 
 			_logInTcs.TrySetResult(_socialProviderData);
 		}
 
 		private void HandleOperationDeepLink(ParsedURLData parsedData)
 		{
+			if (_operationTcs.Task.Status == UniTaskStatus.Faulted)
+			{
+				TezosLogger.LogWarning("Deeplink received but probably task is timed out.");
+				return;
+			}
+			
 			TezosLogger.LogDebug("Handling operation response.");
 
-			// var operation = new OperationInfo(parsedData.GetParameter("operationHash"), parsedData.GetParameter("operationHash"), BeaconMessageType.operation_response);
-
-			// TezosLogger.LogDebug($"Dispatching operation injected event with operation hash: {operation.Hash}");
-			// _eventDispatcher.DispatchOperationInjectedEvent(operation);
+			var operationResult = new OperationResponse
+			                      {
+				                      TransactionHash = parsedData.GetParameter("operationHash"),
+				                      Type            = OperationType.OPERATION_RESPONSE
+			                      };
+			_operationTcs.TrySetResult(operationResult);
 		}
 
 		private void HandleSignExpressionDeepLink(ParsedURLData parsedData)
 		{
+			if (_signPayloadTcs.Task.Status == UniTaskStatus.Faulted)
+			{
+				TezosLogger.LogWarning("Deeplink received but probably task is timed out.");
+				return;
+			}
+			
 			TezosLogger.LogDebug("Handling sign expression request.");
 
-			var signResult = new SocialSignData
-			{
-				Message = parsedData.GetParameter("expression"),
-				Signature = parsedData.GetParameter("signature")
-			};
+			var signResult = new SignPayloadResponse
+			                 {
+				                 Id        = parsedData.GetParameter("expression"),
+				                 Signature = parsedData.GetParameter("operationHash")
+			                 };
 
-			TezosLogger.LogDebug($"Dispatching payload signed event for expression: {signResult.Message} and signature: {signResult.Signature}");
-			// _eventDispatcher.DispatchPayloadSignedEvent(signResult);
+			TezosLogger.LogDebug($"Dispatching payload signed event for expression: {parsedData.GetParameter("expression")} and signature: {signResult.Signature}");
+			_signPayloadTcs.TrySetResult(signResult);
 		}
 
 		private ParsedURLData ParseDeepLinkUrl(string url)
@@ -163,7 +171,7 @@ namespace Tezos.SocialLoginProvider
 
 			// Check for error parameters
 			var errorMessage = parsedData.GetParameter("errorMessage");
-			var errorId = parsedData.GetParameter("errorId");
+			var errorId      = parsedData.GetParameter("errorId");
 
 			if (!string.IsNullOrEmpty(errorMessage))
 			{
@@ -221,61 +229,55 @@ namespace Tezos.SocialLoginProvider
 			TezosLogger.LogDebug("TestOperation");
 
 			var parameter = new MichelinePrim
-			{
-				Prim = PrimType.Pair,
-				Args = new List<IMicheline>
-				{
-					new MichelineInt(11000856),
-					new MichelinePrim
-					{
-						Prim = PrimType.Pair,
-						Args = new List<IMicheline>
-						{
-							new MichelineInt(1),
-							new MichelinePrim
-							{
-								Prim = PrimType.Pair,
-								Args = new List<IMicheline>
-								{
-									new MichelinePrim
-									{
-										Prim = PrimType.None
-									},
-									new MichelinePrim
-									{
-										Prim = PrimType.Pair,
-										Args = new List<IMicheline>
-										{
-											new MichelinePrim
-											{
-												Prim = PrimType.None
-											},
-											new MichelineArray()
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}.ToJson();
+			                {
+				                Prim = PrimType.Pair,
+				                Args = new List<IMicheline>
+				                       {
+					                       new MichelineInt(11000856),
+					                       new MichelinePrim
+					                       {
+						                       Prim = PrimType.Pair,
+						                       Args = new List<IMicheline>
+						                              {
+							                              new MichelineInt(1),
+							                              new MichelinePrim
+							                              {
+								                              Prim = PrimType.Pair,
+								                              Args = new List<IMicheline>
+								                                     {
+									                                     new MichelinePrim { Prim = PrimType.None },
+									                                     new MichelinePrim
+									                                     {
+										                                     Prim = PrimType.Pair,
+										                                     Args = new List<IMicheline>
+										                                            {
+											                                            new MichelinePrim { Prim = PrimType.None },
+											                                            new MichelineArray()
+										                                            }
+									                                     }
+								                                     }
+							                              }
+						                              }
+					                       }
+				                       }
+			                }.ToJson();
 
 			const string _entry_point = "fulfill_ask";
 			const string _destination = "KT1MFWsAXGUZ4gFkQnjByWjrrVtuQi4Tya8G";
-			const ulong _amount = 1500000;
+			const ulong  _amount      = 1500000;
 
-			var req = new SocialOperationRequest
-			{
-				Destination = _destination,
-				EntryPoint = _entry_point,
-				Arg = parameter,
-				Amount = _amount
-			};
+			var req = new OperationRequest
+			          {
+				          Destination = _destination,
+				          EntryPoint  = _entry_point,
+				          Arg         = parameter,
+				          Amount      = _amount
+			          };
 
 			OpenOperationLink(req);
 		}
 
-		private void OpenOperationLink(SocialOperationRequest request)
+		private void OpenOperationLink(OperationRequest request)
 		{
 			if (_socialProviderData == null || string.IsNullOrEmpty(_socialProviderData.WalletAddress))
 			{
@@ -287,6 +289,28 @@ namespace Tezos.SocialLoginProvider
 			Debug.Log($"operationLink:{operationLink}");
 			Application.OpenURL(operationLink);
 		}
-	}
 
+		public async UniTask<OperationResponse> RequestOperation(OperationRequest operationRequest)
+		{
+			if (_operationTcs != null && _operationTcs.Task.Status == UniTaskStatus.Pending) return await _operationTcs.Task;
+			_operationTcs = new();
+
+			TezosLogger.LogDebug("Requesting operation.");
+			OpenOperationLink(operationRequest);
+			return await _operationTcs.WithTimeout(30 * 1000);
+		}
+
+		public async UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest signPayloadRequest)
+		{
+			if (_signPayloadTcs != null && _signPayloadTcs.Task.Status == UniTaskStatus.Pending) return await _signPayloadTcs.Task;
+			_signPayloadTcs = new();
+
+			signPayloadRequest.SigningType = SignPayloadType.RAW;
+			var signLink = _urlGenerator.GenerateSignLink(signPayloadRequest, _typeOfLogin);
+			Application.OpenURL(signLink);
+			return await _signPayloadTcs.WithTimeout(30 * 1000);
+		}
+
+		public UniTask RequestContractOrigination(OriginateContractRequest originateContractRequest) => throw new NotSupportedException("Contract origination is not supported by Kukai wallet.");
+	}
 }

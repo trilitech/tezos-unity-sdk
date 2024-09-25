@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using Beacon.Sdk.Beacon.Operation;
 using Netezos.Contracts;
 using Netezos.Encoding;
 using Newtonsoft.Json.Linq;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
+using Tezos.Operation;
 using Tezos.Token;
-using Tezos.WalletProvider;
 using UnityEngine;
+using OperationRequest = Tezos.Operation.OperationRequest;
+using OperationResponse = Tezos.Operation.OperationResponse;
 
 namespace Tezos.API
 {
@@ -26,7 +27,7 @@ namespace Tezos.API
 
 			var mintParameters = GetContractScript().BuildParameter(entrypoint, new { address = destination, amount = amount.ToString(), metadata = tokenMetadata.GetMetadataDict(), token_id = tokenId.ToString() }).ToJson();
 
-			var walletOperationRequest = new WalletOperationRequest { Destination = address, EntryPoint = entrypoint, Arg = mintParameters };
+			var walletOperationRequest = new OperationRequest { Destination = address, EntryPoint = entrypoint, Arg = mintParameters };
 			var result                 = await RequestOperation(walletOperationRequest);
 
 			TezosLogger.LogDebug($"Mint completed with operation ID: {result.Id}");
@@ -45,7 +46,7 @@ namespace Tezos.API
 
 			var param = GetContractScript().BuildParameter(entryPoint, new List<object> { new { from_ = activeAddress, txs = new List<object> { new { to_ = destination, token_id = tokenId, amount } } } }).ToJson();
 
-			var walletOperationRequest = new WalletOperationRequest { Destination = activeAddress, EntryPoint = entryPoint, Arg = param };
+			var walletOperationRequest = new OperationRequest { Destination = activeAddress, EntryPoint = entryPoint, Arg = param };
 
 			var result = await RequestOperation(walletOperationRequest);
 
@@ -61,7 +62,7 @@ namespace Tezos.API
 			var address         = GetWalletConnectionData().WalletAddress;
 			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
 
-			var walletOriginateContractRequest = new WalletOriginateContractRequest { Script = scriptWithAdmin };
+			var walletOriginateContractRequest = new OriginateContractRequest { Script = scriptWithAdmin };
 			OperationResulted += OnOperationResulted;
 			await RequestContractOrigination(walletOriginateContractRequest);
 

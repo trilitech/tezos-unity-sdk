@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
-using Beacon.Sdk.Beacon.Operation;
 using Tezos.Common;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.MessageSystem;
+using Tezos.Operation;
 using Tezos.Reflection;
 using Tezos.SaveSystem;
+using OperationRequest = Tezos.Operation.OperationRequest;
+using OperationResponse = Tezos.Operation.OperationResponse;
 
 namespace Tezos.WalletProvider
 {
 	public class WalletProviderController : IController
 	{
 		public event Action<string> PairingRequested;
+		public event Action         WalletDisconnected;
 
 		private const string KEY_WALLET = "key-wallet-provider";
 
@@ -31,7 +34,8 @@ namespace Tezos.WalletProvider
 			List<UniTask> initTasks = new();
 			foreach (IWalletProvider walletProvider in _walletProviders)
 			{
-				walletProvider.PairingRequested += OnPairingRequested;
+				walletProvider.PairingRequested   += OnPairingRequested;
+				walletProvider.WalletDisconnected += OnWalletDisconnected;
 				initTasks.Add(walletProvider.Init(_context));
 			}
 
@@ -39,6 +43,8 @@ namespace Tezos.WalletProvider
 			_connectedWalletData = await _saveController.Load<WalletProviderData>(KEY_WALLET);
 			IsInitialized        = true;
 		}
+
+		private void OnWalletDisconnected() => WalletDisconnected?.Invoke();
 
 		private void OnPairingRequested(string pairingData) => PairingRequested?.Invoke(pairingData);
 
@@ -57,11 +63,12 @@ namespace Tezos.WalletProvider
 			bool result = await _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).Disconnect();
 			_connectedWalletData = null;
 			_saveController.Delete(KEY_WALLET);
+			OnWalletDisconnected();
 			return result;
 		}
 
-		public UniTask<OperationResponse>  RequestOperation(WalletOperationRequest                 walletOperationRequest)         => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).RequestOperation(walletOperationRequest);
-		public UniTask<WalletProviderData> RequestSignPayload(WalletSignPayloadRequest             walletSignPayloadRequest)       => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).RequestSignPayload(walletSignPayloadRequest);
-		public UniTask                     RequestOriginateContract(WalletOriginateContractRequest walletOriginateContractRequest) => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData.WalletType).RequestContractOrigination(walletOriginateContractRequest);
+		public UniTask<OperationResponse>   RequestOperation(OperationRequest                 walletOperationRequest)         => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestOperation(walletOperationRequest);
+		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest             walletSignPayloadRequest)       => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestSignPayload(walletSignPayloadRequest);
+		public UniTask                      RequestOriginateContract(OriginateContractRequest walletOriginateContractRequest) => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestContractOrigination(walletOriginateContractRequest);
 	}
 }

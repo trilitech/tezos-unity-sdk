@@ -1,4 +1,4 @@
-namespace Tezos.WalletProvider.Types
+namespace Tezos.SocialLoginProvider
 {
 
 	public class AuthResponse

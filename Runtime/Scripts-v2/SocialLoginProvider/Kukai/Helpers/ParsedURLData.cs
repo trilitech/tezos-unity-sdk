@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Tezos.WalletProvider
+namespace Tezos.SocialLoginProvider
 {
 
 	/// <summary>

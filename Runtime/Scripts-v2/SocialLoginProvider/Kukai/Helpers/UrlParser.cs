@@ -4,7 +4,7 @@ using System.Linq;
 using Tezos.Logger;
 using UnityEngine.Networking;
 
-namespace Tezos.WalletProvider
+namespace Tezos.SocialLoginProvider
 {
 
 	/// <summary>

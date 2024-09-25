@@ -1,4 +1,4 @@
-﻿namespace Tezos.WalletProvider
+﻿namespace Tezos.SocialLoginProvider
 {
 	public enum SocialLoginType
 	{

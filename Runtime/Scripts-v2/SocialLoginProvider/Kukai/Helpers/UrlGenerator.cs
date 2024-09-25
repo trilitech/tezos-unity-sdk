@@ -4,7 +4,7 @@ using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tezos.Logger;
-using Tezos.WalletProvider.Types;
+using Tezos.Operation;
 
 namespace Tezos.SocialLoginProvider
 {
@@ -68,7 +68,7 @@ namespace Tezos.SocialLoginProvider
 		/// <param name="walletAddress">The wallet address.</param>
 		/// <param name="typeOfLogin">The type of login.</param>
 		/// <returns>An operation URL to be sent to Kukai Embed.</returns>
-		public string GenerateOperationLink(SocialOperationRequest req, string walletAddress, TypeOfLogin typeOfLogin)
+		public string GenerateOperationLink(OperationRequest req, string walletAddress, TypeOfLogin typeOfLogin)
 		{
 			var serializedRequest = SerializeWalletOperationRequest(req, walletAddress);
 			TezosLogger.LogDebug($"JSON Payload: {serializedRequest}");
@@ -93,7 +93,7 @@ namespace Tezos.SocialLoginProvider
 		/// <param name="request">The wallet operation request.</param>
 		/// <param name="walletAddress">The wallet address.</param>
 		/// <returns>A JSON string representing the wallet operation request.</returns>
-		private string SerializeWalletOperationRequest(SocialOperationRequest request, string walletAddress)
+		private string SerializeWalletOperationRequest(OperationRequest request, string walletAddress)
 		{
 			var jsonObject = new JObject
 			{
@@ -116,7 +116,7 @@ namespace Tezos.SocialLoginProvider
 			return jsonArray.ToString(Formatting.None);
 		}
 
-		public string GenerateSignLink(SocialSignPayloadRequest signRequest, TypeOfLogin typeOfLogin)
+		public string GenerateSignLink(SignPayloadRequest signRequest, TypeOfLogin typeOfLogin)
 		{
 			return BuildUrl(ActionTypes.SIGN, new Dictionary<string, string>
 			{
