@@ -21,13 +21,16 @@ namespace Tezos.Initializer
 
 			Context                  context                  = new();
 			SaveController           saveController           = new();
-			SocialLoginController    socialLoginController    = new(saveController);
+			SocialProviderController socialLoginController    = new(saveController);
 			WalletProviderController walletProviderController = new(saveController);
 
 			unityMainThreadDispatcher.gameObject.hideFlags = HideFlags.HideAndDontSave;
 
 			ValidateConfig();
 
+			TezosLogger.LogInfo($"Initializing SaveController");
+			await saveController.Initialize(context);
+			TezosLogger.LogInfo($"SaveController Initialized");
 			TezosLogger.LogInfo($"Initializing TezosAPI");
 			TezosAPI.Init(context, walletProviderController, socialLoginController);
 			TezosLogger.LogInfo($"TezosAPI Initialized");

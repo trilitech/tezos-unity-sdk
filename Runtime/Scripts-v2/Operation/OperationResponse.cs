@@ -5,6 +5,5 @@ namespace Tezos.Operation
 		public string        TransactionHash;
 		public string        Id;
 		public string        SenderId;
-		public OperationType Type;
 	}
 }

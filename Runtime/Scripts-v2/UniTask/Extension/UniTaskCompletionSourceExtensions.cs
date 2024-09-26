@@ -14,7 +14,7 @@ namespace Tezos.Cysharp
 		/// <param name="timeout">The timeout duration in milliseconds.</param>
 		/// <param name="cancellationMessage">An optional message to specify when cancellation occurs.</param>
 		/// <returns>The original UniTask from the source, or a canceled task if the timeout occurs.</returns>
-		public static async UniTask<T> WithTimeout<T>(this UniTaskCompletionSource<T> source, int timeout, string cancellationMessage = "Operation timed out")
+		public static async UniTask<T> WithTimeout<T>(this UniTaskCompletionSource<T> source, int timeout, string cancellationMessage = "Task timed out")
 		{
 			using var cts = new CancellationTokenSource();
 

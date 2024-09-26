@@ -29,9 +29,10 @@ namespace Tezos.SocialLoginProvider
 		private TypeOfLogin                                 _typeOfLogin;
 		private string                                      _webClientAddress;
 
-		public UniTask Init(SocialLoginController socialLoginController)
+		public UniTask Init(SocialProviderController socialLoginController)
 		{
-			_urlGenerator = new UrlGenerator(ConfigGetter.GetOrCreateConfig<TezosConfig>().KukaiWebClientAddress);
+			_urlGenerator       = new UrlGenerator(ConfigGetter.GetOrCreateConfig<TezosConfig>().KukaiWebClientAddress);
+			_socialProviderData = socialLoginController.GetSocialProviderData();
 			InitializeDeepLinking();
 
 			return UniTask.CompletedTask;
@@ -45,10 +46,8 @@ namespace Tezos.SocialLoginProvider
 			TezosLogger.LogDebug("Initiating wallet connection.");
 			_logInTcs = new();
 			OpenLoginLink();
-			return _logInTcs.WithTimeout(30 * 1000, "Kukai login timed out.");
+			return _logInTcs.WithTimeout(10 * 1000, "Kukai login timed out.");
 		}
-
-		public string GetWalletAddress() => _socialProviderData?.WalletAddress;
 
 		public UniTask<bool> LogOut()
 		{
@@ -115,7 +114,6 @@ namespace Tezos.SocialLoginProvider
 			var operationResult = new OperationResponse
 			                      {
 				                      TransactionHash = parsedData.GetParameter("operationHash"),
-				                      Type            = OperationType.OPERATION_RESPONSE
 			                      };
 			_operationTcs.TrySetResult(operationResult);
 		}
@@ -297,7 +295,7 @@ namespace Tezos.SocialLoginProvider
 
 			TezosLogger.LogDebug("Requesting operation.");
 			OpenOperationLink(operationRequest);
-			return await _operationTcs.WithTimeout(30 * 1000);
+			return await _operationTcs.WithTimeout(10 * 1000);
 		}
 
 		public async UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest signPayloadRequest)
@@ -308,7 +306,7 @@ namespace Tezos.SocialLoginProvider
 			signPayloadRequest.SigningType = SignPayloadType.RAW;
 			var signLink = _urlGenerator.GenerateSignLink(signPayloadRequest, _typeOfLogin);
 			Application.OpenURL(signLink);
-			return await _signPayloadTcs.WithTimeout(30 * 1000);
+			return await _signPayloadTcs.WithTimeout(10 * 1000);
 		}
 
 		public UniTask RequestContractOrigination(OriginateContractRequest originateContractRequest) => throw new NotSupportedException("Contract origination is not supported by Kukai wallet.");

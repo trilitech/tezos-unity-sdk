@@ -26,7 +26,7 @@ namespace Tezos.API
 		private static UniTaskCompletionSource<bool> _sdkInitializedTcs;
 
 		private static WalletProviderController _walletProviderController;
-		private static SocialLoginController    _socialLoginController;
+		private static SocialProviderController _socialProviderController;
 		private static Rpc                      _rpc;
 
 		static TezosAPI() => _sdkInitializedTcs = new();
@@ -34,22 +34,24 @@ namespace Tezos.API
 		public static void Init(
 			IContext                 context,
 			WalletProviderController walletProviderController,
-			SocialLoginController    socialLoginController
+			SocialProviderController socialLoginController
 			)
 		{
 			context.MessageSystem.AddListener<SdkInitializedCommand>(OnSDKInitialized);
+
 			_rpc                      = new(5);
 			_walletProviderController = walletProviderController;
-			_socialLoginController    = socialLoginController;
+			_socialProviderController    = socialLoginController;
 
-			_walletProviderController.PairingRequested   += OnPairingRequested;
+			_walletProviderController.WalletConnected    += OnWalletConnected;
 			_walletProviderController.WalletDisconnected += OnWalletDisconnected;
+			_walletProviderController.PairingRequested   += OnPairingRequested;
 		}
 
-		private static void OnWalletDisconnected() => WalletDisconnected?.Invoke();
-
-		private static void OnSDKInitialized(SdkInitializedCommand command)     => _sdkInitializedTcs.TrySetResult(command.GetData());
-		private static void OnPairingRequested(string              pairingData) => PairingRequested?.Invoke(pairingData);
+		private static void OnWalletConnected(WalletProviderData walletProviderData) => WalletConnected?.Invoke(walletProviderData);
+		private static void OnWalletDisconnected()                                   => WalletDisconnected?.Invoke();
+		private static void OnPairingRequested(string              pairingData)      => PairingRequested?.Invoke(pairingData);
+		private static void OnSDKInitialized(SdkInitializedCommand command)          => _sdkInitializedTcs.TrySetResult(command.GetData());
 
 #region APIs
 
@@ -67,6 +69,7 @@ namespace Tezos.API
 		public static async UniTask<WalletProviderData> ConnectWallet(WalletProviderData walletProviderData)
 		{
 			if (IsSocialLoggedIn()) throw new AlreadyConnectedException("Can not connect wallet since there is already a social login.");
+			if (IsWalletConnected()) throw new AlreadyConnectedException("Wallet already connected.");
 
 			var result = await _walletProviderController.Connect(walletProviderData);
 			await UnityMainThreadDispatcher.Instance().EnqueueAsync(
@@ -93,9 +96,9 @@ namespace Tezos.API
 				return result;
 			}
 
-			if (_socialLoginController.IsSocialLoggedIn())
+			if (_socialProviderController.IsSocialLoggedIn())
 			{
-				var result = await _socialLoginController.LogOut();
+				var result = await _socialProviderController.LogOut();
 				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
 				                                                        () =>
 				                                                        {
@@ -108,14 +111,15 @@ namespace Tezos.API
 			throw new ConnectionRequiredException("Disconnection failed because no connection found");
 		}
 
-		public static bool               IsSocialLoggedIn()   => _socialLoginController.IsSocialLoggedIn();
-		public static SocialProviderData GetSocialLoginData() => _socialLoginController.GetSocialProviderData();
+		public static bool               IsSocialLoggedIn()   => _socialProviderController.IsSocialLoggedIn();
+		public static SocialProviderData GetSocialLoginData() => _socialProviderController.GetSocialProviderData();
 
 		public static async UniTask<SocialProviderData> SocialLogIn(SocialProviderData socialProviderData)
 		{
 			if (IsWalletConnected()) throw new AlreadyConnectedException("Can not login since there is already a wallet connected");
+			if (IsSocialLoggedIn()) throw new AlreadyConnectedException("Already logged in.");
 
-			var result = await _socialLoginController.LogIn(socialProviderData);
+			var result = await _socialProviderController.LogIn(socialProviderData);
 			SocialLoggedIn?.Invoke(result);
 			return result;
 		}
@@ -135,9 +139,9 @@ namespace Tezos.API
 				return result;
 			}
 
-			if (_socialLoginController.IsSocialLoggedIn())
+			if (_socialProviderController.IsSocialLoggedIn())
 			{
-				var result = await _socialLoginController.RequestOperation(walletOperationRequest);
+				var result = await _socialProviderController.RequestOperation(walletOperationRequest);
 				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
 				                                                        () =>
 				                                                        {
@@ -165,9 +169,9 @@ namespace Tezos.API
 				return result;
 			}
 
-			if (_socialLoginController.IsSocialLoggedIn())
+			if (_socialProviderController.IsSocialLoggedIn())
 			{
-				var result = await _socialLoginController.RequestSignPayload(operationRequest);
+				var result = await _socialProviderController.RequestSignPayload(operationRequest);
 				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
 				                                                        () =>
 				                                                        {
@@ -183,7 +187,7 @@ namespace Tezos.API
 		public static UniTask RequestContractOrigination(OriginateContractRequest originateContractRequest)
 		{
 			if (_walletProviderController.IsWalletConnected()) return _walletProviderController.RequestOriginateContract(originateContractRequest);
-			if (_socialLoginController.IsSocialLoggedIn()) return _socialLoginController.RequestOriginateContract(originateContractRequest);
+			if (_socialProviderController.IsSocialLoggedIn()) return _socialProviderController.RequestOriginateContract(originateContractRequest);
 
 			throw new ConnectionRequiredException("Request contract origination failed because no connection found");
 		}
@@ -196,9 +200,9 @@ namespace Tezos.API
 			if (!IsConnected()) throw new ConnectionRequiredException("Not connected");
 
 			var walletAddress = IsWalletConnected() ? GetWalletConnectionData().WalletAddress : IsSocialLoggedIn() ? GetSocialLoginData().WalletAddress : null;
-			
+
 			if (string.IsNullOrWhiteSpace(walletAddress)) throw new ArgumentException("Wallet address cannot be null or empty", nameof(walletAddress));
-			
+
 			return await _rpc.GetRequest<ulong>(EndPoints.GetBalanceEndPoint(walletAddress));
 		}
 

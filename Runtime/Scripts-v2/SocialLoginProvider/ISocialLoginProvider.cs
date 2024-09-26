@@ -6,7 +6,7 @@ namespace Tezos.SocialLoginProvider
 	public interface ISocialLoginProvider
 	{
 		public SocialLoginType       SocialLoginType { get; }
-		UniTask                      Init(SocialLoginController socialLoginController);
+		UniTask                      Init(SocialProviderController socialLoginController);
 		UniTask<SocialProviderData>  LogIn(SocialProviderData   socialLoginData);
 		UniTask<bool>                LogOut();
 		bool                         IsLoggedIn();

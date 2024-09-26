@@ -55,12 +55,9 @@ namespace Tezos.WalletProvider
 		{
 			TezosLogger.LogDebug("Pairing with wallet...");
 
-			UnityMainThreadDispatcher.Instance().Enqueue(() =>
-			{
-				var url = $"tezos://?type=tzip10&data={data}";
+			var url = $"tezos://?type=tzip10&data={data}";
 				TezosLogger.LogDebug("Opening URL: " + url);
 				Application.OpenURL(url);
-			});
 		}
 #endif
 	}

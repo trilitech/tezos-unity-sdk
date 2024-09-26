@@ -10,22 +10,21 @@ using Tezos.SaveSystem;
 
 namespace Tezos.SocialLoginProvider
 {
-	public class SocialLoginController : IController
+	public class SocialProviderController : IController
 	{
 		private const string KEY_SOCIAL = "key-social-provider";
 
 		private List<ISocialLoginProvider> _socialLoginProviders;
-		private IContext                   _context;
 		private SocialProviderData         _socialProviderData;
 		private SaveController             _saveController;
 
 		public bool IsInitialized { get; private set; }
 
-		public SocialLoginController(SaveController saveController) => _saveController = saveController;
+		public SocialProviderController(SaveController saveController) => _saveController = saveController;
 
 		public async UniTask Initialize(IContext context)
 		{
-			_context              = context;
+			_socialProviderData   = await _saveController.Load<SocialProviderData>(KEY_SOCIAL);
 			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<ISocialLoginProvider>().ToList();
 			List<UniTask> initTasks = new();
 			foreach (ISocialLoginProvider socialLoginProvider in _socialLoginProviders)
@@ -34,8 +33,7 @@ namespace Tezos.SocialLoginProvider
 			}
 
 			await UniTask.WhenAll(initTasks);
-			_socialProviderData = await _saveController.Load<SocialProviderData>(KEY_SOCIAL);
-			IsInitialized       = true;
+			IsInitialized = true;
 		}
 
 		public bool               IsSocialLoggedIn()      => !string.IsNullOrEmpty(_socialProviderData?.WalletAddress);
