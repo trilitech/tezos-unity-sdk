@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using Tezos.Common;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
 using Tezos.Operation;
+using Tezos.Provider;
 using Tezos.Reflection;
 using Tezos.SaveSystem;
 
 namespace Tezos.SocialLoginProvider
 {
-	public class SocialProviderController : IController
+	public class SocialProviderController : IProviderController
 	{
 		private const string KEY_SOCIAL = "key-social-provider";
 
@@ -18,14 +18,24 @@ namespace Tezos.SocialLoginProvider
 		private SocialProviderData         _socialProviderData;
 		private SaveController             _saveController;
 
-		public bool IsInitialized { get; private set; }
+		public ProviderType ProviderType  => ProviderType.SOCIAL;
+		public bool         IsConnected   => !string.IsNullOrEmpty(_socialProviderData?.WalletAddress);
+		public bool         IsInitialized { get; private set; }
 
 		public SocialProviderController(SaveController saveController) => _saveController = saveController;
 
 		public async UniTask Initialize(IContext context)
 		{
 			_socialProviderData   = await _saveController.Load<SocialProviderData>(KEY_SOCIAL);
-			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<ISocialLoginProvider>().ToList();
+#if UNITY_EDITOR || UNITY_ANDROID
+			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<IAndroidProvider>().Cast<ISocialLoginProvider>().ToList();
+#elif UNITY_IOS
+			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<IiOSProvider>().Cast<ISocialLoginProvider>().ToList();
+#elif UNITY_WEBGL
+			_socialLoginProviders = ReflectionHelper.CreateInstancesOfType<IWebGLProvider>().Cast<ISocialLoginProvider>().ToList();
+#else
+			TezosLogger.LogError($"Unsupported platform:{Application.platform}");
+#endif
 			List<UniTask> initTasks = new();
 			foreach (ISocialLoginProvider socialLoginProvider in _socialLoginProviders)
 			{
@@ -36,7 +46,6 @@ namespace Tezos.SocialLoginProvider
 			IsInitialized = true;
 		}
 
-		public bool               IsSocialLoggedIn()      => !string.IsNullOrEmpty(_socialProviderData?.WalletAddress);
 		public SocialProviderData GetSocialProviderData() => _socialProviderData;
 
 		public async UniTask<SocialProviderData> LogIn(SocialProviderData socialProviderData)
@@ -55,8 +64,8 @@ namespace Tezos.SocialLoginProvider
 			return result;
 		}
 
-		public UniTask<OperationResponse>   RequestOperation(OperationRequest                 walletOperationRequest)   => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestOperation(walletOperationRequest);
-		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest             signPayloadRequest)       => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestSignPayload(signPayloadRequest);
-		public UniTask                      RequestOriginateContract(OriginateContractRequest originateContractRequest) => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestContractOrigination(originateContractRequest);
+		public UniTask<OperationResponse>   RequestOperation(OperationRequest                   walletOperationRequest)   => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestOperation(walletOperationRequest);
+		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest               signPayloadRequest)       => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestSignPayload(signPayloadRequest);
+		public UniTask                      RequestContractOrigination(OriginateContractRequest originateContractRequest) => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestContractOrigination(originateContractRequest);
 	}
 }

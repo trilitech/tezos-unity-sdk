@@ -1,7 +1,8 @@
 import BaseWallet from "./BaseWallet";
-import { AccountInfo, Wallet } from "./Types";
+import { AccountInformation, Wallet } from "./Types";
 import { DAppClient } from "@airgap/beacon-sdk";
 import { Network, NetworkType } from "@airgap/beacon-types";
+import { AccountInfo } from '../../node_modules/@airgap/beacon-types/dist/esm/types/AccountInfo';
 
 class BeaconWallet extends BaseWallet implements Wallet {
   client: DAppClient | null;
@@ -10,9 +11,9 @@ class BeaconWallet extends BaseWallet implements Wallet {
   rpcUrl: string;
   address: string;
 
-  constructor(appName: string, appUrl: string, iconUrl: string) {
+  constructor(appName: string, appUrl: string, iconUrl: string, unityObjectName: string) {
     console.log("BeaconWallet constructor", appName, appUrl, iconUrl);
-    super(appName, appUrl, iconUrl);
+    super(appName, appUrl, iconUrl, unityObjectName);
   }
 
   SetNetwork(networkName: string, rpcUrl: string) {
@@ -22,6 +23,7 @@ class BeaconWallet extends BaseWallet implements Wallet {
   }
 
   async ConnectAccount() {
+    console.log("Beacon ConnectAccount");
     const network: Network = {
       type: this.networkType,
       rpcUrl: this.rpcUrl,
@@ -39,19 +41,22 @@ class BeaconWallet extends BaseWallet implements Wallet {
     try {
       const activeAccount = await this.client.getActiveAccount();
       let publicKey: string;
+      let accountInfo;
 
       if (!activeAccount || activeAccount.scopes.length === 0) {
         const permissions = await this.client.requestPermissions();
         this.activeAddress = permissions.address;
         publicKey = permissions.publicKey;
+        accountInfo = permissions.accountInfo;
       } else {
         this.activeAddress = activeAccount.address;
         publicKey = activeAccount.publicKey;
       }
 
       this.CallUnityOnAccountConnected({
-        address: this.activeAddress,
+        walletAddress: this.activeAddress,
         publicKey: publicKey,
+        accountInfo: accountInfo
       });
     } catch (error) {
       console.error(`Error during connecting account, ${error.message}`);
@@ -107,12 +112,18 @@ class BeaconWallet extends BaseWallet implements Wallet {
   async SignPayload(signingType: number, plainTextPayload: string) {
     const parsedSigningType = this.NumToSigningType(signingType);
 
-    const result = await this.client.requestSignPayload({
-      signingType: parsedSigningType,
-      payload: this.GetHexPayloadString(parsedSigningType, plainTextPayload),
-    });
-
-    this.CallUnityOnPayloadSigned({ signature: result.signature });
+    try{
+      const result = await this.client.requestSignPayload({
+        signingType: parsedSigningType,
+        payload: this.GetHexPayloadString(parsedSigningType, plainTextPayload),
+      });
+  
+      this.CallUnityOnPayloadSigned({ signature: result.signature });
+    }
+    catch (error) {
+      console.error(`Error during payload signing, ${error.message}`);
+      this.CallUnityOnPayloadSignFailed(error);
+    }
   }
 
   async DisconnectAccount() {
@@ -120,9 +131,10 @@ class BeaconWallet extends BaseWallet implements Wallet {
     this.activeAddress = "";
     await this.client.removeAllAccounts();
 
-    const accountInfo: AccountInfo = {
+    const accountInfo: AccountInformation = {
       publicKey: activeAccount.publicKey,
-      address: activeAccount.address,
+      walletAddress: activeAccount.address,
+      accountInfo: null
     };
 
     this.CallUnityOnAccountDisconnected(accountInfo);

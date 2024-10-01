@@ -25,30 +25,30 @@ namespace Tezos.API
 
 		private static UniTaskCompletionSource<bool> _sdkInitializedTcs;
 
+		private static Rpc                                _rpc;
 		private static WalletProviderController _walletProviderController;
 		private static SocialProviderController _socialProviderController;
-		private static Rpc                      _rpc;
 
 		static TezosAPI() => _sdkInitializedTcs = new();
 
-		public static void Init(
-			IContext                 context,
-			WalletProviderController walletProviderController,
-			SocialProviderController socialLoginController
-			)
+		public static void Init(IContext context, WalletProviderController walletProviderController, SocialProviderController socialProviderController)
 		{
 			context.MessageSystem.AddListener<SdkInitializedCommand>(OnSDKInitialized);
 
 			_rpc                      = new(5);
 			_walletProviderController = walletProviderController;
-			_socialProviderController    = socialLoginController;
+			_socialProviderController = socialProviderController;
 
 			_walletProviderController.WalletConnected    += OnWalletConnected;
 			_walletProviderController.WalletDisconnected += OnWalletDisconnected;
 			_walletProviderController.PairingRequested   += OnPairingRequested;
 		}
 
-		private static void OnWalletConnected(WalletProviderData walletProviderData) => WalletConnected?.Invoke(walletProviderData);
+		private static void OnWalletConnected(WalletProviderData walletProviderData)
+		{
+			TezosLogger.LogInfo($"TezosAPI.OnWalletConnected. walletProviderData is null: {walletProviderData is null}, walletProviderData.WalletAddress: {walletProviderData.WalletAddress}");
+			WalletConnected?.Invoke(walletProviderData);
+		}
 		private static void OnWalletDisconnected()                                   => WalletDisconnected?.Invoke();
 		private static void OnPairingRequested(string              pairingData)      => PairingRequested?.Invoke(pairingData);
 		private static void OnSDKInitialized(SdkInitializedCommand command)          => _sdkInitializedTcs.TrySetResult(command.GetData());
@@ -63,7 +63,7 @@ namespace Tezos.API
 
 		public static bool               IsConnected()             => IsWalletConnected() || IsSocialLoggedIn();
 		public static string             GetConnectionAddress()    => IsWalletConnected() ? GetWalletConnectionData().WalletAddress : IsSocialLoggedIn() ? GetSocialLoginData().WalletAddress : string.Empty;
-		public static bool               IsWalletConnected()       => _walletProviderController.IsWalletConnected();
+		public static bool               IsWalletConnected()       => _walletProviderController.IsConnected;
 		public static WalletProviderData GetWalletConnectionData() => _walletProviderController.GetWalletProviderData();
 
 		public static async UniTask<WalletProviderData> ConnectWallet(WalletProviderData walletProviderData)
@@ -81,10 +81,9 @@ namespace Tezos.API
 			return result;
 		}
 
-		//todo: these needs factory pattern
 		public static async UniTask<bool> Disconnect()
 		{
-			if (_walletProviderController.IsWalletConnected())
+			if (IsWalletConnected())
 			{
 				var result = await _walletProviderController.Disconnect();
 				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
@@ -96,7 +95,7 @@ namespace Tezos.API
 				return result;
 			}
 
-			if (_socialProviderController.IsSocialLoggedIn())
+			if (IsSocialLoggedIn())
 			{
 				var result = await _socialProviderController.LogOut();
 				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
@@ -111,7 +110,7 @@ namespace Tezos.API
 			throw new ConnectionRequiredException("Disconnection failed because no connection found");
 		}
 
-		public static bool               IsSocialLoggedIn()   => _socialProviderController.IsSocialLoggedIn();
+		public static bool               IsSocialLoggedIn()   => _socialProviderController.IsConnected;
 		public static SocialProviderData GetSocialLoginData() => _socialProviderController.GetSocialProviderData();
 
 		public static async UniTask<SocialProviderData> SocialLogIn(SocialProviderData socialProviderData)
@@ -124,73 +123,31 @@ namespace Tezos.API
 			return result;
 		}
 
-		//todo: these needs factory pattern
 		public static async UniTask<OperationResponse> RequestOperation(OperationRequest walletOperationRequest)
 		{
-			if (_walletProviderController.IsWalletConnected())
-			{
-				var result = await _walletProviderController.RequestOperation(walletOperationRequest);
-				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
-				                                                        () =>
-				                                                        {
-					                                                        OperationResulted?.Invoke(result);
-				                                                        }
-				                                                       );
-				return result;
-			}
-
-			if (_socialProviderController.IsSocialLoggedIn())
-			{
-				var result = await _socialProviderController.RequestOperation(walletOperationRequest);
-				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
-				                                                        () =>
-				                                                        {
-					                                                        OperationResulted?.Invoke(result);
-				                                                        }
-				                                                       );
-				return result;
-			}
-
-			throw new ConnectionRequiredException("Request operation failed because no connection found");
+			var result = await ProviderFactory.GetConnectedProviderController().RequestOperation(walletOperationRequest);
+			await UnityMainThreadDispatcher.Instance().EnqueueAsync(
+			                                                        () =>
+			                                                        {
+				                                                        OperationResulted?.Invoke(result);
+			                                                        }
+			                                                       );
+			return result;
 		}
 
-		//todo: these needs factory pattern
 		public static async UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest operationRequest)
 		{
-			if (_walletProviderController.IsWalletConnected())
-			{
-				var result = await _walletProviderController.RequestSignPayload(operationRequest);
-				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
-				                                                        () =>
-				                                                        {
-					                                                        SigningResulted?.Invoke(result);
-				                                                        }
-				                                                       );
-				return result;
-			}
-
-			if (_socialProviderController.IsSocialLoggedIn())
-			{
-				var result = await _socialProviderController.RequestSignPayload(operationRequest);
-				await UnityMainThreadDispatcher.Instance().EnqueueAsync(
-				                                                        () =>
-				                                                        {
-					                                                        SigningResulted?.Invoke(result);
-				                                                        }
-				                                                       );
-				return result;
-			}
-
-			throw new ConnectionRequiredException("Sign payload failed because no connection found");
+			var result = await ProviderFactory.GetConnectedProviderController().RequestSignPayload(operationRequest);
+			await UnityMainThreadDispatcher.Instance().EnqueueAsync(
+			                                                        () =>
+			                                                        {
+				                                                        SigningResulted?.Invoke(result);
+			                                                        }
+			                                                       );
+			return result;
 		}
 
-		public static UniTask RequestContractOrigination(OriginateContractRequest originateContractRequest)
-		{
-			if (_walletProviderController.IsWalletConnected()) return _walletProviderController.RequestOriginateContract(originateContractRequest);
-			if (_socialProviderController.IsSocialLoggedIn()) return _socialProviderController.RequestOriginateContract(originateContractRequest);
-
-			throw new ConnectionRequiredException("Request contract origination failed because no connection found");
-		}
+		public static UniTask RequestContractOrigination(OriginateContractRequest originateContractRequest) => ProviderFactory.GetConnectedProviderController().RequestContractOrigination(originateContractRequest);
 
 		/// <summary>
 		/// Fetches the XTZ balance of a given wallet address asynchronously.

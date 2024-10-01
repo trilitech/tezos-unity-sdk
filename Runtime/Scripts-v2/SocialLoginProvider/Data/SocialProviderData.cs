@@ -11,6 +11,5 @@
 		public string PublicKey                { get; set; }
 		public string LoginDetails             { get; set; }
 		public string LoginType                { get; set; }
-		public string Error                    { get; set; }
 	}
 }

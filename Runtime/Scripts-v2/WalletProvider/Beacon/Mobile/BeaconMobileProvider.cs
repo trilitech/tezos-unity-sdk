@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR || !UNITY_WEBGL
+using System;
 using System.IO;
 using Beacon.Sdk;
 using Beacon.Sdk.Beacon;
@@ -79,7 +80,7 @@ namespace Tezos.WalletProvider
 
 #endregion
 
-	public class BeaconProvider : IWalletProvider
+	public class BeaconMobileProvider : IAndroidProvider, IiOSProvider
 	{
 		public event Action<WalletProviderData> WalletConnected;
 		public event Action                     WalletDisconnected;
@@ -92,13 +93,11 @@ namespace Tezos.WalletProvider
 		private UniTaskCompletionSource<WalletProviderData>            _walletConnectionTcs;
 		private UniTaskCompletionSource<bool>                          _walletDisconnectionTcs;
 
-		private BeaconConnector         _connector;
 		private OperationRequestHandler _operationRequestHandler;
 
 		public UniTask Init()
 		{
 			_operationRequestHandler = new OperationRequestHandler();
-			_connector               = new BeaconConnector(_operationRequestHandler, this);
 			return CreateAsync();
 		}
 
@@ -126,7 +125,7 @@ namespace Tezos.WalletProvider
 				var pairingRequestInfo = BeaconDappClient.GetPairingRequestInfo();
 				_walletData            = data;
 				_walletData.PairingUri = pairingRequestInfo;
-				_connector.PairingRequested(pairingRequestInfo);
+				RequestPairing(pairingRequestInfo);
 				PairingRequested?.Invoke(pairingRequestInfo);
 				TezosLogger.LogDebug($"pairingRequestInfo: {pairingRequestInfo}");
 			}
@@ -161,7 +160,12 @@ namespace Tezos.WalletProvider
 			if (_operationTcs != null && _operationTcs.Task.Status == UniTaskStatus.Pending) return await _operationTcs.Task;
 
 			_operationTcs = new();
-			_connector.RequestOperation(operationRequest);
+			TezosLogger.LogDebug($"RequestOperation, _operationRequestHandler is null:{_operationRequestHandler is null}");
+			Application.OpenURL("tezos://");
+			_operationRequestHandler.RequestTezosOperation(
+			                                               operationRequest.Destination, operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
+			                                               BeaconDappClient
+			                                              );
 			return await _operationTcs.WithTimeout(10 * 1000, "Request operation task timeout.");
 		}
 
@@ -170,11 +174,28 @@ namespace Tezos.WalletProvider
 			if (_signPayloadTcs != null && _signPayloadTcs.Task.Status == UniTaskStatus.Pending) return await _signPayloadTcs.Task;
 
 			_signPayloadTcs = new();
-			_connector.RequestSignPayload(signRequest);
+			TezosLogger.LogDebug("RequestSignPayload");
+			Application.OpenURL("tezos://");
+			Beacon.Sdk.Beacon.Sign.SignPayloadType signPayloadType = Enum.Parse<Beacon.Sdk.Beacon.Sign.SignPayloadType>(signRequest.SigningType.ToString().ToLowerInvariant());
+			BeaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signPayloadType, signRequest.Payload), signPayloadType);
 			return await _signPayloadTcs.WithTimeout(10 * 1000, "Sign payload task timeout.");
 		}
 
-		public UniTask RequestContractOrigination(OriginateContractRequest originationRequest) => _connector.RequestContractOrigination(originationRequest);
+		public async UniTask RequestContractOrigination(OriginateContractRequest originationRequest)
+		{
+			TezosLogger.LogDebug("RequestContractOrigination - BeaconDotNet");
+			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress, BeaconDappClient);
+		}
+
+		private void RequestPairing(string data)
+		{
+			TezosLogger.LogDebug("WalletProvider.OnHandshakeReceived");
+			TezosLogger.LogDebug("Pairing with wallet...");
+
+			var url = $"tezos://?type=tzip10&data={data}";
+			TezosLogger.LogDebug("Opening URL: " + url);
+			Application.OpenURL(url);
+		}
 
 		public bool IsAlreadyConnected() => BeaconDappClient.Connected;
 
@@ -336,7 +357,7 @@ namespace Tezos.WalletProvider
 		private void HandleOperationResponse(OperationResponse operationResponse)
 		{
 			TezosLogger.LogDebug($"Received operation response. operationResponse is null:{operationResponse is null}");
-			
+
 			if (_operationTcs.Task.Status == UniTaskStatus.Faulted)
 			{
 				TezosLogger.LogWarning("Operation response received but probably task is timed out.");
@@ -365,7 +386,7 @@ namespace Tezos.WalletProvider
 		private void HandleSignPayloadResponse(SignPayloadResponse signPayloadResponse)
 		{
 			TezosLogger.LogDebug($"Received sign payload response. signPayloadResponse is null:{signPayloadResponse is null}");
-			
+
 			if (_signPayloadTcs.Task.Status == UniTaskStatus.Faulted)
 			{
 				TezosLogger.LogWarning("Sign payload response received but probably task is timed out.");
@@ -443,9 +464,8 @@ namespace Tezos.WalletProvider
 			await CreateAsync();
 
 			// meaning dapp removed via wallet app
-			if (_walletDisconnectionTcs == null) _walletDisconnectionTcs = new();
+			if (_walletDisconnectionTcs != null) _walletDisconnectionTcs.TrySetResult(true);
 
-			_walletDisconnectionTcs.TrySetResult(true);
 			_walletData = new();
 			WalletDisconnected?.Invoke();
 		}
@@ -505,3 +525,4 @@ namespace Tezos.WalletProvider
 #endregion
 	}
 }
+#endif

@@ -22,7 +22,7 @@ function InitWalletProvider(
     walletType: WalletType,
     appName: string,
     appUrl: string,
-    iconUrl: string
+    iconUrl: string,
 ) {
 
     console.log("InitWalletProvider");
@@ -35,13 +35,13 @@ function InitWalletProvider(
 
 
     if (walletType === WalletType.kukai) {
-        if (!kukaiWallet) kukaiWallet = new KukaiWallet(appName, appUrl, iconUrl);
+        if (!kukaiWallet) kukaiWallet = new KukaiWallet(appName, appUrl, iconUrl, "KukaiWebGLEventBridge");
         window.WalletProvider = kukaiWallet;
     }
 
     if (walletType === WalletType.beacon) {
         if (!beaconWallet)
-            beaconWallet = new BeaconWallet(appName, appUrl, iconUrl);
+            beaconWallet = new BeaconWallet(appName, appUrl, iconUrl, "BeaconWebGLEventBridge");
         window.WalletProvider = beaconWallet;
     }
 
@@ -102,7 +102,7 @@ async function UnityReadyEvent() {
         );
 
         window.WalletProvider.client = dAppClient;
-        window.WalletProvider.ConnectAccount();
+        // window.WalletProvider.ConnectAccount();
     } else {
         const networkName = localStorage.getItem("networkName");
         console.log("No active account found, trying to connect to: ", networkName);
@@ -116,7 +116,7 @@ async function UnityReadyEvent() {
                 dappUrl,
                 iconUrl
             );
-            window.WalletProvider.ConnectAccount();
+            // window.WalletProvider.ConnectAccount();
         }
     }
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Netezos.Encoding;
+using Newtonsoft.Json;
 using Tezos.API;
 using Tezos.Operation;
 using Tezos.QR;
@@ -42,7 +44,11 @@ public class RefactorExample : MonoBehaviour
 		if (TezosAPI.IsConnected()) _informationText.text = TezosAPI.GetConnectionAddress();
 	}
 
-	private void OnWalletConnected(WalletProviderData walletProviderData) => _informationText.text = $"{walletProviderData.WalletAddress}";
+	private void OnWalletConnected(WalletProviderData walletProviderData)
+	{
+		Debug.Log("OnWalletConnected received.");
+		_informationText.text = $"{walletProviderData.WalletAddress}";
+	}
 
 	private async void OnSendOperationClicked()
 	{
@@ -98,7 +104,7 @@ public class RefactorExample : MonoBehaviour
 		}
 		catch (Exception e)
 		{
-			_payloadText.text = $"{e.Message}";
+			_informationText.text = $"{e.Message}";
 		}
 	}
 

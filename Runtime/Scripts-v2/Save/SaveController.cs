@@ -19,31 +19,31 @@ namespace Tezos.SaveSystem
 			return UniTask.CompletedTask;
 		}
 
-		public void Save<T>(string key, T data)
+		public async UniTask Save<T>(string key, T data)
 		{
-			UnityMainThreadDispatcher.Instance().Enqueue(
-			                                             () =>
-			                                             {
-				                                             TezosLogger.LogInfo($"Saving data to {key}");
-				                                             var serializedObject = JsonConvert.SerializeObject(data);
-				                                             PlayerPrefs.SetString(key, serializedObject);
-				                                             TezosLogger.LogInfo($"Data saved");
-			                                             }
-			                                            );
+			await UnityMainThreadDispatcher.Instance().EnqueueAsync(
+			                                                        () =>
+			                                                        {
+				                                                        TezosLogger.LogInfo($"Saving data to {key}");
+				                                                        var serializedObject = JsonConvert.SerializeObject(data);
+				                                                        PlayerPrefs.SetString(key, serializedObject);
+				                                                        TezosLogger.LogInfo($"Data saved");
+			                                                        }
+			                                                       );
 		}
 
 		public async Task<T> Load<T>(string key)
 		{
 			T loadedData = default;
 			await UnityMainThreadDispatcher.Instance().EnqueueAsync(
-			                                             () =>
-			                                             {
-				                                             TezosLogger.LogInfo($"Loading data from {key}");
-				                                             loadedData =  JsonConvert.DeserializeObject<T>(PlayerPrefs.GetString(key, default));
-				                                             TezosLogger.LogInfo($"Loaded data from {key}");
-			                                             }
-			                                            );
-			
+			                                                        () =>
+			                                                        {
+				                                                        TezosLogger.LogInfo($"Loading data from {key}");
+				                                                        loadedData = JsonConvert.DeserializeObject<T>(PlayerPrefs.GetString(key, default));
+				                                                        TezosLogger.LogInfo($"Loaded data from {key}");
+			                                                        }
+			                                                       );
+
 			return loadedData;
 		}
 

@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Beacon.Sdk.Beacon.Permission;
 using Tezos.API;
 using Tezos.MessageSystem;
 using Tezos.Configs;
 using Tezos.Logger;
 using Tezos.MainThreadDispatcher;
+using Tezos.Provider;
 using Tezos.SaveSystem;
 using Tezos.SocialLoginProvider;
 using Tezos.WalletProvider;
@@ -28,6 +30,15 @@ namespace Tezos.Initializer
 
 			ValidateConfig();
 
+			TezosLogger.LogInfo($"Initializing ProviderFactory");
+			ProviderFactory.Init(
+			                     new List<IProviderController>
+			                     {
+				                     socialLoginController,
+				                     walletProviderController
+			                     }
+			                    );
+			TezosLogger.LogInfo($"ProviderFactory Initialized");
 			TezosLogger.LogInfo($"Initializing SaveController");
 			await saveController.Initialize(context);
 			TezosLogger.LogInfo($"SaveController Initialized");

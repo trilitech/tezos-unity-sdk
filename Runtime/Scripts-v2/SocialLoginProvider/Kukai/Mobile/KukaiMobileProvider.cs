@@ -12,7 +12,7 @@ using SignPayloadType = Tezos.Operation.SignPayloadType;
 
 namespace Tezos.SocialLoginProvider
 {
-	public class KukaiProvider : ISocialLoginProvider
+	public class KukaiMobileProvider : IAndroidProvider, IiOSProvider
 	{
 		public AuthResponse    AuthResponse    { get; private set; }
 		public SocialLoginType SocialLoginType => SocialLoginType.Kukai;
@@ -201,7 +201,6 @@ namespace Tezos.SocialLoginProvider
 		private void HandleErrorDeepLink(string errorMessage, string action, string errorId)
 		{
 			TezosLogger.LogError($"Error received from Kukai: {errorMessage}, Action: {action}, Error ID: {errorId}");
-			_socialProviderData.Error = action + "-" + errorMessage + "-" + errorId;
 		}
 
 		private void InitializeDeepLinking()

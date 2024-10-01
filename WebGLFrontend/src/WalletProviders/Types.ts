@@ -1,5 +1,6 @@
 import { DAppClient } from "@airgap/beacon-sdk";
 import { KukaiEmbed } from "kukai-embed";
+import { AccountInfo } from '../../node_modules/@airgap/beacon-types/dist/esm/types/AccountInfo';
 
 enum WalletType {
   beacon = "beacon",
@@ -13,6 +14,7 @@ enum EventType {
   contractCallInjected = "ContractCallInjected",
   contractCallFailed = "ContractCallFailed",
   payloadSigned = "PayloadSigned",
+  payloadSigFailed = "PayloadSignFailed",
   sdkInitialized = "SDKInitialized",
 }
 
@@ -34,17 +36,19 @@ interface Wallet {
 }
 
 interface AbstractWallet {
-  CallUnityOnAccountConnected(accountInfo: AccountInfo): void;
-  CallUnityOnAccountDisconnected(accountInfo: AccountInfo): void;
+  CallUnityOnAccountConnected(accountInfo: AccountInformation): void;
+  CallUnityOnAccountDisconnected(accountInfo: AccountInformation): void;
   CallUnityOnPayloadSigned(result: SignResult): void;
   CallUnityOnContractCallInjected(result: OperationResult): void;
   CallUnityOnAccountFailedToConnect(error: Error): void;
   CallUnityOnContractCallFailed(error: Error): void;
+  CallUnityOnPayloadSignFailed(error: Error): void;
 }
 
-interface AccountInfo {
+interface AccountInformation {
   publicKey: string;
-  address: string;
+  walletAddress: string;
+  accountInfo: AccountInfo
 }
 
 interface SignResult {
@@ -64,7 +68,7 @@ interface SDKIntializedEvent {}
 interface UnityEvent {
   eventType: EventType;
   data:
-    | AccountInfo
+    | AccountInformation
     | SignResult
     | ErrorInfo
     | OperationResult
@@ -75,7 +79,7 @@ export {
   Wallet,
   WalletType,
   AbstractWallet,
-  AccountInfo,
+  AccountInformation,
   SignResult,
   OperationResult,
   UnityEvent,
