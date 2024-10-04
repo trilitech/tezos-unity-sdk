@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Tezos.API
+namespace Tezos.Request
 {
 
 	internal static class HttpHeaders

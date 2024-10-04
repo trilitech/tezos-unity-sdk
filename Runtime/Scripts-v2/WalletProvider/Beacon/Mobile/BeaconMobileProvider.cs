@@ -16,6 +16,7 @@ using Tezos.Logger;
 using Tezos.MainThreadDispatcher;
 using Tezos.MessageSystem;
 using Tezos.Operation;
+using Tezos.Request;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using OperationRequest = Tezos.Operation.OperationRequest;
@@ -94,12 +95,16 @@ namespace Tezos.WalletProvider
 		private UniTaskCompletionSource<bool>                          _walletDisconnectionTcs;
 
 		private OperationRequestHandler _operationRequestHandler;
+		private Rpc                     _rpc;
 
 		public UniTask Init()
 		{
+			_rpc                     = new(5);
 			_operationRequestHandler = new OperationRequestHandler();
 			return CreateAsync();
 		}
+
+		public async UniTask<string> GetBalance(string walletAddress) => await _rpc.GetRequest<string>(EndPoints.GetBalanceEndPoint(walletAddress));
 
 		public UniTask<WalletProviderData> Connect(WalletProviderData data)
 		{

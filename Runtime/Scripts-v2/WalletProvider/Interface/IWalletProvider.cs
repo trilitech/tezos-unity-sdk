@@ -14,6 +14,7 @@ namespace Tezos.WalletProvider
 		public event Action<string>             PairingRequested;
 		public WalletType                       WalletType { get; }
 		UniTask                                 Init();
+		UniTask<string>                         GetBalance(string walletAddress);
 		UniTask<WalletProviderData>             Connect(WalletProviderData data);
 		UniTask<bool>                           Disconnect();
 		UniTask<OperationResponse>              RequestOperation(OperationRequest                   operationRequest);

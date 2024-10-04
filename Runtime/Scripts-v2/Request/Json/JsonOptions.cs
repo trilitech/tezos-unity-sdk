@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Tezos.API
+namespace Tezos.Request
 {
 
 	public static class JsonOptions

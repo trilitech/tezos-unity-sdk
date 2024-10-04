@@ -7,6 +7,7 @@ using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
 using Tezos.Operation;
+using Tezos.Request;
 using UnityEngine;
 using SignPayloadType = Tezos.Operation.SignPayloadType;
 
@@ -28,9 +29,11 @@ namespace Tezos.SocialLoginProvider
 		private UniTaskCompletionSource<bool>               _logOutTcs;
 		private TypeOfLogin                                 _typeOfLogin;
 		private string                                      _webClientAddress;
+		private Rpc                                         _rpc;
 
 		public UniTask Init(SocialProviderController socialLoginController)
 		{
+			_rpc                = new(5);
 			_urlGenerator       = new UrlGenerator(ConfigGetter.GetOrCreateConfig<TezosConfig>().KukaiWebClientAddress);
 			_socialProviderData = socialLoginController.GetSocialProviderData();
 			InitializeDeepLinking();
@@ -60,6 +63,8 @@ namespace Tezos.SocialLoginProvider
 			return _logOutTcs.WithTimeout(10 * 1000);
 		}
 
+		public UniTask<string> GetBalance(string walletAddress) => _rpc.GetRequest<string>(EndPoints.GetBalanceEndPoint(walletAddress));
+
 		public bool IsLoggedIn() => !string.IsNullOrEmpty(_socialProviderData?.WalletAddress);
 
 		private static TypeOfLogin ParseTypeOfLogin(string loginType)
@@ -79,7 +84,7 @@ namespace Tezos.SocialLoginProvider
 				TezosLogger.LogWarning("Deeplink received but probably task is timed out.");
 				return;
 			}
-			
+
 			TezosLogger.LogDebug("Handling login response.");
 			_typeOfLogin = ParseTypeOfLogin(parsedData.GetParameter("typeOfLogin"));
 
@@ -108,7 +113,7 @@ namespace Tezos.SocialLoginProvider
 				TezosLogger.LogWarning("Deeplink received but probably task is timed out.");
 				return;
 			}
-			
+
 			TezosLogger.LogDebug("Handling operation response.");
 
 			var operationResult = new OperationResponse
@@ -125,7 +130,7 @@ namespace Tezos.SocialLoginProvider
 				TezosLogger.LogWarning("Deeplink received but probably task is timed out.");
 				return;
 			}
-			
+
 			TezosLogger.LogDebug("Handling sign expression request.");
 
 			var signResult = new SignPayloadResponse
@@ -198,10 +203,7 @@ namespace Tezos.SocialLoginProvider
 			}
 		}
 
-		private void HandleErrorDeepLink(string errorMessage, string action, string errorId)
-		{
-			TezosLogger.LogError($"Error received from Kukai: {errorMessage}, Action: {action}, Error ID: {errorId}");
-		}
+		private void HandleErrorDeepLink(string errorMessage, string action, string errorId) { TezosLogger.LogError($"Error received from Kukai: {errorMessage}, Action: {action}, Error ID: {errorId}"); }
 
 		private void InitializeDeepLinking()
 		{
@@ -261,7 +263,7 @@ namespace Tezos.SocialLoginProvider
 
 			const string _entry_point = "fulfill_ask";
 			const string _destination = "KT1MFWsAXGUZ4gFkQnjByWjrrVtuQi4Tya8G";
-			const ulong  _amount      = 1500000;
+			const string _amount      = "1500000";
 
 			var req = new OperationRequest
 			          {

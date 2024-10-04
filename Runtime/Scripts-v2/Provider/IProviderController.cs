@@ -8,6 +8,7 @@ namespace Tezos.Provider
 	{
 		ProviderType                 ProviderType { get; }
 		bool                         IsConnected  { get; }
+		UniTask<string>              GetBalance();
 		UniTask<OperationResponse>   RequestOperation(OperationRequest                   operationRequest);
 		UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest               signRequest);
 		UniTask                      RequestContractOrigination(OriginateContractRequest originationRequest);

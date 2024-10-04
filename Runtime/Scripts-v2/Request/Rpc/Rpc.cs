@@ -2,7 +2,7 @@
 using Netezos.Rpc.Queries.Post;
 using Tezos.Cysharp.Threading.Tasks;
 
-namespace Tezos.API
+namespace Tezos.Request
 {
 	public class Rpc : TezosClient
 	{

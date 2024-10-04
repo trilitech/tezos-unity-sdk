@@ -5,6 +5,6 @@ namespace Tezos.Operation
 		public string Destination;
 		public string EntryPoint;
 		public string Arg;
-		public ulong  Amount;
+		public string Amount;
 	}
 }

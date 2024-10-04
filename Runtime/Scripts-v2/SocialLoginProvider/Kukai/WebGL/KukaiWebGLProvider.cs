@@ -8,6 +8,7 @@ using Tezos.Logger;
 using Tezos.MainThreadDispatcher;
 using Tezos.MessageSystem;
 using Tezos.Operation;
+using Tezos.Request;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -33,9 +34,11 @@ namespace Tezos.SocialLoginProvider
 		private UniTaskCompletionSource<bool>                _logOutTcs;
 
 		private KukaiWebGLEventBridge _webGLEventBridge;
+		private Rpc                   _rpc;
 
 		public UniTask Init(SocialProviderController socialProviderController)
 		{
+			_rpc                                   =  new(5);
 			_webGLEventBridge                      =  new GameObject("KukaiWebGLEventBridge").AddComponent<KukaiWebGLEventBridge>();
 			_webGLEventBridge.EventReceived        += data => UnityMainThreadDispatcher.Instance().Enqueue(() => OnEventReceived(data));
 			_webGLEventBridge.gameObject.hideFlags =  HideFlags.HideAndDontSave;
@@ -135,6 +138,8 @@ namespace Tezos.SocialLoginProvider
 			// await UnityMainThreadDispatcher.Instance().EnqueueAsync(HandleDisconnection);
 			return await _logOutTcs.Task;
 		}
+
+		public UniTask<string> GetBalance(string walletAddress) => _rpc.GetRequest<string>(EndPoints.GetBalanceEndPoint(walletAddress));
 
 		public async UniTask<OperationResponse> RequestOperation(OperationRequest operationRequest)
 		{

@@ -3,13 +3,13 @@ using System.IO;
 using Tezos.Configs;
 using Tezos.MessageSystem;
 
-namespace Tezos.API
+namespace Tezos.Request
 {
 	public static class EndPoints
 	{
 		private static string _baseUrl;
 
-		static EndPoints() { _baseUrl = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().BaseUrl; }
+		static EndPoints() => _baseUrl = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().BaseUrl;
 
 		public static string GetBalanceEndPoint(string      walletAddress)                                               => Path.Combine(_baseUrl, "accounts", walletAddress, "balance");
 		public static string GetContractCodeEndPoint(string contract)                                                    => Path.Combine(_baseUrl, $"chains/main/blocks/head/context/contracts/{contract}/script/");

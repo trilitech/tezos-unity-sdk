@@ -7,8 +7,9 @@ namespace Tezos.SocialLoginProvider
 	{
 		public SocialLoginType       SocialLoginType { get; }
 		UniTask                      Init(SocialProviderController socialLoginController);
-		UniTask<SocialProviderData>  LogIn(SocialProviderData   socialLoginData);
+		UniTask<SocialProviderData>  LogIn(SocialProviderData      socialLoginData);
 		UniTask<bool>                LogOut();
+		UniTask<string>              GetBalance(string walletAddress);
 		bool                         IsLoggedIn();
 		UniTask<OperationResponse>   RequestOperation(OperationRequest                   operationRequest);
 		UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest               signPayloadRequest);

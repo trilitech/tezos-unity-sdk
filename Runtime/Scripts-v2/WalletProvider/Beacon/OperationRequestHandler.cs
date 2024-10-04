@@ -70,7 +70,7 @@ namespace Tezos.WalletProvider
 		/// <param name="amount">The amount to be transferred.</param>
 		/// <param name="beaconDappClient">The Dapp Beacon client instance.</param>
 		/// <returns>A Task representing the asynchronous operation.</returns>
-		public UniTask RequestTezosOperation(string destination, string entryPoint, string input, ulong amount, DappBeaconClient beaconDappClient)
+		public UniTask RequestTezosOperation(string destination, string entryPoint, string input, string amount, DappBeaconClient beaconDappClient)
 		{
 			TezosLogger.LogDebug("Requesting Tezos Operation");
 			return RequestOperation(beaconDappClient, () => CreateTransactionOperation(destination, entryPoint, input, amount), BeaconMessageType.operation_request);
@@ -154,12 +154,12 @@ namespace Tezos.WalletProvider
 		///     This method sets up a transaction operation with the provided parameters,
 		///     creating a partial transaction operation object and adding it to the list.
 		/// </remarks>
-		private List<TezosBaseOperation> CreateTransactionOperation(string destination, string entryPoint, string input, ulong amount)
+		private List<TezosBaseOperation> CreateTransactionOperation(string destination, string entryPoint, string input, string amount)
 		{
 			var operationDetails = new List<TezosBaseOperation>();
 
 			// Create partial Tezos transaction operation with provided details
-			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount.ToString(), destination, new JObject { ["entrypoint"] = entryPoint, ["value"] = JToken.Parse(input) });
+			var partialTezosTransactionOperation = new PartialTezosTransactionOperation(amount, destination, new JObject { ["entrypoint"] = entryPoint, ["value"] = JToken.Parse(input) });
 			operationDetails.Add(partialTezosTransactionOperation);
 			return operationDetails;
 		}

@@ -1,13 +1,15 @@
 #if UNITY_EDITOR
 using System.IO;
+using System.Linq;
 using Tezos.Configs;
 using Tezos.MessageSystem;
+using Tezos.Reflection;
 using UnityEditor;
 using UnityEngine;
 
 namespace Tezos.Editor
 {
-	public class TezosEditor : EditorWindow
+	public class TezosEditor : EditorWindow, ITezosEditor
 	{
 		private const string LinkerFolderPath          = "Assets/Tezos/Linker";
 		private const string LinkerFileName            = "link.xml";
@@ -18,6 +20,12 @@ namespace Tezos.Editor
 
 		[MenuItem("Tezos/Setup Configs")]
 		public static void SetupTezosConfigs()
+		{
+			var tezosEditors = ReflectionHelper.CreateInstancesOfType<ITezosEditor>().ToList();
+			tezosEditors.ForEach(editor => editor.SetupConfigs());
+		}
+
+		public void SetupConfigs()
 		{
 			CreateLinkerFile();
 			CopyAndMergeFolders(SourceStreamingAssetsPath, Path.Combine(DestinationAssetsPath, "StreamingAssets"));
@@ -117,11 +125,11 @@ namespace Tezos.Editor
 	public class TezosPackageImportListener : AssetPostprocessor
 	{
 		private static bool _packageImported;
-		
+
 		private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
 		{
 			if (_packageImported) return;
-			
+
 			foreach (string asset in importedAssets)
 			{
 				if (asset.Contains("com.trilitech.tezos-unity-sdk"))

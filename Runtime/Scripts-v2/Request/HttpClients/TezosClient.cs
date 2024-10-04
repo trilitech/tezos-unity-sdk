@@ -6,7 +6,7 @@ using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using UnityEngine.Networking;
 
-namespace Tezos.API
+namespace Tezos.Request
 {
 	public class TezosClient
 	{

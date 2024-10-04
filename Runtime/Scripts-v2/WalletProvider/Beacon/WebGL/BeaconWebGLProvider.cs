@@ -7,6 +7,7 @@ using Tezos.Logger;
 using Tezos.MainThreadDispatcher;
 using Tezos.MessageSystem;
 using Tezos.Operation;
+using Tezos.Request;
 using UnityEngine;
 using Object = UnityEngine.Object;
 // ReSharper disable once RedundantUsingDirective
@@ -37,9 +38,11 @@ namespace Tezos.WalletProvider
 		private UniTaskCompletionSource<bool>                _walletDisconnectionTcs;
 
 		private WebGLEventBridge _webGLEventBridge;
+		private Rpc              _rpc;
 
 		public UniTask Init()
 		{
+			_rpc                                   =  new(5);
 			_webGLEventBridge                      =  new GameObject("BeaconWebGLEventBridge").AddComponent<WebGLEventBridge>();
 			_webGLEventBridge.EventReceived        += data => UnityMainThreadDispatcher.Instance().Enqueue(() => OnEventReceived(data));
 			_webGLEventBridge.gameObject.hideFlags =  HideFlags.HideAndDontSave;
@@ -48,6 +51,8 @@ namespace Tezos.WalletProvider
 			JsUnityReadyEvent();
 			return UniTask.CompletedTask;
 		}
+
+		public async UniTask<string> GetBalance(string walletAddress) => await _rpc.GetRequest<string>(EndPoints.GetBalanceEndPoint(walletAddress));
 
 		private void OnEventReceived(string jsonEventData)
 		{

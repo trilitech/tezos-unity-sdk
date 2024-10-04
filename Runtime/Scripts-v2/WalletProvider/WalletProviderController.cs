@@ -76,6 +76,8 @@ namespace Tezos.WalletProvider
 
 		public WalletProviderData GetWalletProviderData() => _connectedWalletData;
 
+		public IWalletProvider GetWalletProvider<T>() where T : IWalletProvider => _walletProviders.Find(p => p is T);
+
 		public async UniTask<WalletProviderData> Connect(WalletProviderData walletProviderData)
 		{
 			_connectedWalletData = await _walletProviders.Find(wp => wp.WalletType == walletProviderData.WalletType).Connect(walletProviderData);
@@ -88,6 +90,7 @@ namespace Tezos.WalletProvider
 			return result;
 		}
 
+		public UniTask<string>              GetBalance()                                                                        => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).GetBalance(_connectedWalletData.WalletAddress);
 		public UniTask<OperationResponse>   RequestOperation(OperationRequest                   walletOperationRequest)         => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestOperation(walletOperationRequest);
 		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest               walletSignPayloadRequest)       => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestSignPayload(walletSignPayloadRequest);
 		public UniTask                      RequestContractOrigination(OriginateContractRequest walletOriginateContractRequest) => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestContractOrigination(walletOriginateContractRequest);

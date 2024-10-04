@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Tezos.API
+namespace Tezos.Request
 {
 
 	internal class SnakeCaseNamingPolicy : JsonNamingPolicy

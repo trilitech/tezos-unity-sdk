@@ -19,7 +19,8 @@ namespace Tezos.MessageSystem
 			// Check if the config is already in cache
 			if (_cache.TryGetValue(key, out ScriptableObject cachedConfig))
 			{
-				return cachedConfig as T;
+				if(cachedConfig != null)
+					return cachedConfig as T;
 			}
 
 			// Try to load the ScriptableObject from resources
