@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using TezosSDK.Helpers.Logging;
 using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
 using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI;
 using TezosSDK.Samples.MarketplaceSample.ScriptableObjects;
@@ -22,10 +21,9 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 		[SerializeField] private List<Draggable> draggables = new();
 		[SerializeField] private StatsView statsView;
 		[SerializeField] private ItemView itemView;
+		
 		private const string PlayerPrefsEquipKey = "_eq_";
-
 		private const string PlayerPrefsInvKey = "_inv_";
-
 		private readonly Dictionary<int, Draggable> _itemIDtoDraggable = new();
 		private readonly List<int> _lastHeldItems = new();
 		private SnapController _snapController;
@@ -35,20 +33,10 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 			_snapController = GetComponent<SnapController>();
 		}
 
-		private void OnApplicationQuit()
-		{
-			// no need for local storage, since data need to be coming from the blockchain
-			//SaveInventoryLocally();
-		}
-
 		public void Init(List<IItemModel> items)
 		{
-			//ClearInventory();
 			UpdateItems(items);
 			UpdateSnapController();
-
-			// no need for local storage, since data need to be coming from the blockchain
-			//LoadLocalInventory();
 		}
 
 		public void OnItemClicked(Draggable item)

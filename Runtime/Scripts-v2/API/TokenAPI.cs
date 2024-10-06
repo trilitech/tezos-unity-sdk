@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Netezos.Contracts;
@@ -52,51 +53,24 @@ namespace Tezos.API
 
 			return result.TransactionHash;
 		}
-		
-		public static async UniTask<string> Deploy()
-		{
-			var deployTcs = new UniTaskCompletionSource<string>();
-			TezosLogger.LogDebug("Deploying contract...");
 
-			var stringScript    = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
-			var address         = GetWalletConnectionData().WalletAddress;
-			var scriptWithAdmin = stringScript.Replace("CONTRACT_ADMIN", address);
-
-			var walletOriginateContractRequest = new OriginateContractRequest { Script = scriptWithAdmin };
-			OperationResulted += OnOperationResulted;
-			await RequestContractOrigination(walletOriginateContractRequest);
-
-			async void OnOperationResulted(OperationResponse operationResponse)
-			{
-				OperationResulted -= OnOperationResulted;
-				TezosLogger.LogDebug($"Deploy completed with operation ID: {operationResponse.Id}");
-
-				var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text;
-				var creator  = GetWalletConnectionData().WalletAddress;
-				
-				var result = await GetOriginatedContractsForOwner(creator, codeHash, 1000, new OriginatedContractsForOwnerOrder.Default(0));
-
-				var tokenContracts = result.ToList();
-
-				if (!tokenContracts.Any())
-				{
-					return;
-				}
-
-				var lastUsedContract = tokenContracts.Last();
-				PlayerPrefs.SetString("CurrentContract:" + creator, lastUsedContract);
-				deployTcs.TrySetResult(lastUsedContract);
-			}
-
-			return await deployTcs.Task;
-		}
-
-		private static ContractScript GetContractScript()
+		private static ContractScript GetContractScript() // TODO: This needs to be replaced with the actual contract script, not the conract we ship with the SDK. Netezos possibly has a way of achieving this.
 		{
 			var script = Resources.Load<TextAsset>("Contracts/FA2TokenContract").text;
+			
+			if (string.IsNullOrEmpty(script))
+			{
+				throw new InvalidOperationException("Failed to load contract script");
+			}
+			
 			var code   = JObject.Parse(script).SelectToken("code");
 
-			return new ContractScript(Micheline.FromJson(code.ToString()));
+			if (code != null)
+			{
+				return new ContractScript(Micheline.FromJson(code.ToString())!);
+			}
+			
+			throw new InvalidOperationException("Failed to parse contract code");
 		}
 	}
 }

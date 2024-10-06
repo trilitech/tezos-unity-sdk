@@ -1,4 +1,5 @@
-using TezosSDK.Tezos.Managers;
+using Tezos.Configs;
+using Tezos.MessageSystem;
 using TMPro;
 using UnityEngine;
 
@@ -12,8 +13,10 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 
 		private void Start()
 		{
-			nameText.text = TezosManager.Instance.DAppMetadata.Name;
-			descriptionText.text = TezosManager.Instance.DAppMetadata.Description;
+			var appConfig   = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			
+			nameText.text = appConfig.AppName;
+			descriptionText.text = appConfig.AppDescription;
 		}
 	}
 

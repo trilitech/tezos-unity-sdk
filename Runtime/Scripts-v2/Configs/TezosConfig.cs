@@ -57,25 +57,5 @@ namespace Tezos.Configs
 		{
 			get => rpcUrlFormat.Replace("{network}", network.ToString());
 		}
-
-		private void OnValidate()
-		{
-			if (string.IsNullOrEmpty(pinataApiKey))
-			{
-				Debug.LogWarning("Pinata API key is not set in TezosConfigSO. You will not be able to upload images to IPFS.");
-			}
-
-			if (dataProviderConfig == null)
-			{
-				Debug.LogError("Data provider is not set in TezosConfigSO. You will not be able to query data.");
-			}
-			else
-			{
-				if (dataProviderConfig.Network != network)
-				{
-					Debug.LogError("Data provider network does not match TezosConfigSO network.");
-				}
-			}
-		}
 	}
 }

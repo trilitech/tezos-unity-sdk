@@ -83,6 +83,14 @@ namespace Tezos.API
 
 		public static async UniTask<bool> Disconnect()
 		{
+
+			if (!IsConnected())
+			{
+				TezosLogger.LogWarning("No connection found to disconnect");
+				return false;
+			}
+			
+			
 			if (IsWalletConnected())
 			{
 				var result = await _walletProviderController.Disconnect();
@@ -290,7 +298,7 @@ namespace Tezos.API
 
 		public static UniTask<int> GetAccountCounter(string address) => _rpc.GetRequest<int>(EndPoints.GetAccountCounterEndPoint(address));
 
-		private static UniTask<IEnumerable<string>> GetOriginatedContractsForOwner(
+		public static UniTask<IEnumerable<FA2Token>> GetOriginatedContractsForOwner(
 			string                           creator,
 			string                           codeHash,
 			long                             maxItems,
@@ -307,11 +315,10 @@ namespace Tezos.API
 				           _                                                                      => string.Empty
 			           };
 
-			var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&"                                +
-			          "select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time" +
-			          $",id&{sort}&limit={maxItems}";
+			var url = $"contracts?creator={creator}&tzips.any=fa2&codeHash={codeHash}&" +
+			          $"select=address,tokensCount as tokens_count,lastActivity,lastActivityTime as last_activity_time,id&{sort}&limit={maxItems}";
 
-			return _rpc.GetRequest<IEnumerable<string>>(url);
+			return _rpc.GetRequest<IEnumerable<FA2Token>>(url);
 		}
 
 #endregion

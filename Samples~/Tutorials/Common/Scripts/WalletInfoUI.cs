@@ -1,5 +1,5 @@
-using TezosSDK.Tezos.Managers;
-using TezosSDK.Tezos.Models;
+using Tezos.API;
+using Tezos.WalletProvider;
 using TMPro;
 using UnityEngine;
 
@@ -15,26 +15,23 @@ namespace TezosSDK.Samples.Tutorials.Common
 		{
 			addressText.text = NOT_CONNECTED_TEXT;
 
-			// Subscribe to events
-			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
+			TezosAPI.WalletConnected += OnWalletConnected;
+			TezosAPI.WalletDisconnected += OnWalletDisconnected;
 		}
 
 		private void OnDestroy()
 		{
-			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected -= OnWalletDisconnected;
+			TezosAPI.WalletConnected -= OnWalletConnected;
+			TezosAPI.WalletDisconnected -= OnWalletDisconnected;
 		}
 
-		private void OnWalletConnected(WalletInfo walletInfo)
+		private void OnWalletConnected(WalletProviderData walletProviderData)
 		{
-			// We can get the address from the wallet
-			addressText.text = TezosManager.Instance.Tezos.WalletAccount.GetWalletAddress();
-			// Or from the event data
-			addressText.text = walletInfo.Address;
+			// We can get the address from the event data
+			addressText.text = walletProviderData.WalletAddress;
 		}
 
-		private void OnWalletDisconnected(WalletInfo walletInfo)
+		private void OnWalletDisconnected()
 		{
 			addressText.text = NOT_CONNECTED_TEXT;
 		}

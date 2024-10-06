@@ -1,5 +1,5 @@
-using TezosSDK.Tezos.Managers;
-using TezosSDK.Tezos.Models;
+using Tezos.API;
+using Tezos.WalletProvider;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,24 +15,24 @@ namespace TezosSDK.Samples.Tutorials.Common
 		private void Start()
 		{
 			// Subscribe to wallet events
-			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
+			TezosAPI.WalletConnected += OnWalletConnected;
+			TezosAPI.WalletDisconnected += OnWalletDisconnected;
 		}
 
 		private void OnDestroy()
 		{
-			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected -= OnWalletDisconnected;
+			TezosAPI.WalletConnected -= OnWalletConnected;
+			TezosAPI.WalletDisconnected -= OnWalletDisconnected;
 		}
 
-		private void OnWalletConnected(WalletInfo walletInfo)
+		private void OnWalletConnected(WalletProviderData walletProviderData)
 		{
-			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
-			addressText.text = string.IsNullOrEmpty(contractAddress) ? "Not deployed" : contractAddress;
-			UpdateLayout();
+			// var contractAddress = TezosAPI.TokenContract.Address;
+			// addressText.text = string.IsNullOrEmpty(contractAddress) ? "Not deployed" : contractAddress;
+			// UpdateLayout();
 		}
 
-		private void OnWalletDisconnected(WalletInfo walletInfo)
+		private void OnWalletDisconnected()
 		{
 			addressText.text = NOT_CONNECTED_TEXT;
 			UpdateLayout();

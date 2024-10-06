@@ -523,6 +523,7 @@ namespace Tezos.WalletProvider
 		private string GetDbPath() => Path.Combine(Application.persistentDataPath, "beacon.db");
 
 #endregion
+
 	}
 }
 #endif

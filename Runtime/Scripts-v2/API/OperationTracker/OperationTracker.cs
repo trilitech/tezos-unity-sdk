@@ -14,12 +14,12 @@ namespace Tezos.API
 	/// </summary>
 	public class OperationTracker
 	{
-		private const    float                TIMEOUT   = 30f;   // seconds
 		private const    float                WAIT_TIME = 2000f; // milliseconds (2 seconds)
 		private readonly Action<bool, string> _onComplete;
 		private readonly string               _operationHash;
 		private          bool                 _isTracking;
 		private          string               _baseUrl;
+		
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="OperationTracker" /> class.
@@ -52,7 +52,9 @@ namespace Tezos.API
 		private async UniTask TrackOperationAsync()
 		{
 			float startTime = Time.time;
-			while (_isTracking && Time.time - startTime < TIMEOUT)
+			var timeout = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().RequestTimeoutSeconds;
+			
+			while (_isTracking && Time.time - startTime < timeout)
 			{
 				TezosLogger.LogDebug($"Checking operation status for hash {_operationHash}");
 				bool? result = await GetOperationStatusAsync(_operationHash);
@@ -74,7 +76,7 @@ namespace Tezos.API
 					return;
 				}
 
-				TezosLogger.LogDebug($"Waiting {WAIT_TIME / 1000} seconds before next operation status check. Remaining time: {TIMEOUT - (Time.time - startTime)}");
+				TezosLogger.LogDebug($"Waiting {WAIT_TIME / 1000} seconds before next operation status check. Remaining time: {timeout - (Time.time - startTime)}");
 				await UniTask.Delay((int)WAIT_TIME); // Wait before checking again
 			}
 

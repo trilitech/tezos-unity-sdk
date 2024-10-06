@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TezosSDK.Helpers;
-using TezosSDK.Helpers.Coroutines;
+using Beacon.Sdk.Beacon.Operation;
+using Tezos.API;
+using Tezos.MainThreadDispatcher;
+using Tezos.WalletProvider;
 using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.Core;
 using TezosSDK.Samples.MarketplaceSample.MarketplaceExample.UI;
-using TezosSDK.Tezos.Models;
 using TMPro;
 using UnityEngine;
+using OperationResponse = Tezos.Operation.OperationResponse;
 
 namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 {
@@ -47,37 +49,22 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 			inventory.onItemMint.AddListener(MintItem);
 		}
 
-		private void OnContractCallCompleted(OperationInfo operationInfo)
+		private void OnOperationInjected(OperationResponse response)
 		{
-			DisplayPopup($"Transaction completed with hash {operationInfo.Hash}");
-		}
-
-		private void OnOperationFailed(OperationInfo info)
-		{
-			DisplayPopup($"Operation failed, error: {info.ErrorMesssage}");
-		}
-
-		private void OnOperationInjected(OperationInfo operationInfo)
-		{
-			if (!string.IsNullOrEmpty(operationInfo.Hash))
+			if (!string.IsNullOrEmpty(response.TransactionHash))
 			{
 				_manager.FetchMarketItems(PopulateMarket);
 				_manager.FetchInventoryItems(PopulateInventory);
 				market.CheckSelection();
 				DisplayWalletData();
 			}
-
-			DisplayPopup("Call injected!\n \n" + "\n \nTransaction Hash:\n" + operationInfo.Hash);
+	
+			DisplayPopup("Call injected!\n \n" + "\n \nTransaction Hash:\n" + response.TransactionHash);
 		}
 
-		private void OnPayloadSigned(SignResult signResult)
+		private void OnWalletConnected(WalletProviderData walletProviderData)
 		{
-			DisplayPopup($"Successfully signed with signature: {signResult.Signature}");
-		}
-
-		private void OnWalletConnected(WalletInfo walletInfo)
-		{
-			if (!string.IsNullOrEmpty(walletInfo.Address))
+			if (!string.IsNullOrEmpty(walletProviderData.WalletAddress))
 			{
 				OnSignIn(true);
 			}
@@ -88,7 +75,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 			DisplayPopup("Wallet connection failed!\n \n" + "Response: \n" + errorInfo);
 		}
 
-		private void OnWalletDisconnected(WalletInfo walletInfo)
+		private void OnWalletDisconnected()
 		{
 			AllowUIAccess(false);
 			ResetWalletData();
@@ -124,11 +111,11 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 
 		public void DisplayPopup(string message)
 		{
-			UnityMainThreadDispatcher.Enqueue(msg =>
+			UnityMainThreadDispatcher.Instance().Enqueue(() =>
 			{
 				popupPanel.SetActive(true);
-				popupPanel.GetComponentInChildren<TMP_InputField>().text = msg;
-			}, message);
+				popupPanel.GetComponentInChildren<TMP_InputField>().text = message;
+			});
 		}
 
 		public void GetCoins()
@@ -239,13 +226,14 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 
 		private void InitializeCallbacks()
 		{
+			
+			TezosAPI.WalletConnected += OnWalletConnected;
+			TezosAPI.WalletDisconnected += OnWalletDisconnected;
+			TezosAPI.OperationResulted += OnOperationInjected;
+			
 			_manager.GetWalletMessageReceiver().WalletConnected += OnWalletConnected;
 			_manager.GetWalletMessageReceiver().WalletConnectionFailed += OnWalletConnectionFailed;
 			_manager.GetWalletMessageReceiver().WalletDisconnected += OnWalletDisconnected;
-			_manager.GetWalletMessageReceiver().OperationCompleted += OnContractCallCompleted;
-			_manager.GetWalletMessageReceiver().OperationFailed += OnOperationFailed;
-			_manager.GetWalletMessageReceiver().OperationInjected += OnOperationInjected;
-			_manager.GetWalletMessageReceiver().PayloadSigned += OnPayloadSigned;
 		}
 
 		private void MintItem()
@@ -261,7 +249,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 				loadingPanel.SetActive(false);
 			};
 
-			CoroutineRunner.Instance.StartWrappedCoroutine(DoActionNextFrame(action));
+			StartCoroutine(DoActionNextFrame(action));
 		}
 
 		private void PopulateMarket(List<IItemModel> items)
@@ -272,7 +260,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 				loadingPanel.SetActive(false);
 			};
 
-			CoroutineRunner.Instance.StartWrappedCoroutine(DoActionNextFrame(action));
+			StartCoroutine(DoActionNextFrame(action));
 		}
 
 		private void SetAccountText(string account)

@@ -1,4 +1,4 @@
-using TezosSDK.Tezos.Managers;
+using Tezos.API;
 using UnityEngine;
 
 namespace TezosSDK.Samples.Tutorials.ContractAndMinting
@@ -14,15 +14,13 @@ namespace TezosSDK.Samples.Tutorials.ContractAndMinting
 			tokensCount.SetActive(false);
 			buttons.SetActive(false);
 
-			var messageReceiver = TezosManager.Instance.EventManager;
-
-			messageReceiver.WalletConnected += _ =>
+			TezosAPI.WalletConnected += _ =>
 			{
 				tokensCount.SetActive(true);
 				buttons.SetActive(true);
 			};
 
-			messageReceiver.WalletDisconnected += _ =>
+			TezosAPI.WalletDisconnected += () =>
 			{
 				tokensCount.SetActive(false);
 				buttons.SetActive(false);

@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using TezosSDK.API;
-using TezosSDK.Helpers.Logging;
-using TezosSDK.Tezos.Managers;
-using TezosSDK.Tezos.Models;
-using TezosSDK.WalletProvider;
-using TezosSDK.WalletServices.Connectors;
+using Tezos.API;
+using Tezos.Configs;
+using Tezos.MessageSystem;
+using Tezos.SocialLoginProvider;
+using Tezos.WalletProvider;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace TezosSDK.Samples.Tutorials.WalletConnection
 {
@@ -22,16 +20,22 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 		[SerializeField] private List<GameObject> kukaiOnlyObjects;
 		
 
-		private void Start()
+		private async void Start()
 		{
-			nameText.text = TezosManager.Instance.DAppMetadata.Name;
-			descriptionText.text = TezosManager.Instance.DAppMetadata.Description;
+			var appConfig   = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			
+			nameText.text = appConfig.AppName;
+			descriptionText.text = appConfig.AppDescription;
 			
 			CheckKukaiOnlyObjects();
 
 			// Subscribe to wallet events
-			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
+			TezosAPI.WalletConnected += OnWalletConnected;
+			TezosAPI.WalletDisconnected += OnWalletDisconnected;
+			
+			await TezosAPI.WaitUntilSDKInitialized();
+
+			var result = await TezosAPI.ConnectWallet(new WalletProviderData { WalletType = WalletType.BEACON });
 		}
 
 		// Check if the wallet is Kukai and disable objects on the scene that are only for Kukai if it's not
@@ -50,27 +54,17 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 
 		private void OnDestroy()
 		{
-			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected -= OnWalletDisconnected;
+			TezosAPI.WalletConnected -= OnWalletConnected;
+			TezosAPI.WalletDisconnected -= OnWalletDisconnected;
 		}
 
-		private void OnWalletConnected(WalletInfo _)
+		private async void OnWalletConnected(WalletProviderData walletProviderData)
 		{
 			HandleKukaiOnlyObjects();
 
-			StartCoroutine(TezosManager.Instance.Tezos.GetCurrentWalletBalance(result =>
-			{
-				if (result.Success)
-				{
-					// Handle the successful retrieval of the wallet balance
-					OnBalanceFetched(result.Data);
-				}
-				else
-				{
-					// Handle the error case, update UI or log error
-					//TezosLogger.LogError(result.ErrorMessage);
-				}
-			}));
+			// Balance is in microtez, so we divide it by 1.000.000 to get tez
+			int convertedBalance = (int)(await TezosAPI.GetXTZBalance() / 1000000);
+			balanceText.text = convertedBalance + " XTZ";
 		}
 
 		// If the wallet is Kukai, display additional information
@@ -86,15 +80,9 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 			// kukaiSignedMessageText.text = kukaiConnector.AuthResponse.Message; todo: auth response not exists
 		}
 
-		private void OnWalletDisconnected(WalletInfo _)
+		private void OnWalletDisconnected()
 		{
 			balanceText.text = "";
-		}
-
-		private void OnBalanceFetched(ulong balance)
-		{
-			// Balance is in microtez, so we divide it by 1.000.000 to get tez
-			balanceText.text = $"{balance / 1000000f}";
 		}
 	}
 

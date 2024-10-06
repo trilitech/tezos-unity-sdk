@@ -1,7 +1,5 @@
-using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Helpers.Logging;
-using TezosSDK.Tezos.Managers;
-using TezosSDK.Tezos.Models;
+using Tezos.API;
+using Tezos.WalletProvider;
 using TMPro;
 using UnityEngine;
 
@@ -16,37 +14,26 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 		private void Start()
 		{
 			// Subscribe to wallet events
-			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
-			TezosManager.Instance.EventManager.WalletDisconnected += OnWalletDisconnected;
+			TezosAPI.WalletConnected += OnWalletConnected;
+			TezosAPI.WalletDisconnected += OnWalletDisconnected;
 		}
-
-		private void OnWalletConnected(WalletInfo _)
+		
+		private void OnDestroy()
 		{
-			var routine = TezosManager.Instance.Tezos.GetCurrentWalletBalance(OnBalanceResult);
-			StartCoroutine(routine);
+			TezosAPI.WalletConnected -= OnWalletConnected;
+			TezosAPI.WalletDisconnected -= OnWalletDisconnected;
 		}
 
-		private void OnWalletDisconnected(WalletInfo _)
-		{
-			balanceText.text = _notConnectedText;
-		}
-
-		private void OnBalanceFetched(ulong balance)
+		private async void OnWalletConnected(WalletProviderData walletProviderData)
 		{
 			// Balance is in microtez, so we divide it by 1.000.000 to get tez
-			balanceText.text = $"{balance / 1000000f}";
+			int convertedBalance = (int)(await TezosAPI.GetXTZBalance() / 1000000);
+			balanceText.text = convertedBalance + " XTZ";
 		}
 
-		private void OnBalanceResult(HttpResult<ulong> result)
+		private void OnWalletDisconnected()
 		{
-			if (result.Success)
-			{
-				OnBalanceFetched(result.Data);
-			}
-			else
-			{
-				//TezosLogger.LogError(result.ErrorMessage);
-			}
+			balanceText.text = _notConnectedText;
 		}
 	}
 

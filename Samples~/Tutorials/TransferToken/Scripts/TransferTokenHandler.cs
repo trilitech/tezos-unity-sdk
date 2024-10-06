@@ -1,12 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
-using TezosSDK.Helpers.HttpClients;
-using TezosSDK.Helpers.Logging;
+using Tezos.API;
+using Tezos.Logger;
+using Tezos.WalletProvider;
 using TezosSDK.Samples.Tutorials.Common;
-using TezosSDK.Tezos.Filters;
-using TezosSDK.Tezos.Managers;
-using TezosSDK.Tezos.Models;
-using TezosSDK.Tezos.Models.Tokens;
 using TMPro;
 using UnityEngine;
 
@@ -17,74 +13,58 @@ namespace TezosSDK.Samples.Tutorials.TransferToken
 	{
 		[SerializeField] private TMP_InputField availableTokensTMP;
 		[SerializeField] private ContractInfoUI contractInfoUI;
+		[SerializeField] private string contractAddress;
+		
 
 		private void Start()
 		{
 			// Subscribe to account connection events
-			TezosManager.Instance.EventManager.WalletConnected += OnWalletConnected;
+			TezosAPI.WalletConnected += OnWalletConnected;
 		}
 
 		private void OnDestroy()
 		{
-			TezosManager.Instance.EventManager.WalletConnected -= OnWalletConnected;
+			TezosAPI.WalletConnected -= OnWalletConnected;
 		}
 
-		private void OnWalletConnected(WalletInfo _)
+		private async void OnWalletConnected(WalletProviderData walletProviderData)
 		{
-			var contractAddress = TezosManager.Instance.Tezos.TokenContract.Address;
-
 			if (!string.IsNullOrEmpty(contractAddress))
 			{
 				GetContractTokenIds(contractAddress);
 				return;
 			}
-
-			var getOriginatedContractsRoutine = TezosManager.Instance.Tezos.GetOriginatedContracts(result =>
+			
+			var codeHash = Resources.Load<TextAsset>("Contracts/FA2TokenContractCodeHash").text; // TODO: How to get the code hash for other contracts?
+			var creator = TezosAPI.GetConnectionAddress();
+			
+			var result = await TezosAPI.GetOriginatedContractsForOwner(creator, codeHash, 5, new OriginatedContractsForOwnerOrder.Default(0));
+			var tokenContracts = result.ToList();
+			
+			if (!tokenContracts.Any())
 			{
-				if (!result.Success)
-				{
-					//TezosLogger.LogError($"Failed to get originated contracts: {result.ErrorMessage}");
-					return;
-				}
+				availableTokensTMP.text =
+					$"{creator} didn't deploy any contract yet.";
 
-				var tokenContracts = result.Data.ToList();
+				return;
+			}
 
-				if (!tokenContracts.Any())
-				{
-					availableTokensTMP.text =
-						$"{TezosManager.Instance.Tezos.WalletAccount.GetWalletAddress()} didn't deploy any contract yet.";
+			var initializedContract = tokenContracts.First();
 
-					return;
-				}
-
-				var initializedContract = tokenContracts.First();
-				TezosManager.Instance.Tezos.TokenContract = initializedContract;
-
-				contractInfoUI.SetAddress(initializedContract.Address);
-				GetContractTokenIds(initializedContract.Address);
-			});
-
-			StartCoroutine(getOriginatedContractsRoutine);
+			contractInfoUI.SetAddress(initializedContract.Address);
+			GetContractTokenIds(initializedContract.Address);
 		}
 
-		private void GetContractTokenIds(string contractAddress)
+		private async void GetContractTokenIds(string addr)
 		{
-			//TezosLogger.LogDebug($"Getting token IDs for contract: {contractAddress}");
+			TezosLogger.LogDebug($"Getting token IDs for contract: {addr}");
+			
+			var tokenData = await TezosAPI.GetTokensForContract(addr, false, 10_000, new TokensForContractOrder.Default(0));
 
-			var tokensForContractCoroutine = TezosManager.Instance.Tezos.API.GetTokensForContract(Callback,
-				contractAddress, false, 10_000, new TokensForContractOrder.Default(0));
+			var tokens = tokenData.ToList();
 
-			StartCoroutine(tokensForContractCoroutine);
-			return;
-
-			void Callback(HttpResult<IEnumerable<Token>> result)
-			{
-				var tokens = result.Data.ToList();
-				//TezosLogger.LogDebug($"Received {tokens.Count()} tokens for contract: {contractAddress}");
-				// Join the token IDs with ", " as the separator
-				var idsResult = string.Join(", ", tokens.Select(token => token.TokenId));
-				availableTokensTMP.text = idsResult;
-			}
+			var idsResult = string.Join(", ", tokens.Select(token => token.TokenId));
+			availableTokensTMP.text = idsResult;
 		}
 	}
 

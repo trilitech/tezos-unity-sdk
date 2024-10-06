@@ -6,7 +6,11 @@
         "Unity.TextMeshPro",
         "Tezos.API",
         "Tezos.WalletProvider",
-        "Tezos.SocialLoginProvider"
+        "Tezos.SocialLoginProvider",
+        "Tezos.Operation",
+        "Tezos.UniTask",
+        "Tezos.Token",
+        "Tezos.MainThreadDispatcher"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

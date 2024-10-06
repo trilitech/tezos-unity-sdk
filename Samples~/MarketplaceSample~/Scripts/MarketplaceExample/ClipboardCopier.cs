@@ -1,5 +1,4 @@
 using System.Collections;
-using TezosSDK.Helpers.Coroutines;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -31,7 +30,7 @@ namespace TezosSDK.Samples.MarketplaceSample.MarketplaceExample
 
 			// copy text to the clipboard
 			GUIUtility.systemCopyBuffer = text.text;
-			CoroutineRunner.Instance.StartWrappedCoroutine(OnTextCopied());
+			StartCoroutine(OnTextCopied());
 		}
 
 		#endregion

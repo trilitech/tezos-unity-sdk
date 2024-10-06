@@ -60,6 +60,7 @@ namespace Tezos.Initializer
 		private static void ValidateConfig()
 		{
 			TezosConfig config = ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			
 			if (config.Network == NetworkType.mainnet)
 			{
 				Debug.LogWarning("You are using Mainnet. Make sure you are not using Mainnet for testing purposes.");
