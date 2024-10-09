@@ -1,6 +1,6 @@
 namespace Tezos.Operation
 {
-	public struct OriginateContractRequest
+	public struct DeployContractRequest
 	{
 		public string Script;
 		public string DelegateAddress;

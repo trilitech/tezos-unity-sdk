@@ -310,6 +310,6 @@ namespace Tezos.SocialLoginProvider
 			return await _signPayloadTcs.WithTimeout(10 * 1000);
 		}
 
-		public UniTask RequestContractOrigination(OriginateContractRequest originateContractRequest) => throw new NotSupportedException("Contract origination is not supported by Kukai wallet.");
+		public UniTask RequestContractOrigination(DeployContractRequest deployContractRequest) => throw new NotSupportedException("Contract origination is not supported by Kukai wallet.");
 	}
 }

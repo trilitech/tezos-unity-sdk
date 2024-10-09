@@ -32,6 +32,9 @@ namespace Tezos.Editor
 			CopyAndMergeFolders(SourceWebGLTemplatesPath,  Path.Combine(DestinationAssetsPath, "WebGLTemplates"));
 			SetWebGLTemplate(WebGLTemplateName);
 			CreateTezosConfigs();
+			
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 
 			Debug.Log("Tezos setup completed.");
 		}
@@ -53,9 +56,6 @@ namespace Tezos.Editor
 
 			File.WriteAllText(linkerFilePath, linkXmlContent);
 			Debug.Log($"link.xml created/updated at: {linkerFilePath}");
-
-			AssetDatabase.SaveAssets();
-			AssetDatabase.Refresh();
 		}
 
 		private static void CopyAndMergeFolders(string sourcePath, string destinationPath)
@@ -73,7 +73,6 @@ namespace Tezos.Editor
 			}
 
 			CopyDirectoryRecursively(sourcePath, destinationPath);
-			AssetDatabase.Refresh();
 		}
 
 		private static void CopyDirectoryRecursively(string sourceDir, string targetDir)
@@ -100,9 +99,6 @@ namespace Tezos.Editor
 		{
 			PlayerSettings.WebGL.template = templateName;
 			Debug.Log($"Set WebGL template to: {templateName}");
-
-			AssetDatabase.SaveAssets();
-			AssetDatabase.Refresh();
 		}
 
 		private static void CreateTezosConfigs()
@@ -114,8 +110,6 @@ namespace Tezos.Editor
 			tezosConfig.DataProvider = dataProviderConfig;
 
 			EditorUtility.SetDirty(tezosConfig);
-			AssetDatabase.SaveAssetIfDirty(tezosConfig);
-			AssetDatabase.Refresh();
 			Debug.Log("Tezos configs created and updated.");
 
 			EditorGUIUtility.PingObject(tezosConfig);

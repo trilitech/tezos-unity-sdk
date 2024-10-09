@@ -116,11 +116,11 @@ namespace Tezos.SocialLoginProvider
 
 			_logInTcs = new();
 			TezosLogger.LogDebug($"Connect method entered");
-			var tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
-			var appConfig   = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			var dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
+			var appConfig          = ConfigGetter.GetOrCreateConfig<AppConfig>();
 			JsInitWallet(
-			             tezosConfig.Network.ToString(), tezosConfig.Rpc, SocialLoginType.ToString().ToLower(), appConfig.AppName,
-			             appConfig.AppUrl,               appConfig.AppIcon
+			             dataProviderConfig.Network.ToString(), dataProviderConfig.BaseUrl, SocialLoginType.ToString().ToLower(), appConfig.AppName,
+			             appConfig.AppUrl,                      appConfig.AppIcon
 			            );
 
 			JsConnectAccount();
@@ -146,7 +146,7 @@ namespace Tezos.SocialLoginProvider
 			if (_operationTcs != null && _operationTcs.Task.Status == UniTaskStatus.Pending) return await _operationTcs.Task;
 
 			_operationTcs = new();
-			JsSendContractCall(operationRequest.Destination, operationRequest.Amount.ToString(), operationRequest.EntryPoint, operationRequest.Arg);
+			JsSendContractCall(operationRequest.Destination, operationRequest.Amount, operationRequest.EntryPoint, operationRequest.Arg);
 			return await _operationTcs.WithTimeout(10 * 1000, "Request operation task timeout.");
 		}
 
@@ -159,7 +159,7 @@ namespace Tezos.SocialLoginProvider
 			return await _signPayloadTcs.WithTimeout(10 * 1000, "Sign payload task timeout.");
 		}
 
-		public UniTask RequestContractOrigination(OriginateContractRequest originationRequest)
+		public UniTask RequestContractOrigination(DeployContractRequest originationRequest)
 		{
 			TezosLogger.LogDebug("RequestContractOrigination - BeaconWebGL");
 			JsRequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress);

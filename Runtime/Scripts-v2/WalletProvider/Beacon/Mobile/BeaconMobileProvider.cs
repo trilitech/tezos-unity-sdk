@@ -186,7 +186,7 @@ namespace Tezos.WalletProvider
 			return await _signPayloadTcs.WithTimeout(10 * 1000, "Sign payload task timeout.");
 		}
 
-		public async UniTask RequestContractOrigination(OriginateContractRequest originationRequest)
+		public async UniTask DeployContract(DeployContractRequest originationRequest)
 		{
 			TezosLogger.LogDebug("RequestContractOrigination - BeaconDotNet");
 			await _operationRequestHandler.RequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress, BeaconDappClient);

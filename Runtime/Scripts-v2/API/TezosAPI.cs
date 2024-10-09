@@ -87,14 +87,12 @@ namespace Tezos.API
 
 		public static async UniTask<bool> Disconnect()
 		{
-
 			if (!IsConnected())
 			{
 				TezosLogger.LogWarning("No connection found to disconnect");
 				return false;
 			}
-			
-			
+
 			if (IsWalletConnected())
 			{
 				var result = await _walletProviderController.Disconnect();
@@ -159,7 +157,7 @@ namespace Tezos.API
 			return result;
 		}
 
-		public static UniTask RequestContractOrigination(OriginateContractRequest originateContractRequest) => ProviderFactory.GetConnectedProviderController().RequestContractOrigination(originateContractRequest);
+		public static UniTask DeployContract(DeployContractRequest deployContractRequest) => ProviderFactory.GetConnectedProviderController().DeployContract(deployContractRequest);
 
 		/// <summary>
 		/// Fetches the XTZ balance of a given wallet address asynchronously.

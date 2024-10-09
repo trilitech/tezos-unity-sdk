@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Dynamic.Json;
 using Newtonsoft.Json;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
@@ -14,15 +13,7 @@ namespace Tezos.Request
 
 		private int RequestTimeout { get; }
 
-		private T DeserializeJson<T>(string json)
-		{
-			if (typeof(T) == typeof(string))
-			{
-				return (T)(object)DJson.Parse(json, JsonOptions.DefaultOptions);
-			}
-
-			return JsonConvert.DeserializeObject<T>(json);
-		}
+		private T DeserializeJson<T>(string json) => JsonConvert.DeserializeObject<T>(json);
 
 		public async UniTask<T> GetRequest<T>(string endpoint)
 		{
@@ -59,7 +50,8 @@ namespace Tezos.Request
 			request.timeout         = RequestTimeout;
 			request.SetRequestHeader(HttpHeaders.Accept.Key,      HttpHeaders.Accept.Value);
 			request.SetRequestHeader(HttpHeaders.UserAgent.Key,   HttpHeaders.UserAgent.Value);
-			request.SetRequestHeader(HttpHeaders.ContentType.Key, "application/json");
+			request.SetRequestHeader(HttpHeaders.ContentType.Key, HttpHeaders.ContentType.Value);
+
 			var operation = request.SendWebRequest();
 			while (!operation.isDone)
 			{

@@ -13,6 +13,6 @@ namespace Tezos.SocialLoginProvider
 		bool                         IsLoggedIn();
 		UniTask<OperationResponse>   RequestOperation(OperationRequest                   operationRequest);
 		UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest               signPayloadRequest);
-		UniTask                      RequestContractOrigination(OriginateContractRequest originateContractRequest);
+		UniTask                      RequestContractOrigination(DeployContractRequest deployContractRequest);
 	}
 }

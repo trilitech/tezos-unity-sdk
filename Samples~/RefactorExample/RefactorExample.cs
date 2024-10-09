@@ -46,7 +46,7 @@ public class RefactorExample : MonoBehaviour
 
 	private void OnWalletConnected(WalletProviderData walletProviderData)
 	{
-		Debug.Log("OnWalletConnected received.");
+		Debug.Log($"OnWalletConnected received, walletAddress{walletProviderData.WalletAddress}");
 		_informationText.text = $"{walletProviderData.WalletAddress}";
 	}
 
@@ -90,7 +90,7 @@ public class RefactorExample : MonoBehaviour
 
 			const string entryPoint  = "fulfill_ask";
 			const string destination = "KT1MFWsAXGUZ4gFkQnjByWjrrVtuQi4Tya8G";
-			const ulong  amount      = 1500000;
+			const string amount      = "1500000";
 
 			var req = new OperationRequest
 			          {
@@ -136,7 +136,8 @@ public class RefactorExample : MonoBehaviour
 		}
 		catch (Exception e)
 		{
-			_payloadText.text = $"{e.Message}";
+			_informationText.text = $"{e.Message}";
+			_payloadText.text     = $"{e.StackTrace}";
 		}
 	}
 
@@ -144,12 +145,14 @@ public class RefactorExample : MonoBehaviour
 	{
 		try
 		{
-			int convertedBalance = (int)(await TezosAPI.GetXTZBalance() / 1000000);
+			var   balance          = ulong.Parse(await TezosAPI.GetBalance());
+			float convertedBalance = balance / 1000000f;
 			_informationText.text = $"Balance: {convertedBalance}";
 		}
 		catch (Exception e)
 		{
 			_informationText.text = e.Message;
+			_payloadText.text     = e.StackTrace;
 		}
 	}
 
@@ -157,7 +160,7 @@ public class RefactorExample : MonoBehaviour
 	{
 		try
 		{
-			var result = await TezosAPI.ConnectWallet(new WalletProviderData { WalletType = WalletType.BEACON });
+			var result = await TezosAPI.ConnectWallet(new WalletProviderData { WalletType = WalletType.WALLETCONNECT });
 			OnWalletConnected(result);
 		}
 		catch (Exception e)

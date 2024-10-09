@@ -123,11 +123,11 @@ namespace Tezos.WalletProvider
 
 			_walletConnectionTcs = new();
 			TezosLogger.LogDebug($"Connect method entered");
-			var tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
-			var appConfig   = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			var dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
+			var appConfig          = ConfigGetter.GetOrCreateConfig<AppConfig>();
 			JsInitWallet(
-			             tezosConfig.Network.ToString(), tezosConfig.Rpc, WalletType.ToString().ToLower(), appConfig.AppName,
-			             appConfig.AppUrl,               appConfig.AppIcon
+			             dataProviderConfig.Network.ToString(), dataProviderConfig.BaseUrl, WalletType.ToString().ToLower(), appConfig.AppName,
+			             appConfig.AppUrl,                      appConfig.AppIcon
 			            );
 
 			JsConnectAccount();
@@ -164,7 +164,7 @@ namespace Tezos.WalletProvider
 			return await _signPayloadTcs.WithTimeout(10 * 1000, "Sign payload task timeout.");
 		}
 
-		public UniTask RequestContractOrigination(OriginateContractRequest originationRequest)
+		public UniTask DeployContract(DeployContractRequest originationRequest)
 		{
 			TezosLogger.LogDebug("RequestContractOrigination - BeaconWebGL");
 			JsRequestContractOrigination(originationRequest.Script, originationRequest.DelegateAddress);

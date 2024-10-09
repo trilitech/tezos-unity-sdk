@@ -14,12 +14,12 @@ namespace Tezos.WalletProvider
 		public event Action<string>             PairingRequested;
 		public WalletType                       WalletType { get; }
 		UniTask                                 Init();
-		UniTask<string>                         GetBalance(string walletAddress);
+		UniTask<string>                         GetBalance(string          walletAddress);
 		UniTask<WalletProviderData>             Connect(WalletProviderData data);
 		UniTask<bool>                           Disconnect();
-		UniTask<OperationResponse>              RequestOperation(OperationRequest                   operationRequest);
-		UniTask<SignPayloadResponse>            RequestSignPayload(SignPayloadRequest               signRequest);
-		UniTask                                 RequestContractOrigination(OriginateContractRequest originationRequest);
+		UniTask<OperationResponse>              RequestOperation(OperationRequest       operationRequest);
+		UniTask<SignPayloadResponse>            RequestSignPayload(SignPayloadRequest   signRequest);
+		UniTask                                 DeployContract(DeployContractRequest originationRequest);
 		bool                                    IsAlreadyConnected();
 	}
 }

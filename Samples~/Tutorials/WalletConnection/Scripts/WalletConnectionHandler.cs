@@ -63,7 +63,8 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 			HandleKukaiOnlyObjects();
 
 			// Balance is in microtez, so we divide it by 1.000.000 to get tez
-			int convertedBalance = (int)(await TezosAPI.GetXTZBalance() / 1000000);
+			var balance          = ulong.Parse(await TezosAPI.GetBalance());
+			int convertedBalance = (int)(balance / 1000000);
 			balanceText.text = convertedBalance + " XTZ";
 		}
 
