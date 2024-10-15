@@ -50,8 +50,10 @@ namespace Tezos.Editor
 			string linkerFilePath = Path.Combine(LinkerFolderPath, LinkerFileName);
 
 			string linkXmlContent = @"<linker>
-    <!--Preserve an entire assembly-->
+<!--Preserve an entire assembly-->
     <assembly fullname=""Tezos.Initializer"" preserve=""all""/>
+    <assembly fullname=""Tezos.WalletProvider"" preserve=""all""/>
+    <assembly fullname=""Tezos.SocialLoginProvider"" preserve=""all""/>
 </linker>";
 
 			File.WriteAllText(linkerFilePath, linkXmlContent);
