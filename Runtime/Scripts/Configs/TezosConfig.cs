@@ -7,7 +7,7 @@ namespace Tezos.Configs
 	public class TezosConfig: ScriptableObject
 	{
 		[Tooltip("Select the network to use for chain interactions.")]
-		[SerializeField] private NetworkType network = NetworkType.ghostnet;
+		[SerializeField] public NetworkType Network = NetworkType.ghostnet;
 
 		[Tooltip("Web client address for Kukai Connector.")]
 		[SerializeField] private string kukaiWebClientAddress;
@@ -33,29 +33,12 @@ namespace Tezos.Configs
 			set => dataProviderConfig = value;
 		}
 
-		public string KukaiWebClientAddress
-		{
-			get => kukaiWebClientAddress;
-		}
+		public string KukaiWebClientAddress => kukaiWebClientAddress;
 
-		public NetworkType Network
-		{
-			get => network;
-		}
+		public string PinataApiKey => pinataApiKey;
 
-		public string PinataApiKey
-		{
-			get => pinataApiKey;
-		}
+		public int RequestTimeoutSeconds => requestTimeoutSeconds;
 
-		public int RequestTimeoutSeconds
-		{
-			get => requestTimeoutSeconds;
-		}
-
-		public string Rpc
-		{
-			get => rpcUrlFormat.Replace("{network}", network.ToString());
-		}
+		public string Rpc => rpcUrlFormat.Replace("{network}", Network.ToString());
 	}
 }

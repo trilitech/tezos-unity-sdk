@@ -7,7 +7,7 @@ namespace Tezos.Configs
 	public class DataProviderConfig: ScriptableObject
 	{
 		[Tooltip("Select the network to use for querying data.")]
-		[SerializeField] private NetworkType network = NetworkType.ghostnet;
+		[SerializeField] public NetworkType Network = NetworkType.ghostnet;
 
 		// The URL format string for the base API endpoint. Use {network} as a placeholder for the network type.
 		// Example format: "https://api.{network}.tzkt.io/v1/"
@@ -21,20 +21,8 @@ namespace Tezos.Configs
 		[Tooltip("URL to the documentation of the data provider. (Optional)")]
 		[SerializeField] private string documentationUrl = "https://api.tzkt.io/";
 
-		public string BaseUrl
-		{
-			get => baseUrlFormat.Replace("{network}", network.ToString());
-		}
-
-		public string DocumentationUrl
-		{
-			get => documentationUrl;
-		}
-
-		public NetworkType Network
-		{
-			get => network;
-		}
+		public string BaseUrl => baseUrlFormat.Replace("{network}", Network.ToString());
+		public string DocumentationUrl => documentationUrl;
 
 		public int RequestTimeoutSeconds
 		{
