@@ -16,7 +16,7 @@ namespace Tezos.Editor
 		private const string SourceStreamingAssetsPath = "Packages/com.trilitech.tezos-unity-sdk/WebGLFrontend/output/StreamingAssets";
 		private const string SourceWebGLTemplatesPath  = "Packages/com.trilitech.tezos-unity-sdk/WebGLFrontend/output/WebGLTemplates";
 		private const string DestinationAssetsPath     = "Assets";
-		private const string WebGLTemplateName         = "Airgap";
+		private const string WebGLTemplateName         = "PROJECT:Airgap";
 
 		[MenuItem("Tezos/Setup Configs")]
 		public static void SetupTezosConfigs()
@@ -32,7 +32,7 @@ namespace Tezos.Editor
 			CopyAndMergeFolders(SourceWebGLTemplatesPath,  Path.Combine(DestinationAssetsPath, "WebGLTemplates"));
 			SetWebGLTemplate(WebGLTemplateName);
 			CreateTezosConfigs();
-			
+
 			AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();
 
