@@ -82,6 +82,7 @@ namespace Tezos.SocialLoginProvider
 						break;
 					case "EventTypeOperationInjected": break;
 					case "EventTypeOperationCompleted":
+					case "ContractCallInjected":
 						var operationResult = JsonConvert.DeserializeObject<OperationResponse>(eventData.Data);
 						_operationTcs.TrySetResult(operationResult);
 						break;
