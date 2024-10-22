@@ -64,9 +64,10 @@ namespace Tezos.SocialLoginProvider
 			return result;
 		}
 
-		public UniTask<string>              GetBalance()                                                                  => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).GetBalance(_socialProviderData.WalletAddress);
-		public UniTask<OperationResponse>   RequestOperation(OperationRequest                   walletOperationRequest)   => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestOperation(walletOperationRequest);
-		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest               signPayloadRequest)       => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestSignPayload(signPayloadRequest);
-		public UniTask                      DeployContract(DeployContractRequest deployContractRequest) => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestContractOrigination(deployContractRequest);
+		public UniTask<string>              GetBalance()                                                  => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).GetBalance(_socialProviderData.WalletAddress);
+		public UniTask<OperationResponse>   RequestOperation(OperationRequest     walletOperationRequest) => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestOperation(walletOperationRequest);
+		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest signPayloadRequest)     => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestSignPayload(signPayloadRequest);
+		public UniTask                      DeployContract(DeployContractRequest  deployContractRequest)  => _socialLoginProviders.Find(sp => sp.SocialLoginType == _socialProviderData?.SocialLoginType).RequestContractOrigination(deployContractRequest);
+		public ISocialLoginProvider         GetSocialProvider<T>() where T : ISocialLoginProvider         => _socialLoginProviders.Find(p => p is T);
 	}
 }

@@ -15,8 +15,9 @@ namespace Tezos.SocialLoginProvider
 {
 	public class KukaiMobileProvider : IAndroidProvider, IiOSProvider
 	{
-		public AuthResponse    AuthResponse    { get; private set; }
-		public SocialLoginType SocialLoginType => SocialLoginType.Kukai;
+		public AuthResponse       AuthResponse       { get; private set; }
+		public SocialProviderData SocialProviderData { get; set; }
+		public SocialLoginType    SocialLoginType    => SocialLoginType.Kukai;
 
 		private readonly UrlParser _urlParser = new();
 
@@ -24,7 +25,6 @@ namespace Tezos.SocialLoginProvider
 		private UniTaskCompletionSource<SignPayloadResponse> _signPayloadTcs;
 
 		private UrlGenerator                                _urlGenerator;
-		private SocialProviderData                          _socialProviderData;
 		private UniTaskCompletionSource<SocialProviderData> _logInTcs;
 		private UniTaskCompletionSource<bool>               _logOutTcs;
 		private TypeOfLogin                                 _typeOfLogin;
@@ -33,9 +33,9 @@ namespace Tezos.SocialLoginProvider
 
 		public UniTask Init(SocialProviderController socialLoginController)
 		{
-			_rpc                = new(5);
-			_urlGenerator       = new UrlGenerator(ConfigGetter.GetOrCreateConfig<TezosConfig>().KukaiWebClientAddress);
-			_socialProviderData = socialLoginController.GetSocialProviderData();
+			_rpc               = new(5);
+			_urlGenerator      = new UrlGenerator(ConfigGetter.GetOrCreateConfig<TezosConfig>().KukaiWebClientAddress);
+			SocialProviderData = socialLoginController.GetSocialProviderData();
 			InitializeDeepLinking();
 
 			return UniTask.CompletedTask;
@@ -57,15 +57,15 @@ namespace Tezos.SocialLoginProvider
 			if (_logOutTcs != null && _logOutTcs.Task.Status == UniTaskStatus.Pending) return _logOutTcs.Task;
 
 			TezosLogger.LogDebug("Wallet disconnected.");
-			_logOutTcs          = new();
-			_socialProviderData = null;
+			_logOutTcs         = new();
+			SocialProviderData = null;
 			_logOutTcs.TrySetResult(true);
 			return _logOutTcs.WithTimeout(10 * 1000);
 		}
 
 		public UniTask<string> GetBalance(string walletAddress) => _rpc.GetRequest<string>(EndPoints.GetBalanceEndPoint(walletAddress));
 
-		public bool IsLoggedIn() => !string.IsNullOrEmpty(_socialProviderData?.WalletAddress);
+		public bool IsLoggedIn() => !string.IsNullOrEmpty(SocialProviderData?.WalletAddress);
 
 		private static TypeOfLogin ParseTypeOfLogin(string loginType)
 		{
@@ -88,14 +88,14 @@ namespace Tezos.SocialLoginProvider
 			TezosLogger.LogDebug("Handling login response.");
 			_typeOfLogin = ParseTypeOfLogin(parsedData.GetParameter("typeOfLogin"));
 
-			_socialProviderData = new SocialProviderData
-			                      {
-				                      SocialLoginType = SocialLoginType.Kukai,
-				                      WalletAddress   = parsedData.GetParameter("address"),
-				                      PublicKey       = parsedData.GetParameter("public_key"),
-				                      LoginType       = _typeOfLogin.ToString(),
-				                      LoginDetails    = parsedData.GetParameter("login_details"),
-			                      };
+			SocialProviderData = new SocialProviderData
+			                     {
+				                     SocialLoginType = SocialLoginType.Kukai,
+				                     WalletAddress   = parsedData.GetParameter("address"),
+				                     PublicKey       = parsedData.GetParameter("public_key"),
+				                     LoginType       = _typeOfLogin,
+				                     LoginDetails    = parsedData.GetParameter("login_details"),
+			                     };
 
 			AuthResponse = new AuthResponse
 			               {
@@ -103,7 +103,7 @@ namespace Tezos.SocialLoginProvider
 				               Signature = parsedData.GetParameter("signature")
 			               };
 
-			_logInTcs.TrySetResult(_socialProviderData);
+			_logInTcs.TrySetResult(SocialProviderData);
 		}
 
 		private void HandleOperationDeepLink(ParsedURLData parsedData)
@@ -278,13 +278,13 @@ namespace Tezos.SocialLoginProvider
 
 		private void OpenOperationLink(OperationRequest request)
 		{
-			if (_socialProviderData == null || string.IsNullOrEmpty(_socialProviderData.WalletAddress))
+			if (SocialProviderData == null || string.IsNullOrEmpty(SocialProviderData.WalletAddress))
 			{
 				TezosLogger.LogError("No active wallet found");
 				return;
 			}
 
-			var operationLink = _urlGenerator.GenerateOperationLink(request, _socialProviderData.WalletAddress, _typeOfLogin);
+			var operationLink = _urlGenerator.GenerateOperationLink(request, SocialProviderData.WalletAddress, SocialProviderData.LoginType);
 			Debug.Log($"operationLink:{operationLink}");
 			Application.OpenURL(operationLink);
 		}

@@ -77,7 +77,7 @@ namespace TezosSDK.Samples.Tutorials.WalletConnection
 			}
 
 			SocialProviderData socialProviderData = TezosAPI.GetSocialLoginData();
-			kukaiTypeOfLoginText.text = socialProviderData.LoginType;
+			kukaiTypeOfLoginText.text = socialProviderData.LoginType.ToString();
 			// kukaiSignedMessageText.text = kukaiConnector.AuthResponse.Message; todo: auth response not exists
 		}
 

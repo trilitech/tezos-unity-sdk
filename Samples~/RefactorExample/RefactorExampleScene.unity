@@ -1901,6 +1901,7 @@ GameObject:
   - component: {fileID: 1540002262}
   - component: {fileID: 1540002261}
   - component: {fileID: 1540002266}
+  - component: {fileID: 1540002267}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2014,6 +2015,19 @@ MonoBehaviour:
   _sendOperationButton: {fileID: 1853941510}
   _qrCodeGenerator: {fileID: 170698006}
   _qrCodeContainer: {fileID: 170698002}
+--- !u!114 &1540002267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540002259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfcb3f55ca5340fd92bcbb36db538538, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deepLinkURL: 
 --- !u!1 &1723813478
 GameObject:
   m_ObjectHideFlags: 0

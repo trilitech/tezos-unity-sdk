@@ -63,7 +63,8 @@ namespace Tezos.API
 			return _sdkInitializedTcs.Task;
 		}
 
-		public static T GetWalletProvider<T>() where T : IWalletProvider => (T)_walletProviderController.GetWalletProvider<T>();
+		public static T GetWalletProvider<T>() where T : IWalletProvider      => (T)_walletProviderController.GetWalletProvider<T>();
+		public static T GetSocialProvider<T>() where T : ISocialLoginProvider => (T)_socialProviderController.GetSocialProvider<T>();
 
 		public static bool               IsConnected()             => IsWalletConnected() || IsSocialLoggedIn();
 		public static string             GetConnectionAddress()    => IsWalletConnected() ? GetWalletConnectionData().WalletAddress : IsSocialLoggedIn() ? GetSocialLoginData().WalletAddress : string.Empty;
