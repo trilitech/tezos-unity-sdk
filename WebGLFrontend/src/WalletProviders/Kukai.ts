@@ -130,7 +130,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
       accountInfo: null
     };
 
-    await this.client.logout();
+    await this.client?.logout();
     localStorage.removeItem("networkName");
     this.CallUnityOnAccountDisconnected(accountInfo);
   }
