@@ -52,7 +52,7 @@ namespace Tezos.API
 		private async UniTask TrackOperationAsync()
 		{
 			float startTime = Time.time;
-			var timeout = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().RequestTimeoutSeconds;
+			var timeout = ConfigGetter.GetOrCreateConfig<TezosConfig>().RequestTimeoutSeconds;
 			
 			while (_isTracking && Time.time - startTime < timeout)
 			{

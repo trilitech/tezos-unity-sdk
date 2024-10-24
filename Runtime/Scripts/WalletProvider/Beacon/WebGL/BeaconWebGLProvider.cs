@@ -39,10 +39,12 @@ namespace Tezos.WalletProvider
 
 		private WebGLEventBridge _webGLEventBridge;
 		private Rpc              _rpc;
+		private TezosConfig      _tezosConfig;
 
 		public UniTask Init()
 		{
-			_rpc                                   =  new(5);
+			_tezosConfig                           =  ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			_rpc                                   =  new(_tezosConfig.RequestTimeoutSeconds);
 			_webGLEventBridge                      =  new GameObject("BeaconWebGLEventBridge").AddComponent<WebGLEventBridge>();
 			_webGLEventBridge.EventReceived        += data => UnityMainThreadDispatcher.Instance().Enqueue(() => OnEventReceived(data));
 			_webGLEventBridge.gameObject.hideFlags =  HideFlags.HideAndDontSave;
@@ -132,7 +134,7 @@ namespace Tezos.WalletProvider
 			            );
 
 			JsConnectAccount();
-			return _walletConnectionTcs.WithTimeout(30 * 1000, "Wallet connection task timeout.");
+			return _walletConnectionTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Wallet connection task timeout.");
 		}
 
 		public async UniTask<bool> Disconnect()
@@ -153,7 +155,7 @@ namespace Tezos.WalletProvider
 
 			_operationTcs = new();
 			JsSendContractCall(operationRequest.Destination, operationRequest.Amount.ToString(), operationRequest.EntryPoint, operationRequest.Arg);
-			return await _operationTcs.WithTimeout(10 * 1000, "Request operation task timeout.");
+			return await _operationTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Request operation task timeout.");
 		}
 
 		public async UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest signRequest)
@@ -162,7 +164,7 @@ namespace Tezos.WalletProvider
 
 			_signPayloadTcs = new();
 			JsSignPayload((int)signRequest.SigningType, signRequest.Payload);
-			return await _signPayloadTcs.WithTimeout(10 * 1000, "Sign payload task timeout.");
+			return await _signPayloadTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Sign payload task timeout.");
 		}
 
 		public UniTask DeployContract(DeployContractRequest originationRequest)

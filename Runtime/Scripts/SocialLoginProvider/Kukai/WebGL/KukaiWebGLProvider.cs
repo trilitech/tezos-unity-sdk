@@ -35,10 +35,12 @@ namespace Tezos.SocialLoginProvider
 
 		private KukaiWebGLEventBridge _webGLEventBridge;
 		private Rpc                   _rpc;
+		private TezosConfig           _tezosConfig;
 
 		public UniTask Init(SocialProviderController socialProviderController)
 		{
-			_rpc                                   =  new(5);
+			_tezosConfig                           =  ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			_rpc                                   =  new(_tezosConfig.RequestTimeoutSeconds);
 			_webGLEventBridge                      =  new GameObject("KukaiWebGLEventBridge").AddComponent<KukaiWebGLEventBridge>();
 			_webGLEventBridge.EventReceived        += data => UnityMainThreadDispatcher.Instance().Enqueue(() => OnEventReceived(data));
 			_webGLEventBridge.gameObject.hideFlags =  HideFlags.HideAndDontSave;
@@ -125,7 +127,7 @@ namespace Tezos.SocialLoginProvider
 			            );
 
 			JsConnectAccount();
-			return _logInTcs.WithTimeout(30 * 1000, "Log in task timeout.");
+			return _logInTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Log in task timeout.");
 		}
 
 		public async UniTask<bool> LogOut()
@@ -148,7 +150,7 @@ namespace Tezos.SocialLoginProvider
 
 			_operationTcs = new();
 			JsSendContractCall(operationRequest.Destination, operationRequest.Amount, operationRequest.EntryPoint, operationRequest.Arg);
-			return await _operationTcs.WithTimeout(10 * 1000, "Request operation task timeout.");
+			return await _operationTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Request operation task timeout.");
 		}
 
 		public async UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest signRequest)
@@ -157,7 +159,7 @@ namespace Tezos.SocialLoginProvider
 
 			_signPayloadTcs = new();
 			JsSignPayload((int)signRequest.SigningType, signRequest.Payload);
-			return await _signPayloadTcs.WithTimeout(10 * 1000, "Sign payload task timeout.");
+			return await _signPayloadTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Sign payload task timeout.");
 		}
 
 		public UniTask RequestContractOrigination(DeployContractRequest originationRequest)

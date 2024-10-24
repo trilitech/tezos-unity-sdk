@@ -15,18 +15,10 @@ namespace Tezos.Configs
 		[Tooltip("The URL format for the base API endpoint. Use {network} as a placeholder for the network type.")]
 		[SerializeField] private string baseUrlFormat = "https://api.{network}.tzkt.io/v1/";
 
-		[Tooltip("Timeout for requests to the data provider.")]
-		[SerializeField] private int requestTimeoutSeconds = 45;
-
 		[Tooltip("URL to the documentation of the data provider. (Optional)")]
 		[SerializeField] private string documentationUrl = "https://api.tzkt.io/";
 
 		public string BaseUrl => baseUrlFormat.Replace("{network}", Network.ToString());
 		public string DocumentationUrl => documentationUrl;
-
-		public int RequestTimeoutSeconds
-		{
-			get => requestTimeoutSeconds;
-		}
 	}
 }

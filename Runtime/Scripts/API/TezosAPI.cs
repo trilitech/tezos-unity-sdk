@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Tezos.Configs;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MainThreadDispatcher;
@@ -36,7 +37,9 @@ namespace Tezos.API
 		{
 			context.MessageSystem.AddListener<SdkInitializedCommand>(OnSDKInitialized);
 
-			_rpc                      = new(5);
+			var tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
+
+			_rpc                      = new(tezosConfig.RequestTimeoutSeconds);
 			_walletProviderController = walletProviderController;
 			_socialProviderController = socialProviderController;
 

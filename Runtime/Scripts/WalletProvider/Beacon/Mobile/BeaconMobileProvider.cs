@@ -96,10 +96,12 @@ namespace Tezos.WalletProvider
 
 		private OperationRequestHandler _operationRequestHandler;
 		private Rpc                     _rpc;
+		private TezosConfig             _tezosConfig;
 
 		public UniTask Init()
 		{
-			_rpc                     = new(5);
+			_tezosConfig             = ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			_rpc                     = new(_tezosConfig.RequestTimeoutSeconds);
 			_operationRequestHandler = new OperationRequestHandler();
 			return CreateAsync();
 		}
@@ -139,7 +141,7 @@ namespace Tezos.WalletProvider
 				TezosLogger.LogError($"Error during dapp connection: {e.Message}");
 			}
 
-			return _walletConnectionTcs.WithTimeout(30 * 1000, "Wallet connection task timeout.");
+			return _walletConnectionTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Wallet connection task timeout.");
 		}
 
 		public async UniTask<bool> Disconnect()
@@ -171,7 +173,7 @@ namespace Tezos.WalletProvider
 			                                               operationRequest.Destination, operationRequest.EntryPoint, operationRequest.Arg, operationRequest.Amount,
 			                                               BeaconDappClient
 			                                              );
-			return await _operationTcs.WithTimeout(10 * 1000, "Request operation task timeout.");
+			return await _operationTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Request operation task timeout.");
 		}
 
 		public async UniTask<Operation.SignPayloadResponse> RequestSignPayload(SignPayloadRequest signRequest)
@@ -183,7 +185,7 @@ namespace Tezos.WalletProvider
 			Application.OpenURL("tezos://");
 			Beacon.Sdk.Beacon.Sign.SignPayloadType signPayloadType = Enum.Parse<Beacon.Sdk.Beacon.Sign.SignPayloadType>(signRequest.SigningType.ToString().ToLowerInvariant());
 			BeaconDappClient.RequestSign(NetezosExtensions.GetPayloadString(signPayloadType, signRequest.Payload), signPayloadType);
-			return await _signPayloadTcs.WithTimeout(10 * 1000, "Sign payload task timeout.");
+			return await _signPayloadTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000, "Sign payload task timeout.");
 		}
 
 		public async UniTask DeployContract(DeployContractRequest originationRequest)
