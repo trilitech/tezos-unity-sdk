@@ -222,7 +222,14 @@ namespace Tezos.SocialLoginProvider
 		private void OpenLoginLink()
 		{
 			var loginLink = _urlGenerator.GenerateLoginLink("my_nonce", "my_project_id");
-			Application.OpenURL(loginLink);
+
+			OpenLink(loginLink);
+		}
+
+		private static void OpenLink(string loginLink)
+		{
+			var safeBrowsing = UniWebViewSafeBrowsing.Create(loginLink);
+			safeBrowsing.Show();
 		}
 
 		private void TestOperation()
@@ -288,7 +295,8 @@ namespace Tezos.SocialLoginProvider
 
 			var operationLink = _urlGenerator.GenerateOperationLink(request, SocialProviderData.WalletAddress, SocialProviderData.LoginType);
 			Debug.Log($"operationLink:{operationLink}");
-			Application.OpenURL(operationLink);
+			
+			OpenLink(operationLink);
 		}
 
 		public async UniTask<OperationResponse> RequestOperation(OperationRequest operationRequest)
@@ -308,7 +316,9 @@ namespace Tezos.SocialLoginProvider
 
 			signPayloadRequest.SigningType = SignPayloadType.RAW;
 			var signLink = _urlGenerator.GenerateSignLink(signPayloadRequest, _typeOfLogin);
-			Application.OpenURL(signLink);
+			
+			OpenLink(signLink);
+			
 			return await _signPayloadTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000);
 		}
 
