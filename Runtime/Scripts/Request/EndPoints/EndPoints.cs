@@ -11,9 +11,9 @@ namespace Tezos.Request
 
 		static EndPoints() => _baseUrl = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().BaseUrl;
 
-		public static string GetBalanceEndPoint(string      walletAddress)                                               => Path.Combine(_baseUrl, "accounts", walletAddress, "balance");
-		public static string GetContractCodeEndPoint(string contract)                                                    => Path.Combine(_baseUrl, $"chains/main/blocks/head/context/contracts/{contract}/script/");
-		public static string GetRunViewEndPoint()                                                                        => Path.Combine(_baseUrl, "chains/main/blocks/head/helpers/scripts/run_script_view/");
+		public static string GetBalanceEndPoint(string            walletAddress)                                         => Path.Combine(_baseUrl, "accounts", walletAddress, "balance");
+		public static string GetContractCodeEndPoint(string       contract)                                              => Path.Combine(_baseUrl, $"chains/main/blocks/head/context/contracts/{contract}/script/");
+		public static string GetRunViewEndPoint(string            contract,        string name)                          => Path.Combine(_baseUrl, $"helpers/view/{contract}/{name}");
 		public static string GetIsHolderOfContractEndPoint(string wallet,          string contractAddress)               => Path.Combine(_baseUrl, $"tokens/balances?account={wallet}&token.contract={contractAddress}&balance.ne=0&select=id");
 		public static string GetIsHolderOfTokenEndPoint(string    wallet,          string contractAddress, uint tokenId) => Path.Combine(_baseUrl, $"tokens/balances?account={wallet}&token.contract={contractAddress}&token.tokenId={tokenId}&balance.ne=0&select=id");
 		public static string GetTokenMetadataEndPoint(string      contractAddress, uint   tokenId) => Path.Combine(_baseUrl, $"tokens?contract={contractAddress}&tokenId={tokenId}&select=metadata");

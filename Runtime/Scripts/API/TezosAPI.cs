@@ -173,7 +173,7 @@ namespace Tezos.API
 			return ProviderFactory.GetConnectedProviderController().GetBalance();
 		}
 
-		public static UniTask<T> ReadView<T>(string contractAddress, string entrypoint, string input) => _rpc.RunView<T>(contractAddress, entrypoint, input);
+		public static UniTask<T> ReadView<T>(string contractAddress, string view, string input) => _rpc.PostRequest<T>(EndPoints.GetRunViewEndPoint(contractAddress, view), input);
 
 		public static UniTask<IEnumerable<TokenBalance>> GetTokensForOwner(
 			string              owner,
