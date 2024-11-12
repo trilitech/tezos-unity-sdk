@@ -21,6 +21,8 @@ namespace Tezos.SocialLoginProvider
 
 		private readonly UrlParser _urlParser = new();
 
+		private string _network => ConfigGetter.GetOrCreateConfig<TezosConfig>().Network.ToString();
+
 		private UniTaskCompletionSource<OperationResponse>   _operationTcs;
 		private UniTaskCompletionSource<SignPayloadResponse> _signPayloadTcs;
 
@@ -221,7 +223,7 @@ namespace Tezos.SocialLoginProvider
 
 		private void OpenLoginLink()
 		{
-			var loginLink = _urlGenerator.GenerateLoginLink("my_nonce", "my_project_id");
+			var loginLink = _urlGenerator.GenerateLoginLink("my_nonce", "my_project_id", _network);
 
 			OpenLink(loginLink);
 		}
@@ -293,9 +295,9 @@ namespace Tezos.SocialLoginProvider
 				return;
 			}
 
-			var operationLink = _urlGenerator.GenerateOperationLink(request, SocialProviderData.WalletAddress, SocialProviderData.LoginType);
+			var operationLink = _urlGenerator.GenerateOperationLink(request, SocialProviderData.WalletAddress, SocialProviderData.LoginType, _network);
 			Debug.Log($"operationLink:{operationLink}");
-			
+
 			OpenLink(operationLink);
 		}
 
@@ -315,10 +317,10 @@ namespace Tezos.SocialLoginProvider
 			_signPayloadTcs = new();
 
 			signPayloadRequest.SigningType = SignPayloadType.RAW;
-			var signLink = _urlGenerator.GenerateSignLink(signPayloadRequest, _typeOfLogin);
-			
+			var signLink = _urlGenerator.GenerateSignLink(signPayloadRequest, _typeOfLogin, _network);
+
 			OpenLink(signLink);
-			
+
 			return await _signPayloadTcs.WithTimeout(_tezosConfig.RequestTimeoutSeconds * 1000);
 		}
 

@@ -1,13 +1,9 @@
-﻿using System.Text.Json;
-using Netezos.Rpc.Queries.Post;
-using Tezos.Cysharp.Threading.Tasks;
+﻿using Tezos.Cysharp.Threading.Tasks;
 
 namespace Tezos.Request
 {
 	public class Rpc : TezosClient
 	{
-		private const string CHAIN_ID = "NetXdQprcVkpaWU";
-
 		public Rpc(int timeOut) : base(timeOut)
 		{
 		}

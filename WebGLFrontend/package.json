@@ -20,8 +20,8 @@
     "webpack-cli": "^5.1.1"
   },
   "dependencies": {
-    "@airgap/beacon-sdk": "^4.0.12",
-    "@taquito/utils": "^16.1.2",
+    "@airgap/beacon-sdk": "^4.3.0",
+    "@taquito/utils": "^16.2.0",
     "kukai-embed": "0.9.0",
     "node-polyfill-webpack-plugin": "^2.0.1"
   }

@@ -1,6 +1,6 @@
 import BaseWallet from "./BaseWallet";
 import { AccountInformation, Wallet } from "./Types";
-import { DAppClient } from "@airgap/beacon-sdk";
+import { BeaconEvent, DAppClient } from "@airgap/beacon-sdk";
 import { Network, NetworkType } from "@airgap/beacon-types";
 import { AccountInfo } from '../../node_modules/@airgap/beacon-types/dist/esm/types/AccountInfo';
 
@@ -39,6 +39,13 @@ class BeaconWallet extends BaseWallet implements Wallet {
     }
 
     try {
+
+      // Listen for all the active account changes
+      this.client.subscribeToEvent(BeaconEvent.ACTIVE_ACCOUNT_SET, (account) => {
+        // An active account has been set, update the dApp UI
+        console.log(`${BeaconEvent.ACTIVE_ACCOUNT_SET} triggered: `, account.address);
+      });
+
       const activeAccount = await this.client.getActiveAccount();
       let publicKey: string;
       let accountInfo;

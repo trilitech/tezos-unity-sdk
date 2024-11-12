@@ -8,7 +8,6 @@ using Tezos.Operation;
 
 namespace Tezos.SocialLoginProvider
 {
-
 	/// <summary>
 	///     Generates URLs for login and wallet operations to be opened in system browsers to be sent to Kukai Embed.
 	/// </summary>
@@ -16,10 +15,7 @@ namespace Tezos.SocialLoginProvider
 	{
 		private readonly string _deepLinkUrl;
 
-		public UrlGenerator(string deepLinkUrl)
-		{
-			_deepLinkUrl = deepLinkUrl;
-		}
+		public UrlGenerator(string deepLinkUrl) { _deepLinkUrl = deepLinkUrl; }
 
 		/// <summary>
 		///     Generates a login URL.
@@ -27,17 +23,16 @@ namespace Tezos.SocialLoginProvider
 		/// <param name="nonce">The nonce for the login request.</param>
 		/// <param name="projectId">The project ID associated with the login request.</param>
 		/// <returns>A login URL to be sent to Kukai Embed.</returns>
-		public string GenerateLoginLink(string nonce, string projectId)
+		public string GenerateLoginLink(string nonce, string projectId, string network)
 		{
-			return BuildUrl(ActionTypes.LOGIN, new Dictionary<string, string>
-			{
-				{
-					"nonce", nonce
-				},
-				{
-					"projectId", projectId
-				}
-			});
+			return BuildUrl(
+			                ActionTypes.LOGIN, new Dictionary<string, string>
+			                                   {
+				                                   { "network", network.ToLower() },
+				                                   { "nonce", nonce },
+				                                   { "projectId", projectId }
+			                                   }
+			               );
 		}
 
 		/// <summary>
@@ -49,7 +44,7 @@ namespace Tezos.SocialLoginProvider
 		private string BuildUrl(string action, Dictionary<string, string> queryParams)
 		{
 			var uriBuilder = new UriBuilder(_deepLinkUrl);
-			var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+			var query      = HttpUtility.ParseQueryString(uriBuilder.Query);
 			query["action"] = action;
 
 			foreach (var param in queryParams)
@@ -68,20 +63,19 @@ namespace Tezos.SocialLoginProvider
 		/// <param name="walletAddress">The wallet address.</param>
 		/// <param name="typeOfLogin">The type of login.</param>
 		/// <returns>An operation URL to be sent to Kukai Embed.</returns>
-		public string GenerateOperationLink(OperationRequest req, string walletAddress, TypeOfLogin typeOfLogin)
+		public string GenerateOperationLink(OperationRequest req, string walletAddress, TypeOfLogin typeOfLogin, string network)
 		{
 			var serializedRequest = SerializeWalletOperationRequest(req, walletAddress);
 			TezosLogger.LogDebug($"JSON Payload: {serializedRequest}");
 
-			var url = BuildUrl(ActionTypes.OPERATION, new Dictionary<string, string>
-			{
-				{
-					"typeOfLogin", typeOfLogin.ToString().ToLower()
-				},
-				{
-					"operation", Uri.EscapeDataString(serializedRequest)
-				}
-			});
+			var url = BuildUrl(
+			                   ActionTypes.OPERATION, new Dictionary<string, string>
+			                                          {
+				                                          { "network", network.ToLower() },
+				                                          { "typeOfLogin", typeOfLogin.ToString().ToLower() },
+				                                          { "operation", Uri.EscapeDataString(serializedRequest) }
+			                                          }
+			                  );
 
 			TezosLogger.LogDebug($"Generated URL: {url}");
 			return url;
@@ -96,38 +90,33 @@ namespace Tezos.SocialLoginProvider
 		private string SerializeWalletOperationRequest(OperationRequest request, string walletAddress)
 		{
 			var jsonObject = new JObject
-			{
-				["kind"] = "transaction",
-				["source"] = walletAddress,
-				["amount"] = request.Amount.ToString(),
-				["destination"] = request.Destination,
-				["parameters"] = new JObject
-				{
-					["entrypoint"] = request.EntryPoint,
-					["value"] = JToken.Parse(request.Arg)
-				}
-			};
+			                 {
+				                 ["kind"]        = "transaction",
+				                 ["source"]      = walletAddress,
+				                 ["amount"]      = request.Amount.ToString(),
+				                 ["destination"] = request.Destination,
+				                 ["parameters"] = new JObject
+				                                  {
+					                                  ["entrypoint"] = request.EntryPoint,
+					                                  ["value"]      = JToken.Parse(request.Arg)
+				                                  }
+			                 };
 
-			var jsonArray = new JArray
-			{
-				jsonObject
-			};
+			var jsonArray = new JArray { jsonObject };
 
 			return jsonArray.ToString(Formatting.None);
 		}
 
-		public string GenerateSignLink(SignPayloadRequest signRequest, TypeOfLogin typeOfLogin)
+		public string GenerateSignLink(SignPayloadRequest signRequest, TypeOfLogin typeOfLogin, string network)
 		{
-			return BuildUrl(ActionTypes.SIGN, new Dictionary<string, string>
-			{
-				{
-					"typeOfLogin", typeOfLogin.ToString().ToLower()
-				},
-				{
-					"expression", Uri.EscapeDataString(signRequest.Payload)
-				}
-			});
+			return BuildUrl(
+			                ActionTypes.SIGN, new Dictionary<string, string>
+			                                  {
+				                                  { "network", network.ToLower() },
+				                                  { "typeOfLogin", typeOfLogin.ToString().ToLower() },
+				                                  { "expression", Uri.EscapeDataString(signRequest.Payload) }
+			                                  }
+			               );
 		}
 	}
-
 }
