@@ -1,48 +1,96 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
     <script src="StreamingAssets/webgl-frontend.js"></script>
-  </head>
-  <body style="text-align: center">
-    <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
-    <script src="Build/{{{ LOADER_FILENAME }}}"></script>
-    <script>
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
+</head>
+<body style="text-align: center">
+
+<!-- Canvas for the Unity WebGL content -->
+<canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}}
+        style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+
+<!-- Loading Bar HTML Structure -->
+<div id="unity-loading-bar" style="display: none;">
+    <div id="unity-logo"></div>
+    <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+    </div>
+</div>
+
+<script src="Build/{{{ LOADER_FILENAME }}}"></script>
+<script>
+    // Check for mobile device to apply mobile-specific styling
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
-      }
-        createUnityInstance(document.querySelector("#unity-canvas"), {
+    }
 
+    // Initialize loading bar elements
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+
+    // Show loading bar before Unity initializes
+    loadingBar.style.display = "block";
+
+    createUnityInstance(document.querySelector("#unity-canvas"), {
         dataUrl: "Build/{{{ DATA_FILENAME }}}",
         frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
-#if USE_WASM
+        #if USE_WASM
         codeUrl: "Build/{{{ CODE_FILENAME }}}",
-#endif
-#if MEMORY_FILENAME
+        #endif
+        #if MEMORY_FILENAME
         memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
-#endif
-#if SYMBOLS_FILENAME
+        #endif
+        #if SYMBOLS_FILENAME
         symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
-#endif
+        #endif
         streamingAssetsUrl: "StreamingAssets",
-        companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
-        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
-        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      }).then((unityInstance) => {
+        companyName: {
+    {
+        {
+            JSON.stringify(COMPANY_NAME)
+        }
+    }
+    },
+    productName: {
+        {
+            {
+                JSON.stringify(PRODUCT_NAME)
+            }
+        }
+    }
+    ,
+    productVersion: {
+        {
+            {
+                JSON.stringify(PRODUCT_VERSION)
+            }
+        }
+    }
+    ,
+    },
+    (progress) => {
+        // Update loading bar progress
+        progressBarFull.style.width = 100 * progress + "%";
+    }
+    ).then((unityInstance) => {
+        // Hide loading bar once Unity is loaded
+        loadingBar.style.display = "none";
         console.log("Unity instance initialized.");
         window.unityInstance = unityInstance;
-      });
-    </script>
-    <div id="logger-output"></div>
-  </body>
+    }).catch((message) => {
+        alert(message);
+    });
+</script>
+
+<div id="logger-output"></div>
+</body>
 </html>
