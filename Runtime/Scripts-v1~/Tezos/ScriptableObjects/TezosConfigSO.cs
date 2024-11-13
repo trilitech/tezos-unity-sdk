@@ -15,7 +15,7 @@ namespace TezosSDK.Tezos.ScriptableObjects
 		[SerializeField] private ConnectorType connectorType;
 
 		[Tooltip("Web client address for Kukai Connector.")]
-		[SerializeField] private string kukaiWebClientAddress;
+		public string KukaiWebClientAddress;
 
 		// The URL format string for the RPC endpoint. Use {network} as a placeholder for the network type.
 		// Example format: "https://{network}.tezos.marigold.dev"
@@ -40,11 +40,6 @@ namespace TezosSDK.Tezos.ScriptableObjects
 		public DataProviderConfigSO DataProvider
 		{
 			get => dataProviderConfig;
-		}
-
-		public string KukaiWebClientAddress
-		{
-			get => kukaiWebClientAddress;
 		}
 
 		public NetworkType Network
