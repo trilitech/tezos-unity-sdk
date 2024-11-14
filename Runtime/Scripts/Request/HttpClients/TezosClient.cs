@@ -13,7 +13,7 @@ namespace Tezos.Request
 
 		private int RequestTimeout { get; }
 
-		private T DeserializeJson<T>(string json) => JsonConvert.DeserializeObject<T>(json);
+		private T DeserializeJson<T>(string json) => JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Ignore });
 
 		public async UniTask<T> GetRequest<T>(string endpoint)
 		{

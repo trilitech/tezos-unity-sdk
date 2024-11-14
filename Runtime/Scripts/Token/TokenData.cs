@@ -3,7 +3,6 @@ using System.Text.Json;
 
 namespace Tezos.Token
 {
-
 	public class TokenData
 	{
 		/// <summary>
@@ -91,7 +90,6 @@ namespace Tezos.Token
 		/// <summary>
 		///     Token metadata.
 		/// </summary>
-		public JsonElement TokenMetadata { get; set; }
+		public TokenMetadata TokenMetadata { get; set; }
 	}
-
 }

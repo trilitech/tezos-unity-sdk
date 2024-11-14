@@ -90,9 +90,9 @@ namespace Tezos.WalletProvider
 			return result;
 		}
 
-		public UniTask<string>              GetBalance()                                                                        => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).GetBalance(_connectedWalletData.WalletAddress);
-		public UniTask<OperationResponse>   RequestOperation(OperationRequest                   walletOperationRequest)         => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestOperation(walletOperationRequest);
-		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest               walletSignPayloadRequest)       => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestSignPayload(walletSignPayloadRequest);
-		public UniTask                      DeployContract(DeployContractRequest walletDeployContractRequest) => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).DeployContract(walletDeployContractRequest);
+		public UniTask<string>              GetBalance()                                                       => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).GetBalance(_connectedWalletData.WalletAddress);
+		public UniTask<OperationResponse>   RequestOperation(OperationRequest     walletOperationRequest)      => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestOperation(walletOperationRequest);
+		public UniTask<SignPayloadResponse> RequestSignPayload(SignPayloadRequest walletSignPayloadRequest)    => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).RequestSignPayload(walletSignPayloadRequest);
+		public UniTask                      DeployContract(DeployContractRequest  walletDeployContractRequest) => _walletProviders.Find(wp => wp.WalletType == _connectedWalletData?.WalletType).DeployContract(walletDeployContractRequest);
 	}
 }
