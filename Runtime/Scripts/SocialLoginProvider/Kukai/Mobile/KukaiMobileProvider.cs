@@ -228,10 +228,14 @@ namespace Tezos.SocialLoginProvider
 			OpenLink(loginLink);
 		}
 
-		private static void OpenLink(string loginLink)
+		private static void OpenLink(string linkToOpen)
 		{
+#if UNITY_ANDROID && !UNITY_EDITOR
 			var safeBrowsing = UniWebViewSafeBrowsing.Create(loginLink);
 			safeBrowsing.Show();
+#else
+			Application.OpenURL(linkToOpen);
+#endif
 		}
 
 		private void TestOperation()
