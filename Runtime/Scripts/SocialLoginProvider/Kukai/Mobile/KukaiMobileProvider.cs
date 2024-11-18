@@ -320,7 +320,7 @@ namespace Tezos.SocialLoginProvider
 			if (_signPayloadTcs != null && _signPayloadTcs.Task.Status == UniTaskStatus.Pending) return await _signPayloadTcs.Task;
 			_signPayloadTcs = new();
 
-			signPayloadRequest.SigningType = SignPayloadType.RAW;
+			signPayloadRequest.SigningType = Enum.Parse<SignPayloadType>(signPayloadRequest.SigningType.ToString().ToLowerInvariant());
 			var signLink = _urlGenerator.GenerateSignLink(signPayloadRequest, _typeOfLogin, _network);
 
 			OpenLink(signLink);
