@@ -29,7 +29,7 @@ namespace Tezos.Request
 		{
 			var url         = Path.Combine(_baseUrl, "tokens");
 			var queryParams = HttpUtility.ParseQueryString(string.Empty);
-			queryParams["sender"] = address;
+			queryParams["contract"] = address;
 			queryParams["limit"]  = limit.ToString();
 			return $"{url}?{queryParams}";
 		}
