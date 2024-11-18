@@ -172,7 +172,7 @@ namespace Tezos.API
 		}
 
 		public static UniTask       DeployContract(DeployContractRequest deployContractRequest)                      => ProviderFactory.GetConnectedProviderController().DeployContract(deployContractRequest);
-		public static UniTask<T>    ReadView<T>(string                   contractAddress, string view, string input) => _rpc.PostRequest<T>(EndPoints.GetRunViewEndPoint(contractAddress, view), input);
+		public static UniTask<T>    ReadView<T>(string                   contractAddress, string view, object data) => _rpc.PostRequest<T>(EndPoints.GetRunViewEndPoint(contractAddress, view), data);
 		public static UniTask<T>    GetTokens<T>(string                  address,         int    limit = 100) => _rpc.GetRequest<T>(EndPoints.GetTokensEndPoint(address, limit));
 		public static UniTask<T>    GetTokenMetadata<T>(string           tokenId)       => _rpc.GetRequest<T>(EndPoints.GetTokenMetadataEndPoint(tokenId));
 		public static UniTask<bool> GetOperationStatus(string            operationHash) => _rpc.GetRequest<bool>(EndPoints.GetOperationStatusEndPoint(operationHash));
