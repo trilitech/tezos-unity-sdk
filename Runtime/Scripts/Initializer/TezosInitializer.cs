@@ -71,7 +71,7 @@ namespace Tezos.Initializer
 				Debug.LogError("Networks for RPC and Data Provider are different. Make sure they are the same.");
 			}
 
-			if (string.IsNullOrEmpty(config.PinataApiKey))
+			if (string.IsNullOrEmpty(config.PinataApiToken))
 			{
 				Debug.LogWarning("Pinata API key is not set in TezosConfigSO. You will not be able to upload images to IPFS.");
 			}

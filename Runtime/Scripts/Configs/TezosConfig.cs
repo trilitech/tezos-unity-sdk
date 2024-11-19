@@ -1,5 +1,6 @@
 using Beacon.Sdk.Beacon.Permission;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Tezos.Configs
 {
@@ -22,7 +23,7 @@ namespace Tezos.Configs
 		[SerializeField] private int requestTimeoutSeconds = 45;
 
 		[Tooltip("Create API key in Pinata service https://app.pinata.cloud/developers/api-keys and paste JWT value " + "here to be able to upload images to IPFS.")]
-		[SerializeField] private string pinataApiKey;
+		[SerializeField] private string pinataApiToken;
 
 		[Tooltip("Data provider to use for querying data.")]
 		[SerializeField] private DataProviderConfig dataProviderConfig;
@@ -35,7 +36,7 @@ namespace Tezos.Configs
 
 		public string KukaiWebClientAddress => kukaiWebClientAddress;
 
-		public string PinataApiKey => pinataApiKey;
+		public string PinataApiToken => pinataApiToken;
 
 		public int RequestTimeoutSeconds => requestTimeoutSeconds;
 
