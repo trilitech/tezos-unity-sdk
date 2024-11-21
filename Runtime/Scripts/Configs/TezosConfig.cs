@@ -11,7 +11,7 @@ namespace Tezos.Configs
 		[SerializeField] public NetworkType Network = NetworkType.ghostnet;
 
 		[Tooltip("Web client address for Kukai Connector.")]
-		[SerializeField] private string kukaiWebClientAddress;
+		public string KukaiWebClientAddress;
 
 		// The URL format string for the RPC endpoint. Use {network} as a placeholder for the network type.
 		// Example format: "https://{network}.tezos.marigold.dev"
@@ -33,8 +33,6 @@ namespace Tezos.Configs
 			get => dataProviderConfig;
 			set => dataProviderConfig = value;
 		}
-
-		public string KukaiWebClientAddress => kukaiWebClientAddress;
 
 		public string PinataApiToken => pinataApiToken;
 
