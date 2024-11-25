@@ -5,7 +5,8 @@
 		Google,
 		Reddit,
 		Twitter,
-		Facebook
+		Facebook,
+		Email
 	}
 
 }
