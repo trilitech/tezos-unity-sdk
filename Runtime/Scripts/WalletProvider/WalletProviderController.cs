@@ -8,7 +8,6 @@ using Tezos.Operation;
 using Tezos.Provider;
 using Tezos.Reflection;
 using Tezos.SaveSystem;
-using UnityEngine;
 using OperationRequest = Tezos.Operation.OperationRequest;
 using OperationResponse = Tezos.Operation.OperationResponse;
 
