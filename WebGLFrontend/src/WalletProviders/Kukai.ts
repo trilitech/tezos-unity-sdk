@@ -8,39 +8,8 @@ class KukaiWallet extends BaseWallet implements Wallet {
   initInProgress: boolean;
 
   constructor(appName: string, appUrl: string, iconUrl: string, unityObjectName: string) {
+    console.log("KukaiWallet constructor", appName, appUrl, iconUrl);
     super(appName, appUrl, iconUrl, unityObjectName);
-    this.StoreCredentials();
-  }
-
-  private async StoreCredentials() {
-    const storedNetwork = localStorage.getItem("networkName");
-    if (storedNetwork) {
-      this.networkName = storedNetwork;
-    }
-
-    const storedPk = localStorage.getItem("kukaiUserPk");
-    const storedPkh = localStorage.getItem("kukaiUserPkh");
-    const storedAuth = localStorage.getItem("kukaiUserAuthResponse");
-    const storedUserData = localStorage.getItem("kukaiUserData");
-
-    if (storedPk && storedPkh) {
-      this.client = new KukaiEmbed({ net: this.networkName });
-      await this.client.init();
-      this.client.user.pk = storedPk;
-      this.client.user.pkh = storedPkh;
-
-      if (storedAuth) {
-        try {
-          this.client.user.authResponse = JSON.parse(storedAuth);
-        } catch {}
-      }
-
-      if (storedUserData) {
-        try {
-          this.client.user.userData = JSON.parse(storedUserData);
-        } catch {}
-      }
-    }
   }
 
   SetNetwork(networkName: string, rpcUrl: string) {
@@ -49,49 +18,59 @@ class KukaiWallet extends BaseWallet implements Wallet {
   }
 
   async ConnectAccount() {
-    if (!this.client) {
-      this.client = new KukaiEmbed({ net: this.networkName });
-    }
-
-    if (!this.client.initialized) {
+    console.log("KukaiWallet ConnectAccount");
+    
+    if (!this.client?.initialized) {
+      
+      console.log("!this.client?.initialized");
+      console.log("initInProgress", this.initInProgress);
+      
       if (this.initInProgress) return;
+      
+      this.client = new KukaiEmbed({
+        net: this.networkName,
+      });
+      
+      console.log("this.client", this.client)
+      
       this.initInProgress = true;
+      
       try {
+        console.log("this.client.init() 1");
         await this.client.init();
-      } finally {
+        console.log("this.client.init() 2");
+      }
+      catch (error) {
+        console.error(`Error during initializing Kukai, ${error.message}`);
+      }
+      finally {
         this.initInProgress = false;
       }
+      
     }
+    
+    console.log("this.client.user", this.client.user);
 
-    if (this.client.user && this.client.user.pk && this.client.user.pkh) {
+    if (this.client.user) {
       this.CallUnityOnAccountConnected({
         walletAddress: this.client.user.pkh,
         publicKey: this.client.user.pk,
         accountInfo: null
       });
-      return;
-    }
-
-    try {
-      await this.client.login();
-      localStorage.setItem("kukaiUserPk", this.client.user.pk);
-      localStorage.setItem("kukaiUserPkh", this.client.user.pkh);
-
-      if (this.client.user.authResponse) {
-        localStorage.setItem("kukaiUserAuthResponse", JSON.stringify(this.client.user.authResponse));
+    } else {
+      console.log("KukaiWallet ConnectAccount !this.client.user");
+      try {
+        console.log("KukaiWallet ConnectAccount try");
+        await this.client.login();
+        this.CallUnityOnAccountConnected({
+          walletAddress: this.client.user.pkh,
+          publicKey: this.client.user.pk,
+          accountInfo: null
+        });
+      } catch (error) {
+        console.error(`Error during connecting account, ${error.message}`);
+        this.CallUnityOnAccountFailedToConnect(error);
       }
-
-      if (this.client.user.userData) {
-        localStorage.setItem("kukaiUserData", JSON.stringify(this.client.user.userData));
-      }
-
-      this.CallUnityOnAccountConnected({
-        walletAddress: this.client.user.pkh,
-        publicKey: this.client.user.pk,
-        accountInfo: null
-      });
-    } catch (error) {
-      this.CallUnityOnAccountFailedToConnect(error);
     }
   }
 
@@ -99,14 +78,19 @@ class KukaiWallet extends BaseWallet implements Wallet {
     return this.client?.user?.pkh ?? "";
   }
 
-  async SendContract(destination: string, amount: string, entryPoint: string, parameter: string) {
+  async SendContract(
+    destination: string,
+    amount: string,
+    entryPoint: string,
+    parameter: string
+  ) {
     try {
-      if (!this.client) {
+      if(!this.client)
         await this.ConnectAccount();
-      }
       const transactionHash = await this.client.send(
         this.GetOperationsList(destination, amount, entryPoint, parameter)
       );
+
       this.CallUnityOnContractCallInjected({ transactionHash });
     } catch (error) {
       this.CallUnityOnContractCallFailed(error);
@@ -119,6 +103,7 @@ class KukaiWallet extends BaseWallet implements Wallet {
         // @ts-ignore
         this.GetOriginationOperationsList(script, delegateAddress)
       );
+
       this.CallUnityOnContractCallInjected({ transactionHash });
     } catch (error) {
       this.CallUnityOnContractCallFailed(error);
@@ -130,10 +115,12 @@ class KukaiWallet extends BaseWallet implements Wallet {
       this.NumToSigningType(signingType),
       plainTextPayload
     );
-    try {
+    try{
       const signature = await this.client.signExpr(hexPayload);
       this.CallUnityOnPayloadSigned({ signature });
-    } catch (error) {
+    }
+    catch (error) {
+      console.error(`Error during payload signing, ${error.message}`);
       this.CallUnityOnPayloadSignFailed(error);
     }
   }
@@ -145,13 +132,8 @@ class KukaiWallet extends BaseWallet implements Wallet {
       accountInfo: null
     };
 
-    localStorage.removeItem("kukaiUserPk");
-    localStorage.removeItem("kukaiUserPkh");
-    localStorage.removeItem("kukaiUserAuthResponse");
-    localStorage.removeItem("kukaiUserData");
-    localStorage.removeItem("networkName");
-
     await this.client?.logout();
+    localStorage.removeItem("networkName");
     this.CallUnityOnAccountDisconnected(accountInfo);
   }
 }
