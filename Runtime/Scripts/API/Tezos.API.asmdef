@@ -1,0 +1,28 @@
+{
+    "name": "Tezos.API",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b60df1cfa722f47e59ced3e589b14c36",
+        "GUID:c4f74bc9e829c4f048905f612502f3af",
+        "GUID:1e0e7f81c816746efa3d2034b066b144",
+        "GUID:c1653c7c12da84853bcb836bb7fd9960",
+        "GUID:7198d896ea7bc354697770531cec156e",
+        "GUID:3ab1d7df9cbaa4bdc917f69884d6565a",
+        "GUID:4afb67e7a9fc643bb85e0dd7998d542e",
+        "GUID:23f3dee23436422f87c2b7d79a98e216",
+        "GUID:a36d4ab4ac1445529d56bb1978202fe9",
+        "GUID:67dfc283a3014520b1ae80c0cb8e8822",
+        "GUID:61d2357f46164d61830c7393d329d506",
+        "GUID:832ee16f9a74421fa64eac13167606ab",
+        "GUID:b7fc0294b19e43989b71c61cd07693dc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,24 @@
+{
+    "name": "TezosSDK.MarketplaceSample",
+    "rootNamespace": "",
+    "references": [
+        "TezosSDK",
+        "Unity.TextMeshPro",
+        "Tezos.API",
+        "Tezos.WalletProvider",
+        "Tezos.SocialLoginProvider",
+        "Tezos.Operation",
+        "Tezos.UniTask",
+        "Tezos.Token",
+        "Tezos.MainThreadDispatcher"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,7 +1,7 @@
 import { char2Bytes } from "@taquito/utils";
 import {
   AbstractWallet,
-  AccountInfo,
+  AccountInformation,
   ErrorInfo,
   EventType,
   OperationResult,
@@ -15,16 +15,18 @@ import {
   TezosOperationType,
 } from "@airgap/beacon-types";
 
-class BaseWallet implements AbstractWallet {
+class BaseWallet implements AbstractWallet{ 
   dappName: string;
   dappUrl: string;
   iconUrl: string;
+  unityObjectName: string;
 
-  constructor(appName: string, appUrl: string, iconUrl: string) {
+  constructor(appName: string, appUrl: string, iconUrl: string, unityObjectName: string) {
     console.log("BaseWallet constructor", appName, appUrl, iconUrl);
     this.dappName = appName;
     this.dappUrl = appUrl;
     this.iconUrl = iconUrl;
+    this.unityObjectName = unityObjectName
   }
 
   CallUnityOnSDKInitialized() {
@@ -67,7 +69,15 @@ class BaseWallet implements AbstractWallet {
     this.CallUnityMethod(eventData);
   }
 
-  CallUnityOnAccountDisconnected(accountInfo: AccountInfo) {
+  CallUnityOnPayloadSignFailed(error: ErrorInfo) {
+    const eventData: UnityEvent = {
+      eventType: EventType.payloadSigFailed,
+      data: error,
+    };
+    this.CallUnityMethod(eventData);
+  }
+
+  CallUnityOnAccountDisconnected(accountInfo: AccountInformation) {
     const eventData: UnityEvent = {
       eventType: EventType.accountDisconnected,
       data: accountInfo,
@@ -78,7 +88,7 @@ class BaseWallet implements AbstractWallet {
     localStorage.removeItem("iconUrl");
   }
 
-  CallUnityOnAccountConnected(accountInfo: AccountInfo) {
+  CallUnityOnAccountConnected(accountInfo: AccountInformation) {
     const eventData: UnityEvent = {
       eventType: EventType.accountConnected,
       data: accountInfo,
@@ -97,7 +107,7 @@ class BaseWallet implements AbstractWallet {
     };
 
     window.unityInstance.SendMessage(
-      "WalletEventManager",
+      this.unityObjectName,
       "HandleEvent",
       JSON.stringify(resultEventData)
     );

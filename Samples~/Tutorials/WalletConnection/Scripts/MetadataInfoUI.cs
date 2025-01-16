@@ -1,8 +1,9 @@
-using TezosSDK.Tezos;
+using Tezos.Configs;
+using Tezos.MessageSystem;
 using TMPro;
 using UnityEngine;
 
-namespace TezosSDK.Tutorials.WalletConnection
+namespace TezosSDK.Samples.Tutorials.WalletConnection
 {
 
 	public class MetadataInfoUI : MonoBehaviour
@@ -12,8 +13,10 @@ namespace TezosSDK.Tutorials.WalletConnection
 
 		private void Start()
 		{
-			nameText.text = TezosManager.Instance.DAppMetadata.Name;
-			descriptionText.text = TezosManager.Instance.DAppMetadata.Description;
+			var appConfig   = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			
+			nameText.text = appConfig.AppName;
+			descriptionText.text = appConfig.AppDescription;
 		}
 	}
 

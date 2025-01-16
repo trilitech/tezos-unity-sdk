@@ -1,5 +1,5 @@
 import BaseWallet from "./BaseWallet";
-import { AccountInfo, Wallet } from "./Types";
+import { AccountInformation, Wallet } from "./Types";
 import { KukaiEmbed } from "kukai-embed";
 
 class KukaiWallet extends BaseWallet implements Wallet {
@@ -7,9 +7,9 @@ class KukaiWallet extends BaseWallet implements Wallet {
   networkName: string;
   initInProgress: boolean;
 
-  constructor(appName: string, appUrl: string, iconUrl: string) {
+  constructor(appName: string, appUrl: string, iconUrl: string, unityObjectName: string) {
     console.log("KukaiWallet constructor", appName, appUrl, iconUrl);
-    super(appName, appUrl, iconUrl);
+    super(appName, appUrl, iconUrl, unityObjectName);
   }
 
   SetNetwork(networkName: string, rpcUrl: string) {
@@ -53,8 +53,9 @@ class KukaiWallet extends BaseWallet implements Wallet {
 
     if (this.client.user) {
       this.CallUnityOnAccountConnected({
-        address: this.client.user.pkh,
+        walletAddress: this.client.user.pkh,
         publicKey: this.client.user.pk,
+        accountInfo: null
       });
     } else {
       console.log("KukaiWallet ConnectAccount !this.client.user");
@@ -62,8 +63,9 @@ class KukaiWallet extends BaseWallet implements Wallet {
         console.log("KukaiWallet ConnectAccount try");
         await this.client.login();
         this.CallUnityOnAccountConnected({
-          address: this.client.user.pkh,
+          walletAddress: this.client.user.pkh,
           publicKey: this.client.user.pk,
+          accountInfo: null
         });
       } catch (error) {
         console.error(`Error during connecting account, ${error.message}`);
@@ -83,6 +85,8 @@ class KukaiWallet extends BaseWallet implements Wallet {
     parameter: string
   ) {
     try {
+      if(!this.client)
+        await this.ConnectAccount();
       const transactionHash = await this.client.send(
         this.GetOperationsList(destination, amount, entryPoint, parameter)
       );
@@ -111,17 +115,24 @@ class KukaiWallet extends BaseWallet implements Wallet {
       this.NumToSigningType(signingType),
       plainTextPayload
     );
-    const signature = await this.client.signExpr(hexPayload);
-    this.CallUnityOnPayloadSigned({ signature });
+    try{
+      const signature = await this.client.signExpr(hexPayload);
+      this.CallUnityOnPayloadSigned({ signature });
+    }
+    catch (error) {
+      console.error(`Error during payload signing, ${error.message}`);
+      this.CallUnityOnPayloadSignFailed(error);
+    }
   }
 
   async DisconnectAccount() {
-    const accountInfo: AccountInfo = {
+    const accountInfo: AccountInformation = {
       publicKey: this.client?.user?.pk,
-      address: this.GetActiveAccountAddress(),
+      walletAddress: this.GetActiveAccountAddress(),
+      accountInfo: null
     };
 
-    await this.client.logout();
+    await this.client?.logout();
     localStorage.removeItem("networkName");
     this.CallUnityOnAccountDisconnected(accountInfo);
   }

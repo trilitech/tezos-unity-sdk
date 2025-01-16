@@ -16,13 +16,13 @@
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.3",
     "typescript": "^5.0.4",
-    "webpack": "^5.83.1",
+    "webpack": "^5.95.0",
     "webpack-cli": "^5.1.1"
   },
   "dependencies": {
-    "@airgap/beacon-sdk": "^4.0.12",
-    "@taquito/utils": "^16.1.2",
-    "kukai-embed": "0.8.9",
+    "@airgap/beacon-sdk": "^4.3.0",
+    "@taquito/utils": "^16.2.0",
+    "kukai-embed": "0.9.0",
     "node-polyfill-webpack-plugin": "^2.0.1"
   }
 }

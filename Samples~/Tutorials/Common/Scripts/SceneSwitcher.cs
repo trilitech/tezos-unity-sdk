@@ -1,8 +1,8 @@
-using TezosSDK.Tezos;
+using Tezos.API;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace TezosSDK.Tutorials.Common
+namespace TezosSDK.Samples.Tutorials.Common
 {
 
 	public class SceneSwitcher : MonoBehaviour
@@ -11,11 +11,7 @@ namespace TezosSDK.Tutorials.Common
 
 		public void ChangeToScene()
 		{
-			if (TezosManager.Instance)
-			{
-				TezosManager.Instance.Wallet.Disconnect();
-			}
-
+			TezosAPI.Disconnect().GetAwaiter().GetResult();
 			SceneManager.LoadScene(sceneNameToLoad);
 		}
 	}

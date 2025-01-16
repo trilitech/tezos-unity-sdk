@@ -1,4 +1,4 @@
-﻿namespace TezosSDK.FileUploaders.IPFS
+﻿namespace TezosSDK.FileUploaders
 {
 
 	public class PinataCredentials

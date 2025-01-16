@@ -1,9 +1,9 @@
-using TezosSDK.Tezos;
+using Tezos.API;
+using Tezos.Logger;
 using TMPro;
 using UnityEngine;
-using Logger = TezosSDK.Helpers.Logger;
 
-namespace TezosSDK.Tutorials.TransferToken
+namespace TezosSDK.Samples.Tutorials.TransferToken
 {
 
 	public class TransferButton : MonoBehaviour
@@ -12,16 +12,12 @@ namespace TezosSDK.Tutorials.TransferToken
 		[SerializeField] private TMP_InputField address;
 		[SerializeField] private TMP_InputField amount;
 
-		public void HandleTransfer()
+		public async void HandleTransfer()
 		{
-			TezosManager.Instance.Tezos.TokenContract.Transfer(TransferCompleted, address.text, int.Parse(id.text),
-				int.Parse(amount.text));
+			var hash = await TezosAPI.Transfer(address.text, int.Parse(id.text), int.Parse(amount.text));
+			TezosLogger.LogDebug($"Transfer complete with transaction hash {hash}");
 		}
-
-		private void TransferCompleted(string txHash)
-		{
-			Logger.LogDebug($"Transfer complete with transaction hash {txHash}");
-		}
+		
 	}
 
 }

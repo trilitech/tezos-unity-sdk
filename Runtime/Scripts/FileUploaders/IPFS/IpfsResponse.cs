@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace TezosSDK.FileUploaders.IPFS
+namespace TezosSDK.FileUploaders
 {
 
 	public class IpfsResponse

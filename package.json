@@ -1,46 +1,46 @@
 {
-  "name": "com.trilitech.tezos-unity-sdk",
-  "version": "3.0.0",
-  "unity": "2021.3",
-  "displayName": "Tezos Unity SDK",
-  "description": "Unity SDK for Tezos: Seamlessly Integrate Tezos with Your Unity Projects\n\nThis SDK empowers developers to easily incorporate Tezos blockchain functionality into Unity games or applications. Designed for efficiency and ease of use, it's the perfect tool for bringing blockchain capabilities to your Unity creations.\n\nFor detailed documentation, visit: https://docs.tezos.com/unity/\n\nGet Involved:\n- Join our vibrant community on Discord: https://discord.gg/tezos\n- Explore funding opportunities: https://grants.tezos.foundation/",
-  "samples": [
-    {
-      "displayName": "Tutorials",
-      "description": "A set of tutorials showing how to use the Tezos Unity SDK, split into multiple scenes, each demonstrating a different feature.\nThe scenes are easy to follow and are well commented to help you begin your journey with Tezos and Unity.\n\nFor more information, you can also check out the documentation at https://docs.tezos.com/unity/",
-      "path": "Samples~/Tutorials"
-    },
-    {
-      "displayName": "Sample Marketplace Game",
-      "description": "Simple game featuring a marketplace where players can mint and trade NFTs, deploy smart contracts, and more.\n\nFor more information, you can also check out the documentation at https://docs.tezos.com/unity/",
-      "path": "Samples~/MarketplaceSample"
-    }
+  "name"            : "com.trilitech.tezos-unity-sdk",
+  "version"         : "4.0.0-preview.14",
+  "unity"           : "2021.3",
+  "displayName"     : "Tezos Unity SDK",
+  "description"     : "Unity SDK for Tezos: Seamlessly Integrate Tezos with Your Unity Projects\n\nThis SDK empowers developers to easily incorporate Tezos blockchain functionality into Unity games or applications. Designed for efficiency and ease of use, it's the perfect tool for bringing blockchain capabilities to your Unity creations.\n\nFor detailed documentation, visit: https://docs.tezos.com/unity/\n\nGet Involved:\n- Join our vibrant community on Discord: https://discord.gg/tezos\n- Explore funding opportunities: https://grants.tezos.foundation/",
+  "samples"         : [
+	{
+	  "displayName": "Tutorials",
+	  "description": "A set of tutorials showing how to use the Tezos Unity SDK, split into multiple scenes, each demonstrating a different feature.\nThe scenes are easy to follow and are well commented to help you begin your journey with Tezos and Unity.\n\nFor more information, you can also check out the documentation at https://docs.tezos.com/unity/",
+	  "path"       : "Samples~/Tutorials"
+	},
+	{
+	  "displayName": "Sample Marketplace Game",
+	  "description": "Simple game featuring a marketplace where players can mint and trade NFTs, deploy smart contracts, and more.\n\nFor more information, you can also check out the documentation at https://docs.tezos.com/unity/",
+	  "path"       : "Samples~/MarketplaceSample"
+	}
   ],
-  "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.2.1",
-    "com.unity.textmeshpro": "3.0.6"
+  "dependencies"    : {
+	"com.unity.nuget.newtonsoft-json": "3.2.1",
+	"com.unity.textmeshpro"          : "3.0.6"
   },
-  "keywords": [
-    "tezos",
-    "blockchain",
-    "game-dev",
-    "unity",
-    "sdk"
+  "keywords"        : [
+	"tezos",
+	"blockchain",
+	"game-dev",
+	"unity",
+	"sdk"
   ],
-  "homepage": "https://tezos.com/unity/",
-  "bugs": {
-    "url": "https://github.com/trilitech/tezos-unity-sdk/issues"
+  "homepage"        : "https://tezos.com/unity/",
+  "bugs"            : {
+	"url": "https://github.com/trilitech/tezos-unity-sdk/issues"
   },
-  "repository": {
-    "type": "git",
-    "url": "ssh://git@github.com:trilitech/tezos-unity-sdk.git"
+  "repository"      : {
+	"type": "git",
+	"url" : "ssh://git@github.com:trilitech/tezos-unity-sdk.git"
   },
   "documentationUrl": "https://docs.tezos.com/unity/",
-  "changelogUrl": "https://github.com/trilitech/tezos-unity-sdk/blob/main/CHANGELOG.md",
-  "author": {
-    "name": "TriliTech",
-    "email" : "contact@trili.tech",
-    "url": "https://tezos.com/unity/"
+  "changelogUrl"    : "https://github.com/trilitech/tezos-unity-sdk/blob/main/CHANGELOG.md",
+  "author"          : {
+	"name" : "TriliTech",
+	"email": "contact@trili.tech",
+	"url"  : "https://tezos.com/unity/"
   },
-  "license": "MIT"
+  "license"         : "MIT"
 }

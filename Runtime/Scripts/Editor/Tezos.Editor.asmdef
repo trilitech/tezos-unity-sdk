@@ -1,0 +1,17 @@
+{
+    "name": "Tezos.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3ab1d7df9cbaa4bdc917f69884d6565a",
+        "GUID:c5d9872faca374b12b8a5feb12c32f17"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

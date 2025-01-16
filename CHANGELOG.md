@@ -4,6 +4,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+### Added
+- `KukaiConnector` class to handle Kukai wallet connections.
+- `OnWalletDisconnected` event handling in `TezosAuthenticator`.
+- Refactor of wallet and connector interfaces to improve modularity and flexibility, including:
+  - New focused wallet interfaces (`IWalletConnection`, `IWalletAccount`, `IWalletTransaction`, `IWalletContract`, `IWalletEventProvider`) for better separation of concerns.
+  - `WalletConnectorFactory` to replace `BeaconConnectorFactory`, reflecting a more generic wallet connection approach.
+- Introduced `TezosLogger` class to replace `Logger.cs` for improved and cleaner logging and to avoid conflicts with Unity's `Logger` class.
+- Enabled sourcemaps on WebGL for debugging.
+- Introduced `InitializeTezosAsync` method in `TezosManager` to allow for asynchronous initialization of the SDK, so that listeners can wait for the SDK to be ready before proceeding.
+- `TezosManager` now has a `IsInitialized` property to check if the SDK has been initialized.
+
+### Changed
+- Refactored asynchronous callbacks throughout the SDK to use the `Result<T>` pattern for improved error handling and clarity.
+- Simplified HTTP request logic for better efficiency and readability, including updates to `TezosHttpClient` to utilize coroutine callbacks.
+- Improved operation tracking in `OperationTracker` and `WalletProvider` to improve blockchain operation tracking and error reporting mechanisms.
+- Updated event naming and handling to improve clarity and streamline the event handling process, renaming events such as `ContractCallInjected` to `OperationInjected` and using generic events like `OperationCompleted` in `WalletEventManager`.
+- `TokenMetadata` type to `JsonElement` to be able to handle generic metadata.
+- Connector system, renaming `IBeaconConnector` to `IWalletConnector` and modifying implementations (`BeaconConnectorDotNet`, `BeaconConnectorWebGL`) to align with new interface.
+- `TokenContract` and `BeaconConnectorDotNet` classes updated to use the new wallet interfaces.
+- Method signatures and implementations across wallet-related classes to align with new interfaces.
+- Event handling in connectors to ensure proper translation and dispatch according to the new event system structure.
+- Logging and error handling across the modified classes for better debugging and maintenance.
+- Connection and operation request flows in wallet connectors to enhance performance and user experience.
+- Samples have been updated to use the new namespaces and namings.
+- WebGL fixes and security improvements.
+- File structure, folder structure, and namespace changes.
+
+### Fixed
+- Addressed a memory leak in `TokenContract` where event handlers were not being properly unsubscribed.
+- Handling of `SDKInitialized` event in `BeaconConnectorWebGl` and `TezosAuthenticator` to ensure proper initialization.
+- WebGL persistent auth for Beacon wallet provider.
+
+### Removed
+- Outdated debug logs to clean up codebase and improve maintainability.
+- Dark background UI element in `TezosAuthenticator` prefab.
+
+
+### Documentation
+- Updated comments to reflect new callback signatures and their behaviors as well as the use of the `Result<T>` pattern.
+- Updated comments to describe the new wallet and connector interface structure and their benefits.
+
+
+
+
 ## [3.0.0] - 2023-01-09
 ### Added
 - Tutorial scenes within the `Tutorials` folder, offering step-by-step guidance on SDK features.

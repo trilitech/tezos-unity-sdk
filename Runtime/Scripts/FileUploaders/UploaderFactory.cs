@@ -1,5 +1,8 @@
-using TezosSDK.FileUploaders.IPFS;
-using TezosSDK.FileUploaders.OnChain;
+// ReSharper disable once RedundantUsingDirective
+// ReSharper disable once RedundantUsingDirective
+using TezosSDK.FileUploaders;
+// ReSharper disable once RedundantUsingDirective
+// ReSharper disable once RedundantUsingDirective
 using UnityEngine;
 
 namespace TezosSDK.FileUploaders

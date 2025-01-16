@@ -3,12 +3,12 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text.Json;
+using Tezos.Logger;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using Logger = TezosSDK.Helpers.Logger;
 
-namespace TezosSDK.FileUploaders.IPFS
+namespace TezosSDK.FileUploaders
 {
 
 	public class EditorPinataUploader : BaseUploader, IPinataUploader
@@ -19,8 +19,7 @@ namespace TezosSDK.FileUploaders.IPFS
 		{
 			yield return null;
 
-			var path = EditorUtility.OpenFilePanel("Select image", string.Empty,
-				SupportedFileExtensions.Replace(".", string.Empty).Replace(" ", string.Empty));
+			var path = EditorUtility.OpenFilePanel("Select image", string.Empty, SupportedFileExtensions.Replace(".", string.Empty).Replace(" ", string.Empty));
 
 			var filename = Path.GetFileName(path);
 			var form = new WWWForm();
@@ -37,7 +36,8 @@ namespace TezosSDK.FileUploaders.IPFS
 			}
 			else
 			{
-				Logger.LogError($"Error during upload to IPFS {request.downloadHandler.text}");
+				// TezosLogger.LogError($"Error during upload to IPFS {request.downloadHandler.text}");
+				TezosLogger.LogError($"Upload failed: {request.error}");
 			}
 		}
 

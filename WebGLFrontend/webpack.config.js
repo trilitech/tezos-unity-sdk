@@ -28,4 +28,5 @@ module.exports = {
     minimize: true,
     minimizer: [new TerserPlugin()],
   },
+  devtool: 'source-map', // Enable source maps for debugging
 };

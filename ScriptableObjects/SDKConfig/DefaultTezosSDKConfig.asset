@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: DefaultTezosSDKConfig
   m_EditorClassIdentifier: 
   network: 1
-  rpcUrlFormat: https://{network}.tezos.marigold.dev
+  connectorType: 2
+  kukaiWebClientAddress: http://192.168.0.74:3000
+  rpcUrlFormat: https://rpc.tzkt.io/{network}
   requestTimeoutSeconds: 45
   pinataApiKey: 
   dataProviderConfig: {fileID: 11400000, guid: 8db273370a9fc4fbf9bf668dde7d9b72, type: 2}
