@@ -1,6 +1,6 @@
 {
   "name"            : "com.trilitech.tezos-unity-sdk",
-  "version"         : "4.0.0",
+  "version"         : "4.0.1",
   "unity"           : "2021.3",
   "displayName"     : "Tezos Unity SDK",
   "description"     : "Unity SDK for Tezos: Seamlessly Integrate Tezos with Your Unity Projects\n\nThis SDK empowers developers to easily incorporate Tezos blockchain functionality into Unity games or applications. Designed for efficiency and ease of use, it's the perfect tool for bringing blockchain capabilities to your Unity creations.\n\nFor detailed documentation, visit: https://docs.tezos.com/unity/\n\nGet Involved:\n- Join our vibrant community on Discord: https://discord.gg/tezos\n- Explore funding opportunities: https://grants.tezos.foundation/",
