@@ -1,4 +1,5 @@
 #if UNITY_2023_1_OR_NEWER
+using Tezos.Cysharp.Threading.Tasks;
 namespace Cysharp.Threading.Tasks
 {
     public static class UnityAwaitableExtensions
