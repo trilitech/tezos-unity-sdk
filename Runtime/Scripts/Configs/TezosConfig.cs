@@ -8,16 +8,10 @@ namespace Tezos.Configs
 	public class TezosConfig: ScriptableObject
 	{
 		[Tooltip("Select the network to use for chain interactions.")]
-		[SerializeField] public NetworkType Network = NetworkType.ghostnet;
+		[SerializeField] public NetworkType Network = NetworkType.testnet;
 
 		[Tooltip("Web client address for Kukai Connector.")]
 		public string KukaiWebClientAddress;
-
-		// The URL format string for the RPC endpoint. Use {network} as a placeholder for the network type.
-		// Example format: "https://{network}.tezos.marigold.dev"
-		// If NetworkType is set to 'ghostnet', the resulting URL will be: "https://ghostnet.tezos.marigold.dev"
-		[Tooltip("The URL format for the RPC endpoint. Use {network} as a placeholder for the network type.")]
-		[SerializeField] private string rpcUrlFormat = "https://{network}.tezos.marigold.dev";
 
 		[Tooltip("Timeout for requests to the chain.")]
 		[SerializeField] private int requestTimeoutSeconds = 45;
@@ -37,7 +31,5 @@ namespace Tezos.Configs
 		public string PinataApiToken => pinataApiToken;
 
 		public int RequestTimeoutSeconds => requestTimeoutSeconds;
-
-		public string Rpc => rpcUrlFormat.Replace("{network}", Network.ToString());
 	}
 }

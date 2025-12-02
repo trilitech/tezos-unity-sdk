@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Beacon.Sdk.Beacon.Permission;
 using Tezos.API;
 using Tezos.MessageSystem;
 using Tezos.Configs;

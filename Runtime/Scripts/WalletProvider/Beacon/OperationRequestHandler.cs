@@ -14,6 +14,7 @@ using Tezos.Configs;
 using Tezos.Cysharp.Threading.Tasks;
 using Tezos.Logger;
 using Tezos.MessageSystem;
+using NetworkType = Beacon.Sdk.Beacon.Permission.NetworkType;
 
 namespace Tezos.WalletProvider
 {
@@ -193,8 +194,9 @@ namespace Tezos.WalletProvider
 
 		private Network CreateNetwork()
 		{
-			TezosConfig tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
-			return new Network { Type = tezosConfig.Network, Name = tezosConfig.Network.ToString(), RpcUrl = tezosConfig.Rpc };
+			DataProviderConfig dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
+			NetworkType beaconNetwork = dataProviderConfig.Network == Configs.NetworkType.mainnet ? NetworkType.mainnet : NetworkType.ghostnet; // beacon dotnet sdk does not support shadownet
+			return new Network { Type = beaconNetwork, Name = beaconNetwork.ToString(), RpcUrl = dataProviderConfig.BaseUrl };
 		}
 
 		/// <summary>

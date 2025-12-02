@@ -128,8 +128,9 @@ namespace Tezos.WalletProvider
 			TezosLogger.LogDebug($"Connect method entered");
 			var dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
 			var appConfig          = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			var networkName        = dataProviderConfig.Network == NetworkType.mainnet ? "mainnet" : "ghostnet"; // beacon dotnet sdk does not support shadownet
 			JsInitWallet(
-			             dataProviderConfig.Network.ToString(), dataProviderConfig.BaseUrl, WalletType.ToString().ToLower(), appConfig.AppName,
+			             networkName, dataProviderConfig.BaseUrl, WalletType.ToString().ToLower(), appConfig.AppName,
 			             appConfig.AppUrl,                      appConfig.AppIcon
 			            );
 
