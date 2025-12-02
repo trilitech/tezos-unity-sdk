@@ -106,10 +106,7 @@ namespace Tezos.Editor
 		private static void CreateTezosConfigs()
 		{
 			ConfigGetter.GetOrCreateConfig<AppConfig>();
-			DataProviderConfig dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
-			TezosConfig        tezosConfig        = ConfigGetter.GetOrCreateConfig<TezosConfig>();
-
-			tezosConfig.DataProvider = dataProviderConfig;
+			TezosConfig tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
 
 			EditorUtility.SetDirty(tezosConfig);
 			Debug.Log("Tezos configs created and updated.");

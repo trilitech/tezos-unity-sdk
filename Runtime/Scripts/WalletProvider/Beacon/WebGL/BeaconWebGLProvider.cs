@@ -59,7 +59,7 @@ namespace Tezos.WalletProvider
 		private void OnEventReceived(string jsonEventData)
 		{
 			TezosLogger.LogDebug($"jsonEventData: {jsonEventData}");
-			
+
 			try
 			{
 				var eventData = JsonConvert.DeserializeObject<UnifiedEvent>(jsonEventData);
@@ -68,10 +68,8 @@ namespace Tezos.WalletProvider
 
 				switch (eventData.EventType)
 				{
-					case "EventTypePairingRequest":
-						PairingRequested?.Invoke(eventData.Data);
-						break;
-					case "EventTypePairingDone": break;
+					case "EventTypePairingRequest": PairingRequested?.Invoke(eventData.Data); break;
+					case "EventTypePairingDone":    break;
 					case "EventTypeWalletConnected":
 					case "AccountConnected":
 						var walletProviderData = JsonConvert.DeserializeObject<WalletProviderData>(eventData.Data);
@@ -101,17 +99,13 @@ namespace Tezos.WalletProvider
 						_operationTcs = null;
 						break;
 					case "EventTypePayloadSigned":
-					case "PayloadSigned":
-						_signPayloadTcs.TrySetResult(JsonConvert.DeserializeObject<SignPayloadResponse>(eventData.Data));
-						break;
+					case "PayloadSigned": _signPayloadTcs.TrySetResult(JsonConvert.DeserializeObject<SignPayloadResponse>(eventData.Data)); break;
 					case "PayloadSignFailed":
 						_signPayloadTcs.TrySetException(new WalletSignPayloadRejected("Payload signing failed."));
 						_signPayloadTcs = null;
 						break;
 					case "EventTypeSDKInitialized": break;
-					default:
-						TezosLogger.LogWarning($"Unhandled event type: {eventData.EventType}");
-						break;
+					default:                        TezosLogger.LogWarning($"Unhandled event type: {eventData.EventType}"); break;
 				}
 			}
 			catch (ArgumentException ex)
@@ -126,12 +120,12 @@ namespace Tezos.WalletProvider
 
 			_walletConnectionTcs = new();
 			TezosLogger.LogDebug($"Connect method entered");
-			var dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
-			var appConfig          = ConfigGetter.GetOrCreateConfig<AppConfig>();
-			var networkName        = dataProviderConfig.Network == NetworkType.mainnet ? "mainnet" : "ghostnet"; // beacon dotnet sdk does not support shadownet
+			var tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			var appConfig   = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			var networkName = tezosConfig.Network == NetworkType.mainnet ? "mainnet" : "ghostnet"; // beacon dotnet sdk does not support shadownet
 			JsInitWallet(
-			             networkName, dataProviderConfig.Rpc, WalletType.ToString().ToLower(), appConfig.AppName,
-			             appConfig.AppUrl,                      appConfig.AppIcon
+			             networkName,      tezosConfig.Rpc, WalletType.ToString().ToLower(), appConfig.AppName,
+			             appConfig.AppUrl, appConfig.AppIcon
 			            );
 
 			JsConnectAccount();

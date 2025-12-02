@@ -18,8 +18,7 @@ namespace Tezos.API
 		private readonly Action<bool, string> _onComplete;
 		private readonly string               _operationHash;
 		private          bool                 _isTracking;
-		private          string               _baseUrl;
-		
+		private          string               _rpc;
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="OperationTracker" /> class.
@@ -33,7 +32,7 @@ namespace Tezos.API
 		{
 			_operationHash = operationHash;
 			_onComplete    = onComplete;
-			_baseUrl       = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().Rpc;
+			_rpc           = ConfigGetter.GetOrCreateConfig<TezosConfig>().Rpc;
 		}
 
 		/// <summary>
@@ -52,8 +51,8 @@ namespace Tezos.API
 		private async UniTask TrackOperationAsync()
 		{
 			float startTime = Time.time;
-			var timeout = ConfigGetter.GetOrCreateConfig<TezosConfig>().RequestTimeoutSeconds;
-			
+			var   timeout   = ConfigGetter.GetOrCreateConfig<TezosConfig>().RequestTimeoutSeconds;
+
 			while (_isTracking && Time.time - startTime < timeout)
 			{
 				TezosLogger.LogDebug($"Checking operation status for hash {_operationHash}");
@@ -89,7 +88,7 @@ namespace Tezos.API
 		/// </summary>
 		private async UniTask<bool?> GetOperationStatusAsync(string operationHash)
 		{
-			string                url     = Path.Combine(_baseUrl, $"operations/{operationHash}/status");
+			string                url     = Path.Combine(_rpc, $"operations/{operationHash}/status");
 			using UnityWebRequest request = UnityWebRequest.Get(url);
 			request.SetRequestHeader("Accept", "application/json");
 			request.timeout = 10; // Timeout in seconds

@@ -194,9 +194,9 @@ namespace Tezos.WalletProvider
 
 		private Network CreateNetwork()
 		{
-			DataProviderConfig dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
-			NetworkType beaconNetwork = dataProviderConfig.Network == Configs.NetworkType.mainnet ? NetworkType.mainnet : NetworkType.ghostnet; // beacon dotnet sdk does not support shadownet
-			return new Network { Type = beaconNetwork, Name = beaconNetwork.ToString(), RpcUrl = dataProviderConfig.Rpc };
+			TezosConfig tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			NetworkType beaconNetwork      = tezosConfig.Network == Configs.NetworkType.mainnet ? NetworkType.mainnet : NetworkType.ghostnet; // beacon dotnet sdk does not support shadownet
+			return new Network { Type = beaconNetwork, Name = beaconNetwork.ToString(), RpcUrl = tezosConfig.Rpc };
 		}
 
 		/// <summary>

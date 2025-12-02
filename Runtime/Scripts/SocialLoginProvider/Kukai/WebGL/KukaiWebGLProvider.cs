@@ -19,7 +19,7 @@ namespace Tezos.SocialLoginProvider
 		public string Data      { get; set; }
 		public string EventType { get; set; }
 	}
-	
+
 	public class KukaiWebGLProvider : IWebGLProvider
 	{
 		public event Action<SocialProviderData> WalletConnected;
@@ -61,10 +61,8 @@ namespace Tezos.SocialLoginProvider
 
 				switch (eventData.EventType)
 				{
-					case "EventTypePairingRequest":
-						PairingRequested?.Invoke(eventData.Data);
-						break;
-					case "EventTypePairingDone": break;
+					case "EventTypePairingRequest": PairingRequested?.Invoke(eventData.Data); break;
+					case "EventTypePairingDone":    break;
 					case "EventTypeWalletConnected":
 					case "AccountConnected":
 						var socialProviderData = JsonConvert.DeserializeObject<SocialProviderData>(eventData.Data);
@@ -94,17 +92,13 @@ namespace Tezos.SocialLoginProvider
 						_operationTcs = null;
 						break;
 					case "EventTypePayloadSigned":
-					case "PayloadSigned":
-						_signPayloadTcs.TrySetResult(JsonConvert.DeserializeObject<SignPayloadResponse>(eventData.Data));
-						break;
+					case "PayloadSigned": _signPayloadTcs.TrySetResult(JsonConvert.DeserializeObject<SignPayloadResponse>(eventData.Data)); break;
 					case "PayloadSignFailed":
 						_signPayloadTcs.TrySetException(new SocialSignPayloadFailed("Payload signing failed."));
 						_signPayloadTcs = null;
 						break;
 					case "EventTypeSDKInitialized": break;
-					default:
-						TezosLogger.LogWarning($"Unhandled event type: {eventData.EventType}");
-						break;
+					default:                        TezosLogger.LogWarning($"Unhandled event type: {eventData.EventType}"); break;
 				}
 			}
 			catch (ArgumentException ex)
@@ -119,11 +113,11 @@ namespace Tezos.SocialLoginProvider
 
 			_logInTcs = new();
 			TezosLogger.LogDebug($"Connect method entered");
-			var dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
-			var appConfig          = ConfigGetter.GetOrCreateConfig<AppConfig>();
+			var tezosConfig = ConfigGetter.GetOrCreateConfig<TezosConfig>();
+			var appConfig   = ConfigGetter.GetOrCreateConfig<AppConfig>();
 			JsInitWallet(
-			             dataProviderConfig.Network.ToString(), dataProviderConfig.Rpc, SocialLoginType.ToString().ToLower(), appConfig.AppName,
-			             appConfig.AppUrl,                      appConfig.AppIcon
+			             tezosConfig.Network.ToString(), tezosConfig.Rpc, SocialLoginType.ToString().ToLower(), appConfig.AppName,
+			             appConfig.AppUrl,               appConfig.AppIcon
 			            );
 
 			JsConnectAccount();
