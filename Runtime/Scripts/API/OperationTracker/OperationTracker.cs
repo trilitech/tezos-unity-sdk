@@ -33,7 +33,7 @@ namespace Tezos.API
 		{
 			_operationHash = operationHash;
 			_onComplete    = onComplete;
-			_baseUrl       = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().BaseUrl;
+			_baseUrl       = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().Rpc;
 		}
 
 		/// <summary>

@@ -9,7 +9,7 @@ namespace Tezos.Request
 	{
 		private static string _baseUrl;
 
-		static EndPoints() => _baseUrl = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().BaseUrl;
+		static EndPoints() => _baseUrl = ConfigGetter.GetOrCreateConfig<DataProviderConfig>().Rpc;
 
 		public static string GetBalanceEndPoint(string         walletAddress)         => Path.Combine(_baseUrl, "accounts", walletAddress, "balance");
 		public static string GetRunViewEndPoint(string         contract, string name) => Path.Combine(_baseUrl, $"helpers/view/{contract}/{name}");

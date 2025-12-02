@@ -26,7 +26,7 @@ namespace Tezos.Configs
 		[Tooltip("URL to the documentation of the data provider. (Optional)")]
 		[SerializeField] private string documentationUrl = "https://api.tzkt.io/";
 
-		public string BaseUrl => Network == NetworkType.mainnet ? urlMainnet : urlTestnet;
+		public string Rpc => Network == NetworkType.mainnet ? urlMainnet : urlTestnet;
 		public string DocumentationUrl => documentationUrl;
 	}
 }

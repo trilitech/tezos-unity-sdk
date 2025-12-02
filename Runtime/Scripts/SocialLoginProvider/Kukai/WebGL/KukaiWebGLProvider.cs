@@ -122,7 +122,7 @@ namespace Tezos.SocialLoginProvider
 			var dataProviderConfig = ConfigGetter.GetOrCreateConfig<DataProviderConfig>();
 			var appConfig          = ConfigGetter.GetOrCreateConfig<AppConfig>();
 			JsInitWallet(
-			             dataProviderConfig.Network.ToString(), dataProviderConfig.BaseUrl, SocialLoginType.ToString().ToLower(), appConfig.AppName,
+			             dataProviderConfig.Network.ToString(), dataProviderConfig.Rpc, SocialLoginType.ToString().ToLower(), appConfig.AppName,
 			             appConfig.AppUrl,                      appConfig.AppIcon
 			            );
 
